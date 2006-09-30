@@ -29,6 +29,21 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 
+#define NUMBUF 5
+#define BUFLEN 128
+	char buf[NUMBUF][BUFLEN];
+	char *env[NUMBUF+1];
+	int i = 0;
+	snprintf(buf[i++], BUFLEN-1, "%s=%s", "HOME", "/home/sql");
+	snprintf(buf[i++], BUFLEN-1, "%s=%s", "TERM", "xterm");
+	snprintf(buf[i++], BUFLEN-1, "%s=%s", "USER", "sql");
+	snprintf(buf[i++], BUFLEN-1, "%s=%s", "SHELL", "/usr/local/bin/bash");
+	snprintf(buf[i++], BUFLEN-1, "%s=%s", "PATH", "/usr/kerberos/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin");
+	for(i = 0; i < NUMBUF; i++) {
+		env[i] = buf[i];
+	}
+	env[i] = NULL;
+
 	char uid[21]; // 64-bit uid requires 21
 	char gid[21]; // 64-bit gid requires 21
 	int retval = snprintf(uid, 21, "%d", getuid());
@@ -55,6 +70,6 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 
-        execv(SIGNUP_PATH, v);
+        execle(SIGNUP_PATH, v, env);
 	return 1;
 }

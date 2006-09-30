@@ -31,12 +31,14 @@ make
 install -D admof $RPM_BUILD_ROOT/usr/local/sbin/admof
 install -D signup-scripts-frontend $RPM_BUILD_ROOT/usr/local/sbin/signup-scripts-frontend
 install -D signup-scripts-backend $RPM_BUILD_ROOT/usr/local/sbin/signup-scripts-backend
+install -D bashrc $RPM_BUILD_ROOT/usr/local/etc/bashrc
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(0644, root, root)
+/usr/local/etc/bashrc
 %defattr(0755, root, root)
 /usr/local/sbin/admof
 /usr/local/sbin/signup-scripts-backend
