@@ -30,15 +30,15 @@ int main(int argc, char **argv) {
 	}
 
 #define NUMBUF 5
-#define BUFLEN 128
+#define BUFLEN 256
 	char buf[NUMBUF][BUFLEN];
 	char *env[NUMBUF+1];
 	int i = 0;
-	snprintf(buf[i++], BUFLEN-1, "%s=%s", "HOME", "/home/sql");
+	snprintf(buf[i++], BUFLEN-1, "%s=%s", "HOME", "/afs/athena.mit.edu/contrib/sql");
 	snprintf(buf[i++], BUFLEN-1, "%s=%s", "TERM", "xterm");
 	snprintf(buf[i++], BUFLEN-1, "%s=%s", "USER", "sql");
 	snprintf(buf[i++], BUFLEN-1, "%s=%s", "SHELL", "/usr/local/bin/bash");
-	snprintf(buf[i++], BUFLEN-1, "%s=%s", "PATH", "/usr/kerberos/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin");
+	snprintf(buf[i++], BUFLEN-1, "%s=%s", "PATH", "/usr/kerberos/sbin:/usr/kerberos/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin");
 	for(i = 0; i < NUMBUF; i++) {
 		env[i] = buf[i];
 	}
