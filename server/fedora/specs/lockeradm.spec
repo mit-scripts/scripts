@@ -62,7 +62,6 @@ mv /etc/sudoers.tmp /etc/sudoers
 
 %postun
 userdel -r signup
-groupdel signup
 
 %changelog
 

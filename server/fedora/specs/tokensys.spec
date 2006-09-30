@@ -50,7 +50,6 @@ crontab -u afsagent -r
 
 %postun
 userdel -r afsagent
-groupdel afsagent
 
 %changelog
 
