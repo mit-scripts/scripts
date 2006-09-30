@@ -1,0 +1,36 @@
+AC_INIT(signup-scripts-frontend.c)
+
+AC_PROG_CC
+
+dnl Needed by admof.in
+
+AC_PATH_PROG(fs_path, fs)
+AC_SUBST(fs_path)
+AC_PATH_PROG(pts_path, pts)
+AC_SUBST(pts_path)
+
+dnl Needed by signup-scripts-backend.in
+
+AC_PATH_PROG(ls_path, ls)
+AC_SUBST(ls_path)
+AC_PATH_PROG(grep_path, grep)
+AC_SUBST(grep_path)
+
+AC_PATH_PROG(useradd_path, useradd)
+AC_SUBST(useradd_path)
+AC_PATH_PROG(groupadd_path, groupadd)
+AC_SUBST(groupadd_path)
+AC_PATH_PROG(setquota_path, setquota)
+AC_SUBST(setquota_path)
+
+AC_PATH_PROG(hesinfo_path, hesinfo)
+AC_SUBST(hesinfo_path)
+
+dnl Needed by bash.in
+
+AC_PATH_PROG(bash_path, bash)
+AC_SUBST(bash)
+
+AC_OUTPUT(Makefile)
+AC_OUTPUT(admof)
+AC_OUTPUT(signup-scripts-backend)

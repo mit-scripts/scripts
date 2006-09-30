@@ -1,0 +1,10 @@
+CC = @CC@
+CFLAGS = @CFLAGS@
+prefix = @prefix@
+
+preauto: 
+	rm -f configure config.* Makefile renew
+	rm -rf auto*.cache
+
+ready: preauto
+	autoconf

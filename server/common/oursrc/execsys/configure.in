@@ -1,0 +1,31 @@
+AC_INIT(staticsys-cat.c.pre)
+
+AC_PROG_CC
+
+AC_ARG_WITH(syscat,
+[  --with-syscat[=DIR]        staticsys-cat will be located in DIR],[
+  if test "$withval" != "no" -a "$withval" != "yes"; then
+    UPD_VARS="syscat_path=$withval/staticsys-cat $UPD_VARS"
+  fi
+])
+
+AC_ARG_WITH(afsagent,
+[  --with-afsagent[=UID]        afsagent will have user id UID],[
+  if test "$withval" != "no" -a "$withval" != "yes"; then
+    CFLAGS="-DAFSAGENT_UID=$withval $CCFLAGS"
+  fi
+])
+
+AC_DEFUN(SUPPORT,[AC_ARG_WITH($1,
+[  --with-$1[=PATH]$2       associate .$1 with PATH],[
+  if test "$withval" != "no" -a "$withval" != "yes"; then
+    UPD_VARS="$1_path=$withval $UPD_VARS"
+  fi
+])])
+
+SUPPORT([pl], [ ])
+SUPPORT([php], [])
+SUPPORT([py], [ ])
+
+AC_SUBST(UPD_VARS)
+AC_OUTPUT(Makefile)

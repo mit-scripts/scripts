@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# This script renews afsagent's tickets and tokens.
+# It is called by afsagent's crontab every 8 hours.
+
+# Option #1: invoke kinit with a password
+#echo "password" | @kinit@ >/dev/null daemon/scripts.mit.edu
+
+# Option #2: invoke kinit with a keytab
+@kinit@ -k -t /home/afsagent/krb5.keytab daemon/scripts.mit.edu
+
+# Obtain AFS tokens
+@aklog@
+@aklog@ -c sipb

@@ -1,0 +1,18 @@
+CC = @CC@
+CFLAGS = @CFLAGS@
+prefix = @prefix@
+
+all-local: signup-sql
+
+signup-sql:
+	$(CC) $(CFLAGS) -o $@ signup-sql.c	
+
+clean:
+	rm -f signup-sql
+
+preauto: clean
+	rm -f configure config.* Makefile signup-sql
+	rm -rf auto*.cache
+
+ready: preauto
+	autoconf

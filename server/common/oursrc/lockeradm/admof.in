@@ -1,0 +1,98 @@
+#!/usr/bin/perl
+use strict;
+
+# admof
+# Copyright (C) 2006  Jeff Arnold <jbarnold@mit.edu>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+#
+# See /COPYRIGHT in this repository for more information.
+
+$ENV{PATH} = '';
+
+my $targetuser;
+unless(($targetuser) = ($ARGV[0] =~ /^([\w._-]+)$/)) {
+  error("Invalid locker name: <$ARGV[0]>.");
+}
+my $curuser;
+unless(($curuuser) = ($ARGV[1] =~ /^([\w._-]+)\@ATHENA\.MIT\.EDU$/)) {
+  error("An internal error has occurred.\nContact scripts\@mit.edu for assistance.");
+}
+
+my $fs = `@fs_path@ 2>/dev/null la /mit/$targetuser/`;
+my @fs = split(/\n/, $fs);
+
+#Access list for . is
+#Normal rights:
+#  system:scripts-root rlidwka
+#  system:anyuser rl
+
+unless($fs[0] =~ /^Access list for \/mit\/$targetuser\/ is$/ &&
+       $fs[1] =~ /^Normal rights:$/) {
+  error("Cannot find locker <$targetuser>.");
+}
+
+if($ARGV[2] && !getpwnam($targetuser)) {
+  error("Locker <$targetuser> does not have a scripts.mit.edu account.");
+}
+
+for(my $i = 2; $i < @fs; $i++) {
+  my ($id) = ($fs[$i] =~ /^  ([\w:_-]+) rlidwka$/);
+  if($id eq "") { next; }
+  my $group;
+  if($id eq $curuser) { success(); }
+  elsif(($group) = ($id =~ /^(system:.+)/)) {
+    my $mems = `@pts_path@ 2>/dev/null membership $group`;
+    my @mems = split(/\n/, $mems);
+
+#Members of system:scripts-root (id: -56104) are:
+#  hartmans
+#  jbarnold
+#  presbrey
+#  tabbott
+#  hartmans.root
+
+    next if($mems[0] !~ /^Members of $group \(id: \S+\) are:$/);
+    
+    if($mems =~ /\s+$curuser\s+/) {
+	success();
+    }
+  }
+}
+
+print <<END;
+
+ERROR:
+It appears as though you are not an administrator of locker <$targetuser>.
+In order to be able to su to <$targetuser>, you must have full AFS access
+to the root directory of locker <$targetuser>.  Try running the command
+fs sa /mit/$targetuser $curuser all
+on Athena in order to explicitly grant yourself full AFS access.
+Contact scripts\@mit.edu if you are unable to solve the problem.
+
+END
+
+exit(1);
+
+sub error {
+  print STDERR "\nERROR:\n$_[0]\n\n";
+  exit(1);
+}
+
+sub success {
+  print STDERR "\n== SUCCESS ==\nYou are now logged in as user <$targetuser>.\n";
+  print STDERR "To return to being <$curuser>, type \"exit\".\n\n";
+  exit(33);
+}

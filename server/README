@@ -1,0 +1,11 @@
+common: 
+  distribution-independent code needed to run a scripts.mit.edu server
+
+fedora:
+  distribution-dependent code needed to run a fedora scripts.mit.edu server
+
+debian:
+  distribution-dependent code needed to run a debian scripts.mit.edu server
+
+doc:
+  documentation related to running a scripts.mit.edu server

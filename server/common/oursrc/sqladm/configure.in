@@ -1,0 +1,19 @@
+AC_INIT(signup-sql.c)
+
+AC_PROG_CC
+
+AC_ARG_WITH(sqluid,
+[  --with-sqluid[=UID]        sql user has uid UID ],[
+  if test "$withval" != "no" -a "$withval" != "yes"; then
+    CFLAGS="-D\"SQL_UID=$withval\" $CFLAGS"
+  fi
+])
+
+AC_ARG_WITH(sqlgid,
+[  --with-sqlgid[=UID]        sql user has gid GID ],[
+  if test "$withval" != "no" -a "$withval" != "yes"; then
+    CFLAGS="-D\"SQL_GID=$withval\" $CFLAGS"
+  fi
+])
+
+AC_OUTPUT(Makefile)

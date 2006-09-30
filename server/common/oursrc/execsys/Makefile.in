@@ -1,0 +1,20 @@
+CC = @CC@
+CFLAGS = @CFLAGS@
+
+all-local: staticsys-cat update
+
+staticsys-cat: update
+	$(CC) $(CFLAGS) -o $@ staticsys-cat.c
+
+update:
+	@UPD_VARS@ perl upd-execsys
+
+clean:
+	rm -f staticsys-cat
+
+preauto: clean
+	rm -f configure config.* Makefile
+	rm -rf auto*.cache
+
+ready: preauto
+	autoconf

@@ -1,0 +1,10 @@
+AC_INIT()
+
+AC_PATH_PROG(kinit_path, perl)
+AC_SUBST(kinit_path)
+
+AC_PATH_PROG(aklog_path, sudo)
+AC_SUBST(aklog_path)
+
+AC_OUTPUT(Makefile)
+AC_OUTPUT(renew)

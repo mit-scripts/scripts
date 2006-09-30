@@ -1,0 +1,88 @@
+#!/usr/bin/perl
+use strict;
+
+# signup-scripts-backend
+# Copyright (C) 2006  Jeff Arnold <jbarnold@mit.edu>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+# 
+# See /COPYRIGHT in this repository for more information.
+
+$ENV{PATH} = '';
+
+my $username = $ARGV[0];
+
+# Complain unless submitted username contains only valid characters
+complain("bad username") unless($username =~ /^[\w._-]+$/);
+
+complain("banned username") if(`@grep_path@ '$username' /afs/athena.mit.edu/contrib/scripts/admin/users.banned` != "");
+
+my $homedir;
+my $filsys = `@hesinfo_path@ $username filsys`;
+# AFS /afs/athena.mit.edu/user/j/b/jbarnold w /mit/jbarnold
+if($filsys =~ /^AFS\s(\/afs\/[\w\._\/-]+)\s.*\s\/mit\/$username$/) {
+	$homedir = $1;
+}
+else {
+	complain("athena user not found");
+}
+
+# Run ls to confirm user's homedir and obtain user's homedir uid
+my $ls_regexp = '^\S*\s+\S*\s+(\S*)\s+(\S*)\s+\S*\s+\S*\s+\S*\s+\S*\s+(\S*).*$';
+my ($uid1, $gid1, $name1) = (`@ls_path@ -dln '$homedir'` =~ $ls_regexp);
+
+# Complain if user's homedir does not exist
+complain("athena homedir not found") unless($name1 eq $homedir);
+
+# Complain if user's uid is too low or too high
+complain("bad uid") unless($uid1 > @min_user_uid@ and $uid1 < (1 << 31));
+
+# Run ls to confirm user's .scripts-signup file
+my ($uid2, $gid2, $name2) = (`@ls_path@ -dln '$homedir/.scripts-signup'` =~ $ls_regexp);
+
+# Complain if user's .scripts-signup file does not exist
+#complain("scripts-signup file not found") unless($name2 eq "$homedir/.scripts-signup");
+
+# Complain if the user's username is already taken
+complain("username already taken") if(getpwnam $username);
+
+# Complain if user's uid is already taken
+complain("uid already taken") if(getpwuid $uid1);
+
+if($homedir !~ /\/afs\/athena\.mit\.edu\/user\//) {
+	$gid1 = $uid1;
+}
+
+# Complain if user's gid is already taken
+complain("gid already taken") if(getgrgid $gid1);
+
+# Add user to /etc/passwd
+`@sudo_path@ -u root @groupadd_path@ -g '$gid1' '$username'`;
+`@sudo_path@ -u root @useradd_path@ -d '$homedir' -s '/usr/local/bin/bash' -u '$uid1' -g '$gid1' -G users '$username'`;
+# Add disk quota for user
+`@sudo_path@ -u root @setquota_path@ '$username' 0 25000 0 10000`;
+
+printexit("done", 0);
+
+sub complain {
+  my ($complaint) = @_;
+  printexit($complaint, 1);
+}
+
+sub printexit {
+  my ($msg, $status) = @_;
+  print $msg;
+  exit($status);
+}
