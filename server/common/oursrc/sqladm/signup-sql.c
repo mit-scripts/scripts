@@ -44,24 +44,17 @@ int main(int argc, char **argv) {
 	}
 	env[i] = NULL;
 
-	char uid[21]; // 64-bit uid requires 21
-	char gid[21]; // 64-bit gid requires 21
-	int retval = snprintf(uid, 21, "%d", getuid());
+	char uid_str[21]; // 64-bit uid requires 21
+	char gid_str[21]; // 64-bit gid requires 21
+	int uid_num = getuid();
+	int retval = snprintf(uid_str, 21, "%d", uid_num);
 	if(retval < 0 || retval >= 21) {
                 exit(1);
         }
-	retval = snprintf(gid, 21, "%d", getgid());
+	retval = snprintf(gid_str, 21, "%d", getgid());
 	if(retval < 0 || retval >= 21) {
 		exit(1);
 	}
-
-        char *v[5];
-#define SIGNUP_PATH "/afs/athena.mit.edu/contrib/sql/web_scripts/main/batch/signup.php"
-        v[0] = SIGNUP_PATH;
-	v[1] = getpwuid(getuid())->pw_name;
-	v[2] = uid;
-	v[3] = gid;
-        v[4] = NULL;
 
 	if(setregid(SQL_GID, SQL_GID) != 0) {
 		exit(1);
@@ -70,6 +63,7 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 
-        execle(SIGNUP_PATH, v, env);
+#define SIGNUP_PATH "/afs/athena.mit.edu/contrib/sql/web_scripts/main/batch/signup.php"
+        execle(SIGNUP_PATH, SIGNUP_PATH, getpwuid(uid_num)->pw_name, uid_str, gid_str, NULL, env);
 	return 1;
 }
