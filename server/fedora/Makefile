@@ -77,8 +77,6 @@ patch-specs: install-srpms
 
 # 1. use the package's Makefile to delete leftover files and run autoconf
 # 2. create a tarball (we want it to contain the autoconf output)
-# 3. use the package's Makefile to delete leftover files
-
 create-tarballs: mkdir-tree
 	@cd ${oursrcdir}; \
 	list=`find -mindepth 1 -maxdepth 1 -type d`; \
@@ -89,11 +87,6 @@ create-tarballs: mkdir-tree
 		make ready; \
 		popd; \
 		tar -czf $(tmp_src)/$$i.tar.gz $$i; \
-		pushd $$i; \
-		autoconf; \
-		./configure; \
-		make preauto; \
-		popd; \
 	done;
 
 setup: install-srpms copy-patches copy-specs patch-specs create-tarballs
