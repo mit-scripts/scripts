@@ -117,7 +117,7 @@ all:
 $(allsrc): setup
 	rpmbuild $(rpm_args) -ba ${tmp_specs}/$@*.spec
 
-suexec: setup
+suexec: install-srpms
 	@rm -rf ${tmp_src}/httpd-2*/; \
 	tar zxvf ${tmp_src}/httpd-2*.tar.gz; \
 	cd ./httpd-2*; \
