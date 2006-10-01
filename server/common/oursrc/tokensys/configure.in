@@ -1,9 +1,9 @@
 AC_INIT()
 
-AC_PATH_PROG(kinit_path, perl)
+AC_PATH_PROG(kinit_path, kinit)
 AC_SUBST(kinit_path)
 
-AC_PATH_PROG(aklog_path, sudo)
+AC_PATH_PROG(aklog_path, aklog)
 AC_SUBST(aklog_path)
 
 AC_OUTPUT(Makefile)
