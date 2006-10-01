@@ -147,7 +147,7 @@ diff -ur openafs-1.4.1-rc10/src/afs/VNOPS/afs_vnop_access.c openafs-1.4.1-rc10-s
      OSI_VC_CONVERT(avc);
  
      AFS_STATCNT(afs_access);
-+    amode = amode & (VREAD | VWRITE);
++    amode = amode & ~VEXEC;
      afs_Trace3(afs_iclSetp, CM_TRACE_ACCESS, ICL_TYPE_POINTER, avc,
  	       ICL_TYPE_INT32, amode, ICL_TYPE_OFFSET,
  	       ICL_HANDLE_OFFSET(avc->m.Length));

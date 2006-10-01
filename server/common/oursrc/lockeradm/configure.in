@@ -16,6 +16,8 @@ AC_SUBST(ls_path)
 AC_PATH_PROG(grep_path, grep)
 AC_SUBST(grep_path)
 
+AC_PATH_PROG(sudo_path, sudo)
+AC_SUBST(sudo_path)
 AC_PATH_PROG(useradd_path, useradd)
 AC_SUBST(useradd_path)
 AC_PATH_PROG(groupadd_path, groupadd)
@@ -26,7 +28,7 @@ AC_SUBST(setquota_path)
 AC_PATH_PROG(hesinfo_path, hesinfo)
 AC_SUBST(hesinfo_path)
 
-dnl Needed by bash.in
+dnl Needed by modbash.in
 
 AC_PATH_PROG(bash_path, bash)
 AC_SUBST(bash)
@@ -34,3 +36,4 @@ AC_SUBST(bash)
 AC_OUTPUT(Makefile)
 AC_OUTPUT(admof)
 AC_OUTPUT(signup-scripts-backend)
+AC_OUTPUT(modbash)

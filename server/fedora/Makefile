@@ -108,6 +108,7 @@ all:
 	make $(allsrc)
 
 $(allsrc): setup
+	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild $(rpm_args) -ba ${tmp_specs}/$@*.spec
 
 suexec: install-srpms

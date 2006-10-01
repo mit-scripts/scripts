@@ -28,18 +28,20 @@ make
 
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
+install -D modbashrc $RPM_BUILD_ROOT/usr/local/etc/modbashrc
+install -D modbash $RPM_BUILD_ROOT/usr/local/bin/modbash
 install -D admof $RPM_BUILD_ROOT/usr/local/sbin/admof
 install -D signup-scripts-frontend $RPM_BUILD_ROOT/usr/local/sbin/signup-scripts-frontend
 install -D signup-scripts-backend $RPM_BUILD_ROOT/usr/local/sbin/signup-scripts-backend
-install -D bashrc $RPM_BUILD_ROOT/usr/local/etc/bashrc
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(0644, root, root)
-/usr/local/etc/bashrc
+/usr/local/etc/modbashrc
 %defattr(0755, root, root)
+/usr/local/bin/modbash
 /usr/local/sbin/admof
 /usr/local/sbin/signup-scripts-backend
 %defattr(4755, signup, signup)
@@ -53,8 +55,9 @@ useradd -g signup signup
 cat >>/etc/sudoers <<END
 signup  ALL=(root) NOPASSWD: /usr/sbin/useradd
 signup  ALL=(root) NOPASSWD: /usr/sbin/groupadd
-signup  ALL=(root) NOPASSWD: /usr/sbin/edquota
+signup  ALL=(root) NOPASSWD: /usr/sbin/setquota
 END
+chmod 0440 /etc/sudoers
 
 %preun
 touch /etc/sudoers.tmp
