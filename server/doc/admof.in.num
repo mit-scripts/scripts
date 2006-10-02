@@ -1,0 +1,100 @@
+0000 #!/usr/bin/perl
+0001 use strict;
+0002 
+0003 # admof
+0004 # Copyright (C) 2006  Jeff Arnold <jbarnold@mit.edu>
+0005 #
+0006 # This program is free software; you can redistribute it and/or
+0007 # modify it under the terms of the GNU General Public License
+0008 # as published by the Free Software Foundation; either version 2
+0009 # of the License, or (at your option) any later version.
+0010 #
+0011 # This program is distributed in the hope that it will be useful,
+0012 # but WITHOUT ANY WARRANTY; without even the implied warranty of
+0013 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+0014 # GNU General Public License for more details.
+0015 #
+0016 # You should have received a copy of the GNU General Public License
+0017 # along with this program; if not, write to the Free Software
+0018 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+0019 #
+0020 # See /COPYRIGHT in this repository for more information.
+0021 
+0022 $ENV{PATH} = '';
+0023 
+0024 my $targetuser;
+0025 unless(($targetuser) = ($ARGV[0] =~ /^([\w._-]+)$/)) {
+0026   error("Invalid locker name: <$ARGV[0]>.");
+0027 }
+0028 my $curuser;
+0029 unless(($curuser) = ($ARGV[1] =~ /^([\w._-]+)\@ATHENA\.MIT\.EDU$/)) {
+0030   error("An internal error has occurred.\nContact scripts\@mit.edu for assistance.");
+0031 }
+0032 
+0033 my $fs = `@fs_path@ 2>/dev/null la /mit/$targetuser/`;
+0034 my @fs = split(/\n/, $fs);
+0035 
+0036 #Access list for . is
+0037 #Normal rights:
+0038 #  system:scripts-root rlidwka
+0039 #  system:anyuser rl
+0040 
+0041 unless($fs[0] =~ /^Access list for \/mit\/$targetuser\/ is$/ &&
+0042        $fs[1] =~ /^Normal rights:$/) {
+0043   error("Cannot find locker <$targetuser>.");
+0044 }
+0045 
+0046 if($ARGV[2] && !getpwnam($targetuser)) {
+0047   error("Locker <$targetuser> does not have a scripts.mit.edu account.");
+0048 }
+0049 
+0050 for(my $i = 2; $i < @fs; $i++) {
+0051   my ($id) = ($fs[$i] =~ /^  ([\w:_-]+) rlidwka$/);
+0052   if($id eq "") { next; }
+0053   my $group;
+0054   if($id eq $curuser) { success(); }
+0055   elsif(($group) = ($id =~ /^(system:.+)/)) {
+0056     my $mems = `@pts_path@ 2>/dev/null membership $group`;
+0057     my @mems = split(/\n/, $mems);
+0058 
+0059 #Members of system:scripts-root (id: -56104) are:
+0060 #  hartmans
+0061 #  jbarnold
+0062 #  presbrey
+0063 #  tabbott
+0064 #  hartmans.root
+0065 
+0066     next if($mems[0] !~ /^Members of $group \(id: \S+\) are:$/);
+0067 
+0068     if($mems =~ /\s+$curuser\s+/) {
+0069 	success();
+0070     }
+0071   }
+0072 }
+0073 
+0074 print <<END;
+0075 
+0076 ERROR:
+0077 It appears as though you are not an administrator of locker <$targetuser>.
+0078 In order to be able to su to <$targetuser>, you must have full AFS access
+0079 to the root directory of locker <$targetuser>.  Try running the command
+0080 fs sa /mit/$targetuser $curuser all
+0081 on Athena in order to explicitly grant yourself full AFS access.
+0082 Contact scripts\@mit.edu if you are unable to solve the problem.
+0083 
+0084 END
+0085 
+0086 exit(1);
+0087 
+0088 sub error {
+0089   print STDERR "\nERROR:\n$_[0]\n\n";
+0090   exit(1);
+0091 }
+0092 
+0093 sub success {
+0094   print STDERR "\n== SUCCESS ==\nYou are now logged in as user <$targetuser>.\n";
+0095   print STDERR "To return to being <$curuser>, type \"exit\".\n\n";
+0096   exit(33);
+0097 }
+0098 
+0099 

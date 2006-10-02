@@ -1,0 +1,150 @@
+0000 # scripts.mit.edu krb5 kuserok patch
+0001 # Copyright (C) 2006  Tim Abbott <tabbott@mit.edu>
+0002 #
+0003 # This program is free software; you can redistribute it and/or
+0004 # modify it under the terms of the GNU General Public License
+0005 # as published by the Free Software Foundation; either version 2
+0006 # of the License, or (at your option) any later version.
+0007 #
+0008 # This program is distributed in the hope that it will be useful,
+0009 # but WITHOUT ANY WARRANTY; without even the implied warranty of
+0010 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+0011 # GNU General Public License for more details.
+0012 #
+0013 # You should have received a copy of the GNU General Public License
+0014 # along with this program; if not, write to the Free Software
+0015 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+0016 #
+0017 # See /COPYRIGHT in this repository for more information.
+0018 #
+0019 --- krb5-1.4.3/src/lib/krb5/os/kuserok.c.old    2006-09-09 19:03:33.000000000 -0400
+0020 +++ krb5-1.4.3/src/lib/krb5/os/kuserok.c        2006-09-09 19:50:48.000000000 -0400
+0021 @@ -31,6 +31,7 @@
+0022  #if !defined(_WIN32)		/* Not yet for Windows */
+0023  #include <stdio.h>
+0024  #include <pwd.h>
+0025 +#include <sys/wait.h>
+0026 
+0027  #if defined(_AIX) && defined(_IBMR2)
+0028  #include <sys/access.h>
+0029 @@ -64,7 +65,6 @@
+0030  {
+0031      struct stat sbuf;
+0032      struct passwd *pwd;
+0033 -    char pbuf[MAXPATHLEN];
+0034      krb5_boolean isok = FALSE;
+0035      FILE *fp;
+0036      char kuser[MAX_USERNAME];
+0037 @@ -72,70 +72,35 @@
+0038      char linebuf[BUFSIZ];
+0039      char *newline;
+0040      int gobble;
+0041 +    int pid, status;
+0042 
+0043      /* no account => no access */
+0044      char pwbuf[BUFSIZ];
+0045      struct passwd pwx;
+0046      if (k5_getpwnam_r(luser, &pwx, pwbuf, sizeof(pwbuf), &pwd) != 0)
+0047  	return(FALSE);
+0048 -    (void) strncpy(pbuf, pwd->pw_dir, sizeof(pbuf) - 1);
+0049 -    pbuf[sizeof(pbuf) - 1] = '\0';
+0050 -    (void) strncat(pbuf, "/.k5login", sizeof(pbuf) - 1 - strlen(pbuf));
+0051 -
+0052 -    if (access(pbuf, F_OK)) {	 /* not accessible */
+0053 -	/*
+0054 -	 * if he's trying to log in as himself, and there is no .k5login file,
+0055 -	 * let him.  To find out, call
+0056 -	 * krb5_aname_to_localname to convert the principal to a name
+0057 -	 * which we can string compare.
+0058 -	 */
+0059 -	if (!(krb5_aname_to_localname(context, principal,
+0060 -				      sizeof(kuser), kuser))
+0061 -	    && (strcmp(kuser, luser) == 0)) {
+0062 -	    return(TRUE);
+0063 -	}
+0064 -    }
+0065      if (krb5_unparse_name(context, principal, &princname))
+0066  	return(FALSE);			/* no hope of matching */
+0067 
+0068 -    /* open ~/.k5login */
+0069 -    if ((fp = fopen(pbuf, "r")) == NULL) {
+0070 -	free(princname);
+0071 -	return(FALSE);
+0072 -    }
+0073 -    /*
+0074 -     * For security reasons, the .k5login file must be owned either by
+0075 -     * the user himself, or by root.  Otherwise, don't grant access.
+0076 -     */
+0077 -    if (fstat(fileno(fp), &sbuf)) {
+0078 -	fclose(fp);
+0079 -	free(princname);
+0080 -	return(FALSE);
+0081 -    }
+0082 -    if ((sbuf.st_uid != pwd->pw_uid) && sbuf.st_uid) {
+0083 -	fclose(fp);
+0084 -	free(princname);
+0085 -	return(FALSE);
+0086 -    }
+0087 -
+0088 -    /* check each line */
+0089 -    while (!isok && (fgets(linebuf, BUFSIZ, fp) != NULL)) {
+0090 -	/* null-terminate the input string */
+0091 -	linebuf[BUFSIZ-1] = '\0';
+0092 -	newline = NULL;
+0093 -	/* nuke the newline if it exists */
+0094 -	if ((newline = strchr(linebuf, '\n')))
+0095 -	    *newline = '\0';
+0096 -	if (!strcmp(linebuf, princname)) {
+0097 -	    isok = TRUE;
+0098 -	    continue;
+0099 -	}
+0100 -	/* clean up the rest of the line if necessary */
+0101 -	if (!newline)
+0102 -	    while (((gobble = getc(fp)) != EOF) && gobble != '\n');
+0103 -    }
+0104 +    if ((pid = fork()) == -1) {
+0105 +       free(princname);
+0106 +       return(FALSE);
+0107 +    }
+0108 +    if (pid == 0) {
+0109 +       char *args[4];
+0110 +#define ADMOF_PATH "/usr/local/sbin/admof"
+0111 +       args[0] = ADMOF_PATH;
+0112 +       args[1] = (char *) luser;
+0113 +       args[2] = princname;
+0114 +       args[3] = NULL;
+0115 +       execv(ADMOF_PATH, args);
+0116 +       exit(1);
+0117 +    }
+0118 +    if (waitpid(pid, &status, 0) > 0 && WIFEXITED(status) && WEXITSTATUS(status) == 33) {
+0119 +       isok=TRUE;
+0120 +    }
+0121 +
+0122      free(princname);
+0123 -    fclose(fp);
+0124      return(isok);
+0125  }
+0126 
+0127 
+0128 
+0129 
+0130 
+0131 
+0132 
+0133 
+0134 
+0135 
+0136 
+0137 
+0138 
+0139 
+0140 
+0141 
+0142 
+0143 
+0144 
+0145 
+0146 
+0147 
+0148 
+0149 
