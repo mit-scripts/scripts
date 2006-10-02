@@ -27,7 +27,7 @@ unless(($targetuser) = ($ARGV[0] =~ /^([\w._-]+)$/)) {
   error("Invalid locker name: <$ARGV[0]>.");
 }
 my $curuser;
-unless(($curuuser) = ($ARGV[1] =~ /^([\w._-]+)\@ATHENA\.MIT\.EDU$/)) {
+unless(($curuser) = ($ARGV[1] =~ /^([\w._-]+)\@ATHENA\.MIT\.EDU$/)) {
   error("An internal error has occurred.\nContact scripts\@mit.edu for assistance.");
 }
 
