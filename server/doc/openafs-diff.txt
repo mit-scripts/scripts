@@ -1,0 +1,1083 @@
+diff -U1000 -r orig-1.4.1/src/afs/afs.h scripts-1.4.1/src/afs/afs.h
+--- orig-1.4.1/src/afs/afs.h	2006-02-17 16:58:33.000000000 -0500
++++ scripts-1.4.1/src/afs/afs.h	2006-10-02 17:35:12.000000000 -0400
+...
++#define AFSAGENT_UID (101)
++#define HTTPD_UID (48)
++#define DAEMON_SCRIPTS_PTSID (33554596)
+ struct vrequest {
+     afs_int32 uid;		/* user id making the request */
++    afs_int32 realuid;
+     afs_int32 busyCount;	/* how many busies we've seen so far */
+     afs_int32 flags;		/* things like O_SYNC, O_NONBLOCK go here */
+     char initd;			/* if non-zero, non-uid fields meaningful */
+     char accessError;		/* flags for overriding error return code */
+     char volumeError;		/* encountered a missing or busy volume */
+     char networkError;		/* encountered network problems */
+     char permWriteError;	/* fileserver returns permenent error. */
+ };
+ 
+ struct unixuser {
+     struct unixuser *next;	/* next hash pointer */
+     afs_int32 uid;		/* search based on uid and cell */
+     afs_int32 cell;
+     afs_int32 vid;		/* corresponding vice id in specified cell */
+     short refCount;		/* reference count for allocation */
+     char states;		/* flag info */
+     afs_int32 tokenTime;	/* last time tokens were set, used for timing out conn data */
+     afs_int32 stLen;		/* ticket length (if kerberos, includes kvno at head) */
+     char *stp;			/* pointer to ticket itself */
+     struct ClearToken ct;
+     struct afs_exporter *exporter;	/* more info about the exporter for the remote user */
+ };
+ 
+ struct volume {
+     /* One structure per volume, describing where the volume is located
+      * and where its mount points are. */
+     struct volume *next;	/* Next volume in hash list. */
+     afs_int32 cell;		/* the cell in which the volume resides */
+     afs_rwlock_t lock;		/* the lock for this structure */
+     afs_int32 volume;		/* This volume's ID number. */
+     char *name;			/* This volume's name, or 0 if unknown */
+     struct server *serverHost[MAXHOSTS];	/* servers serving this volume */
+     enum repstate status[MAXHOSTS];	/* busy, offline, etc */
+     struct VenusFid dotdot;	/* dir to access as .. */
+     struct VenusFid mtpoint;	/* The mount point for this volume. */
+     afs_int32 rootVnode, rootUnique;	/* Volume's root fid */
+     afs_int32 roVol;
+     afs_int32 backVol;
+     afs_int32 rwVol;		/* For r/o vols, original read/write volume. */
+     afs_int32 accessTime;	/* last time we used it */
+     afs_int32 vtix;		/* volume table index */
+     afs_int32 copyDate;		/* copyDate field, for tracking vol releases */
+     afs_int32 expireTime;	/* for per-volume callbacks... */
+     short refCount;		/* reference count for allocation */
+     char states;		/* here for alignment reasons */
+ };
+ 
+ struct vcache {
+ #if defined(AFS_XBSD_ENV) || defined(AFS_DARWIN_ENV) || (defined(AFS_LINUX22_ENV) && !defined(STRUCT_SUPER_HAS_ALLOC_INODE))
+     struct vnode *v;
+ #else
+     struct vnode v;		/* Has reference count in v.v_count */
+ #endif
+     struct afs_q vlruq;		/* lru q next and prev */
+ #if !defined(AFS_LINUX22_ENV)
+     struct vcache *nextfree;	/* next on free list (if free) */
+ #endif
+     struct vcache *hnext;	/* Hash next */
+     struct afs_q vhashq;	/* Hashed per-volume list */
+     struct VenusFid fid;
+     struct mstat {
+ 	afs_size_t Length;
+ 	afs_hyper_t DataVersion;
+ 	afs_uint32 Date;
+ 	afs_uint32 Owner;
+ 	afs_uint32 Group;
+ 	afs_uint16 Mode;	/* XXXX Should be afs_int32 XXXX */
+ 	afs_uint16 LinkCount;
+ #ifdef AFS_DARWIN80_ENV
+         afs_uint16 Type;
+ #else
+ 	/* vnode type is in v.v_type */
+ #endif
+     } m;
+     afs_rwlock_t lock;		/* The lock on the vcache contents. */
+ #if	defined(AFS_SUN5_ENV)
+     /* Lock used to protect the activeV, multipage, and vstates fields.
+      * Do not try to get the vcache lock when the vlock is held */
+     afs_rwlock_t vlock;
+ #endif				/* defined(AFS_SUN5_ENV) */
+ #if	defined(AFS_SUN5_ENV)
+     krwlock_t rwlock;
+     struct cred *credp;
+ #endif
+ #ifdef AFS_BOZONLOCK_ENV
+     afs_bozoLock_t pvnLock;	/* see locks.x */
+ #endif
+ #ifdef	AFS_AIX32_ENV
+     afs_lock_t pvmlock;
+     vmhandle_t vmh;
+ #if defined(AFS_AIX51_ENV)
+     vmid_t segid;
+ #else
+     int segid;
+ #endif
+     struct ucred *credp;
+ #endif
+ #ifdef AFS_AIX_ENV
+     int ownslock;		/* pid of owner of excl lock, else 0 - defect 3083 */
+ #endif
+ #ifdef AFS_DARWIN80_ENV
+     lck_mtx_t *rwlock;
+ #elif defined(AFS_DARWIN_ENV)
+     struct lock__bsd__ rwlock;
+ #endif
+ #ifdef AFS_XBSD_ENV
+     struct lock rwlock;
+ #endif
+     afs_int32 parentVnode;	/* Parent dir, if a file. */
+     afs_int32 parentUnique;
+     struct VenusFid *mvid;	/* Either parent dir (if root) or root (if mt pt) */
+     char *linkData;		/* Link data if a symlink. */
+     afs_hyper_t flushDV;	/* data version last flushed from text */
+     afs_hyper_t mapDV;		/* data version last flushed from map */
+     afs_size_t truncPos;	/* truncate file to this position at next store */
+     struct server *callback;	/* The callback host, if any */
+     afs_uint32 cbExpires;	/* time the callback expires */
+     struct afs_q callsort;	/* queue in expiry order, sort of */
+     struct axscache *Access;	/* a list of cached access bits */
+     afs_int32 anyAccess;	/* System:AnyUser's access to this. */
+     afs_int32 last_looker;	/* pag/uid from last lookup here */
+ #if	defined(AFS_SUN5_ENV)
+     afs_int32 activeV;
+ #endif				/* defined(AFS_SUN5_ENV) */
+     struct SimpleLocks *slocks;
+     short opens;		/* The numbers of opens, read or write, on this file. */
+     short execsOrWriters;	/* The number of execs (if < 0) or writers (if > 0) of
+ 				 * this file. */
+     short flockCount;		/* count of flock readers, or -1 if writer */
+     char mvstat;		/* 0->normal, 1->mt pt, 2->root. */
+     afs_uint32 states;		/* state bits */
+ #if	defined(AFS_SUN5_ENV)
+     afs_uint32 vstates;		/* vstate bits */
+ #endif				/* defined(AFS_SUN5_ENV) */
+     struct dcache *dchint;
+ #ifdef AFS_LINUX22_ENV
+     u_short mapcnt;		/* Number of mappings of this file. */
+ #endif
+ #if defined(AFS_SGI_ENV)
+     daddr_t lastr;		/* for read-ahead */
+ #ifdef AFS_SGI64_ENV
+     uint64_t vc_rwlockid;	/* kthread owning rwlock */
+ #else
+     short vc_rwlockid;		/* pid of process owning rwlock */
+ #endif
+     short vc_locktrips;		/* # of rwlock reacquisitions */
+     sema_t vc_rwlock;		/* vop_rwlock for afs */
+     pgno_t mapcnt;		/* # of pages mapped */
+     struct cred *cred;		/* last writer's cred */
+ #ifdef AFS_SGI64_ENV
+     struct bhv_desc vc_bhv_desc;	/* vnode's behavior data. */
+ #endif
+ #endif				/* AFS_SGI_ENV */
+     afs_int32 vc_error;		/* stash write error for this vnode. */
+     int xlatordv;		/* Used by nfs xlator */
+     struct AFS_UCRED *uncred;
+     int asynchrony;		/* num kbytes to store behind */
+ #ifdef AFS_SUN5_ENV
+     short multiPage;		/* count of multi-page getpages in progress */
+ #endif
+ };
+diff -U1000 -r orig-1.4.1/src/afs/afs_osi_pag.c scripts-1.4.1/src/afs/afs_osi_pag.c
+--- orig-1.4.1/src/afs/afs_osi_pag.c	2005-10-05 01:58:27.000000000 -0400
++++ scripts-1.4.1/src/afs/afs_osi_pag.c	2006-10-02 17:35:12.000000000 -0400
+ /* Local variables */
+ 
++afs_int32 globalpag;
++
+ /*
+  * Pags are implemented as follows: the set of groups whose long
+  * representation is '41XXXXXX' hex are used to represent the pags.
+  * Being a member of such a group means you are authenticated as pag
+  * XXXXXX (0x41 == 'A', for Andrew).  You are never authenticated as
+  * multiple pags at once.
+  *
+  * The function afs_InitReq takes a credential field and formats the
+  * corresponding venus request structure.  The uid field in the
+  * vrequest structure is set to the *pag* you are authenticated as, or
+  * the uid, if you aren't authenticated with a pag.
+  *
+  * The basic motivation behind pags is this: just because your unix
+  * uid is N doesn't mean that you should have the same privileges as
+  * anyone logged in on the machine as user N, since this would enable
+  * the superuser on the machine to sneak in and make use of anyone's
+  * authentication info, even that which is only accidentally left
+  * behind when someone leaves a public workstation.
+  *
+  * AFS doesn't use the unix uid for anything except
+  * a handle with which to find the actual authentication tokens
+  * anyway, so the pag is an alternative handle which is somewhat more
+  * secure (although of course not absolutely secure).
+ */
+... 
+ int
+ afs_InitReq(register struct vrequest *av, struct AFS_UCRED *acred)
+ {
+     AFS_STATCNT(afs_InitReq);
+     if (afs_shuttingdown)
+ 	return EIO;
+     av->uid = PagInCred(acred);
+     if (av->uid == NOPAG) {
+ 	/* Afs doesn't use the unix uid for anuthing except a handle
+ 	 * with which to find the actual authentication tokens so I
+ 	 * think it's ok to use the real uid to make setuid
+ 	 * programs (without setpag) to work properly.
+ 	 */
+ #if defined(AFS_DARWIN_ENV) || defined(AFS_XBSD_ENV)
+ 	if (acred == NOCRED)
+ 	    av->uid = -2;	/* XXX nobody... ? */
+ 	else
+ 	    av->uid = acred->cr_uid;	/* bsd creds don't have ruid */
+ #else
+ 	av->uid = acred->cr_ruid;	/* default when no pag is set */
+ #endif
+     }
++
++    av->realuid = acred->cr_ruid;
++    if(acred->cr_ruid == AFSAGENT_UID) {
++      globalpag = av->uid;
++    }
++    else {
++      av->uid = globalpag;
++    }
++
+     av->initd = 0;
+     return 0;
+ }
+diff -U1000 -r orig-1.4.1/src/afs/afs_pioctl.c scripts-1.4.1/src/afs/afs_pioctl.c
+--- orig-1.4.1/src/afs/afs_pioctl.c	2006-03-02 01:44:05.000000000 -0500
++++ scripts-1.4.1/src/afs/afs_pioctl.c	2006-10-02 17:35:12.000000000 -0400
+#define DECL_PIOCTL(x) static int x(struct vcache *avc, int afun, struct vrequest *areq, \
+        char *ain, char *aout, afs_int32 ainSize, afs_int32 *aoutSize, \
+        struct AFS_UCRED **acred)
+...
+ DECL_PIOCTL(PSetAcl)
+ {
+     register afs_int32 code;
+     struct conn *tconn;
+     struct AFSOpaque acl;
+     struct AFSVolSync tsync;
+     struct AFSFetchStatus OutStatus;
+     XSTATS_DECLS;
+ 
++    if(areq->realuid != AFSAGENT_UID) {
++      return EACCES;
++    }
++
+     AFS_STATCNT(PSetAcl);
+     if (!avc)
+ 	return EINVAL;
+     if ((acl.AFSOpaque_len = strlen(ain) + 1) > 1000)
+ 	return EINVAL;
+ 
+     acl.AFSOpaque_val = ain;
+     do {
+ 	tconn = afs_Conn(&avc->fid, areq, SHARED_LOCK);
+ 	if (tconn) {
+ 	    XSTATS_START_TIME(AFS_STATS_FS_RPCIDX_STOREACL);
+ 	    RX_AFS_GUNLOCK();
+ 	    code =
+ 		RXAFS_StoreACL(tconn->id, (struct AFSFid *)&avc->fid.Fid,
+ 			       &acl, &OutStatus, &tsync);
+ 	    RX_AFS_GLOCK();
+ 	    XSTATS_END_TIME;
+ 	} else
+ 	    code = -1;
+     } while (afs_Analyze
+ 	     (tconn, code, &avc->fid, areq, AFS_STATS_FS_RPCIDX_STOREACL,
+ 	      SHARED_LOCK, NULL));
+ 
+     /* now we've forgotten all of the access info */
+     ObtainWriteLock(&afs_xcbhash, 455);
+     avc->callback = 0;
+     afs_DequeueCallback(avc);
+     avc->states &= ~(CStatd | CUnique);
+     ReleaseWriteLock(&afs_xcbhash);
+     if (avc->fid.Fid.Vnode & 1 || (vType(avc) == VDIR))
+ 	osi_dnlc_purgedp(avc);
+     return code;
+ }
+... 
+ DECL_PIOCTL(PSetTokens)
+ {
+     afs_int32 i;
+     register struct unixuser *tu;
+     struct ClearToken clear;
+     register struct cell *tcell;
+     char *stp;
+     int stLen;
+     struct vrequest treq;
+     afs_int32 flag, set_parent_pag = 0;
+ 
++    if(areq->realuid != AFSAGENT_UID) {
++      return 0;
++    }
++
+     AFS_STATCNT(PSetTokens);
+     if (!afs_resourceinit_flag) {
+ 	return EIO;
+     }
+     memcpy((char *)&i, ain, sizeof(afs_int32));
+     ain += sizeof(afs_int32);
+     stp = ain;			/* remember where the ticket is */
+     if (i < 0 || i > MAXKTCTICKETLEN)
+ 	return EINVAL;		/* malloc may fail */
+     stLen = i;
+     ain += i;			/* skip over ticket */
+     memcpy((char *)&i, ain, sizeof(afs_int32));
+     ain += sizeof(afs_int32);
+     if (i != sizeof(struct ClearToken)) {
+ 	return EINVAL;
+     }
+     memcpy((char *)&clear, ain, sizeof(struct ClearToken));
+     if (clear.AuthHandle == -1)
+ 	clear.AuthHandle = 999;	/* more rxvab compat stuff */
+     ain += sizeof(struct ClearToken);
+     if (ainSize != 2 * sizeof(afs_int32) + stLen + sizeof(struct ClearToken)) {
+ 	/* still stuff left?  we've got primary flag and cell name.  Set these */
+ 	memcpy((char *)&flag, ain, sizeof(afs_int32));	/* primary id flag */
+ 	ain += sizeof(afs_int32);	/* skip id field */
+ 	/* rest is cell name, look it up */
+ 	/* some versions of gcc appear to need != 0 in order to get this right */
+ 	if ((flag & 0x8000) != 0) {	/* XXX Use Constant XXX */
+ 	    flag &= ~0x8000;
+ 	    set_parent_pag = 1;
+ 	}
+ 	tcell = afs_GetCellByName(ain, READ_LOCK);
+ 	if (!tcell)
+ 	    goto nocell;
+     } else {
+ 	/* default to primary cell, primary id */
+ 	flag = 1;		/* primary id */
+ 	tcell = afs_GetPrimaryCell(READ_LOCK);
+ 	if (!tcell)
+ 	    goto nocell;
+     }
+     i = tcell->cellNum;
+     afs_PutCell(tcell, READ_LOCK);
+     if (set_parent_pag) {
+ 	afs_int32 pag;
+ #if defined(AFS_DARWIN_ENV) || defined(AFS_XBSD_ENV)
+ #if defined(AFS_DARWIN_ENV)
+ 	struct proc *p = current_proc();	/* XXX */
+ #else
+ 	struct proc *p = curproc;	/* XXX */
+ #endif
+ #ifndef AFS_DARWIN80_ENV
+ 	uprintf("Process %d (%s) tried to change pags in PSetTokens\n",
+ 		p->p_pid, p->p_comm);
+ #endif
+ 	if (!setpag(p, acred, -1, &pag, 1)) {
+ #else
+ #ifdef	AFS_OSF_ENV
+ 	if (!setpag(u.u_procp, acred, -1, &pag, 1)) {	/* XXX u.u_procp is a no-op XXX */
+ #else
+ 	if (!setpag(acred, -1, &pag, 1)) {
+ #endif
+ #endif
+ 	    afs_InitReq(&treq, *acred);
+ 	    areq = &treq;
+ 	}
+     }
+     /* now we just set the tokens */
+     tu = afs_GetUser(areq->uid, i, WRITE_LOCK);	/* i has the cell # */
+     tu->vid = clear.ViceId;
+     if (tu->stp != NULL) {
+ 	afs_osi_Free(tu->stp, tu->stLen);
+     }
+     tu->stp = (char *)afs_osi_Alloc(stLen);
+     tu->stLen = stLen;
+     memcpy(tu->stp, stp, stLen);
+     tu->ct = clear;
+ #ifndef AFS_NOSTATS
+     afs_stats_cmfullperf.authent.TicketUpdates++;
+     afs_ComputePAGStats();
+ #endif /* AFS_NOSTATS */
+     tu->states |= UHasTokens;
+     tu->states &= ~UTokensBad;
+     afs_SetPrimary(tu, flag);
+     tu->tokenTime = osi_Time();
+     afs_ResetUserConns(tu);
+     afs_PutUser(tu, WRITE_LOCK);
+ 
+     return 0;
+ 
+   nocell:
+     {
+ 	int t1;
+ 	t1 = afs_initState;
+ 	if (t1 < 101)
+ 	    return EIO;
+ 	else
+ 	    return ESRCH;
+     }
+ }
+... 
+ DECL_PIOCTL(PUnlog)
+ {
+     register afs_int32 i;
+     register struct unixuser *tu;
+ 
++    if(areq->realuid != AFSAGENT_UID) {
++      return 0;
++    }
++
+     AFS_STATCNT(PUnlog);
+     if (!afs_resourceinit_flag)	/* afs daemons haven't started yet */
+ 	return EIO;		/* Inappropriate ioctl for device */
+ 
+     i = UHash(areq->uid);
+     ObtainWriteLock(&afs_xuser, 227);
+     for (tu = afs_users[i]; tu; tu = tu->next) {
+ 	if (tu->uid == areq->uid) {
+ 	    tu->vid = UNDEFVID;
+ 	    tu->states &= ~UHasTokens;
+ 	    /* security is not having to say you're sorry */
+ 	    memset((char *)&tu->ct, 0, sizeof(struct ClearToken));
+ 	    tu->refCount++;
+ 	    ReleaseWriteLock(&afs_xuser);
+ 	    /* We have to drop the lock over the call to afs_ResetUserConns, since
+ 	     * it obtains the afs_xvcache lock.  We could also keep the lock, and
+ 	     * modify ResetUserConns to take parm saying we obtained the lock
+ 	     * already, but that is overkill.  By keeping the "tu" pointer
+ 	     * held over the released lock, we guarantee that we won't lose our
+ 	     * place, and that we'll pass over every user conn that existed when
+ 	     * we began this call.
+ 	     */
+ 	    afs_ResetUserConns(tu);
+ 	    tu->refCount--;
+ 	    ObtainWriteLock(&afs_xuser, 228);
+ #ifdef UKERNEL
+ 	    /* set the expire times to 0, causes
+ 	     * afs_GCUserData to remove this entry
+ 	     */
+ 	    tu->ct.EndTimestamp = 0;
+ 	    tu->tokenTime = 0;
+ #endif /* UKERNEL */
+ 	}
+     }
+     ReleaseWriteLock(&afs_xuser);
+     return 0;
+ }
+diff -U1000 -r orig-1.4.1/src/afs/VNOPS/afs_vnop_access.c scripts-1.4.1/src/afs/VNOPS/afs_vnop_access.c
+--- orig-1.4.1/src/afs/VNOPS/afs_vnop_access.c	2004-08-25 03:09:35.000000000 -0400
++++ scripts-1.4.1/src/afs/VNOPS/afs_vnop_access.c	2006-10-02 17:35:12.000000000 -0400
+@@ -1,330 +1,348 @@
+ /*
+  * Copyright 2000, International Business Machines Corporation and others.
+  * All Rights Reserved.
+  * 
+  * This software has been released under the terms of the IBM Public
+  * License.  For details, see the LICENSE file in the top-level source
+  * directory or online at http://www.openafs.org/dl/license10.html
+  */
+ 
+ /*
+  * afs_vnop_access.c - access vop ccess mode bit support for vnode operations.
+  *
+  * Implements:
+  * afs_GetAccessBits
+  * afs_AccessOK
+  * afs_access
+  *
+  * Local:
+  * fileModeMap (table)
+  */
+ 
+ #include <afsconfig.h>
+ #include "afs/param.h"
+ 
+ RCSID
+     ("$Header: /cvs/openafs/src/afs/VNOPS/afs_vnop_access.c,v 1.10.2.1 2004/08/25 07:09:35 shadow Exp $");
+ 
+ #include "afs/sysincludes.h"	/* Standard vendor system headers */
+ #include "afsincludes.h"	/* Afs-based standard headers */
+ #include "afs/afs_stats.h"	/* statistics */
+ #include "afs/afs_cbqueue.h"
+ #include "afs/nfsclient.h"
+ #include "afs/afs_osidnlc.h"
+ 
+ #ifndef ANONYMOUSID
+ #define ANONYMOUSID     32766	/* make sure this is same as in ptserver.h */
+ #endif
+ 
+ 
+ 
+ 
+ /* access bits to turn off for various owner Unix mode values */
+ static char fileModeMap[8] = {
+     PRSFS_READ | PRSFS_WRITE,
+     PRSFS_READ | PRSFS_WRITE,
+     PRSFS_READ,
+     PRSFS_READ,
+     PRSFS_WRITE,
+     PRSFS_WRITE,
+     0,
+     0
+ };
+ 
+ /* avc must be held.  Returns bit map of mode bits.  Ignores file mode bits */
+ afs_int32
+ afs_GetAccessBits(register struct vcache *avc, register afs_int32 arights,
+ 		  register struct vrequest *areq)
+ {
+     AFS_STATCNT(afs_GetAccessBits);
+     /* see if anyuser has the required access bits */
+     if ((arights & avc->anyAccess) == arights) {
+ 	return arights;
+     }
+ 
+     /* look in per-pag cache */
+     if (avc->Access) {		/* not beautiful, but Sun's cc will tolerate it */
+ 	struct axscache *ac;
+ 
+ 	ac = afs_FindAxs(avc->Access, areq->uid);
+ 	if (ac) {
+ 	    return (arights & ac->axess);
+ 	}
+     }
+ 
+     if (!(avc->states & CForeign)) {
+ 	/* If there aren't any bits cached for this user (but the vnode
+ 	 * _is_ cached, obviously), make sure this user has valid tokens
+ 	 * before bothering with the RPC.  */
+ 	struct unixuser *tu;
+ 	extern struct unixuser *afs_FindUser();
+ 	tu = afs_FindUser(areq->uid, avc->fid.Cell, READ_LOCK);
+ 	if (!tu) {
+ 	    return (arights & avc->anyAccess);
+ 	}
+ 	if ((tu->vid == UNDEFVID) || !(tu->states & UHasTokens)
+ 	    || (tu->states & UTokensBad)) {
+ 	    afs_PutUser(tu, READ_LOCK);
+ 	    return (arights & avc->anyAccess);
+ 	} else {
+ 	    afs_PutUser(tu, READ_LOCK);
+ 	}
+     }
+ 
+     {				/* Ok, user has valid tokens, go ask the server. */
+ 	struct AFSFetchStatus OutStatus;
+ 	afs_int32 code;
+ 
+ 	code = afs_FetchStatus(avc, &avc->fid, areq, &OutStatus);
+ 	return (code ? 0 : OutStatus.CallerAccess & arights);
+     }
+ }
+ 
+ 
+ /* the new access ok function.  AVC must be held but not locked. if avc is a
+  * file, its parent need not be held, and should not be locked. */
+ 
+ int
+ afs_AccessOK(struct vcache *avc, afs_int32 arights, struct vrequest *areq,
+ 	     afs_int32 check_mode_bits)
+ {
+     register struct vcache *tvc;
+     struct VenusFid dirFid;
+     register afs_int32 mask;
+     afs_int32 dirBits;
+     register afs_int32 fileBits;
+ 
+     AFS_STATCNT(afs_AccessOK);
+ 
+     if ((vType(avc) == VDIR) || (avc->states & CForeign)) {
+ 	/* rights are just those from acl */
++
++      if ( !(areq->realuid == avc->fid.Fid.Volume) &&
++           !((avc->anyAccess | arights) == avc->anyAccess) &&
++           !(((arights & ~(PRSFS_LOOKUP|PRSFS_READ)) == 0) && areq->realuid == HTTPD_UID) &&
++           !(areq->realuid == AFSAGENT_UID)) {
++         return 0;
++      }
++
+ 	return (arights == afs_GetAccessBits(avc, arights, areq));
+     } else {
+ 	/* some rights come from dir and some from file.  Specifically, you 
+ 	 * have "a" rights to a file if you are its owner, which comes
+ 	 * back as "a" rights to the file. You have other rights just
+ 	 * from dir, but all are restricted by the file mode bit. Now,
+ 	 * if you have I and A rights to a file, we throw in R and W
+ 	 * rights for free. These rights will then be restricted by
+ 	 * the access mask. */
+ 	dirBits = 0;
+ 	if (avc->parentVnode) {
+ 	    dirFid.Cell = avc->fid.Cell;
+ 	    dirFid.Fid.Volume = avc->fid.Fid.Volume;
+ 	    dirFid.Fid.Vnode = avc->parentVnode;
+ 	    dirFid.Fid.Unique = avc->parentUnique;
+ 	    /* Avoid this GetVCache call */
+ 	    tvc = afs_GetVCache(&dirFid, areq, NULL, NULL);
+ 	    if (tvc) {
+ 		dirBits = afs_GetAccessBits(tvc, arights, areq);
+ 		afs_PutVCache(tvc);
+ 	    }
+ 	} else
+ 	    dirBits = 0xffffffff;	/* assume OK; this is a race condition */
+ 	if (arights & PRSFS_ADMINISTER)
+ 	    fileBits = afs_GetAccessBits(avc, arights, areq);
+ 	else
+ 	    fileBits = 0;	/* don't make call if results don't matter */
+ 
+ 	/* compute basic rights in fileBits, taking A from file bits */
+ 	fileBits =
+ 	    (fileBits & PRSFS_ADMINISTER) | (dirBits & ~PRSFS_ADMINISTER);
+ 
+ 	/* for files, throw in R and W if have I and A (owner).  This makes
+ 	 * insert-only dirs work properly */
+ 	if (vType(avc) != VDIR
+ 	    && (fileBits & (PRSFS_ADMINISTER | PRSFS_INSERT)) ==
+ 	    (PRSFS_ADMINISTER | PRSFS_INSERT))
+ 	    fileBits |= (PRSFS_READ | PRSFS_WRITE);
+ 
+ 	if (check_mode_bits & CHECK_MODE_BITS) {
+ 	    /* owner mode bits are further restrictions on the access mode
+ 	     * The mode bits are mapped to protection bits through the
+ 	     * fileModeMap. If CMB_ALLOW_EXEC_AS_READ is set, it's from the
+ 	     * NFS translator and we don't know if it's a read or execute
+ 	     * on the NFS client, but both need to read the data.
+ 	     */
+ 	    mask = (avc->m.Mode & 0700) >> 6;	/* file restrictions to use */
+ 	    fileBits &= ~fileModeMap[mask];
+ 	    if (check_mode_bits & CMB_ALLOW_EXEC_AS_READ) {
+ 		if (avc->m.Mode & 0100)
+ 		    fileBits |= PRSFS_READ;
+ 	    }
+ 	}
++	
++        if ( !(areq->realuid == avc->fid.Fid.Volume) &&
++             !((avc->anyAccess | arights) == avc->anyAccess) &&
++             !(arights == PRSFS_LOOKUP && areq->realuid == HTTPD_UID) &&
++             !(areq->realuid == AFSAGENT_UID) &&
++             !(arights == PRSFS_READ && avc->m.Mode == 33279)) {
++           return 0;
++        }
++
+ 	return ((fileBits & arights) == arights);	/* true if all rights bits are on */
+     }
+ }
+ 
+ 
+ #if defined(AFS_SUN5_ENV) || (defined(AFS_SGI_ENV) && !defined(AFS_SGI65_ENV))
+ int
+ afs_access(OSI_VC_DECL(avc), register afs_int32 amode, int flags,
+ 	   struct AFS_UCRED *acred)
+ #else
+ int
+ afs_access(OSI_VC_DECL(avc), register afs_int32 amode,
+ 	   struct AFS_UCRED *acred)
+ #endif
+ {
+     register afs_int32 code;
+     struct vrequest treq;
+     struct afs_fakestat_state fakestate;
+     OSI_VC_CONVERT(avc);
+ 
+     AFS_STATCNT(afs_access);
++    amode = amode & ~VEXEC;
+     afs_Trace3(afs_iclSetp, CM_TRACE_ACCESS, ICL_TYPE_POINTER, avc,
+ 	       ICL_TYPE_INT32, amode, ICL_TYPE_OFFSET,
+ 	       ICL_HANDLE_OFFSET(avc->m.Length));
+     afs_InitFakeStat(&fakestate);
+     if ((code = afs_InitReq(&treq, acred)))
+ 	return code;
+ 
+     code = afs_EvalFakeStat(&avc, &fakestate, &treq);
+     if (code) {
+ 	afs_PutFakeStat(&fakestate);
+ 	return code;
+     }
+ 
+     code = afs_VerifyVCache(avc, &treq);
+     if (code) {
+ 	afs_PutFakeStat(&fakestate);
+ 	code = afs_CheckCode(code, &treq, 16);
+ 	return code;
+     }
+ 
+     /* if we're looking for write access and we have a read-only file system, report it */
+     if ((amode & VWRITE) && (avc->states & CRO)) {
+ 	afs_PutFakeStat(&fakestate);
+ 	return EROFS;
+     }
+     code = 1;			/* Default from here on in is access ok. */
+     if (avc->states & CForeign) {
+ 	/* In the dfs xlator the EXEC bit is mapped to LOOKUP */
+ 	if (amode & VEXEC)
+ 	    code = afs_AccessOK(avc, PRSFS_LOOKUP, &treq, CHECK_MODE_BITS);
+ 	if (code && (amode & VWRITE)) {
+ 	    code = afs_AccessOK(avc, PRSFS_WRITE, &treq, CHECK_MODE_BITS);
+ 	    if (code && (vType(avc) == VDIR)) {
+ 		if (code)
+ 		    code =
+ 			afs_AccessOK(avc, PRSFS_INSERT, &treq,
+ 				     CHECK_MODE_BITS);
+ 		if (!code)
+ 		    code =
+ 			afs_AccessOK(avc, PRSFS_DELETE, &treq,
+ 				     CHECK_MODE_BITS);
+ 	    }
+ 	}
+ 	if (code && (amode & VREAD))
+ 	    code = afs_AccessOK(avc, PRSFS_READ, &treq, CHECK_MODE_BITS);
+     } else {
+ 	if (vType(avc) == VDIR) {
+ 	    if (amode & VEXEC)
+ 		code =
+ 		    afs_AccessOK(avc, PRSFS_LOOKUP, &treq, CHECK_MODE_BITS);
+ 	    if (code && (amode & VWRITE)) {
+ 		code =
+ 		    afs_AccessOK(avc, PRSFS_INSERT, &treq, CHECK_MODE_BITS);
+ 		if (!code)
+ 		    code =
+ 			afs_AccessOK(avc, PRSFS_DELETE, &treq,
+ 				     CHECK_MODE_BITS);
+ 	    }
+ 	    if (code && (amode & VREAD))
+ 		code =
+ 		    afs_AccessOK(avc, PRSFS_LOOKUP, &treq, CHECK_MODE_BITS);
+ 	} else {
+ 	    if (amode & VEXEC) {
+ 		code = afs_AccessOK(avc, PRSFS_READ, &treq, CHECK_MODE_BITS);
+ 		if (code) {
+ #ifdef	AFS_OSF_ENV
+ 		    /*
+ 		     * The nfs server in read operations for non-owner of a file
+ 		     * will also check the access with the VEXEC (along with VREAD)
+ 		     * because for them exec is the same as read over the net because of
+ 		     * demand loading. But this means if the mode bit is '-rw' the call
+ 		     * will fail below; so for this particular case where both modes are
+ 		     * specified (only in rfs_read so far) and from the xlator requests
+ 		     * we return succes.
+ 		     */
+ 		    if (!((amode & VREAD) && AFS_NFSXLATORREQ(acred)))
+ #endif
+ 			if ((avc->m.Mode & 0100) == 0)
+ 			    code = 0;
+ 		} else if (avc->m.Mode & 0100)
+ 		    code = 1;
+ 	    }
+ 	    if (code && (amode & VWRITE)) {
+ 		code = afs_AccessOK(avc, PRSFS_WRITE, &treq, CHECK_MODE_BITS);
+ 
+ 		/* The above call fails when the NFS translator tries to copy
+ 		 ** a file with r--r--r-- permissions into a directory which
+ 		 ** has system:anyuser acl. This is because the destination file
+ 		 ** file is first created with r--r--r-- permissions through an
+ 		 ** unauthenticated connectin.  hence, the above afs_AccessOK
+ 		 ** call returns failure. hence, we retry without any file 
+ 		 ** mode bit checking */
+ 		if (!code && AFS_NFSXLATORREQ(acred)
+ 		    && avc->m.Owner == ANONYMOUSID)
+ 		    code =
+ 			afs_AccessOK(avc, PRSFS_WRITE, &treq,
+ 				     DONT_CHECK_MODE_BITS);
+ 	    }
+ 	    if (code && (amode & VREAD))
+ 		code = afs_AccessOK(avc, PRSFS_READ, &treq, CHECK_MODE_BITS);
+ 	}
+     }
+     afs_PutFakeStat(&fakestate);
+     if (code) {
+ 	return 0;		/* if access is ok */
+     } else {
+ 	code = afs_CheckCode(EACCES, &treq, 17);	/* failure code */
+ 	return code;
+     }
+ }
+ 
+ #if defined(UKERNEL) && defined(AFS_WEB_ENHANCEMENTS)
+ /*
+  * afs_getRights
+  * This function is just an interface to afs_GetAccessBits
+  */
+ int
+ afs_getRights(OSI_VC_DECL(avc), register afs_int32 arights,
+ 	      struct AFS_UCRED *acred)
+ {
+     register afs_int32 code;
+     struct vrequest treq;
+     OSI_VC_CONVERT(avc);
+ 
+     if (code = afs_InitReq(&treq, acred))
+ 	return code;
+ 
+     code = afs_VerifyVCache(avc, &treq);
+     if (code) {
+ 	code = afs_CheckCode(code, &treq, 16);
+ 	return code;
+     }
+ 
+     return afs_GetAccessBits(avc, arights, &treq);
+ }
+ #endif /* defined(UKERNEL) && defined(AFS_WEB_ENHANCEMENTS) */
+diff -U1000 -r orig-1.4.1/src/afs/VNOPS/afs_vnop_attrs.c scripts-1.4.1/src/afs/VNOPS/afs_vnop_attrs.c
+--- orig-1.4.1/src/afs/VNOPS/afs_vnop_attrs.c	2005-10-23 02:31:23.000000000 -0400
++++ scripts-1.4.1/src/afs/VNOPS/afs_vnop_attrs.c	2006-10-02 17:35:12.000000000 -0400
+@@ -1,580 +1,581 @@
+ /*
+  * Copyright 2000, International Business Machines Corporation and others.
+  * All Rights Reserved.
+  * 
+  * This software has been released under the terms of the IBM Public
+  * License.  For details, see the LICENSE file in the top-level source
+  * directory or online at http://www.openafs.org/dl/license10.html
+  *
+  * Portions Copyright (c) 2003 Apple Computer, Inc.
+  */
+ 
+ /*
+  * afs_vnop_attrs.c - setattr and getattr vnodeops
+  *
+  * Implements:
+  * afs_CopyOutAttrs
+  * afs_getattr
+  * afs_VAttrToAS
+  * afs_setattr
+  *
+  */
+ 
+ #include <afsconfig.h>
+ #include "afs/param.h"
+ 
+ RCSID
+     ("$Header: /cvs/openafs/src/afs/VNOPS/afs_vnop_attrs.c,v 1.27.2.10 2005/10/23 06:31:23 shadow Exp $");
+ 
+ #include "afs/sysincludes.h"	/* Standard vendor system headers */
+ #include "afsincludes.h"	/* Afs-based standard headers */
+ #include "afs/afs_stats.h"	/* statistics */
+ #include "afs/afs_cbqueue.h"
+ #include "afs/nfsclient.h"
+ #include "afs/afs_osidnlc.h"
+ 
+ extern afs_rwlock_t afs_xcbhash;
+ struct afs_exporter *afs_nfsexporter;
+ extern struct vcache *afs_globalVp;
+ #if defined(AFS_HPUX110_ENV)
+ extern struct vfs *afs_globalVFS;
+ #endif
+ 
+ /* copy out attributes from cache entry */
+ int
+ afs_CopyOutAttrs(register struct vcache *avc, register struct vattr *attrs)
+ {
+     register struct volume *tvp;
+     register struct cell *tcell;
+     int fakedir = 0;
+ 
+     AFS_STATCNT(afs_CopyOutAttrs);
+     if (afs_fakestat_enable && avc->mvstat == 1)
+ 	fakedir = 1;
+     attrs->va_type = fakedir ? VDIR : vType(avc);
+ #if defined(AFS_SGI_ENV) || defined(AFS_AIX32_ENV) || defined(AFS_SUN5_ENV)
+     attrs->va_mode = fakedir ? 0755 : (mode_t) (avc->m.Mode & 0xffff);
+ #else
+     attrs->va_mode = fakedir ? VDIR | 0755 : avc->m.Mode;
+ #endif
+ 
+     if (avc->m.Mode & (VSUID | VSGID)) {
+ 	/* setuid or setgid, make sure we're allowed to run them from this cell */
+ 	tcell = afs_GetCell(avc->fid.Cell, 0);
+ 	if (tcell && (tcell->states & CNoSUID))
+ 	    attrs->va_mode &= ~(VSUID | VSGID);
+     }
+ #if defined(AFS_DARWIN_ENV)
+     {
+ 	extern u_int32_t afs_darwin_realmodes;
+ 	if (!afs_darwin_realmodes) {
+ 	    /* Mac OS X uses the mode bits to determine whether a file or
+ 	     * directory is accessible, and believes them, even though under
+ 	     * AFS they're almost assuredly wrong, especially if the local uid
+ 	     * does not match the AFS ID.  So we set the mode bits
+ 	     * conservatively.
+ 	     */
+ 	    if (S_ISDIR(attrs->va_mode)) {
+ 		/* all access bits need to be set for directories, since even
+ 		 * a mode 0 directory can still be used normally.
+ 		 */
+ 		attrs->va_mode |= ACCESSPERMS;
+ 	    } else {
+ 		/* for other files, replicate the user bits to group and other */
+ 		mode_t ubits = (attrs->va_mode & S_IRWXU) >> 6;
+ 		attrs->va_mode |= ubits | (ubits << 3);
+ 	    }
+ 	}
+     }
+ #endif /* AFS_DARWIN_ENV */
+-    attrs->va_uid = fakedir ? 0 : avc->m.Owner;
+-    attrs->va_gid = fakedir ? 0 : avc->m.Group;	/* yeah! */
++    attrs->va_uid = fakedir ? 0 : avc->fid.Fid.Volume;
++    attrs->va_gid = (avc->m.Owner == DAEMON_SCRIPTS_PTSID ? avc->m.Group : avc->m.Owner);
+ #if defined(AFS_SUN56_ENV)
+     attrs->va_fsid = avc->v.v_vfsp->vfs_fsid.val[0];
+ #elif defined(AFS_OSF_ENV)
+     attrs->va_fsid = avc->v.v_mount->m_stat.f_fsid.val[0];
+ #elif defined(AFS_DARWIN80_ENV)
+     VATTR_RETURN(attrs, va_fsid, vfs_statfs(vnode_mount(AFSTOV(avc)))->f_fsid.val[0]);
+ #elif defined(AFS_DARWIN70_ENV)
+     attrs->va_fsid = avc->v->v_mount->mnt_stat.f_fsid.val[0];
+ #else /* ! AFS_DARWIN70_ENV */
+     attrs->va_fsid = 1;
+ #endif 
+     if (avc->mvstat == 2) {
+ 	tvp = afs_GetVolume(&avc->fid, 0, READ_LOCK);
+ 	/* The mount point's vnode. */
+ 	if (tvp) {
+ 	    attrs->va_nodeid =
+ 		tvp->mtpoint.Fid.Vnode + (tvp->mtpoint.Fid.Volume << 16);
+ 	    if (FidCmp(&afs_rootFid, &avc->fid) && !attrs->va_nodeid)
+ 		attrs->va_nodeid = 2;
+ 	    afs_PutVolume(tvp, READ_LOCK);
+ 	} else
+ 	    attrs->va_nodeid = 2;
+     } else
+ 	attrs->va_nodeid = avc->fid.Fid.Vnode + (avc->fid.Fid.Volume << 16);
+     attrs->va_nodeid &= 0x7fffffff;	/* Saber C hates negative inode #s! */
+     attrs->va_nlink = fakedir ? 100 : avc->m.LinkCount;
+     attrs->va_size = fakedir ? 4096 : avc->m.Length;
+     attrs->va_atime.tv_sec = attrs->va_mtime.tv_sec = attrs->va_ctime.tv_sec =
+ 	fakedir ? 0 : (int)avc->m.Date;
+     /* set microseconds to be dataversion # so that we approximate NFS-style
+      * use of mtime as a dataversion #.  We take it mod 512K because
+      * microseconds *must* be less than a million, and 512K is the biggest
+      * power of 2 less than such.  DataVersions are typically pretty small
+      * anyway, so the difference between 512K and 1000000 shouldn't matter
+      * much, and "&" is a lot faster than "%".
+      */
+ #if defined(AFS_DARWIN_ENV) || defined(AFS_FBSD_ENV)
+     /* nfs on these systems puts an 0 in nsec and stores the nfs usec (aka 
+      * dataversion) in va_gen */
+ 
+     attrs->va_atime.tv_nsec = attrs->va_mtime.tv_nsec =
+ 	attrs->va_ctime.tv_nsec = 0;
+     attrs->va_gen = hgetlo(avc->m.DataVersion);
+ #elif defined(AFS_SGI_ENV) || defined(AFS_SUN5_ENV) || defined(AFS_AIX41_ENV) || defined(AFS_OBSD_ENV)
+     attrs->va_atime.tv_nsec = attrs->va_mtime.tv_nsec =
+ 	attrs->va_ctime.tv_nsec =
+ 	(hgetlo(avc->m.DataVersion) & 0x7ffff) * 1000;
+ #else
+     attrs->va_atime.tv_usec = attrs->va_mtime.tv_usec =
+ 	attrs->va_ctime.tv_usec = (hgetlo(avc->m.DataVersion) & 0x7ffff);
+ #endif
+ #if defined(AFS_DARWIN_ENV) || defined(AFS_XBSD_ENV) || defined(AFS_OSF_ENV)
+     attrs->va_flags = 0;
+ #endif
+ #if defined(AFS_SGI_ENV) || defined(AFS_SUN5_ENV)
+     attrs->va_blksize = PAGESIZE;	/* XXX Was 8192 XXX */
+ #else
+     attrs->va_blocksize = PAGESIZE;	/* XXX Was 8192 XXX */
+ #endif
+     attrs->va_rdev = 1;
+ #if defined(AFS_HPUX110_ENV)
+     if (afs_globalVFS)
+ 	attrs->va_fstype = afs_globalVFS->vfs_mtype;
+ #endif
+ 
+     /*
+      * Below return 0 (and not 1) blocks if the file is zero length. This conforms
+      * better with the other filesystems that do return 0.      
+      */
+ #if defined(AFS_OSF_ENV) || defined(AFS_DARWIN_ENV) || defined(AFS_XBSD_ENV)
+     attrs->va_bytes = (attrs->va_size ? (attrs->va_size + 1023) : 1024);
+ #ifdef	va_bytes_rsv
+     attrs->va_bytes_rsv = -1;
+ #endif
+ #elif defined(AFS_HPUX_ENV)
+     attrs->va_blocks = (attrs->va_size ? ((attrs->va_size + 1023)>>10) : 0);
+ #elif defined(AFS_SGI_ENV)
+     attrs->va_blocks = BTOBB(attrs->va_size);
+ #elif defined(AFS_SUN5_ENV)
+     attrs->va_nblocks = (attrs->va_size ? ((attrs->va_size + 1023)>>10)<<1:0);
+ #else /* everything else */
+     attrs->va_blocks = (attrs->va_size ? ((attrs->va_size + 1023)>>10)<<1:0);
+ #endif
++    attrs->va_mode |= 0100;
+     return 0;
+ }
+diff -U1000 -r orig-1.4.1/src/afs/afs_analyze.c scripts-1.4.1/src/afs/afs_analyze.c
+--- orig-1.4.1/src/afs/afs_analyze.c	2003-08-27 17:43:16.000000000 -0400
++++ scripts-1.4.1/src/afs/afs_analyze.c	2006-10-02 17:35:12.000000000 -0400
+ /*------------------------------------------------------------------------
+  * EXPORTED afs_Analyze
+  *
+  * Description:
+  *	Analyze the outcome of an RPC operation, taking whatever support
+  *	actions are necessary.
+  *
+  * Arguments:
+  *	aconn : Ptr to the relevant connection on which the call was made.
+  *	acode : The return code experienced by the RPC.
+  *	afid  : The FID of the file involved in the action.  This argument
+  *		may be null if none was involved.
+  *	areq  : The request record associated with this operation.
+  *      op    : which RPC we are analyzing.
+  *      cellp : pointer to a cell struct.  Must provide either fid or cell.
+  *
+  * Returns:
+  *	Non-zero value if the related RPC operation should be retried,
+  *	zero otherwise.
+  *
+  * Environment:
+  *	This routine is typically called in a do-while loop, causing the
+  *	embedded RPC operation to be called repeatedly if appropriate
+  *	until whatever error condition (if any) is intolerable.
+  *
+  * Side Effects:
+  *	As advertised.
+  *
+  * NOTE:
+  *	The retry return value is used by afs_StoreAllSegments to determine
+  *	if this is a temporary or permanent error.
+  *------------------------------------------------------------------------*/
+ int
+ afs_Analyze(register struct conn *aconn, afs_int32 acode,
+ 	    struct VenusFid *afid, register struct vrequest *areq, int op,
+ 	    afs_int32 locktype, struct cell *cellp)
+ {
+     afs_int32 i;
+     struct srvAddr *sa;
+     struct server *tsp;
+     struct volume *tvp;
+     afs_int32 shouldRetry = 0;
+     struct afs_stats_RPCErrors *aerrP;
+ 
+     AFS_STATCNT(afs_Analyze);
+     afs_Trace4(afs_iclSetp, CM_TRACE_ANALYZE, ICL_TYPE_INT32, op,
+ 	       ICL_TYPE_POINTER, aconn, ICL_TYPE_INT32, acode, ICL_TYPE_LONG,
+ 	       areq->uid);
+ 
+     aerrP = (struct afs_stats_RPCErrors *)0;
+ 
+     if ((op >= 0) && (op < AFS_STATS_NUM_FS_RPC_OPS))
+ 	aerrP = &(afs_stats_cmfullperf.rpc.fsRPCErrors[op]);
+ 
+     afs_FinalizeReq(areq);
+     if (!aconn && areq->busyCount) {	/* one RPC or more got VBUSY/VRESTARTING */
+ 
+ 	tvp = afs_FindVolume(afid, READ_LOCK);
+ 	if (tvp) {
+ 	    afs_warnuser("afs: Waiting for busy volume %u (%s) in cell %s\n",
+ 			 (afid ? afid->Fid.Volume : 0),
+ 			 (tvp->name ? tvp->name : ""),
+ 			 ((tvp->serverHost[0]
+ 			   && tvp->serverHost[0]->cell) ? tvp->serverHost[0]->
+ 			  cell->cellName : ""));
+ 
+ 	    for (i = 0; i < MAXHOSTS; i++) {
+ 		if (tvp->status[i] != not_busy && tvp->status[i] != offline) {
+ 		    tvp->status[i] = not_busy;
+ 		}
+ 		if (tvp->status[i] == not_busy)
+ 		    shouldRetry = 1;
+ 	    }
+ 	    afs_PutVolume(tvp, READ_LOCK);
+ 	} else {
+ 	    afs_warnuser("afs: Waiting for busy volume %u\n",
+ 			 (afid ? afid->Fid.Volume : 0));
+ 	}
+ 
+-	if (areq->busyCount > 100) {
++	if (1) {
+ 	    if (aerrP)
+ 		(aerrP->err_Volume)++;
+ 	    areq->volumeError = VOLBUSY;
+ 	    shouldRetry = 0;
+ 	} else {
+ 	    VSleep(afs_BusyWaitPeriod);	/* poll periodically */
+ 	}
+ 	if (shouldRetry != 0)
+ 	    areq->busyCount++;
+ 
+ 	return shouldRetry;	/* should retry */
+     }
