@@ -38,7 +38,7 @@ dload		= ${PWD}/.dload
 server_url	= "http://scripts.mit.edu/src"
 server_arch	= "fedora.stable"
 
-rpm_args	= -E '%define _smp_mflags -j4' -E '%define _topdir $(topdir)' -E '%define _rpmdir $(out_rpms)' -E '%define _srcrpmdir $(out_srpms)' 
+rpm_args	= -E '%define _smp_mflags -j4' -E '%define _topdir $(topdir)' -E '%define _rpmdir $(out_rpms)' -E '%define _srcrpmdir $(out_srpms)' -E '%define kernvers %(rpm -q --whatprovides kernel | sort | tail -1)'
 
 .PHONY: minimal-clean
 
