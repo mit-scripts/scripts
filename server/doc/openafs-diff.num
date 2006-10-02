@@ -1,3 +1,7 @@
+scripts.mit.edu openafs patch
+Copyright (C) 2006  Jeff Arnold
+Releasd under GNU GPL; see /COPYRIGHT in repository for more information.
+
 0000 diff -U1000 -r orig-1.4.1/src/afs/afs.h scripts-1.4.1/src/afs/afs.h
 0001 --- orig-1.4.1/src/afs/afs.h	2006-02-17 16:58:33.000000000 -0500
 0002 +++ scripts-1.4.1/src/afs/afs.h	2006-10-02 17:35:12.000000000 -0400

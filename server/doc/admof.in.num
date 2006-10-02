@@ -96,5 +96,3 @@
 0095   print STDERR "To return to being <$curuser>, type \"exit\".\n\n";
 0096   exit(33);
 0097 }
-0098 
-0099 
