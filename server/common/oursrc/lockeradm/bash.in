@@ -1,3 +1,0 @@
-#!/bin/sh
-
-@bash_path@ --rcfile /usr/local/etc/bashrc "$@"
