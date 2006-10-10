@@ -24,6 +24,7 @@ my @dynamic = qw(
  pl
  php
  py
+ cgi
  scm
 );
 
