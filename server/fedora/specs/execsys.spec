@@ -42,6 +42,14 @@ install -D staticsys-cat $RPM_BUILD_ROOT/usr/local/sbin/staticsys-cat
 /usr/local/sbin/staticsys-cat
 /etc/init.d/execsys-binfmt
 
+%post
+chkconfig --add execsys-binfmt
+service execsys-binfmt start
+
+%preun
+service execsys-binfmt stop
+chkconfig --del execsys-binfmt
+
 %changelog
 
 * Sat Sep 30 2006  Jeff Arnold <jbarnold@MIT.EDU> 0.00
