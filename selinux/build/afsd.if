@@ -1,0 +1,38 @@
+## <summary>policy for afs</summary>
+
+########################################
+## <summary>
+##	Execute a domain transition to run afs.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`afsd_domtrans',`
+	gen_require(`
+		type afsd_t, afsd_exec_t;
+	')
+
+	domain_auto_trans($1,afsd_exec_t,afsd_t)
+
+	allow $1 afsd_t:fd use;
+	allow afsd_t $1:fd use;
+	allow afsd_t $1:fifo_file rw_file_perms;
+	allow afsd_t $1:process sigchld;
+')
+
+interface(`afs_access',`
+	gen_require(`
+		type afsd_t, afsd_etc_t;
+		type autofs_t, nfs_t;
+	')
+	allow $1 afsd_t:udp_socket all_udp_socket_perms;
+	allow $1 afsd_etc_t:dir r_dir_perms;
+	allow $1 afsd_etc_t:file r_file_perms;
+	allow $1 autofs_t:dir r_dir_perms;
+	allow $1 autofs_t:lnk_file r_file_perms;
+	allow $1 nfs_t:dir manage_dir_perms;
+	allow $1 nfs_t:file_class_set manage_file_perms;
+')

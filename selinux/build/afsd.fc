@@ -1,0 +1,9 @@
+# afs executable will have:
+# label: system_u:object_r:afsd_exec_t
+# MLS sensitivity: s0
+# MCS categories: <none>
+
+/usr/vice/etc/afsd	--	gen_context(system_u:object_r:afsd_exec_t,s0)
+/usr/vice/etc(/.*)?		gen_context(system_u:object_r:afsd_etc_t,s0)
+/usr/vice/cache(/.*)?		gen_context(system_u:object_r:afsd_cache_t,s0)
+/afs			-d	gen_context(system_u:object_r:default_t,s0)
