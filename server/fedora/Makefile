@@ -80,7 +80,7 @@ patch-specs: install-srpms
 # 2. create a tarball (we want it to contain the autoconf output)
 create-tarballs: mkdir-tree
 	@cd ${oursrcdir}; \
-	list=`find -mindepth 1 -maxdepth 1 -type d`; \
+	list=`find -mindepth 1 -maxdepth 1 -type d | grep -v ".svn"`; \
 	for i in $$list; do \
 		pushd $$i; \
 		autoconf; \
