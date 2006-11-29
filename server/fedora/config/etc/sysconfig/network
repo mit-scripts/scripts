@@ -1,0 +1,3 @@
+NETWORKING=yes
+HOSTNAME=scripts.mit.edu
+GATEWAY=18.181.0.1

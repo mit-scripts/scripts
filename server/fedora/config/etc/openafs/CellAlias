@@ -1,0 +1,15 @@
+#
+# This file can be used to specify AFS cell aliases, one per line.
+# The syntax to specify "my" as an alias for "my.cell.name" is:
+#
+#   my.cell.name	my
+
+athena.mit.edu		athena
+csail.mit.edu		csail
+dev.mit.edu		dev
+lees.mit.edu		lees
+net.mit.edu		net
+ops.mit.edu		ops
+sipb.mit.edu		sipb
+andrew.cmu.edu		andrew
+acpub.duke.edu		acpub
