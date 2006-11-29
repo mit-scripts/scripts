@@ -9,10 +9,3 @@ signup-sql:
 
 clean:
 	rm -f signup-sql
-
-preauto: clean
-	rm -f configure config.* Makefile signup-sql
-	rm -rf auto*.cache
-
-ready: preauto
-	autoconf

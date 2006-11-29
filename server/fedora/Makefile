@@ -83,9 +83,8 @@ create-tarballs: mkdir-tree
 	list=`find -mindepth 1 -maxdepth 1 -type d | grep -v ".svn"`; \
 	for i in $$list; do \
 		pushd $$i; \
+		./mrproper; \
 		autoconf; \
-		./configure; \
-		make ready; \
 		popd; \
 		tar -czf $(tmp_src)/$$i.tar.gz $$i; \
 	done;
@@ -128,3 +127,16 @@ suexec: install-srpms
 
 install-suexec:
 	install -m 4510 -o 0 -g apache ${PWD}/sbin/suexec /usr/sbin/;
+
+# The following packages are needed for *building* all of our packages
+# basic deps: rpm-build through autoconf
+# oursrc: hesinfo
+# httpd: xmlto through distcache-devel
+# krb5: bison through texinfo
+# openafs: pam-devel through automake
+install-build-deps:
+	yum -y install rpm-build gcc autoconf hesinfo xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel bison ncurses-devel texinfo pam-devel automake
+
+# The following packages are needed for *installing* all of our packages
+install-deps:
+	yum -y krb5-workstation

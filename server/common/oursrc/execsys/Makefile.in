@@ -11,10 +11,3 @@ update:
 
 clean:
 	rm -f staticsys-cat
-
-preauto: clean
-	rm -f configure config.* Makefile
-	rm -rf auto*.cache
-
-ready: preauto
-	autoconf

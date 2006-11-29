@@ -9,6 +9,7 @@ License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 %define debug_package %{nil}
+Prereq: /usr/bin/fs, /usr/bin/pts
 
 %description 
 
@@ -23,7 +24,7 @@ See http://scripts.mit.edu/wiki for more information.
 %setup -q -n %{name}
 
 %build
-./configure
+./configure --with-fs=/usr/bin/fs --with-pts=/usr/bin/pts
 make
 
 %install

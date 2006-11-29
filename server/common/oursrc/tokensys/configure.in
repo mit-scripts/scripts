@@ -1,10 +1,26 @@
 AC_INIT()
 
-AC_PATH_PROG(kinit_path, kinit)
+AC_ARG_WITH(kinit,
+[  --with-kinit[=PATH]       kinit is located at PATH],[
+  if test "$withval" != "no" -a "$withval" != "yes"; then
+    kinit_path="$withval"
+  fi
+])
 AC_SUBST(kinit_path)
+if test "$kinit_path" = ""; then
+        AC_ERROR(Cannot find kinit)
+fi
 
-AC_PATH_PROG(aklog_path, aklog)
+AC_ARG_WITH(aklog,
+[  --with-aklog[=PATH]       aklog is located at PATH],[
+  if test "$withval" != "no" -a "$withval" != "yes"; then
+    aklog_path="$withval"
+  fi
+])
 AC_SUBST(aklog_path)
+if test "$aklog_path" = ""; then
+        AC_ERROR(Cannot find aklog)
+fi
 
 AC_OUTPUT(Makefile)
 AC_OUTPUT(renew)

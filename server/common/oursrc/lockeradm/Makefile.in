@@ -9,10 +9,3 @@ signup-scripts-frontend:
 
 clean:
 	rm -f signup-scripts-frontend
-
-preauto: clean
-	rm -f configure config.* Makefile admof signup-scripts-backend
-	rm -rf auto*.cache
-
-ready: preauto
-	autoconf

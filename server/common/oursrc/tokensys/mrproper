@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rm -f configure config.* Makefile renew
+rm -rf auto*.cache

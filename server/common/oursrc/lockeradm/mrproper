@@ -1,0 +1,5 @@
+#!/bin/sh
+
+rm -f signup-scripts-frontend
+rm -f configure config.* Makefile admof signup-scripts-backend
+rm -rf auto*.cache

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+rm -f staticsys-cat
+rm -f configure config.* Makefile
+rm -rf auto*.cache

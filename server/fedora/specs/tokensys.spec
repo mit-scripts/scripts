@@ -9,6 +9,7 @@ License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 %define debug_package %{nil}
+Prereq: /usr/kerberos/bin/kinit, /usr/bin/aklog
 
 %description 
 
@@ -22,7 +23,7 @@ See http://scripts.mit.edu/wiki for more information.
 %setup -q -n %{name}
 
 %build
-./configure
+./configure --with-kinit=/usr/kerberos/bin/kinit --with-aklog=/usr/bin/aklog
 
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
