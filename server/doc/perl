@@ -1,4 +1,4 @@
-In order to transfer perl modules from one machine to another
+In order to transfer perl modules from one machine to another:
 
 $ perl -MCPAN -e shell
 cpan> autobundle
