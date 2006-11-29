@@ -2,6 +2,18 @@ AC_INIT(signup-scripts-frontend.c)
 
 AC_PROG_CC
 
+AC_DEFUN(REQUIRE_PATH,[
+AC_SUBST($1_path)
+if test "[$]$1_path" = ""; then
+        AC_ERROR(Cannot find $1)
+fi
+])
+
+AC_DEFUN(LOCATE,[
+AC_PATH_PROG($1_path, $1)
+REQUIRE_PATH($1)
+])
+
 dnl Needed by admof.in
 
 AC_ARG_WITH(fs,
@@ -10,10 +22,7 @@ AC_ARG_WITH(fs,
     fs_path="$withval"
   fi
 ])
-AC_SUBST(fs_path)
-if test "$fs_path" = ""; then
-        AC_ERROR(Cannot find fs)
-fi
+REQUIRE_PATH(fs)
 
 AC_ARG_WITH(pts,
 [  --with-pts[=PATH]         pts is located at PATH],[
@@ -21,59 +30,21 @@ AC_ARG_WITH(pts,
     pts_path="$withval"
   fi
 ])
-AC_SUBST(pts_path)
-if test "$pts_path" = ""; then
-        AC_ERROR(Cannot find pts)
-fi
+REQUIRE_PATH(pts)
 
 dnl Needed by signup-scripts-backend.in
 
-AC_PATH_PROG(ls_path, ls)
-AC_SUBST(ls_path)
-if test "$ls_path" = ""; then
-	AC_ERROR(Cannot find ls)
-fi
-AC_PATH_PROG(grep_path, grep)
-AC_SUBST(grep_path)
-if test "$grep_path" = ""; then
-	AC_ERROR(Cannot find grep)
-fi
-
-AC_PATH_PROG(sudo_path, sudo)
-AC_SUBST(sudo_path)
-if test "$sudo_path" = ""; then
-	AC_ERROR(Cannot find sudo)
-fi
-AC_PATH_PROG(useradd_path, useradd)
-AC_SUBST(useradd_path)
-if test "$useradd_path" = ""; then
-	AC_ERROR(Cannot find useradd)
-fi
-AC_PATH_PROG(groupadd_path, groupadd)
-AC_SUBST(groupadd_path)
-if test "$groupadd_path" = ""; then
-	AC_ERROR(Cannot find groupadd)
-fi
-
-AC_PATH_PROG(setquota_path, setquota)
-AC_SUBST(setquota_path)
-if test "$setquota_path" = ""; then
-	AC_ERROR(Cannot find setquota)
-fi
-
-AC_PATH_PROG(hesinfo_path, hesinfo)
-AC_SUBST(hesinfo_path)
-if test "$hesinfo_path" = ""; then
-	AC_ERROR(Cannot find hesinfo)
-fi
+LOCATE(ls)
+LOCATE(grep)
+LOCATE(sudo)
+LOCATE(useradd)
+LOCATE(groupadd)
+LOCATE(setquota)
+LOCATE(hesinfo)
 
 dnl Needed by modbash.in
 
-AC_PATH_PROG(bash_path, bash)
-AC_SUBST(bash_path)
-if test "$bash_path" = ""; then
-	AC_ERROR(Cannot find bash)
-fi
+LOCATE(bash)
 
 AC_OUTPUT(Makefile)
 AC_OUTPUT(admof)

@@ -1,15 +1,19 @@
 AC_INIT()
 
+AC_DEFUN(REQUIRE_PATH,[
+AC_SUBST($1_path)
+if test "[$]$1_path" = ""; then
+        AC_ERROR(Cannot find $1)
+fi
+])
+
 AC_ARG_WITH(kinit,
 [  --with-kinit[=PATH]       kinit is located at PATH],[
   if test "$withval" != "no" -a "$withval" != "yes"; then
     kinit_path="$withval"
   fi
 ])
-AC_SUBST(kinit_path)
-if test "$kinit_path" = ""; then
-        AC_ERROR(Cannot find kinit)
-fi
+REQUIRE_PATH(kinit)
 
 AC_ARG_WITH(aklog,
 [  --with-aklog[=PATH]       aklog is located at PATH],[
@@ -17,10 +21,7 @@ AC_ARG_WITH(aklog,
     aklog_path="$withval"
   fi
 ])
-AC_SUBST(aklog_path)
-if test "$aklog_path" = ""; then
-        AC_ERROR(Cannot find aklog)
-fi
+REQUIRE_PATH(aklog)
 
 AC_OUTPUT(Makefile)
 AC_OUTPUT(renew)
