@@ -173,3 +173,15 @@ diff -ur openafs-1.4.1-rc10/src/afs/VNOPS/afs_vnop_attrs.c openafs-1.4.1-rc10-sc
      return 0;
  }
  
+diff -ru openafs-1.4.2/configure openafs-1.4.2-scripts/configure
+--- openafs-1.4.2/configure	2006-10-13 15:48:34.000000000 -0400
++++ openafs-1.4.2-scripts/configure	2006-11-29 19:47:43.000000000 -0500
+@@ -11512,7 +11512,7 @@
+   if test "x$ac_cv_linux_keyring_support" = "xyes"; then
+ 
+ cat >>confdefs.h <<\_ACEOF
+-#define LINUX_KEYRING_SUPPORT 1
++#undef LINUX_KEYRING_SUPPORT
+ _ACEOF
+ 
+   fi
