@@ -1,2 +1,8 @@
+noc:
+  configuration for a scripts monitoring NOC
+
+selinux:
+  selinux strict policy modules for a scripts.mit.edu server
+
 server:
   code needed to run a scripts.mit.edu server
