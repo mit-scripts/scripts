@@ -1,0 +1,124 @@
+nagiosgraph Installation
+------------------------
+
+File:    $Id: INSTALL,v 1.14 2006/04/05 12:37:11 sauber Exp $
+Author:  (c) Soren Dossing, 2005
+License: OSI Artistic License
+         http://www.opensource.org/licenses/artistic-license.php
+
+Follow instructions below to install and use nagiosgraph. The
+instructions are for Nagios 2.0b4, and might differ in other versions of
+Nagios.
+
+ - Check required packaged are installed: perl, CGI, nagios and rrdtool
+
+ - Install nagiosgraph.conf, map, insert.pl and show.cgi somewhere, for 
+   example in /usr/local/nagios/nagiosgraph/
+
+ - Edit paths, debug level etc. in nagiosgraph.conf.
+
+ - Check that nagios user can write to rrd dir, and www user can read.
+
+ - Check that nagios and www user can write to log file.
+
+ - In insert.pl and show.cgi edit path to nagiosgraph.conf file.
+
+ - In nagios.cfg set:
+
+     process_performance_data=1
+     service_perfdata_file=/var/spool/nagios/perfdata.log
+     service_perfdata_file_template=$LASTSERVICECHECK$||$HOSTNAME$||$SERVICEDESC$||$SERVICEOUTPUT$||$SERVICEPERFDATA$
+     service_perfdata_file_mode=a
+     service_perfdata_file_processing_interval=30
+     service_perfdata_file_processing_command=process-service-perfdata
+
+   Make sure that service_perfdata_command is not defined.
+
+   Make sure that location of perfdata_file matches definition in 
+   nagiosgraph.conf .
+
+ - In checkcommands.cfg or misccommands.cfg:
+
+     define command {
+       command_name  process-service-perfdata
+       command_line  /usr/local/nagios/nagiosgraph/insert.pl
+     }
+
+   Make sure there is only one definition for process-service-perfdata.
+
+ - Alternative to the two points above: The old style is still possible. 
+   It uses far more CPU but inserts data in rrd files immediately for 
+   every service check.
+
+   In nagios.cfg:
+
+     service_perfdata_command=process-service-perfdata
+
+   Make sure that service_perfdata_file_processing_command is not 
+   defined.
+
+   In misccommands.cfg:
+
+     define command{
+       command_name    process-service-perfdata
+       command_line  /usr/local/nagios/nagiosgraph/insert.pl "$LASTSERVICECHECK$||$HOSTNAME$||$SERVICEDESC$||$SERVICEOUTPUT$||$SERVICEPERFDATA$"
+     }
+
+ - Put an icon approx. 40x40 in .../share/images/logos/ for nagios to link
+   to graphs.
+
+ - Copy nagiosgraph.css to .../nagios/stylesheets/ .
+
+ - In cgi.cfg have:
+
+     xedtemplate_config_file=/usr/local/etc/nagios/serviceextinfo.cfg
+
+ - Edit serviceextinfo.cfg
+
+   Most services can be graphed with no particular configuration like this:
+
+     define serviceextinfo {
+       service_description  DNS
+       hostgroup       servers
+       notes_url       /nagiosgraph/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+       icon_image      graph.gif
+       icon_image_alt  View graphs
+     }
+
+   Instead of hostgroup line a host_name line with all hosts where this
+   type of data are being collected.
+
+   Some type of services have data values that have big differences in the
+   magnitude. In such cases it's good idea to split up into seperate
+   graphs. Here's an example for ntp:
+
+     define serviceextinfo {
+       service_description  NTP
+       host_name       server01,server02,server03,server04
+       notes_url       /nagiosgraph/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$&db=ntp,jitter,offset&db=ntp,stratum
+       icon_image      graph.gif
+       icon_image_alt  View graphs
+     }
+
+ - Add for example &geom=350x100 to notes_url line for custom sizes of 
+   graphs.
+
+ - Add for example &rrdopts=%2Dl%200%20%2Du%20100 (meaning: 
+   "-l 0 -u 100") to notes_url line for custom Y axis ranges. Any 
+   rrdgraph options can be specified, but has to be url encoded.
+
+ - Configure Apache to point to show.cgi. For example:
+
+     ScriptAlias /nagiosgraph/ /usr/local/nagios/nagiosgraph/
+
+ - To add new service types, edit the map file. This contains regular
+   expression to identify service types, and defines how to store data in 
+   rrd files. Use testentry.pl for testing before inserting in map file.
+
+ - Consider security.
+
+ - Start Nagios. Increase debug level in nagiosgraph.conf if things don't
+   work right away.
+
+ - Keep an eye on the log file. It can grow big. Perhaps rotate it, or
+   decrease log level when everything works fine.
