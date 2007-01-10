@@ -52,7 +52,7 @@ diff -ur openafs-1.4.1-rc10/src/afs/afs_osi_pag.c openafs-1.4.1-rc10-scripts/src
  
  /* Local variables */
  
-+afs_int32 globalpag;
++afs_int32 globalpag = 0;
 +
  /*
   * Pags are implemented as follows: the set of groups whose long
@@ -63,7 +63,7 @@ diff -ur openafs-1.4.1-rc10/src/afs/afs_osi_pag.c openafs-1.4.1-rc10-scripts/src
      }
 +
 +    av->realuid = acred->cr_ruid;
-+    if(acred->cr_ruid == AFSAGENT_UID) {
++    if(!globalpag && acred->cr_ruid == AFSAGENT_UID) {
 +      globalpag = av->uid;
 +    }
 +    else {
