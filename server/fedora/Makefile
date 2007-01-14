@@ -19,7 +19,7 @@
 # See /COPYRIGHT in this repository for more information.
 
 upstream	= openafs krb5 httpd
-oursrc		= execsys tokensys lockeradm sqladm
+oursrc		= execsys tokensys lockeradm sqladm httpdmods
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
