@@ -18,7 +18,7 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream	= openafs krb5 httpd
+upstream	= openafs krb5 httpd mit-zephyr
 oursrc		= execsys tokensys accountadm sqladm httpdmods
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
