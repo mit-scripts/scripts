@@ -3,7 +3,7 @@
   Instead, you must use a recent version of ssh to authenticate using Kerberos
   (specifically, you must use gssapi-with-mic).  We recommend that you run
   these commands on Athena to connect: "add scripts" then "sshmic scripts".
-  The default Athena ssh is too old to authenticate to scripts.mit.edu.
+  The ssh on some workstations is too old to authenticate to scripts.mit.edu.
   Also, please note that you must sign up for one or more of the script
   services before you can log in using ssh (see http://scripts.mit.edu).
   Feel free to e-mail scripts@mit.edu if you have any questions.
