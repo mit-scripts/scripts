@@ -134,17 +134,14 @@ suexec: install-srpms
 install-suexec:
 	install -m 4510 -o 0 -g apache ${PWD}/sbin/suexec /usr/sbin/;
 
-# The following packages are needed for *building* all of our packages
-# basic deps: kernel-devel through autoconf
+# The following packages are needed for our packages
+# basic deps: kernel-devel through krb5-workstation
 # oursrc: hesinfo
 # httpdmods: httpd-devel
 # httpd: xmlto through distcache-devel
 # krb5: bison through texinfo
 # openafs: pam-devel through automake
-# mit-zephyr: readline-devel
-install-build-deps:
-	yum -y install kernel-devel rpm-build gcc autoconf hesinfo httpd-devel xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel bison ncurses-devel texinfo pam-devel automake readline-devel
-
-# The following packages are needed for *installing* all of our packages
+# mit-zephyr: readline-devel hesiod.i386 libXt.i386 compat-readline43
 install-deps:
-	yum -y krb5-workstation
+	yum -y install kernel-devel rpm-build gcc autoconf patch krb5-workstation hesinfo httpd-devel xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel bison ncurses-devel texinfo pam-devel automake readline-devel hesiod.i386 libXt.i386
+	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
