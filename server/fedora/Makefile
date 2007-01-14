@@ -135,13 +135,13 @@ install-suexec:
 	install -m 4510 -o 0 -g apache ${PWD}/sbin/suexec /usr/sbin/;
 
 # The following packages are needed for *building* all of our packages
-# basic deps: rpm-build through autoconf
+# basic deps: rpm-build through autoconf kernel-devel
 # oursrc: hesinfo
 # httpd: xmlto through distcache-devel
 # krb5: bison through texinfo
 # openafs: pam-devel through automake
 install-build-deps:
-	yum -y install rpm-build gcc autoconf hesinfo xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel bison ncurses-devel texinfo pam-devel automake
+	yum -y install kernel-devel rpm-build gcc autoconf hesinfo xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel bison ncurses-devel texinfo pam-devel automake
 
 # The following packages are needed for *installing* all of our packages
 install-deps:
