@@ -1,6 +1,6 @@
 Summary: scripts.mit.edu locker administration system
 Group: Applications/System
-Name: lockeradm
+Name: accountadm
 Version: 0.00
 Release: scripts
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
