@@ -9,11 +9,11 @@
  %description
  Kerberos V5 is a trusted-third-party network authentication system,
  which can improve your network's security by eliminating the insecure
-@@ -926,6 +928,7 @@
- cp src/krb524/README README.krb524
- find . -type f -name "*.info-dir" -exec rm -fv "{}" ";"
- gzip doc/*.ps
-+%patch1000 -p1 -b .scripts
+@@ -926,4 +928,7 @@
+
  cd src
++cd ..
++%patch1000 -p1 -b .scripts
++cd src
  top=`pwd`
  for configurein in `find -name configure.in -type f` ; do
