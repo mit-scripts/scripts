@@ -59,7 +59,7 @@ mkdir-tree:
 	@mkdir -p $(tree);
 
 download:
-	-@wget -O- -nv $(server_url)/$(server_arch) | wget -i- -nv -nc -B $(server_url)/ -nd -nH -P $(dload);
+	-@wget -O- -nv $(server_url)/$(server_arch) | wget -i- -nv -N -B $(server_url)/ -nd -nH -P $(dload);
 
 copy-patches: mkdir-tree
 	@cp $(patches)/*.patch $(tmp_src); \
