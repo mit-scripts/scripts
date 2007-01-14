@@ -23,6 +23,7 @@ oursrc		= execsys tokensys accountadm sqladm httpdmods
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
+metapatches	= ${PWD}/meta-patches
 specs		= ${PWD}/specs
 
 topdir		= ${PWD}/.tmp
@@ -61,7 +62,12 @@ download:
 	-@wget -O- -nv $(server_url)/$(server_arch) | wget -i- -nv -nc -B $(server_url)/ -nd -nH -P $(dload);
 
 copy-patches: mkdir-tree
-	cp ${patches}/*.patch $(tmp_src)
+	@cp $(patches)/*.patch $(tmp_src); \
+	cd $(tmp_src); \
+	list=`ls $(metapatches)/*.patch`; \
+        for i in $$list; do \
+                patch < $$i; \
+        done;
 
 install-srpms: mkdir-tree download
 	rpm $(rpm_args) -i $(dload)/*.src.rpm 2>/dev/null;
