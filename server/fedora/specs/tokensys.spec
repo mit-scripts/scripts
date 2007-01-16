@@ -42,7 +42,6 @@ install -D crontab $RPM_BUILD_ROOT/home/afsagent/crontab
 %pre
 groupadd -g 101 afsagent
 useradd -u 101 -g 101 afsagent
-chmod 700 /home/afsagent
 
 %post
 crontab -u afsagent /home/afsagent/crontab
