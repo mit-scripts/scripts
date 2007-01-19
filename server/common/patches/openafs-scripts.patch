@@ -32,12 +32,13 @@ diff -ur openafs-1.4.1-rc10/src/afs/afs_analyze.c openafs-1.4.1-rc10-scripts/src
 diff -ur openafs-1.4.1-rc10/src/afs/afs.h openafs-1.4.1-rc10-scripts/src/afs/afs.h
 --- openafs-1.4.1-rc10/src/afs/afs.h	2006-02-17 16:58:33.000000000 -0500
 +++ openafs-1.4.1-rc10-scripts/src/afs/afs.h	2006-04-18 16:38:55.000000000 -0400
-@@ -175,8 +175,12 @@
+@@ -175,8 +175,13 @@
     struct afs_q *prev;
  };
 
 +#define AFSAGENT_UID (101)
 +#define HTTPD_UID (48)
++#define POSTFIX_UID (89)
 +#define DAEMON_SCRIPTS_PTSID (33554596)
  struct vrequest {
      afs_int32 uid;		/* user id making the request */
@@ -57,6 +58,30 @@ diff -ur openafs-1.4.1-rc10/src/afs/afs_osi_pag.c openafs-1.4.1-rc10-scripts/src
  /*
   * Pags are implemented as follows: the set of groups whose long
   * representation is '41XXXXXX' hex are used to represent the pags.
+@@ -77,9 +77,9 @@
+     AFS_STATCNT(genpag);
+ #ifdef AFS_LINUX20_ENV
+     /* Ensure unique PAG's (mod 200 days) when reloading the client. */
+-    return (('A' << 24) + ((pag_epoch + pagCounter++) & 0xffffff));
++    return (('A' << 24) + ((pag_epoch + pagCounter) & 0xffffff));
+ #else /* AFS_LINUX20_ENV */
+-    return (('A' << 24) + (pagCounter++ & 0xffffff));
++    return (('A' << 24) + (pagCounter & 0xffffff));
+ #endif /* AFS_LINUX20_ENV */
+ }
+
+@@ -105,9 +105,9 @@
+ {
+     AFS_STATCNT(genpag);
+ #ifdef AFS_LINUX20_ENV
+-    return (pag_epoch + pagCounter++);
++    return (pag_epoch + pagCounter);
+ #else
+-    return (pagCounter++);
++    return (pagCounter);
+ #endif /* AFS_LINUX20_ENV */
+ }
+ 
 @@ -426,6 +430,15 @@
  	av->uid = acred->cr_ruid;	/* default when no pag is set */
  #endif
@@ -120,7 +145,7 @@ diff -ur openafs-1.4.1-rc10/src/afs/VNOPS/afs_vnop_access.c openafs-1.4.1-rc10-s
 +      if ( !(areq->realuid == avc->fid.Fid.Volume) &&
 +           !((avc->anyAccess | arights) == avc->anyAccess) &&
 +           !(((arights & ~(PRSFS_LOOKUP|PRSFS_READ)) == 0) && areq->realuid == HTTPD_UID) &&
-+           !(areq->realuid == AFSAGENT_UID)) {
++           !(((arights & ~(PRSFS_LOOKUP|PRSFS_READ)) == 0) && areq->realuid == POSTFIX_UID) ) {
 +         return 0;
 +      }
 +
@@ -135,7 +160,7 @@ diff -ur openafs-1.4.1-rc10/src/afs/VNOPS/afs_vnop_access.c openafs-1.4.1-rc10-s
 +        if ( !(areq->realuid == avc->fid.Fid.Volume) &&
 +             !((avc->anyAccess | arights) == avc->anyAccess) &&
 +             !(arights == PRSFS_LOOKUP && areq->realuid == HTTPD_UID) &&
-+             !(areq->realuid == AFSAGENT_UID) &&
++             !(arights == PRSFS_LOOKUP && areq->realuid == POSTFIX_UID) &&
 +             !(arights == PRSFS_READ && avc->m.Mode == 33279)) {
 +           return 0;
 +        }
@@ -173,15 +198,13 @@ diff -ur openafs-1.4.1-rc10/src/afs/VNOPS/afs_vnop_attrs.c openafs-1.4.1-rc10-sc
      return 0;
  }
  
-diff -ru openafs-1.4.2/configure openafs-1.4.2-scripts/configure
---- openafs-1.4.2/configure	2006-10-13 15:48:34.000000000 -0400
-+++ openafs-1.4.2-scripts/configure	2006-11-29 19:47:43.000000000 -0500
-@@ -11512,7 +11512,7 @@
-   if test "x$ac_cv_linux_keyring_support" = "xyes"; then
- 
- cat >>confdefs.h <<\_ACEOF
--#define LINUX_KEYRING_SUPPORT 1
-+#undef LINUX_KEYRING_SUPPORT
- _ACEOF
- 
-   fi
+--- openafs-1.4.2/src/afs/afs_user.c.scripts	2007-01-18 19:22:49.000000000 -0500
++++ openafs-1.4.2/src/afs/afs_user.c	2007-01-19 13:46:36.000000000 -0500
+@@ -110,6 +110,7 @@
+     now = osi_Time();
+     for (i = 0; i < NUSERS; i++) {
+ 	for (lu = &afs_users[i], tu = *lu; tu; tu = nu) {
++            if(tu->uid == AFSAGENT_UID) continue;
+ 	    delFlag = 0;	/* should we delete this dude? */
+ 	    /* Don't garbage collect users in use now (refCount) */
+ 	    if (tu->refCount == 0) {
