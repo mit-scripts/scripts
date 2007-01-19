@@ -198,13 +198,3 @@ diff -ur openafs-1.4.1-rc10/src/afs/VNOPS/afs_vnop_attrs.c openafs-1.4.1-rc10-sc
      return 0;
  }
  
---- openafs-1.4.2/src/afs/afs_user.c.scripts	2007-01-18 19:22:49.000000000 -0500
-+++ openafs-1.4.2/src/afs/afs_user.c	2007-01-19 13:46:36.000000000 -0500
-@@ -110,6 +110,7 @@
-     now = osi_Time();
-     for (i = 0; i < NUSERS; i++) {
- 	for (lu = &afs_users[i], tu = *lu; tu; tu = nu) {
-+            if(tu->uid == AFSAGENT_UID) continue;
- 	    delFlag = 0;	/* should we delete this dude? */
- 	    /* Don't garbage collect users in use now (refCount) */
- 	    if (tu->refCount == 0) {
