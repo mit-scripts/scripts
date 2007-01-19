@@ -7,6 +7,7 @@ require {
 };
 
 afs_access(user_t);
+zephyr_access(user_t);
 
 ### AFS ###
 
@@ -15,6 +16,7 @@ require {
 };
 
 afs_access(kernel_t);
+zephyr_access(kernel_t);
 
 # init.d script sets up cell files:
 allow initrc_t afsd_etc_t:file { setattr write };
@@ -25,6 +27,8 @@ allow user_t proc_t:file write;
 
 require {
 	type crond_t, user_cron_spool_t;
+	type system_crond_t;
+	type var_log_t;
 };
 
 afs_access(crond_t);
@@ -38,6 +42,7 @@ allow crond_t user_t:fd use;
 allow user_t crond_t:fd use;
 allow user_t crond_t:fifo_file rw_file_perms;
 allow user_t crond_t:process sigchld;
+allow system_crond_t var_log_t:file rw_file_perms;
 
 ### SSH ###
 
@@ -59,7 +64,9 @@ require {
 afs_access(postfix_local_t);
 afs_access(procmail_t);
 mta_sendmail_exec(user_t)
+mta_sendmail_exec(system_crond_t)
 can_exec(user_t, sendmail_exec_t)
+can_exec(system_crond_t, sendmail_exec_t)
 allow sendmail_t postfix_local_t:fd use;
 allow sendmail_t postfix_local_t:fifo_file { getattr write };
 corecmd_exec_bin(procmail_t)

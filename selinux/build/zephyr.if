@@ -1,0 +1,24 @@
+interface(`zephyr_domtrans',`
+        gen_requires(`
+                type zephyr_t, zephyr_exec_t;
+        ')
+
+        domain_auto_trans($1,zephyr_exec_t,zephyr_t)
+
+        allow $1 zephyr_t:fd use;
+        allow zephyr_t $1:fd use;
+        allow zephyr_t:$1:fifo_file rw_file_perms;
+        allow zephyr_t $1:process sigchld;
+')
+
+template(`zephyr_access',`
+        require {
+#                type krb5_conf_t;
+                type zephyr_t, zephyr_bin_t;
+        }
+
+        allow $1 zephyr_t:udp_socket { read write };
+#        allow $1 krb5_conf_t:file read;
+        can_exec($1, zephyr_t)
+        can_exec($1, zephyr_bin_t)
+')
