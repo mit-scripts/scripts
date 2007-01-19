@@ -9,6 +9,7 @@ build/%.fc: %.fc
 
 install:
 	/usr/sbin/setenforce 0;
+	/usr/sbin/semodule -i afsagent.pp;
 	/usr/sbin/semodule -i afsd.pp;
 	/usr/sbin/semodule -i misc.pp;
 	/usr/sbin/getenforce
