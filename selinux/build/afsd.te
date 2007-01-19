@@ -60,6 +60,7 @@ sysnet_dns_name_resolve(afsd_t)
 corenet_tcp_sendrecv_all_nodes(afsd_t)
 corenet_udp_sendrecv_all_nodes(afsd_t)
 
+afs_access(afsd_t);
 
 require {
 	type afs_bos_port_t,afs_fs_port_t,afs_fs_port_t,afs_ka_port_t,afs_pt_port_t,afs_vl_port_t;

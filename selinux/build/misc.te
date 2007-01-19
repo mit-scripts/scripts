@@ -1,24 +1,21 @@
 policy_module(misc,1.0.0)
 
+### USER ###
+
+require {
+	type user_t;
+};
+
+afs_access(user_t);
+
 ### AFS ###
 
 require {
-	type crond_t, kernel_t, sshd_t, user_t, httpd_t;
-	type postfix_local_t, procmail_t;
-	type proc_t;
-}
-afs_access(afsd_t);
-afs_access(crond_t);
-afs_access(httpd_t);
-afs_access(kernel_t);
-afs_access(postfix_local_t);
-afs_access(procmail_t);
-afs_access(sshd_t);
-afs_access(user_t);
+	type kernel_t, initrc_t, proc_t;
+};
 
-require {
-	type initrc_t;
-}
+afs_access(kernel_t);
+
 # init.d script sets up cell files:
 allow initrc_t afsd_etc_t:file { setattr write };
 # permit aklog:
@@ -28,9 +25,9 @@ allow user_t proc_t:file write;
 
 require {
 	type crond_t, user_cron_spool_t;
-	type user_t;
 };
 
+afs_access(crond_t);
 ### crond can switch to user_t rather than user_crond_t
 ### (we have pam_env set SELINUX_ROLE_TYPE to accomplish this)
 domain_cron_exemption_target(user_t)
@@ -42,17 +39,25 @@ allow user_t crond_t:fd use;
 allow user_t crond_t:fifo_file rw_file_perms;
 allow user_t crond_t:process sigchld;
 
-### KRB ###
+### SSH ###
 
 require {
-	type sendmail_t, sshd_t;
+	type sshd_t;
 };
 
+afs_access(sshd_t);
 ### sshd GSSAPI authentication
 kerberos_read_keytab(sshd_t)
 allow user_t kernel_t:key search;
 
 ### MAIL ###
+
+require {
+	type postfix_local_t, procmail_t, sendmail_t;
+};
+
+afs_access(postfix_local_t);
+afs_access(procmail_t);
 mta_sendmail_exec(user_t)
 can_exec(user_t, sendmail_exec_t)
 allow sendmail_t postfix_local_t:fd use;
@@ -61,4 +66,12 @@ corecmd_exec_bin(procmail_t)
 corecmd_exec_sbin(procmail_t)
 
 ### HTTPD ###
+
+require {
+	type httpd_t, httpd_suexec_exec_t;
+};
+
+afs_access(httpd_t);
 allow httpd_t self:key all_key_perms;
+allow httpd_t self:process setrlimit;
+allow httpd_t httpd_suexec_exec_t:file { execute execute_no_trans };
