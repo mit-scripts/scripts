@@ -58,30 +58,6 @@ diff -ur openafs-1.4.1-rc10/src/afs/afs_osi_pag.c openafs-1.4.1-rc10-scripts/src
  /*
   * Pags are implemented as follows: the set of groups whose long
   * representation is '41XXXXXX' hex are used to represent the pags.
-@@ -77,9 +77,9 @@
-     AFS_STATCNT(genpag);
- #ifdef AFS_LINUX20_ENV
-     /* Ensure unique PAG's (mod 200 days) when reloading the client. */
--    return (('A' << 24) + ((pag_epoch + pagCounter++) & 0xffffff));
-+    return (('A' << 24) + ((pag_epoch + pagCounter) & 0xffffff));
- #else /* AFS_LINUX20_ENV */
--    return (('A' << 24) + (pagCounter++ & 0xffffff));
-+    return (('A' << 24) + (pagCounter & 0xffffff));
- #endif /* AFS_LINUX20_ENV */
- }
-
-@@ -105,9 +105,9 @@
- {
-     AFS_STATCNT(genpag);
- #ifdef AFS_LINUX20_ENV
--    return (pag_epoch + pagCounter++);
-+    return (pag_epoch + pagCounter);
- #else
--    return (pagCounter++);
-+    return (pagCounter);
- #endif /* AFS_LINUX20_ENV */
- }
- 
 @@ -426,6 +430,15 @@
  	av->uid = acred->cr_ruid;	/* default when no pag is set */
  #endif
