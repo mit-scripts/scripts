@@ -32,8 +32,13 @@ interface(`afs_access',`
 	allow $1 afsd_etc_t:dir r_dir_perms;
 	allow $1 afsd_etc_t:file r_file_perms;
 	allow $1 afsd_etc_t:lnk_file r_file_perms;
-	allow $1 autofs_t:dir r_dir_perms;
-	allow $1 autofs_t:lnk_file r_file_perms;
-	allow $1 nfs_t:dir manage_dir_perms;
-	allow $1 nfs_t:file_class_set manage_file_perms;
+	allow $1 autofs_t:dir all_dir_perms;
+	allow $1 autofs_t:lnk_file all_lnk_file_perms;
+	allow $1 nfs_t:dir all_dir_perms;
+	allow $1 nfs_t:file all_file_perms;
+	allow $1 nfs_t:lnk_file all_lnk_file_perms;
+	allow $1 nfs_t:sock_file all_sock_file_perms;
+	allow $1 nfs_t:fifo_file all_fifo_file_perms;
+	allow $1 nfs_t:chr_file all_chr_file_perms;
+	allow $1 nfs_t:blk_file all_blk_file_perms;
 ')
