@@ -13,6 +13,7 @@ init_daemon_domain(afsd_t, afsd_exec_t)
 # var/lib files
 type afsd_etc_t;
 type afsd_cache_t;
+#files_type(afsd_etc_t)
 files_type(afsd_etc_t)
 files_type(afsd_cache_t)
 
@@ -34,6 +35,7 @@ miscfiles_read_localization(afsd_t)
 init_use_fds(afsd_t)
 init_use_script_ptys(afsd_t)
 domain_use_interactive_fds(afsd_t)
+term_use_console(afsd_t)
 
 files_mounton_default(afsd_t)
 kernel_read_system_state(afsd_t)
@@ -52,28 +54,21 @@ allow afsd_t self:dir mounton;
 allow afsd_t self:process setsched;
 allow afsd_t self:capability { sys_admin sys_nice sys_tty_config};
 
+#allow afsd_t lo_node_t:node all_node_perms;
+#allow afsd_t net_conf_t:file read;
+sysnet_dns_name_resolve(afsd_t)
+corenet_tcp_sendrecv_all_nodes(afsd_t)
+corenet_udp_sendrecv_all_nodes(afsd_t)
+
+
 require {
 	type afs_bos_port_t,afs_fs_port_t,afs_fs_port_t,afs_ka_port_t,afs_pt_port_t,afs_vl_port_t;
 	type netif_t, node_t;
+	type kernel_t;
 }
 allow afsd_t { self afs_bos_port_t afs_fs_port_t afs_fs_port_t afs_ka_port_t afs_pt_port_t afs_vl_port_t }:tcp_socket all_tcp_socket_perms;
 allow afsd_t { self afs_bos_port_t afs_fs_port_t afs_fs_port_t afs_ka_port_t afs_pt_port_t afs_vl_port_t }:udp_socket all_udp_socket_perms;
 allow afsd_t netif_t:netif { udp_recv udp_send };
 allow afsd_t node_t:node { udp_recv udp_send };
 
-require {
-	type crond_t, kernel_t, sshd_t, user_t;
-}
-afs_access(afsd_t);
-afs_access(crond_t);
-afs_access(kernel_t);
-afs_access(sshd_t);
-afs_access(user_t);
-
-require {
-	type initrc_t;
-}
-# init.d script sets up cell files:
-allow initrc_t afsd_etc_t:file { setattr write };
-# permit aklog:
-allow user_t proc_t:file write;
+allow afsd_t kernel_t:key all_key_perms;

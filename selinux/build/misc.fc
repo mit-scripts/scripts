@@ -1,2 +1,2 @@
-/var/empty/sshd(.*)				gen_context(system_u:object_r:sshd_t,s0)
-/var/empty/sshd/etc/localtime		--	gen_context(system_u:object_r:locale_t,s0)
+#/var/empty/sshd(.*)				gen_context(system_u:object_r:sshd_t,s0)
+#/var/empty/sshd/etc/localtime		--	gen_context(system_u:object_r:locale_t,s0)

@@ -1,0 +1,13 @@
+#
+# The PAM configuration file for the cron daemon
+#
+#
+auth	   sufficient pam_rootok.so
+auth       required   pam_env.so
+auth       include    system-auth
+account    required   pam_access.so
+account    include    system-auth
+session    required   pam_loginuid.so
+session    [default=1 success=ignore] pam_succeed_if.so user notin root quiet
+session    required   pam_env.so envfile=/etc/environment.cron
+session    include    system-auth

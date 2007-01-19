@@ -1,0 +1,8 @@
+policy_module(afsagent,1.0.0)
+
+require {
+	type user_t;
+};
+
+type afsagent_t;
+role afsagent_r types afsagent_t;
