@@ -11,7 +11,7 @@ done
 for s in $S_ON; do
 	/sbin/chkconfig --add $s
 	/sbin/chkconfig $s on
-	/sbin/service $s status || runcon system_u:system_r:initrc_t:s0 /sbin/service $s start
+	#/sbin/service $s status || runcon system_u:system_r:initrc_t:s0 /sbin/service $s start
 done
 
 restorecon -R /etc

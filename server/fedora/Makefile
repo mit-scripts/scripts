@@ -117,7 +117,7 @@ $(allsrc): setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild $(rpm_args) -ba ${tmp_specs}/$@*.spec
 
-openafs-kernel:
+openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild $(rpm_args) -bb --define "build_userspace 0" --define "build_modules 1" ${tmp_specs}/openafs*.spec
 
