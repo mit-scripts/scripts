@@ -1,0 +1,12 @@
+Source: scripts-accountadm
+Section: admin
+Priority: optional
+Maintainer: Tim Abbott <tabbott@mit.edu>
+Build-Depends: cdbs (>= 0.4.23-1.1), debhelper (>= 5), autoconf, sudo, quota
+Standards-Version: 3.7.2
+
+Package: scripts-accountadm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: scripts.mit.edu Accountadm package
+ Accountadm.

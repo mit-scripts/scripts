@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+
+DEB_AUTO_UPDATE_DEBIAN_CONTROL = 1
+DEB_AUTO_UPDATE_AUTOCONF = 1
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+DEB_CONFIGURE_EXTRA_FLAGS += --with-fs=/usr/bin/fs --with-pts=/usr/bin/pts
+DEB_MAKE_INVOKE += prefix=/usr/local sysconfdir=/usr/local/etc
