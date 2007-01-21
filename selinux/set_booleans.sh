@@ -14,13 +14,13 @@ setsebool -P \
 	allow_ssh_keysign=1 \
 	allow_user_mysql_connect=1 \
 	cron_can_relabel=1 \
-	httpd_builtin_scripting=1 \
+	httpd_builtin_scripting=0 \
 	httpd_can_network_connect=1 \
 	httpd_can_network_connect_db=1 \
 	httpd_can_network_relay=1 \
 	httpd_enable_cgi=1 \
 	httpd_enable_homedirs=1 \
-	httpd_ssi_exec=1 \
+	httpd_ssi_exec=0 \
 	httpd_tty_comm=1 \
 	nfs_export_all_ro=1 \
 	nfs_export_all_rw=1 \
