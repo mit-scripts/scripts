@@ -8,10 +8,10 @@ build/%.fc: %.fc
 	rm -rf tmp
 
 install:
-	/usr/sbin/setenforce 0;
-	/usr/sbin/semodule -i afsagent.pp;
-	/usr/sbin/semodule -i afsd.pp;
-	/usr/sbin/semodule -i misc.pp;
+	/usr/sbin/semodule -i admof.pp;
+	/usr/sbin/semodule -i nagios-nrpe.pp;
+	/usr/sbin/semodule -i openafs.pp;
+	/usr/sbin/semodule -i scripts.pp;
+	/usr/sbin/semodule -i signup.pp;
+	/usr/sbin/semodule -i zephyr.pp;
 	/usr/sbin/getenforce
-#	export SESTAT=`/usr/sbin/getenforce`;
-#	/usr/sbin/setenforce $$SESTAT;

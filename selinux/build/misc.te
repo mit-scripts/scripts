@@ -1,4 +1,8 @@
-policy_module(misc,1.0.0)
+# Joe Presbrey
+# presbrey@mit.edu
+# 2006/1/15
+
+policy_module(scripts,1.0.0)
 
 ### USER ###
 
@@ -9,39 +13,56 @@ require {
 afs_access(user_t);
 zephyr_access(user_t);
 
+# permit aklog:
+kernel_write_proc_files(user_t)
+#allow user_t proc_t:file write;
+
 ### AFS ###
 
 require {
-	type kernel_t, initrc_t, proc_t;
+	type kernel_t;
 };
 
 afs_access(kernel_t);
 zephyr_access(kernel_t);
 
+### INIT ###
+
+require {
+	type initrc_t, tmp_t;
+};
+
 # init.d script sets up cell files:
-allow initrc_t afsd_etc_t:file { setattr write };
-# permit aklog:
-allow user_t proc_t:file write;
+afs_access(initrc_t);
+allow initrc_t afsd_etc_t:file { rw_file_perms setattr };
+
+# init.d makes the sessions directory:
+allow initrc_t tmp_t:dir { create setattr };
+
+# AFS fs
+kernel_write_proc_files(initrc_t)
 
 ### CRON ###
 
 require {
-	type crond_t, user_cron_spool_t;
+	type crond_t, user_cron_spool_t, user_crontab_t;
 	type system_crond_t;
 	type var_log_t;
 };
 
 afs_access(crond_t);
+afs_access(user_crontab_t);
 ### crond can switch to user_t rather than user_crond_t
 ### (we have pam_env set SELINUX_ROLE_TYPE to accomplish this)
 domain_cron_exemption_target(user_t)
-allow user_t user_cron_spool_t:file entrypoint;
-allow crond_t user_t:process transition;
-dontaudit crond_t user_t:process { noatsecure siginh rlimitinh };
+domain_entry_file(user_t, user_cron_spool_t)
+domain_trans(crond_t, user_cron_spool_t, user_t)
+allow user_t crond_t:process sigchld;
+allow crond_t self:process setrlimit;
 allow crond_t user_t:fd use;
 allow user_t crond_t:fd use;
 allow user_t crond_t:fifo_file rw_file_perms;
-allow user_t crond_t:process sigchld;
+allow crond_t user_t:fifo_file rw_file_perms;
 allow system_crond_t var_log_t:file rw_file_perms;
 
 ### SSH ###
@@ -53,7 +74,17 @@ require {
 afs_access(sshd_t);
 ### sshd GSSAPI authentication
 kerberos_read_keytab(sshd_t)
-allow user_t kernel_t:key search;
+dontaudit user_t kernel_t:key all_key_perms;
+
+# (for admof)
+# perl
+corecmd_exec_bin(sshd_t)
+# aklog
+corecmd_exec_sbin(sshd_t)
+# exec
+corecmd_exec_shell(sshd_t)
+# fs
+kernel_write_proc_files(sshd_t)
 
 ### MAIL ###
 
@@ -75,10 +106,49 @@ corecmd_exec_sbin(procmail_t)
 ### HTTPD ###
 
 require {
-	type httpd_t, httpd_suexec_exec_t;
+	type httpd_t, httpd_suexec_exec_t, httpd_suexec_t;
+	role user_r;
 };
 
 afs_access(httpd_t);
-allow httpd_t self:key all_key_perms;
+dontaudit httpd_t self:key all_key_perms;
+dontaudit httpd_t sshd_t:key all_key_perms;
+dontaudit httpd_t kernel_t:key all_key_perms;
 allow httpd_t self:process setrlimit;
-allow httpd_t httpd_suexec_exec_t:file { execute execute_no_trans };
+
+# SUEXEC PHASE 1
+can_exec(httpd_t, httpd_suexec_exec_t)
+domain_auto_trans(httpd_t, httpd_suexec_exec_t, httpd_suexec_t)
+apache_read_config(httpd_suexec_t)
+apache_read_log(httpd_suexec_t)
+apache_append_log(httpd_suexec_t)
+
+# SUEXEC PHASE 2
+allow httpd_suexec_t self:process { setexec };
+allow httpd_suexec_t user_t:process { transition siginh rlimitinh noatsecure };
+
+# SUEXEC PHASE 3
+allow { httpd_suexec_t user_t } httpd_t:fd { use };
+allow { httpd_suexec_t user_t } httpd_t:fifo_file { read write };
+allow { httpd_suexec_t user_t } httpd_t:process { sigchld };
+allow { user_t } httpd_suexec_t:fd { use };
+#allow httpd_suexec_t user_t:process transition;
+domain_unconfined(httpd_suexec_t)
+
+### *** ###
+
+require {
+	type var_run_t;
+};
+
+# named.pid
+allow initrc_t var_run_t:lnk_file create;
+
+# semodule -i
+require { type semanage_t, sysadm_home_t; };
+allow semanage_t sysadm_home_t:dir rw_dir_perms;
+allow semanage_t sysadm_home_t:file rw_file_perms;
+
+require { type restorecond_t, crond_t; };
+dontaudit restorecond_t kernel_t:key all_key_perms;
+dontaudit crond_t sshd_t:key all_key_perms;
