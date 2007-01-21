@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "install" ]; then
+	adduser --system --quiet --group afsagent
+fi
+
+#DEBHELPER#

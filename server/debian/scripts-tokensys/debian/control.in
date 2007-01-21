@@ -1,0 +1,13 @@
+Source: scripts-tokensys
+Section: admin
+Priority: optional
+Maintainer: Tim Abbott <tabbott@mit.edu>
+Build-Depends: @cdbs@
+Standards-Version: 3.7.2
+
+Package: scripts-tokensys
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, krb5-user, openafs-krb5
+Pre-Depends: cron, adduser
+Description: scripts.mit.edu Tokensys package
+ Tokensys.

@@ -1,0 +1,12 @@
+Source: scripts-sqladm
+Section: admin
+Priority: optional
+Maintainer: Tim Abbott <tabbott@mit.edu>
+Build-Depends: @cdbs@
+Standards-Version: 3.7.2
+
+Package: scripts-sqladm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: scripts.mit.edu Tokensys package
+ Tokensys.
