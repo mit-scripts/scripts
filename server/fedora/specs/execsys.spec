@@ -16,7 +16,7 @@ scripts.mit.edu glue associated with file execution
 Contains:
  - Apache configuration file <execsys.conf>
  - binfmt_misc init script <execsys-binfmt>
- - Binary for serving static content <staticsys-cat>
+ - Binary for serving static content <static-cat>
 See http://scripts.mit.edu/wiki for more information.
 
 %prep
@@ -37,7 +37,7 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local SYSCATDIR=/usr/local/sbin
 %defattr(0644, root, root)
 /etc/httpd/conf.d/execsys.conf
 %defattr(0755, root, root)
-/usr/local/sbin/staticsys-cat
+/usr/local/bin/static-cat
 /etc/init.d/execsys-binfmt
 
 %post

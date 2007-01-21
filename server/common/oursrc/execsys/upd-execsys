@@ -106,12 +106,12 @@ END
 }
 close(CONF);
 
-open(CAT, "./staticsys-cat.c.pre");
+open(CAT, "./static-cat.c.pre");
 $file = <CAT>;
 ($fstart, $fend) = ($file =~ /$regexp/s);
 close(CAT);
 
-open(CAT, ">./staticsys-cat.c");
+open(CAT, ">./static-cat.c");
 print CAT $fstart, "\n";
 print CAT '#define NEXTS ', scalar(@static), "\n";
 print CAT "const char *map[2 * NEXTS] = {\n";

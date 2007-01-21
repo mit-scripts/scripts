@@ -5,20 +5,20 @@ exec_prefix = @exec_prefix@
 libexecdir = @libexecdir@
 sysconfdir = @sysconfdir@
 APACHEDIR = /etc/httpd
-SYSCATPATH = /usr/local/sbin
+SYSCATPATH = /usr/local/bin
 
-all-local: staticsys-cat execsys-binfmt
+all-local: static-cat execsys-binfmt
 
-staticsys-cat.c execsys-binfmt: staticsys-cat.c.pre execsys-binfmt.pre
-	@UPD_VARS@ syscat_path=$(SYSCATPATH) perl upd-execsys
+static-cat.c execsys-binfmt: static-cat.c.pre execsys-binfmt.pre
+	@UPD_VARS@ syscat_path=$(SYSCATPATH)/static-cat perl upd-execsys
 
 install: all-local
 	install -D -p -m644 execsys.conf $(DESTDIR)$(APACHEDIR)/conf.d/execsys.conf
 	install -D -p -m755 execsys-binfmt $(DESTDIR)/etc/init.d/execsys-binfmt
-	install -D -p -m755 staticsys-cat $(DESTDIR)$(SYSCATPATH)/staticsys-cat
+	install -D -p -m755 static-cat $(DESTDIR)$(SYSCATPATH)/static-cat
 
 clean:
-	rm -f staticsys-cat
+	rm -f static-cat
 
 distclean: clean
 	rm -f configure config.* Makefile
