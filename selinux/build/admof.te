@@ -1,0 +1,41 @@
+# Joe Presbrey
+# presbrey@mit.edu
+# 2006/1/15
+
+policy_module(admof,1.0.0)
+
+require {
+	type sshd_t, sshd_tmp_t, proc_t;
+};
+
+type admof_t;
+type admof_exec_t;
+role system_r types admof_t;
+domain_type(admof_t)
+domain_auto_trans(sshd_t,admof_exec_t,admof_t)
+domain_entry_file(admof_t, admof_exec_t)
+files_read_etc_files(admof_t)
+libs_use_ld_so(admof_t)
+libs_use_shared_libs(admof_t)
+miscfiles_read_localization(admof_t)
+
+allow admof_t sshd_t:fd use;
+allow admof_t sshd_t:fifo_file write;
+allow admof_t sshd_t:tcp_socket { read write };
+allow admof_t sshd_tmp_t:file all_file_perms;
+allow admof_t sshd_t:process sigchld;
+allow admof_t self:fifo_file { getattr ioctl read write };
+allow admof_t proc_t:file { getattr read };
+
+dev_read_urand(admof_t)
+corecmd_exec_all_executables(admof_t)
+
+allow sshd_t admof_exec_t:file rx_file_perms;
+
+require { type afs_t; };
+
+afs_access(admof_t)
+allow afs_t admof_t:fifo_file { getattr write };
+allow afs_t sshd_t:fifo_file write;
+allow afs_t sshd_t:tcp_socket { read write };
+allow afs_t sshd_tmp_t:file { read write };
