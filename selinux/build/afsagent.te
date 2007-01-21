@@ -1,8 +1,60 @@
-policy_module(afsagent,1.0.0)
+# Joe Presbrey
+# presbrey@mit.edu
+# 2006/1/15
+
+policy_module(signup,1.0.0)
 
 require {
-	type user_t;
+	attribute domain, userdomain, unpriv_userdomain;
 };
 
-type afsagent_t;
-role afsagent_r types afsagent_t;
+require { type sudo_exec_t; };
+type signup_t, domain, userdomain, unpriv_userdomain;
+type signup_su_t, domain, userdomain;
+role system_r types { signup_t signup_su_t };
+role user_r types { signup_t signup_su_t };
+afs_access(signup_t)
+afs_access(signup_su_t)
+afs_access(useradd_t)
+files_read_etc_files(signup_t)
+libs_use_ld_so(signup_t)
+libs_use_shared_libs(signup_t)
+miscfiles_read_localization(signup_t)
+files_read_etc_files(signup_su_t)
+libs_use_ld_so(signup_su_t)
+libs_use_shared_libs(signup_su_t)
+miscfiles_read_localization(signup_su_t)
+domain_auto_trans(signup_t, sudo_exec_t, signup_su_t)
+auth_rw_shadow(signup_su_t)
+sysnet_dns_name_resolve(signup_t)
+sysnet_dns_name_resolve(signup_su_t)
+usermanage_run_useradd(signup_su_t,system_r,signup_t)
+usermanage_run_groupadd(signup_su_t,system_r,signup_t)
+allow groupadd_t signup_t:fifo_file { getattr ioctl read write };
+allow groupadd_t signup_t:process sigchld;
+
+allow useradd_t { httpd_t signup_t }:fd use;
+allow useradd_t { httpd_t signup_t }:fifo_file { getattr ioctl read write};
+allow useradd_t signup_t:process sigchld;
+allow signup_su_t signup_t:fd use;
+allow signup_su_t signup_t:fifo_file { ioctl write };
+allow signup_su_t signup_t:process sigchld;
+allow signup_su_t sudo_exec_t:file entrypoint;
+allow signup_su_t self:capability { audit_write setgid setuid };
+dev_read_urand(signup_t)
+kernel_read_system_state(signup_t)
+logging_send_syslog_msg(signup_su_t)
+
+corecmd_exec_all_executables(signup_t)
+allow signup_t sbin_t:dir search;
+allow signup_t sbin_t:file { execute execute_no_trans read };
+allow signup_t shell_exec_t:file { execute execute_no_trans getattr read };
+allow signup_t self:fifo_file { getattr ioctl read write };
+
+# SUEXEC #
+require { type httpd_suexec_t, httpd_t; };
+allow httpd_suexec_t { signup_t }:process { transition siginh rlimitinh noatsecure };
+allow { signup_t } httpd_t:fd { use };
+allow { signup_t } httpd_t:fifo_file { getattr ioctl read write };
+allow { signup_t } httpd_t:process { sigchld };
+allow { signup_t } httpd_suexec_t:fd { use };
