@@ -1,0 +1,25 @@
+# Joe Presbrey
+# presbrey@mit.edu
+# 2006/1/15
+
+interface(`nrpe_domtrans',`
+        gen_requires(`
+                type nrpe_t, nrpe_exec_t;
+        ')
+
+        domain_auto_trans($1,nrpe_exec_t,nrpe_t)
+
+        allow $1 nrpe_t:fd use;
+        allow nrpe_t $1:fd use;
+        allow nrpe_t:$1:fifo_file rw_file_perms;
+        allow nrpe_t $1:process sigchld;
+')
+
+template(`nrpe_access',`
+        require {
+                type nrpe_etc_t;
+        }
+
+	allow $1 nrpe_etc_t:file r_file_perms;
+	allow $1 nrpe_etc_t:dir r_dir_perms;
+')

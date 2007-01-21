@@ -1,0 +1,5 @@
+# Joe Presbrey
+# presbrey@mit.edu
+# 2006/1/15
+
+/usr/sbin/nrpe gen_context(system_u:object_r:nrpe_exec_t,s0)
