@@ -1,0 +1,5 @@
+scripts-sqladm (0.0.56) unstable; urgency=low
+
+  * Initial release.
+
+ -- Tim Abbott <tabbott@mit.edu>  Tue, 16 Jan 2007 04:07:53 -0500
