@@ -98,3 +98,6 @@ allow afs_t netif_t:netif { udp_recv udp_send };
 allow afs_t node_t:node { udp_recv udp_send };
 allow afs_t proc_t:file { ioctl read write };
 term_use_all_user_ptys(afs_t)
+
+require { sshd_t; };
+dontaudit afs_t sshd_t:key all_key_perms;
