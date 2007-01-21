@@ -6,11 +6,11 @@ Release: scripts
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
 License: GPL
-Source: %{name}.tar.gz 
+Source: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 %define debug_package %{nil}
 
-%description 
+%description
 
 scripts.mit.edu glue associated with file execution
 Contains:
@@ -23,14 +23,12 @@ See http://scripts.mit.edu/wiki for more information.
 %setup -q -n %{name}
 
 %build
-./configure --with-syscat=/usr/local/sbin --with-pl=/usr/bin/perl --with-php=/usr/bin/php-cgi --with-py=/usr/bin/python
-make
+./configure --with-pl=/usr/bin/perl --with-php=/usr/bin/php-cgi --with-py=/usr/bin/python
+make SYSCATDIR=/usr/local/sbin
 
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
-install -D execsys.conf $RPM_BUILD_ROOT/etc/httpd/conf.d/execsys.conf
-install -D execsys-binfmt $RPM_BUILD_ROOT/etc/init.d/execsys-binfmt
-install -D staticsys-cat $RPM_BUILD_ROOT/usr/local/sbin/staticsys-cat
+make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local SYSCATDIR=/usr/local/sbin
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT

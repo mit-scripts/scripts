@@ -14,7 +14,7 @@ staticsys-cat.c execsys-binfmt: staticsys-cat.c.pre execsys-binfmt.pre
 
 install: all-local
 	install -D -p -m644 execsys.conf $(DESTDIR)$(APACHEDIR)/conf.d/execsys.conf
-	install -D -p -m755 execsys-binfmt $(DESTDIR)$(sysconfdir)/init.d/execsys-binfmt
+	install -D -p -m755 execsys-binfmt $(DESTDIR)/etc/init.d/execsys-binfmt
 	install -D -p -m755 staticsys-cat $(DESTDIR)$(SYSCATPATH)/staticsys-cat
 
 clean:

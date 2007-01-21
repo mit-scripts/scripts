@@ -6,17 +6,17 @@ Release: scripts
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
 License: GPL
-Source: %{name}.tar.gz 
+Source: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 %define debug_package %{nil}
 Prereq: /usr/kerberos/bin/kinit, /usr/bin/aklog
 
-%description 
+%description
 
 scripts.mit.edu AFS administration system
 Contains:
- - A shell script for renewing the system's AFS credentials <renew>
- - A crontab for calling the renew script <crontab> 
+ - A shell script for renewing the scripts AFS credentials <renew>
+ - A crontab for calling the renew script <crontab>
 See http://scripts.mit.edu/wiki for more information.
 
 %prep

@@ -29,11 +29,7 @@ make
 
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
-install -D modbashrc $RPM_BUILD_ROOT/usr/local/etc/modbashrc
-install -D modbash $RPM_BUILD_ROOT/usr/local/bin/modbash
-install -D admof $RPM_BUILD_ROOT/usr/local/sbin/admof
-install -D signup-scripts-frontend $RPM_BUILD_ROOT/usr/local/sbin/signup-scripts-frontend
-install -D signup-scripts-backend $RPM_BUILD_ROOT/usr/local/sbin/signup-scripts-backend
+make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT

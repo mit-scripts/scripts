@@ -26,7 +26,7 @@ make
 
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
-install -D signup-sql $RPM_BUILD_ROOT/usr/local/sbin/signup-sql
+make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
