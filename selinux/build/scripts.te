@@ -68,12 +68,15 @@ allow system_crond_t var_log_t:file rw_file_perms;
 ### SSH ###
 
 require {
-	type sshd_t;
+	type sshd_t, sshd_tmp_t;
 };
 
 afs_access(sshd_t);
 ### sshd GSSAPI authentication
 kerberos_read_keytab(sshd_t)
+# forwarded kerberos tickets via ssh -K
+allow user_t sshd_tmp_t:file r_file_perms;
+
 dontaudit user_t kernel_t:key all_key_perms;
 
 # (for admof)
