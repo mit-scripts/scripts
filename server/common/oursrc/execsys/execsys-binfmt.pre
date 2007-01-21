@@ -1,10 +1,21 @@
 #!/bin/sh
 #
-# execsys-binfmt: test1 
+# execsys-binfmt: test1
 #
 # chkconfig: 2345 2 98
 # description: test2
 #
+### BEGIN INIT INFO
+# Provides:          execsys-binfmt
+# Required-Start:    $syslog
+# Required-Stop:     $syslog
+# Should-Start:      $local_fs
+# Should-Stop:       $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start scripts.mit.edu execsys system
+# Description:       Decides what interpreter to use to execute files
+### END INIT INFO
 
 stop ()
 {
@@ -28,12 +39,16 @@ start)
 stop)
     stop
     ;;
+force-reload)
+    stop
+    start
+    ;;
 restart)
     stop
     start
     ;;
 *)
-    echo "Usage: $0 [start|stop|restart]" >&2
+    echo "Usage: $0 [start|stop|restart|force-reload]" >&2
     exit 2
     ;;
 esac
