@@ -1,3 +1,16 @@
-CC = @CC@
-CFLAGS = @CFLAGS@
 prefix = @prefix@
+exec_prefix = @exec_prefix@
+libdir = @libdir@
+
+all:
+
+install:
+	mkdir -p $(DESTDIR)$(libdir)
+	install -m a=rx,u+w -p renew $(DESTDIR)$(libdir)/
+
+clean:
+	rm -f renew
+
+distclean: clean
+	rm -f configure config.* Makefile
+	rm -rf auto*.cache

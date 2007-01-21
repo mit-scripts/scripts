@@ -2,13 +2,6 @@ AC_INIT(staticsys-cat.c.pre)
 
 AC_PROG_CC
 
-AC_ARG_WITH(syscat,
-[  --with-syscat[=DIR]        staticsys-cat will be located in DIR],[
-  if test "$withval" != "no" -a "$withval" != "yes"; then
-    UPD_VARS="syscat_path=$withval/staticsys-cat $UPD_VARS"
-  fi
-])
-
 AC_ARG_WITH(afsagent,
 [  --with-afsagent[=UID]        afsagent will have user id UID],[
   if test "$withval" != "no" -a "$withval" != "yes"; then

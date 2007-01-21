@@ -1,13 +1,25 @@
 CC = @CC@
 CFLAGS = @CFLAGS@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+libexecdir = @libexecdir@
+sysconfdir = @sysconfdir@
+APACHEDIR = /etc/httpd
+SYSCATPATH = /usr/local/sbin
 
-all-local: staticsys-cat update
+all-local: staticsys-cat execsys-binfmt
 
-staticsys-cat: update
-	$(CC) $(CFLAGS) -o $@ staticsys-cat.c
+staticsys-cat.c execsys-binfmt: staticsys-cat.c.pre execsys-binfmt.pre
+	@UPD_VARS@ syscat_path=$(SYSCATPATH) perl upd-execsys
 
-update:
-	@UPD_VARS@ perl upd-execsys
+install: all-local
+	install -D -p -m644 execsys.conf $(DESTDIR)$(APACHEDIR)/conf.d/execsys.conf
+	install -D -p -m755 execsys-binfmt $(DESTDIR)$(sysconfdir)/init.d/execsys-binfmt
+	install -D -p -m755 staticsys-cat $(DESTDIR)$(SYSCATPATH)/staticsys-cat
 
 clean:
 	rm -f staticsys-cat
+
+distclean: clean
+	rm -f configure config.* Makefile
+	rm -rf auto*.cache

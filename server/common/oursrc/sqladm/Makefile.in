@@ -1,11 +1,18 @@
 CC = @CC@
 CFLAGS = @CFLAGS@
 prefix = @prefix@
+exec_prefix = @exec_prefix@
+sbindir = @sbindir@
+
 
 all-local: signup-sql
 
-signup-sql:
-	$(CC) $(CFLAGS) -o $@ signup-sql.c	
+install:
+	install -p -m755 -D signup-sql $(DESTDIR)$(sbindir)/signup-sql
 
 clean:
 	rm -f signup-sql
+
+distclean: clean
+	rm -f configure config.* Makefile
+	rm -rf auto*.cache
