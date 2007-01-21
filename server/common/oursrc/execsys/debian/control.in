@@ -1,0 +1,18 @@
+Source: scripts-execsys
+Section: web
+Priority: optional
+Maintainer: Tim Abbott <tabbott@mit.edu>
+Build-Depends: @cdbs@
+Standards-Version: 3.7.2
+
+Package: scripts-execsys
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, perl, python, php5-cgi
+Description: scripts.mit.edu Execsys system
+ This package registers an interpreter based on cat for common files
+ that are statically served to the web, such as .html or .jpg files,
+ so that they can be executed as CGI scripts.
+ .
+ This is important for the scripts.mit.edu system because for security
+ reasons, Apache cannot read these files unless they are "executed" as
+ CGI scripts.

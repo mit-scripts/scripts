@@ -1,0 +1,10 @@
+#!/usr/bin/make -f
+
+DEB_AUTO_UPDATE_DEBIAN_CONTROL = 1
+DEB_AUTO_UPDATE_AUTOCONF = 1
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+DEB_CONFIGURE_EXTRA_FLAGS += --with-pl=/usr/bin/perl --with-php=/usr/bin/php-cgi --with-py=/usr/bin/python
+DEB_MAKE_INVOKE += SYSCATPATH=/usr/local/sbin APACHEDIR=/etc/apache2 prefix=/usr/local
+DEB_DH_INSTALLINIT_ARGS += --name execsys-binfmt -o
