@@ -1,3 +1,7 @@
+# Joe Presbrey
+# presbrey@mit.edu
+# 2006/1/15
+
 policy_module(zephyr,1.0.0)
 
 ########################################
@@ -9,11 +13,12 @@ type zephyr_t;
 type zephyr_bin_t;
 type zephyr_exec_t;
 domain_type(zephyr_t)
+corecmd_executable_file(zephyr_bin_t)
 init_daemon_domain(zephyr_t, zephyr_exec_t)
 
 ########################################
 #
-# AFS local policy
+# zephyr local policy
 
 files_read_etc_files(zephyr_t)
 files_rw_etc_runtime_files(zephyr_t)
@@ -21,19 +26,18 @@ libs_use_ld_so(zephyr_t)
 libs_use_shared_libs(zephyr_t)
 miscfiles_read_localization(zephyr_t)
 
-# Init script handling
 init_use_fds(zephyr_t)
 init_use_script_ptys(zephyr_t)
 domain_use_interactive_fds(zephyr_t)
 term_use_console(zephyr_t)
-
-allow zephyr_t self:process setsched;
-allow zephyr_t self:capability { sys_admin sys_nice sys_tty_config};
-
+corenet_udp_bind_generic_port(zephyr_t)
+dev_read_urand(zephyr_t)
 sysnet_dns_name_resolve(zephyr_t)
 corenet_tcp_sendrecv_all_nodes(zephyr_t)
 corenet_udp_sendrecv_all_nodes(zephyr_t)
 corenet_tcp_sendrecv_all_ports(zephyr_t)
 corenet_udp_sendrecv_all_ports(zephyr_t)
+kerberos_use(zephyr_t)
 
-#allow zephyr_bin_t fs_t:filesystem associate;
+allow zephyr_t self:process setsched;
+allow zephyr_t self:capability { sys_admin sys_nice sys_tty_config };
