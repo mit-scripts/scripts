@@ -1,29 +1,40 @@
-policy_module(afsd,1.0.0)
+# Joe Presbrey
+# presbrey@mit.edu
+# 2006/1/15
 
-########################################
-#
-# Declarations
-#
+policy_module(openafs,1.0.0)
+
+type afs_t;
+type afs_bin_t;
+domain_type(afs_t)
+domain_entry_file(afs_t, afs_bin_t)
+corecmd_executable_file(afs_bin_t)
+
+role system_r types afs_t;
+role user_r types afs_t;
 
 type afsd_t;
 type afsd_exec_t;
 domain_type(afsd_t)
 init_daemon_domain(afsd_t, afsd_exec_t)
 
-# var/lib files
 type afsd_etc_t;
 type afsd_cache_t;
-#files_type(afsd_etc_t)
 files_type(afsd_etc_t)
 files_type(afsd_cache_t)
 
 allow afsd_t { afsd_etc_t afsd_cache_t }:dir manage_dir_perms;
 allow afsd_t { afsd_etc_t afsd_cache_t }:file_class_set manage_file_perms;
-#files_var_lib_filetrans(afsd_t,afsd_cache_t, { file dir sock_file })
 
 ########################################
 #
 # AFS local policy
+
+files_read_etc_files(afs_t)
+files_read_etc_runtime_files(afs_t)
+libs_use_ld_so(afs_t)
+libs_use_shared_libs(afs_t)
+miscfiles_read_localization(afs_t)
 
 files_read_etc_files(afsd_t)
 files_rw_etc_runtime_files(afsd_t)
@@ -31,7 +42,6 @@ libs_use_ld_so(afsd_t)
 libs_use_shared_libs(afsd_t)
 miscfiles_read_localization(afsd_t)
 
-# Init script handling
 init_use_fds(afsd_t)
 init_use_script_ptys(afsd_t)
 domain_use_interactive_fds(afsd_t)
@@ -43,23 +53,21 @@ kernel_write_proc_files(afsd_t)
 fs_mount_nfs(afsd_t)
 fs_remount_nfs(afsd_t)
 fs_unmount_nfs(afsd_t)
+fs_manage_nfs_dirs(afsd_t)
 fs_manage_nfs_files(afsd_t)
 fs_manage_nfs_symlinks(afsd_t)
 fs_manage_nfs_named_pipes(afsd_t)
 fs_manage_nfs_named_sockets(afsd_t)
 
-fs_getattr_xattr_fs(afsd_t);
-
 allow afsd_t self:dir mounton;
 allow afsd_t self:process setsched;
-allow afsd_t self:capability { sys_admin sys_nice sys_tty_config};
+allow afsd_t self:capability { sys_admin sys_nice sys_tty_config };
 
-#allow afsd_t lo_node_t:node all_node_perms;
-#allow afsd_t net_conf_t:file read;
 sysnet_dns_name_resolve(afsd_t)
 corenet_tcp_sendrecv_all_nodes(afsd_t)
 corenet_udp_sendrecv_all_nodes(afsd_t)
 
+# some redundancy here
 afs_access(afsd_t);
 
 require {
@@ -72,4 +80,21 @@ allow afsd_t { self afs_bos_port_t afs_fs_port_t afs_fs_port_t afs_ka_port_t afs
 allow afsd_t netif_t:netif { udp_recv udp_send };
 allow afsd_t node_t:node { udp_recv udp_send };
 
+allow kernel_t afsd_t:udp_socket all_udp_socket_perms;
+
 allow afsd_t kernel_t:key all_key_perms;
+allow kernel_t self:key all_key_perms;
+
+require {
+	type inaddr_any_node_t;
+};
+
+afs_access(afs_t)
+allow afs_t afs_pt_port_t:udp_socket all_udp_socket_perms;
+allow afs_t self:udp_socket all_udp_socket_perms;
+allow afs_t afsd_t:udp_socket all_udp_socket_perms; 
+allow afs_t inaddr_any_node_t:udp_socket all_udp_socket_perms;
+allow afs_t netif_t:netif { udp_recv udp_send };
+allow afs_t node_t:node { udp_recv udp_send };
+allow afs_t proc_t:file { ioctl read write };
+term_use_all_user_ptys(afs_t)

@@ -1,10 +1,40 @@
-# afs executable will have:
-# label: system_u:object_r:afsd_exec_t
-# MLS sensitivity: s0
-# MCS categories: <none>
+# Joe Presbrey
+# presbrey@mit.edu
+# 2006/1/15
 
 /afs			-d	gen_context(system_u:object_r:default_t,s0)
 /etc/openafs(/.*)?		gen_context(system_u:object_r:afsd_etc_t,s0)
 /usr/vice/etc(/.*)?		gen_context(system_u:object_r:afsd_etc_t,s0)
 /usr/vice/etc/afsd	--	gen_context(system_u:object_r:afsd_exec_t,s0)
 /usr/vice/cache(/.*)?		gen_context(system_u:object_r:afsd_cache_t,s0)
+
+/usr/bin/afsmonitor		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/bos			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/fs			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/kapasswd		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/klog			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/klog.krb		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/kpasswd		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/pagsh			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/pagsh.krb		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/pts			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/scout			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/sys			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/tokens			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/tokens.krb		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/translate_et		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/udebug			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/bin/unlog			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/backup		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/butc			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/copyauth		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/fms			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/fstrace		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/kas			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/kseal			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/read_tape		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/restorevol		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/rxdebug		gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/uss			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/vos			gen_context(system_u:object_r:afs_bin_t,s0)
+/usr/sbin/vsys			gen_context(system_u:object_r:afs_bin_t,s0)

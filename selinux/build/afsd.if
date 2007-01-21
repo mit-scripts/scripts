@@ -1,15 +1,7 @@
-## <summary>policy for afs</summary>
+# Joe Presbrey
+# presbrey@mit.edu
+# 2006/1/15
 
-########################################
-## <summary>
-##	Execute a domain transition to run afs.
-## </summary>
-## <param name="domain">
-## <summary>
-##	Domain allowed to transition.
-## </summary>
-## </param>
-#
 interface(`afsd_domtrans',`
 	gen_require(`
 		type afsd_t, afsd_exec_t;
@@ -25,20 +17,23 @@ interface(`afsd_domtrans',`
 
 interface(`afs_access',`
 	gen_require(`
+		type afs_t, afs_bin_t;
 		type afsd_t, afsd_etc_t;
-		type autofs_t, nfs_t;
 	')
-	allow $1 afsd_t:udp_socket all_udp_socket_perms;
+
+	allow $1 afs_bin_t:file rx_file_perms;
+	domain_auto_trans($1, afs_bin_t, afs_t)
+	allow afs_t $1:fd use;
+	allow afs_t $1:process sigchld;
+
+	allow $1 afsd_t:udp_socket write;
 	allow $1 afsd_etc_t:dir r_dir_perms;
 	allow $1 afsd_etc_t:file r_file_perms;
 	allow $1 afsd_etc_t:lnk_file r_file_perms;
-	allow $1 autofs_t:dir all_dir_perms;
-	allow $1 autofs_t:lnk_file all_lnk_file_perms;
-	allow $1 nfs_t:dir all_dir_perms;
-	allow $1 nfs_t:file all_file_perms;
-	allow $1 nfs_t:lnk_file all_lnk_file_perms;
-	allow $1 nfs_t:sock_file all_sock_file_perms;
-	allow $1 nfs_t:fifo_file all_fifo_file_perms;
-	allow $1 nfs_t:chr_file all_chr_file_perms;
-	allow $1 nfs_t:blk_file all_blk_file_perms;
+	fs_manage_autofs_symlinks($1)
+	fs_manage_nfs_dirs($1)
+	fs_manage_nfs_files($1)
+	fs_manage_nfs_symlinks($1)
+	fs_manage_nfs_named_pipes($1)
+	fs_manage_nfs_named_sockets($1)
 ')
