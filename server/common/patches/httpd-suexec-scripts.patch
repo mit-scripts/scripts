@@ -68,7 +68,7 @@
          exit(110);
      }
 +    if (uid == 102) {
-+        if (setexeccon("user_u:user_r:signup_t:s0") == -1) {
++        if (setexeccon("system_u:system_r:signup_t:s0") == -1) {
 +            log_err("failed to setexeccon (%ld: %s) to signup_t\n");
 +            exit(201);
 +        }
