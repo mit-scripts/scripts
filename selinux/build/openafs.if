@@ -37,4 +37,5 @@ interface(`afs_access',`
 	fs_manage_nfs_named_pipes($1)
 	fs_manage_nfs_named_sockets($1)
 	allow $1 nfs_t:file entrypoint;
+	allow $1 nfs_t:{file dir} rx_file_perms;
 ')

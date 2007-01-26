@@ -8,10 +8,11 @@ build/%.fc: %.fc
 	rm -rf tmp
 
 install:
-	/usr/sbin/semodule -i admof.pp;
-	/usr/sbin/semodule -i nagios-nrpe.pp;
-	/usr/sbin/semodule -i openafs.pp;
-	/usr/sbin/semodule -i scripts.pp;
-	/usr/sbin/semodule -i signup.pp;
-	/usr/sbin/semodule -i zephyr.pp;
+	/usr/sbin/semodule -n -i openafs.pp;
+	/usr/sbin/semodule -n -i scripts.pp;
+	/usr/sbin/semodule -n -i signup.pp;
+	/usr/sbin/semodule -n -i admof.pp;
+	/usr/sbin/semodule -n -i nagios-nrpe.pp;
+	/usr/sbin/semodule -n -i zephyr.pp;
+	/usr/sbin/semodule -R
 	/usr/sbin/getenforce

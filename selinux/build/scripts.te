@@ -7,10 +7,34 @@ policy_module(scripts,1.0.0)
 ### USER ###
 
 require {
+	attribute domain, userdomain, unpriv_userdomain;
 	type user_t;
 };
 
+type user_setuid_t, domain, userdomain, unpriv_userdomain;
+role user_r types user_setuid_t;
+domain_interactive_fd(user_setuid_t)
+files_read_etc_files(user_setuid_t)
+libs_use_ld_so(user_setuid_t)
+libs_use_shared_libs(user_setuid_t)
+miscfiles_read_localization(user_setuid_t)
+corecmd_exec_all_executables(user_setuid_t)
+term_use_all_user_ptys(user_setuid_t)
+
+allow user_setuid_t bin_t:file entrypoint;
+allow user_setuid_t sbin_t:file entrypoint;
+
+# allow user_setuid_t domain to call setuid and setgid
+allow user_setuid_t self:capability { setuid setgid };
+
+# transition back to the user domain when executing "user" binaries
+domain_auto_trans(user_setuid_t, nfs_t, user_t)
+
+# allow user_setuid_t domain to signal its caller
+allow user_setuid_t user_t:process sigchld;
+
 afs_access(user_t);
+afs_access(user_setuid_t);
 zephyr_access(user_t);
 
 # permit aklog:
