@@ -8,8 +8,16 @@ policy_module(scripts,1.0.0)
 
 require {
 	attribute domain, userdomain, unpriv_userdomain;
-	type user_t;
+	attribute can_change_process_identity, can_change_process_role;
+	type user_t, user_tmp_t;
+	type staff_t, sysadm_t;
 };
+
+corenet_tcp_bind_all_nodes(user_t)
+corenet_tcp_bind_all_ports(user_t)
+#corenet_udp_bind_generic_port(user_t)
+
+## user_setuid_t ##
 
 type user_setuid_t, domain, userdomain, unpriv_userdomain;
 role user_r types user_setuid_t;
@@ -20,6 +28,7 @@ libs_use_shared_libs(user_setuid_t)
 miscfiles_read_localization(user_setuid_t)
 corecmd_exec_all_executables(user_setuid_t)
 term_use_all_user_ptys(user_setuid_t)
+kernel_read_system_state(user_setuid_t)
 
 allow user_setuid_t bin_t:file entrypoint;
 allow user_setuid_t sbin_t:file entrypoint;
@@ -33,9 +42,34 @@ domain_auto_trans(user_setuid_t, nfs_t, user_t)
 # allow user_setuid_t domain to signal its caller
 allow user_setuid_t user_t:process sigchld;
 
+## user_script_t ##
+userdom_base_user_template(user_script)
+userdom_basic_networking_template(user_script)
+domain_interactive_fd(user_script_t)
+corecmd_exec_all_executables(user_script_t)
+files_exec_usr_files(user_script_t)
+corenet_tcp_bind_all_nodes(user_script_t)
+corenet_tcp_bind_all_ports(user_script_t)
+corenet_udp_bind_all_nodes(user_script_t)
+corenet_udp_bind_all_ports(user_script_t)
+#corenet_udp_bind_generic_port(user_script_t)
+kerberos_use(user_script_t)
+files_read_kernel_symbol_table(user_script_t)
+kernel_dontaudit_read_ring_buffer(user_script_t)
+dev_read_urand(user_script_t)
+apache_append_log(user_script_t)
+allow user_script_t user_tmp_t:file all_file_perms;
+allow user_script_t user_tmp_t:dir all_dir_perms;
+allow user_script_t user_tmp_t:fifo_file all_fifo_file_perms;
+kernel_read_system_state(user_script_t)
+
 afs_access(user_t);
+afs_access(user_script_t);
 afs_access(user_setuid_t);
+afs_access(staff_t);
+afs_access(sysadm_t);
 zephyr_access(user_t);
+zephyr_access(user_script_t);
 
 # permit aklog:
 kernel_write_proc_files(user_t)
@@ -102,15 +136,10 @@ kerberos_read_keytab(sshd_t)
 allow user_t sshd_tmp_t:file r_file_perms;
 
 dontaudit user_t kernel_t:key all_key_perms;
+dontaudit user_script_t kernel_t:key all_key_perms;
 
 # (for admof)
-# perl
-corecmd_exec_bin(sshd_t)
-# aklog
-corecmd_exec_sbin(sshd_t)
-# exec
-corecmd_exec_shell(sshd_t)
-# fs
+corecmd_exec_all_executables(sshd_t)
 kernel_write_proc_files(sshd_t)
 
 ### MAIL ###
@@ -122,8 +151,10 @@ require {
 afs_access(postfix_local_t);
 afs_access(procmail_t);
 mta_sendmail_exec(user_t)
+mta_sendmail_exec(user_script_t)
 mta_sendmail_exec(system_crond_t)
 can_exec(user_t, sendmail_exec_t)
+can_exec(user_script_t, sendmail_exec_t)
 can_exec(system_crond_t, sendmail_exec_t)
 allow sendmail_t postfix_local_t:fd use;
 allow sendmail_t postfix_local_t:fifo_file { getattr write };
@@ -152,15 +183,21 @@ apache_append_log(httpd_suexec_t)
 
 # SUEXEC PHASE 2
 allow httpd_suexec_t self:process { setexec };
-allow httpd_suexec_t user_t:process { transition siginh rlimitinh noatsecure };
+allow httpd_suexec_t { user_t user_script_t }:process { transition siginh rlimitinh noatsecure };
 
 # SUEXEC PHASE 3
-allow { httpd_suexec_t user_t } httpd_t:fd { use };
-allow { httpd_suexec_t user_t } httpd_t:fifo_file { read write };
-allow { httpd_suexec_t user_t } httpd_t:process { sigchld };
-allow { user_t } httpd_suexec_t:fd { use };
-#allow httpd_suexec_t user_t:process transition;
-domain_unconfined(httpd_suexec_t)
+allow { httpd_suexec_t user_t user_script_t } httpd_t:fd { use };
+allow { httpd_suexec_t user_t user_script_t } httpd_t:fifo_file { read write };
+allow { httpd_suexec_t user_t user_script_t } httpd_t:process { sigchld };
+allow { user_t user_script_t } httpd_suexec_t:fd { use };
+allow httpd_suexec_t { user_t user_script_t }:process transition;
+typeattribute httpd_suexec_t can_change_process_identity, can_change_process_role;
+#domain_unconfined(httpd_suexec_t)
+apache_append_log(user_t)
+
+# mod_fcgid in user_t
+allow { httpd_suexec_t user_t user_script_t } httpd_t:unix_stream_socket all_unix_stream_socket_perms;
+allow httpd_t { user_t user_script_t }:process { sigkill signal };
 
 ### *** ###
 
@@ -178,4 +215,4 @@ allow semanage_t sysadm_home_t:file rw_file_perms;
 
 require { type restorecond_t, crond_t; };
 dontaudit restorecond_t kernel_t:key all_key_perms;
-dontaudit crond_t sshd_t:key all_key_perms;
+dontaudit { domain userdomain crond_t } sshd_t:key all_key_perms;
