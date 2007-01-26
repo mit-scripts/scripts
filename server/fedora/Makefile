@@ -19,7 +19,7 @@
 # See /COPYRIGHT in this repository for more information.
 
 upstream	= openafs krb5 httpd mit-zephyr
-oursrc		= execsys tokensys accountadm sqladm httpdmods
+oursrc		= execsys tokensys accountadm httpdmods sql-signup
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
@@ -89,8 +89,10 @@ create-tarballs: mkdir-tree
 	list=`find -mindepth 1 -maxdepth 1 -type d | grep -v ".svn"`; \
 	for i in $$list; do \
 		pushd $$i; \
-		./mrproper; \
-		autoconf; \
+		if [ -x ./mrproper ]; then \
+			./mrproper; \
+			autoconf; \
+		fi; \
 		popd; \
 		tar -czf $(tmp_src)/$$i.tar.gz $$i; \
 	done;
