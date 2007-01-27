@@ -11,7 +11,8 @@ all-local: signup-scripts-frontend
 install:
 	install -p -m644 -D modbashrc $(DESTDIR)$(sysconfdir)/modbashrc
 	install -p -m755 -D modbash $(DESTDIR)$(bindir)/modbash
-	install -p -m755 -D admof $(DESTDIR)$(sbindir)/admof
+	install -p -m755 -D admof $(DESTDIR)$(bindir)/admof
+	install -p -m755 -D admof $(DESTDIR)$(sbindir)/ssh-admof
 	install -p -m755 -D signup-scripts-frontend $(DESTDIR)$(sbindir)/signup-scripts-frontend
 	install -p -m755 -D signup-scripts-backend $(DESTDIR)$(sbindir)/signup-scripts-backend
 

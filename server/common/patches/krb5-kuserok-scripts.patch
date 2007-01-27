@@ -108,7 +108,7 @@
 +    }
 +    if (pid == 0) {
 +       char *args[4];
-+#define ADMOF_PATH "/usr/local/sbin/admof"
++#define ADMOF_PATH "/usr/local/sbin/ssh-admof"
 +       args[0] = ADMOF_PATH;
 +       args[1] = (char *) luser;
 +       args[2] = princname;
