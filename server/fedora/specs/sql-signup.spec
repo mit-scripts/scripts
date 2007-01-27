@@ -1,8 +1,8 @@
 Summary:        Signup interface to <sql.mit.edu> for <scripts.mit.edu>.
 Group:			Applications/System
 Name:           sql-signup
-Version:        1.0
-Release:        1
+Version:        0.00
+Release:        0
 Vendor:			The scripts.mit.edu Team (scripts@mit.edu)
 URL:			http://scripts.mit.edu
 License:        GPL
@@ -39,5 +39,6 @@ rm -rf $RPM_BUILD_ROOT
 %config /etc/security/console.apps/sql-signup
 
 %changelog
-* Fri Jan 26 2007 Joe Presbrey <presbrey@mit.edu>
-- First release.
+
+* Fri Jan 26 2007 Joe Presbrey <presbrey@mit.edu> 0.00
+- prerelease

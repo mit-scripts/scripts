@@ -2,7 +2,7 @@ Summary: scripts.mit.edu glue associated with file execution
 Group: Applications/System
 Name: execsys
 Version: 0.00
-Release: scripts
+Release: 0
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
 License: GPL
