@@ -14,6 +14,8 @@ shopt -s checkwinsize
 export PS1='[\u@scripts]:\w\$ '
 umask 022
 
+alias su='echo "Instead of running su USERNAME, ssh USERNAME@scripts.mit.edu from Athena" #'
+
 # You may uncomment the following lines if you want `ls' to be colorized:
 # export LS_OPTIONS='--color=auto'
 # eval `dircolors`
