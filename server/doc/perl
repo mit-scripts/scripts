@@ -1,9 +1,13 @@
 In order to transfer perl modules from one machine to another:
 
+On source machine:
+
 $ perl -MCPAN -e shell
 cpan> autobundle
 
 Wrote bundle file
   /root/.cpan/Bundle/Snapshot_2006_09_30_00.pm
 
-cpan> install Bundle::Spapshot_2006_09_30_00.pm
+On destination machine:
+
+cpan> install Bundle::Snapshot_2006_09_30_00
