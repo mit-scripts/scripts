@@ -92,7 +92,6 @@ sub error {
 }
 
 sub success {
-  print STDERR "\n== SUCCESS ==\nYou are now logged in as user <$targetuser>.\n";
-  print STDERR "To return to being <$curuser>, type \"exit\".\n\n";
+  print STDERR "yes";
   exit(33);
 }
