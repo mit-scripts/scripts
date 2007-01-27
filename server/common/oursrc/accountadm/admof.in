@@ -87,11 +87,11 @@ END
 exit(1);
 
 sub error {
-  print STDERR "\nERROR:\n$_[0]\n\n";
+  print "\nERROR:\n$_[0]\n\n";
   exit(1);
 }
 
 sub success {
-  print STDERR "yes";
+  print "yes";
   exit(33);
 }
