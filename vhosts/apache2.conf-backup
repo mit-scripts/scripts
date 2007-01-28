@@ -1,0 +1,61 @@
+Redirect /sql https://scripts.mit.edu/~sql
+
+<VirtualHost _default_:80>
+    ServerName vhosts.mit.edu
+    DocumentRoot /afs/athena.mit.edu/contrib/scripts/vhosts/server.php
+</VirtualHost>
+
+<VirtualHost 18.181.0.50:80>
+    ServerName scripts-cert.mit.edu
+    ServerAlias scripts-cert
+    DocumentRoot /afs/athena.mit.edu/contrib/scripts/web_scripts/home
+    SuExecUserGroup scripts users
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerName scripts.mit.edu
+    ServerAlias scripts
+    DocumentRoot /afs/athena.mit.edu/contrib/scripts/web_scripts/home
+    SuExecUserGroup scripts users
+</VirtualHost>
+
+<IfModule mod_ssl.c>
+    <VirtualHost 18.181.0.50:443>
+        ServerName scripts-cert.mit.edu
+        ServerAlias scripts-cert
+        DocumentRoot /afs/athena.mit.edu/contrib/scripts/web_scripts/home
+        SSLEngine on
+        SSLCertificateFile /etc/pki/tls/certs/scripts-cert.pem
+        SSLCertificateKeyFile /etc/pki/tls/private/scripts-cert.pem
+        SSLCACertificateFile /etc/pki/tls/certs/ca.pem
+        SSLVerifyClient require
+        SSLVerifyDepth 1
+        SSLOptions +StdEnvVars
+        SuExecUserGroup scripts users
+    </VirtualHost>
+    <VirtualHost *:443>
+        ServerName vhosts.mit.edu
+        ServerAlias vhosts
+        DocumentRoot /afs/athena.mit.edu/contrib/scripts/vhosts/server.php
+        SSLEngine on
+        SSLCertificateFile /etc/pki/tls/certs/cert.pem
+        SSLCertificateKeyFile /etc/pki/tls/private/key.pem
+        SSLCACertificateFile /etc/pki/tls/certs/ca.pem
+        SSLVerifyClient none
+        SSLOptions +StdEnvVars
+    </VirtualHost>
+    <VirtualHost *:443>
+        ServerName scripts.mit.edu
+        ServerAlias scripts
+        DocumentRoot /afs/athena.mit.edu/contrib/scripts/web_scripts/home
+        SSLEngine on
+        SSLCertificateFile /etc/pki/tls/certs/cert.pem
+        SSLCertificateKeyFile /etc/pki/tls/private/key.pem
+        SSLCACertificateFile /etc/pki/tls/certs/ca.pem
+        SSLVerifyClient none
+        SSLOptions +StdEnvVars
+        SuExecUserGroup scripts users
+    </VirtualHost>
+</IfModule>
+
+Include /afs/athena.mit.edu/contrib/scripts/vhosts/conf.d/*.conf
