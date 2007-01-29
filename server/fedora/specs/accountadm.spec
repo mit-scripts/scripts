@@ -36,9 +36,9 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 
 %files
 %defattr(0644, root, root)
-/usr/local/etc/modbashrc
+/usr/local/etc/mbashrc
 %defattr(0755, root, root)
-/usr/local/bin/modbash
+/usr/local/bin/mbash
 /usr/local/bin/admof
 /usr/local/sbin/ssh-admof
 /usr/local/sbin/signup-scripts-backend
@@ -46,8 +46,8 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 /usr/local/sbin/signup-scripts-frontend
 
 %pre
-groupadd signup
-useradd -g signup signup
+groupadd -g 102 signup
+useradd -u 102 -g signup signup
 
 %post
 cat >>/etc/sudoers <<END

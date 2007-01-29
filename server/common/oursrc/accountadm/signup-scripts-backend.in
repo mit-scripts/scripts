@@ -70,7 +70,7 @@ complain("gid already taken") if(getgrgid $gid1);
 
 # Add user to /etc/passwd
 `@sudo_path@ -u root @groupadd_path@ -g '$gid1' '$username'`;
-`@sudo_path@ -u root @useradd_path@ -d '$homedir' -s '/usr/local/bin/modbash' -u '$uid1' -g '$gid1' -G users '$username'`;
+`@sudo_path@ -u root @useradd_path@ -d '$homedir' -s '/usr/local/bin/mbash' -u '$uid1' -g '$gid1' -G users '$username'`;
 # Add disk quota for user
 `@sudo_path@ -u root @setquota_path@ '$username' 0 25000 0 10000 -a`;
 

@@ -42,11 +42,11 @@ LOCATE(groupadd)
 LOCATE(setquota)
 LOCATE(hesinfo)
 
-dnl Needed by modbash.in
+dnl Needed by mbash.in
 
 LOCATE(bash)
 
 AC_OUTPUT(Makefile)
 AC_OUTPUT(admof)
 AC_OUTPUT(signup-scripts-backend)
-AC_OUTPUT(modbash)
+AC_OUTPUT(mbash)
