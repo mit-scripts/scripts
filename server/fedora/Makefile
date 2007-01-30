@@ -19,7 +19,7 @@
 # See /COPYRIGHT in this repository for more information.
 
 upstream	= openafs krb5 httpd mit-zephyr
-oursrc		= execsys tokensys accountadm httpdmods sql-signup
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
