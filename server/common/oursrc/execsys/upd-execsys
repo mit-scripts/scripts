@@ -64,6 +64,7 @@ while(my $line = <TYPES>) {
 	
 	foreach my $ext (split " ", $exts) {
 		$map{$ext} = $type;
+		$map{uc($ext)} = $type;
 	}
 }
 close(TYPES);
