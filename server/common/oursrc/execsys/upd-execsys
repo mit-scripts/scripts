@@ -52,6 +52,7 @@ my @static = qw(
  ppt
  swf
  mp3
+ JPG
 );
 
 my %map;
