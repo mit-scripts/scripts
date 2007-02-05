@@ -34,17 +34,14 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 groupadd logview
 chgrp logview /var/log/httpd
 
-%post
-chgrp logview /usr/local/bin/logview
-chmod g+s /usr/local/bin/logview
-
-%postrm
+%postun
 groupdel logview
 chgrp root /var/log/httpd
 
 %files
 %defattr(0755, root, root)
 /usr/local/bin/logview.pl
+%defattr(2755, root, logview)
 /usr/local/bin/logview
 
 %changelog
