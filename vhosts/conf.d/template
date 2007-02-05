@@ -1,0 +1,14 @@
+<VirtualHost *:80>
+	ServerName hname.mit.edu
+	ServerAlias hname
+	DocumentRoot /afs/athena.mit.edu/path/web_scripts
+	SuExecUserGroup uname uname
+</VirtualHost>
+
+<VirtualHost *:443>
+	ServerName hname.mit.edu
+	ServerAlias hname
+	DocumentRoot /afs/athena.mit.edu/path/web_scripts
+	SuExecUserGroup uname uname
+	SSLEngine on
+</VirtualHost>
