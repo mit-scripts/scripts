@@ -9,7 +9,6 @@ License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 %define debug_package %{nil}
-Requires: httpd
 
 %description 
 
@@ -31,7 +30,7 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
 
 %pre
-adduser logview
+useradd logview
 
 %postun
 userdel logview
