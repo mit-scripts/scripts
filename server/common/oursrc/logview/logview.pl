@@ -2,7 +2,7 @@
 
 %ENV = ();
 $ENV{'PATH'} = '/bin:/usr/bin';
-my $elogsrc = '/var/log/httpd/error_log';
+my $elogsrc = '/home/logs/error_log';
 # get by uid the caller's name to find the corresponding locker name
 my $caller = (getpwuid $<)[0];
 $\ = "\n";
