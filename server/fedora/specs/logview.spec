@@ -31,15 +31,15 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
 
 %pre
-useradd logs
+adduser logview
 
 %postun
-userdel logs
+userdel logview
 
 %files
 %defattr(0755, root, root)
 /usr/local/bin/logview.pl
-%defattr(4755, logs, root)
+%defattr(4755, logview, root)
 /usr/local/bin/logview
 
 %changelog
