@@ -3,5 +3,5 @@
 127.0.0.1	localhost.localdomain localhost
 ::1		localhost.localdomain localhost
 
-18.181.0.46	scripts scripts.mit.edu
-18.181.0.52	sql sql.mit.edu
+18.181.0.46	scripts.mit.edu
+18.181.0.52	sql.mit.edu
