@@ -1,3 +1,5 @@
+# do not trailing-slash DocumentRoot
+
 <VirtualHost *:80>
 	ServerName hname.mit.edu
 	ServerAlias hname
@@ -10,5 +12,7 @@
 	ServerAlias hname
 	DocumentRoot /afs/athena.mit.edu/path/web_scripts
 	SuExecUserGroup uname uname
+	<IfModule mod_ssl.c>
 	SSLEngine on
+	</IfModule>
 </VirtualHost>
