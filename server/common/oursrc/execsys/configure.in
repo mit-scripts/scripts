@@ -19,6 +19,7 @@ AC_DEFUN(SUPPORT,[AC_ARG_WITH($1,
 SUPPORT([pl], [ ])
 SUPPORT([php], [])
 SUPPORT([py], [ ])
+SUPPORT([exe], [ ])
 
 AC_SUBST(UPD_VARS)
 AC_OUTPUT(Makefile)

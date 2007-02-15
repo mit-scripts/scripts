@@ -26,6 +26,7 @@ my @dynamic = qw(
  py
  cgi
  scm
+ exe
 );
 
 my @static = qw(

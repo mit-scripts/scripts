@@ -23,7 +23,7 @@ See http://scripts.mit.edu/wiki for more information.
 %setup -q -n %{name}
 
 %build
-./configure --with-pl=/usr/bin/perl --with-php=/usr/bin/php-cgi --with-py=/usr/bin/python
+./configure --with-pl=/usr/bin/perl --with-php=/usr/bin/php-cgi --with-py=/usr/bin/python --with-exe=/usr/bin/mono
 make SYSCATDIR=/usr/local/sbin
 
 %install
