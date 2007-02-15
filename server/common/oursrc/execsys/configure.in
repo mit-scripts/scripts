@@ -16,10 +16,15 @@ AC_DEFUN(SUPPORT,[AC_ARG_WITH($1,
   fi
 ])])
 
+# the second argument should contain no spaces ("[]") if the corresponding
+# extension is three character long (eg, "php"), and it should contain
+# one space ("[ ]") if the corresponding extension is two characters long
+# (eg, "pl")
+
 SUPPORT([pl], [ ])
 SUPPORT([php], [])
 SUPPORT([py], [ ])
-SUPPORT([exe], [ ])
+SUPPORT([exe], [])
 
 AC_SUBST(UPD_VARS)
 AC_OUTPUT(Makefile)
