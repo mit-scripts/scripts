@@ -17,7 +17,7 @@ AC_DEFUN(SUPPORT,[AC_ARG_WITH($1,
 ])])
 
 # the second argument should contain no spaces ("[]") if the corresponding
-# extension is three character long (eg, "php"), and it should contain
+# extension is three characters long (eg, "php"), and it should contain
 # one space ("[ ]") if the corresponding extension is two characters long
 # (eg, "pl")
 
