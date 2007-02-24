@@ -64,7 +64,7 @@ grep -v "^signup" /etc/sudoers > /etc/sudoers.tmp
 mv /etc/sudoers.tmp /etc/sudoers
 
 %postun
-userdel -r signup
+userdel signup
 
 %changelog
 
