@@ -31,6 +31,11 @@ unless(($curuser) = ($ARGV[1] =~ /^([\w._-]+)\@ATHENA\.MIT\.EDU$/)) {
   error("An internal error has occurred.\nContact scripts\@mit.edu for assistance.");
 }
 
+my $uid = getpwnam $targetuser;
+if($uid <= 110) {
+  error();
+}
+
 my $fs = `@fs_path@ 2>/dev/null la /mit/$targetuser/`;
 my @fs = split(/\n/, $fs);
 
