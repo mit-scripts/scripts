@@ -1,4 +1,4 @@
-package Bundle::Snapshot_2007_01_15_00;
+package Bundle::Snapshot_2007_02_24_01;
 
 $VERSION = '0.01';
 
@@ -8,11 +8,11 @@ __END__
 
 =head1 NAME
 
-Bundle::Snapshot_2007_01_15_00 - Snapshot of installation on localhost on Mon Jan 15 17:32:09 2007
+Bundle::Snapshot_2007_02_24_01 - Snapshot of installation on localhost on Sat Feb 24 23:01:05 2007
 
 =head1 SYNOPSIS
 
-perl -MCPAN -e 'install Bundle::Snapshot_2007_01_15_00'
+perl -MCPAN -e 'install Bundle::Snapshot_2007_02_24_01'
 
 =head1 CONTENTS
 
@@ -54,8 +54,6 @@ APR::String 0.009000
 
 APR::Table 0.009000
 
-APR::ThreadMutex 0.009000
-
 APR::URI 0.009000
 
 APR::UUID 0.009000
@@ -78,37 +76,39 @@ Algorithm::Dependency::Source::HoA 1.102
 
 Algorithm::Dependency::Weight 1.102
 
-Algorithm::Diff 1.1901
+Algorithm::Diff 1.1902
 
 Algorithm::DiffOld 1.1
 
 AnyDBM_File 1.00
 
-Apache2::Access 2.000002
+Apache2::Access 2.000003
 
 Apache2::Build 0.01
 
-Apache2::CmdParms 2.000002
+Apache2::CmdParms 2.000003
 
-Apache2::Command 2.000002
+Apache2::Command 2.000003
 
-Apache2::Connection 2.000002
+Apache2::Connection 2.000003
 
-Apache2::Const 2.000002
+Apache2::ConnectionUtil 2.000003
 
-Apache2::Directive 2.000002
+Apache2::Const 2.000003
 
-Apache2::Filter 2.000002
+Apache2::Directive 2.000003
 
-Apache2::FilterRec 2.000002
+Apache2::Filter 2.000003
 
-Apache2::HookRun 2.000002
+Apache2::FilterRec 2.000003
 
-Apache2::Log 2.000002
+Apache2::HookRun 2.000003
 
-Apache2::MPM 2.000002
+Apache2::Log 2.000003
 
-Apache2::Module 2.000002
+Apache2::MPM 2.000003
+
+Apache2::Module 2.000003
 
 Apache2::ParseSource 0.02
 
@@ -116,23 +116,23 @@ Apache2::PerlSections 2.00
 
 Apache2::PerlSections::Dump 0.01
 
-Apache2::Process 2.000002
+Apache2::Process 2.000003
 
 Apache2::Reload 0.09
 
-Apache2::RequestIO 2.000002
+Apache2::RequestIO 2.000003
 
-Apache2::RequestRec 2.000002
+Apache2::RequestRec 2.000003
 
-Apache2::RequestUtil 2.000002
+Apache2::RequestUtil 2.000003
 
 Apache2::Resource 1.72
 
-Apache2::Response 2.000002
+Apache2::Response 2.000003
 
-Apache2::ServerRec 2.000002
+Apache2::ServerRec 2.000003
 
-Apache2::ServerUtil 2.000002
+Apache2::ServerUtil 2.000003
 
 Apache2::SizeLimit 0.05
 
@@ -140,13 +140,13 @@ Apache2::SourceTables undef
 
 Apache2::Status 4.00
 
-Apache2::SubProcess 2.000002
+Apache2::SubProcess 2.000003
 
-Apache2::SubRequest 2.000002
+Apache2::SubRequest 2.000003
 
-Apache2::URI 2.000002
+Apache2::URI 2.000003
 
-Apache2::Util 2.000002
+Apache2::Util 2.000003
 
 Apache2::XSLoader undef
 
@@ -154,7 +154,7 @@ Apache2::compat undef
 
 Apache2::porting undef
 
-Apache::LogRegex 1.2
+Apache::LogRegex 1.4
 
 Apache::Mason 0.4
 
@@ -168,9 +168,9 @@ Apache::Session::Flex 1.01
 
 Apache::Session::Generate::MD5 2.1
 
-Apache::Session::Generate::ModUniqueId 0.01
+Apache::Session::Generate::ModUniqueId 0.02
 
-Apache::Session::Generate::ModUsertrack 0.01
+Apache::Session::Generate::ModUsertrack 0.02
 
 Apache::Session::Informix 1.01
 
@@ -216,9 +216,9 @@ Apache::Session::Store::Sybase 1.01
 
 Apache::Session::Sybase 1.00
 
-Apache::Session::Wrapper 0.31
+Apache::Session::Wrapper 0.33
 
-Apache::Test 1.28
+Apache::Test 1.29
 
 Apache::Test5005compat 0.01
 
@@ -274,25 +274,27 @@ Apache::TestSort undef
 
 Apache::TestTrace 0.01
 
-Apache::TestUtil 0.01
+Apache::TestUtil 0.02
 
-App::CLI 0.06
+Apache::XMLRPC undef
+
+App::CLI 0.07
 
 App::CLI::Command undef
 
 App::CLI::Command::Help undef
 
-AppConfig 1.63
+AppConfig 1.64
 
-AppConfig::Args 1.63
+AppConfig::Args 1.64
 
-AppConfig::CGI 1.63
+AppConfig::CGI 1.64
 
-AppConfig::File 1.63
+AppConfig::File 1.64
 
-AppConfig::Getopt 1.63
+AppConfig::Getopt 1.64
 
-AppConfig::State 1.63
+AppConfig::State 1.64
 
 AppConfig::Sys 1.63
 
@@ -302,15 +304,27 @@ Archive::Tar::Constant 0.02
 
 Archive::Tar::File 0.02
 
-Archive::Zip 1.16
+Archive::Zip 1.18
 
-Archive::Zip::BufferedFileHandle undef
+Archive::Zip::BufferedFileHandle 1.18
 
-Archive::Zip::MemberRead undef
+Archive::Zip::MemberRead 1.18
 
-Archive::Zip::MockFileHandle undef
+Archive::Zip::MockFileHandle 1.18
 
 Array::Compare 1.13
+
+Astro::FITS::Header 3.000
+
+Astro::FITS::Header::AST 3.000
+
+Astro::FITS::Header::CFITSIO 3.000
+
+Astro::FITS::Header::GSD 3.000
+
+Astro::FITS::Header::Item 3.000
+
+Astro::FITS::Header::NDF 3.000
 
 Attribute::Handlers 0.78_02
 
@@ -338,7 +352,7 @@ Authen::SASL::Perl::LOGIN 1.03
 
 Authen::SASL::Perl::PLAIN 1.04
 
-AutoLoader 5.60
+AutoLoader 5.63
 
 AutoSplit 1.04
 
@@ -356,7 +370,7 @@ B::Disassembler 1.05
 
 B::Lint 1.03
 
-B::PerlReq 0.5.2
+B::PerlReq 0.6.1
 
 B::Showlex 1.02
 
@@ -366,13 +380,15 @@ B::Stash 1.00
 
 B::Xref 1.01
 
-BSD::Resource 1.24
+BSD::Resource 1.28
 
 Barcode::Cuecat 1.20
 
 Benchmark 1.07
 
-BerkeleyDB 0.27
+Benchmark::Timer 0.7100
+
+BerkeleyDB 0.31
 
 BerkeleyDB::Btree undef
 
@@ -386,19 +402,21 @@ Bit::Vector::String 6.4
 
 Business::Hours 0.07
 
-Business::ISBN 1.82
+Business::ISBN 1.84
 
-Business::ISBN::Data 1.11
+Business::ISBN::Data 1.13
 
 Business::UPC 0.04
 
 ByteLoader 0.06
 
-CGI 3.20
+CGI 3.25
 
 CGI::Carp 1.29
 
 CGI::Cookie 1.27
+
+CGI::Cookie::Splitter 0.02
 
 CGI::Fast 1.07
 
@@ -406,7 +424,7 @@ CGI::Pretty 1.08
 
 CGI::Push 1.04
 
-CGI::Simple 0.077
+CGI::Simple 0.079
 
 CGI::Simple::Cookie 0.03
 
@@ -428,11 +446,21 @@ CGI::Untaint::printable undef
 
 CGI::Util 1.5
 
-CPAN 1.76_02
+CPAN 1.8802
 
-CPAN::FirstTime 1.60
+CPAN::Admin 5.400844
 
-CPAN::Nox 1.03
+CPAN::Debug 5.400844
+
+CPAN::FirstTime 5.400879
+
+CPAN::HandleConfig 5.400847
+
+CPAN::Nox 5.400844
+
+CPAN::Tarzip 5.400858
+
+CPAN::Version 5.400844
 
 CSS::Squish 0.05
 
@@ -480,35 +508,35 @@ Cache::SizeAwareMemoryCache undef
 
 Cache::SizeAwareSharedMemoryCache undef
 
-Calendar::Simple 1.13
+Calendar::Simple 1.17
 
 Carp 1.04
 
-Carp::Assert 0.18
+Carp::Assert 0.20
 
 Carp::Assert::More 1.12
 
-Carp::Clan 5.3
+Carp::Clan 5.8
 
-Class::Accessor 0.27
+Class::Accessor 0.30
 
 Class::Accessor::Chained 0.01
 
 Class::Accessor::Chained::Fast undef
 
-Class::Accessor::Fast undef
+Class::Accessor::Fast 0.30
 
-Class::Accessor::Faster undef
+Class::Accessor::Faster 0.30
 
-Class::Accessor::Named 0.003
+Class::Accessor::Named 0.006
 
-Class::Autouse 1.26
+Class::Autouse 1.27
 
-Class::Autouse::Parent 1.26
+Class::Autouse::Parent 1.27
 
 Class::Container 0.12
 
-Class::DBI v3.0.15
+Class::DBI v3.0.16
 
 Class::DBI::AbstractSearch 0.07
 
@@ -572,7 +600,7 @@ Class::DBI::Test::SQLite undef
 
 Class::DBI::mysql 1.00
 
-Class::Data::Inheritable 0.05
+Class::Data::Inheritable 0.06
 
 Class::ErrorHandler 0.01
 
@@ -580,7 +608,7 @@ Class::Factory::Util 1.6
 
 Class::ISA 0.33
 
-Class::InsideOut 1.01
+Class::InsideOut 1.0301
 
 Class::Inspector 1.16
 
@@ -604,11 +632,13 @@ Class::Trigger 0.10
 
 Class::WhiteHole 0.04
 
-Clone 0.20
+Clone 0.22
 
 Compress::Bzip2 2.09
 
-Compress::Zlib 1.41
+Compress::Raw::Zlib 2.003
+
+Compress::Zlib 2.003
 
 Config undef
 
@@ -620,11 +650,11 @@ Config::General::Interpolated 2.07
 
 Config::IniFiles 2.39
 
-Config::Record 1.1.0
+Config::Record 1.1.1
 
-Config::Tiny 2.08
+Config::Tiny 2.10
 
-Convert::ASN1 0.20
+Convert::ASN1 0.21
 
 Convert::ASN1::parser undef
 
@@ -632,15 +662,17 @@ Convert::BinHex 1.119
 
 Convert::TNEF 0.17
 
-Convert::UUlib 1.06
+Convert::UUlib 1.08
 
 Crypt::Blowfish 2.10
 
-Crypt::CBC 2.17
+Crypt::CBC 2.22
 
 Crypt::DH 0.06
 
-Crypt::SSLeay 0.51
+Crypt::Rijndael 1.04
+
+Crypt::SSLeay 0.53
 
 Crypt::SSLeay::CTX undef
 
@@ -652,61 +684,97 @@ Crypt::SSLeay::MainContext undef
 
 Crypt::SSLeay::X509 undef
 
-Cwd 3.12
+Cwd 3.24
 
 DBD::CSV 0.22
 
 DBD::DBM 0.03
 
-DBD::ExampleP 11.12
+DBD::ExampleP 12.009153
 
-DBD::File 0.33
+DBD::File 0.35
 
-DBD::NullP 11.04
+DBD::Gofer 0.009156
+
+DBD::Gofer::Policy::Base 0.009139
+
+DBD::Gofer::Policy::classic 0.009139
+
+DBD::Gofer::Policy::pedantic 0.009139
+
+DBD::Gofer::Policy::rush 0.009152
+
+DBD::Gofer::Transport::Base 0.009147
+
+DBD::Gofer::Transport::http 0.009147
+
+DBD::Gofer::Transport::null 0.009147
+
+DBD::Gofer::Transport::pipeone 0.009147
+
+DBD::Gofer::Transport::stream 0.009147
+
+DBD::NullP 12.008744
 
 DBD::Pg 1.49
 
 DBD::Proxy 0.2004
 
-DBD::SQLite 1.12
+DBD::SQLite 1.13
 
 DBD::SQLite2 0.33
 
-DBD::Sponge 11.10
+DBD::Sponge 12.008696
 
-DBD::mysql 3.0004
+DBD::mysql 3.0007
 
 DBD::mysql::GetInfo undef
 
-DBI 1.51
+DBI 1.54
 
-DBI::Const::GetInfo::ANSI 1.03
+DBI::Const::GetInfo::ANSI 2.008696
 
-DBI::Const::GetInfo::ODBC 1.03
+DBI::Const::GetInfo::ODBC 2.008696
 
-DBI::Const::GetInfoReturn 1.04
+DBI::Const::GetInfoReturn 2.008696
 
-DBI::Const::GetInfoType 1.05
+DBI::Const::GetInfoType 2.008696
 
-DBI::DBD 11.22
+DBI::DBD 12.009152
 
-DBI::DBD::Metadata 1.05
+DBI::DBD::Metadata 2.008696
 
-DBI::FAQ 0.38
+DBI::FAQ 1.008696
 
-DBI::Profile 1.07
+DBI::Gofer::Execute 0.009156
 
-DBI::ProfileData 1.0
+DBI::Gofer::Request 0.009139
 
-DBI::ProfileDumper 1.0
+DBI::Gofer::Response 0.009143
 
-DBI::ProfileDumper::Apache 1.1
+DBI::Gofer::Transport::Base 0.009145
 
-DBI::ProfileSubs undef
+DBI::Gofer::Transport::mod_perl 0.009152
+
+DBI::Gofer::Transport::pipeone 0.009139
+
+DBI::Gofer::Transport::stream 0.009139
+
+DBI::Profile 2.008696
+
+DBI::ProfileData 2.008696
+
+DBI::ProfileDumper 2.009137
+
+DBI::ProfileDumper::Apache 2.008696
+
+DBI::ProfileSubs 0.008696
 
 DBI::ProxyServer 0.3005
 
-DBI::SQL::Nano 0.03
+DBI::SQL::Nano 1.008696
+
+DBI::Util::_accessor 0.009091
 
 DBIx::ContextualFetch 1.03
 
@@ -744,6 +812,8 @@ DBIx::SearchBuilder::Handle::Informix undef
 
 DBIx::SearchBuilder::Handle::ODBC undef
 
+DBIx::SearchBuilder::Handle::Oracle undef
+
 DBIx::SearchBuilder::Handle::Pg undef
 
 DBIx::SearchBuilder::Handle::SQLite undef
@@ -776,7 +846,7 @@ DBM_Filter::null 0.01
 
 DBM_Filter::utf8 0.01
 
-DB_File 1.814
+DB_File 1.815
 
 Data::Buffer 0.04
 
@@ -864,7 +934,7 @@ Date::Simple::Fmt undef
 
 Date::Simple::ISO undef
 
-DateTime 0.30
+DateTime 0.36
 
 DateTime::Duration undef
 
@@ -882,15 +952,19 @@ DateTime::Format::Builder::Parser::Strptime 0.77
 
 DateTime::Format::Builder::Parser::generic 0.77
 
-DateTime::Format::ISO8601 0.0403
+DateTime::Format::Mail 0.30
 
 DateTime::Format::Strptime 1.0700
+
+DateTime::Format::W3CDTF 0.04
+
+DateTime::Helpers undef
 
 DateTime::Infinite undef
 
 DateTime::LeapSecond 0.05
 
-DateTime::Locale 0.22
+DateTime::Locale 0.33
 
 DateTime::Locale::Alias::ISO639_2 undef
 
@@ -909,6 +983,8 @@ DateTime::Locale::aa_ET undef
 DateTime::Locale::af undef
 
 DateTime::Locale::af_ZA undef
+
+DateTime::Locale::ak undef
 
 DateTime::Locale::am undef
 
@@ -976,7 +1052,11 @@ DateTime::Locale::bg_BG undef
 
 DateTime::Locale::bn undef
 
+DateTime::Locale::bn_BD undef
+
 DateTime::Locale::bn_IN undef
+
+DateTime::Locale::bs undef
 
 DateTime::Locale::byn undef
 
@@ -985,6 +1065,8 @@ DateTime::Locale::byn_ER undef
 DateTime::Locale::ca undef
 
 DateTime::Locale::ca_ES undef
+
+DateTime::Locale::cch undef
 
 DateTime::Locale::cs undef
 
@@ -1019,6 +1101,8 @@ DateTime::Locale::dv_MV undef
 DateTime::Locale::dz undef
 
 DateTime::Locale::dz_BT undef
+
+DateTime::Locale::ee undef
 
 DateTime::Locale::el undef
 
@@ -1158,9 +1242,13 @@ DateTime::Locale::fr_LU undef
 
 DateTime::Locale::fr_MC undef
 
+DateTime::Locale::fur undef
+
 DateTime::Locale::ga undef
 
 DateTime::Locale::ga_IE undef
+
+DateTime::Locale::gaa undef
 
 DateTime::Locale::gez undef
 
@@ -1179,6 +1267,10 @@ DateTime::Locale::gu_IN undef
 DateTime::Locale::gv undef
 
 DateTime::Locale::gv_GB undef
+
+DateTime::Locale::ha undef
+
+DateTime::Locale::ha_Arab undef
 
 DateTime::Locale::haw undef
 
@@ -1206,9 +1298,13 @@ DateTime::Locale::hy_AM undef
 
 DateTime::Locale::hy_AM_REVISED undef
 
+DateTime::Locale::ia undef
+
 DateTime::Locale::id undef
 
 DateTime::Locale::id_ID undef
+
+DateTime::Locale::ig undef
 
 DateTime::Locale::is undef
 
@@ -1229,6 +1325,14 @@ DateTime::Locale::ja_JP undef
 DateTime::Locale::ka undef
 
 DateTime::Locale::ka_GE undef
+
+DateTime::Locale::kaj undef
+
+DateTime::Locale::kam undef
+
+DateTime::Locale::kcg undef
+
+DateTime::Locale::kfo undef
 
 DateTime::Locale::kk undef
 
@@ -1261,6 +1365,8 @@ DateTime::Locale::kw_GB undef
 DateTime::Locale::ky undef
 
 DateTime::Locale::ky_KG undef
+
+DateTime::Locale::ln undef
 
 DateTime::Locale::lo undef
 
@@ -1304,6 +1410,8 @@ DateTime::Locale::nb undef
 
 DateTime::Locale::nb_NO undef
 
+DateTime::Locale::ne undef
+
 DateTime::Locale::nl undef
 
 DateTime::Locale::nl_BE undef
@@ -1313,6 +1421,12 @@ DateTime::Locale::nl_NL undef
 DateTime::Locale::nn undef
 
 DateTime::Locale::nn_NO undef
+
+DateTime::Locale::nr undef
+
+DateTime::Locale::nso undef
+
+DateTime::Locale::ny undef
 
 DateTime::Locale::om undef
 
@@ -1325,6 +1439,8 @@ DateTime::Locale::or undef
 DateTime::Locale::or_IN undef
 
 DateTime::Locale::pa undef
+
+DateTime::Locale::pa_Arab undef
 
 DateTime::Locale::pa_IN undef
 
@@ -1353,6 +1469,8 @@ DateTime::Locale::ru undef
 DateTime::Locale::ru_RU undef
 
 DateTime::Locale::ru_UA undef
+
+DateTime::Locale::rw undef
 
 DateTime::Locale::sa undef
 
@@ -1392,13 +1510,21 @@ DateTime::Locale::sr undef
 
 DateTime::Locale::sr_Cyrl undef
 
+DateTime::Locale::sr_Cyrl_BA undef
+
 DateTime::Locale::sr_Cyrl_YU undef
 
 DateTime::Locale::sr_Latn undef
 
+DateTime::Locale::sr_Latn_BA undef
+
 DateTime::Locale::sr_Latn_YU undef
 
 DateTime::Locale::sr_YU undef
+
+DateTime::Locale::ss undef
+
+DateTime::Locale::st undef
 
 DateTime::Locale::sv undef
 
@@ -1424,6 +1550,8 @@ DateTime::Locale::te undef
 
 DateTime::Locale::te_IN undef
 
+DateTime::Locale::tg undef
+
 DateTime::Locale::th undef
 
 DateTime::Locale::th_TH undef
@@ -1438,9 +1566,13 @@ DateTime::Locale::tig undef
 
 DateTime::Locale::tig_ER undef
 
+DateTime::Locale::tn undef
+
 DateTime::Locale::tr undef
 
 DateTime::Locale::tr_TR undef
+
+DateTime::Locale::ts undef
 
 DateTime::Locale::tt undef
 
@@ -1458,7 +1590,13 @@ DateTime::Locale::uz undef
 
 DateTime::Locale::uz_AF undef
 
+DateTime::Locale::uz_Arab undef
+
+DateTime::Locale::uz_Latn undef
+
 DateTime::Locale::uz_UZ undef
+
+DateTime::Locale::ve undef
 
 DateTime::Locale::vi undef
 
@@ -1467,6 +1605,10 @@ DateTime::Locale::vi_VN undef
 DateTime::Locale::wal undef
 
 DateTime::Locale::wal_ET undef
+
+DateTime::Locale::xh undef
+
+DateTime::Locale::yo undef
 
 DateTime::Locale::zh undef
 
@@ -1494,9 +1636,11 @@ DateTime::Locale::zh_SG undef
 
 DateTime::Locale::zh_TW undef
 
+DateTime::Locale::zu undef
+
 DateTime::LocaleCatalog undef
 
-DateTime::TimeZone 0.42
+DateTime::TimeZone 0.6101
 
 DateTime::TimeZone::Africa::Abidjan undef
 
@@ -1505,6 +1649,8 @@ DateTime::TimeZone::Africa::Accra undef
 DateTime::TimeZone::Africa::Addis_Ababa undef
 
 DateTime::TimeZone::Africa::Algiers undef
+
+DateTime::TimeZone::Africa::Asmara undef
 
 DateTime::TimeZone::Africa::Asmera undef
 
@@ -1634,6 +1780,8 @@ DateTime::TimeZone::America::Aruba undef
 
 DateTime::TimeZone::America::Asuncion undef
 
+DateTime::TimeZone::America::Atikokan undef
+
 DateTime::TimeZone::America::Bahia undef
 
 DateTime::TimeZone::America::Barbados undef
@@ -1641,6 +1789,8 @@ DateTime::TimeZone::America::Barbados undef
 DateTime::TimeZone::America::Belem undef
 
 DateTime::TimeZone::America::Belize undef
+
+DateTime::TimeZone::America::Blanc_Sablon undef
 
 DateTime::TimeZone::America::Boa_Vista undef
 
@@ -1663,8 +1813,6 @@ DateTime::TimeZone::America::Cayman undef
 DateTime::TimeZone::America::Chicago undef
 
 DateTime::TimeZone::America::Chihuahua undef
-
-DateTime::TimeZone::America::Coral_Harbour undef
 
 DateTime::TimeZone::America::Costa_Rica undef
 
@@ -1785,6 +1933,8 @@ DateTime::TimeZone::America::Nome undef
 DateTime::TimeZone::America::Noronha undef
 
 DateTime::TimeZone::America::North_Dakota::Center undef
+
+DateTime::TimeZone::America::North_Dakota::New_Salem undef
 
 DateTime::TimeZone::America::Panama undef
 
@@ -2032,6 +2182,8 @@ DateTime::TimeZone::Atlantic::Cape_Verde undef
 
 DateTime::TimeZone::Atlantic::Faeroe undef
 
+DateTime::TimeZone::Atlantic::Faroe undef
+
 DateTime::TimeZone::Atlantic::Madeira undef
 
 DateTime::TimeZone::Atlantic::Reykjavik undef
@@ -2051,6 +2203,8 @@ DateTime::TimeZone::Australia::Broken_Hill undef
 DateTime::TimeZone::Australia::Currie undef
 
 DateTime::TimeZone::Australia::Darwin undef
+
+DateTime::TimeZone::Australia::Eucla undef
 
 DateTime::TimeZone::Australia::Hobart undef
 
@@ -2148,6 +2302,8 @@ DateTime::TimeZone::Europe::Vienna undef
 
 DateTime::TimeZone::Europe::Vilnius undef
 
+DateTime::TimeZone::Europe::Volgograd undef
+
 DateTime::TimeZone::Europe::Warsaw undef
 
 DateTime::TimeZone::Europe::Zaporozhye undef
@@ -2180,7 +2336,11 @@ DateTime::TimeZone::Indian::Mayotte undef
 
 DateTime::TimeZone::Indian::Reunion undef
 
-DateTime::TimeZone::Local undef
+DateTime::TimeZone::Local 0.01
+
+DateTime::TimeZone::Local::Unix undef
+
+DateTime::TimeZone::Local::Win32 undef
 
 DateTime::TimeZone::MST undef
 
@@ -2270,6 +2430,64 @@ DateTime::TimeZone::Pacific::Wallis undef
 
 DateTime::TimeZone::UTC 0.01
 
+Devel::Cover 0.61
+
+Devel::Cover::Annotation::Random 0.61
+
+Devel::Cover::Annotation::Svk 0.61
+
+Devel::Cover::Branch 0.61
+
+Devel::Cover::Condition 0.61
+
+Devel::Cover::Condition_and_2 0.61
+
+Devel::Cover::Condition_and_3 0.61
+
+Devel::Cover::Condition_or_2 0.61
+
+Devel::Cover::Condition_or_3 0.61
+
+Devel::Cover::Condition_xor_4 0.61
+
+Devel::Cover::Criterion 0.61
+
+Devel::Cover::DB 0.61
+
+Devel::Cover::DB::File 0.61
+
+Devel::Cover::DB::Structure 0.61
+
+Devel::Cover::Op 0.61
+
+Devel::Cover::Pod 0.61
+
+Devel::Cover::Report::Compilation 0.61
+
+Devel::Cover::Report::Html 0.61
+
+Devel::Cover::Report::Html_basic 0.61
+
+Devel::Cover::Report::Html_minimal 0.61
+
+Devel::Cover::Report::Html_subtle 0.61
+
+Devel::Cover::Report::Sort 0.61
+
+Devel::Cover::Report::Text 0.61
+
+Devel::Cover::Report::Text2 0.61
+
+Devel::Cover::Statement 0.61
+
+Devel::Cover::Subroutine 0.61
+
+Devel::Cover::Test 0.61
+
+Devel::Cover::Time 0.61
+
+Devel::Cover::Truth_Table 0.61
+
 Devel::Cycle 1.07
 
 Devel::DProf 20050603.00
@@ -2278,7 +2496,7 @@ Devel::InnerPackage 0.3
 
 Devel::Loaded 1
 
-Devel::PPPort 3.06_01
+Devel::PPPort 3.11
 
 Devel::Peek 1.03
 
@@ -2286,11 +2504,11 @@ Devel::SelfStubber 1.03
 
 Devel::StackTrace 1.13
 
-Devel::Symdump 2.06
+Devel::Symdump 2.07
 
 Devel::Symdump::Export undef
 
-Digest 1.14
+Digest 1.15
 
 Digest::BubbleBabble 0.01
 
@@ -2308,6 +2526,8 @@ Digest::MD5 2.36
 
 Digest::Nilsimsa 0.06
 
+Digest::SHA 5.44
+
 Digest::SHA1 2.11
 
 Digest::base 1.00
@@ -2320,7 +2540,7 @@ Dumpvalue 1.12
 
 DynaLoader 1.05
 
-Email::Abstract 2.13
+Email::Abstract 2.131
 
 Email::Abstract::EmailMIME undef
 
@@ -2332,13 +2552,13 @@ Email::Abstract::MailInternet undef
 
 Email::Abstract::MailMessage undef
 
-Email::Address 1.86
+Email::Address 1.884
 
-Email::Date 1.10
+Email::Date 1.101
 
 Email::Filter 1.03
 
-Email::Folder 0.85
+Email::Folder 0.852
 
 Email::Folder::Ezmlm undef
 
@@ -2350,7 +2570,7 @@ Email::Folder::Mbox undef
 
 Email::Folder::Reader undef
 
-Email::FolderType 0.8
+Email::FolderType 0.812
 
 Email::FolderType::Ezmlm undef
 
@@ -2360,83 +2580,95 @@ Email::FolderType::Maildir undef
 
 Email::FolderType::Mbox undef
 
-Email::LocalDelivery 0.21
+Email::LocalDelivery 0.214
 
 Email::LocalDelivery::Maildir 1.10
 
-Email::LocalDelivery::Mbox 1.10
+Email::LocalDelivery::Mbox 1.102
 
-Email::Send 2.171
+Email::MIME 1.858
+
+Email::MIME::ContentType 1.012
+
+Email::MIME::Creator 1.451
+
+Email::MIME::Encodings 1.310
+
+Email::MIME::Modifier 1.441
+
+Email::MessageID 1.35
+
+Email::Send 2.185
 
 Email::Send::IO 2.15
-
-Email::Send::Jifty::Test undef
 
 Email::Send::NNTP 2.04
 
 Email::Send::Qmail 2.15
 
-Email::Send::SMTP 2.04
+Email::Send::SMTP 2.182
 
 Email::Send::Sendmail 2.15
 
 Email::Send::Test 2.04
 
-Email::Simple 1.96
+Email::Simple 1.998
 
 Email::Simple::Creator 1.41
 
-Encode 2.12
+Email::Simple::Headers 1.970
 
-Encode::Alias 2.04
+Encode 2.18
 
-Encode::Byte 2.00
+Encode::Alias 2.06
 
-Encode::CJKConstants 2.00
+Encode::Byte 2.02
 
-Encode::CN 2.00
+Encode::CJKConstants 2.02
 
-Encode::CN::HZ 2.01
+Encode::CN 2.02
 
-Encode::Config 2.01
+Encode::CN::HZ 2.04
 
-Encode::EBCDIC 2.00
+Encode::Config 2.03
 
-Encode::Encoder 2.00
+Encode::EBCDIC 2.02
 
-Encode::Encoding 2.02
+Encode::Encoder 2.01
 
-Encode::Guess 2.00
+Encode::Encoding 2.04
 
-Encode::JP 2.01
+Encode::Guess 2.02
 
-Encode::JP::H2Z 2.00
+Encode::JP 2.03
 
-Encode::JP::JIS7 2.00
+Encode::JP::H2Z 2.02
 
-Encode::KR 2.00
+Encode::JP::JIS7 2.02
 
-Encode::KR::2022_KR 2.00
+Encode::KR 2.02
 
-Encode::MIME::Header 2.01
+Encode::KR::2022_KR 2.02
 
-Encode::MIME::Header::ISO_2022_JP 1.01
+Encode::MIME::Header 2.04
 
-Encode::Symbol 2.00
+Encode::MIME::Header::ISO_2022_JP 1.03
 
-Encode::TW 2.00
+Encode::Symbol 2.02
 
-Encode::Unicode 2.02
+Encode::TW 2.02
 
-Encode::Unicode::UTF7 2.01
+Encode::Unicode 2.03
+
+Encode::Unicode::UTF7 2.04
 
 English 1.02
 
 Env 1.00
 
-Errno 1.09_01
+Errno 1.10
 
-Error 0.17006
+Error 0.17008
 
 Exception::Class 1.23
 
@@ -2448,7 +2680,7 @@ Exporter 5.58
 
 Exporter::Heavy 5.58
 
-Exporter::Lite 0.01
+Exporter::Lite 0.02
 
 ExtUtils::AutoInstall 0.63
 
@@ -2470,9 +2702,9 @@ ExtUtils::CBuilder::Platform::darwin 0.12
 
 ExtUtils::CBuilder::Platform::os2 0.13
 
-ExtUtils::Command 1.09
+ExtUtils::Command 1.13
 
-ExtUtils::Command::MM 0.05
+ExtUtils::Command::MM 0.07
 
 ExtUtils::Constant 0.17
 
@@ -2486,63 +2718,63 @@ ExtUtils::Depends 0.205
 
 ExtUtils::Embed 1.26
 
-ExtUtils::Install 1.33
+ExtUtils::Install 1.41
 
-ExtUtils::Installed 0.08
+ExtUtils::Installed 1.41
 
-ExtUtils::Liblist 1.01
+ExtUtils::Liblist 1.03
 
-ExtUtils::Liblist::Kid 1.3
+ExtUtils::Liblist::Kid 1.32
 
-ExtUtils::MM 0.05
+ExtUtils::MM 0.07
 
-ExtUtils::MM_AIX 0.03
+ExtUtils::MM_AIX 0.05
 
-ExtUtils::MM_Any 0.13
+ExtUtils::MM_Any 0.15
 
-ExtUtils::MM_BeOS 1.05
+ExtUtils::MM_BeOS 1.07
 
-ExtUtils::MM_Cygwin 1.08
+ExtUtils::MM_Cygwin 1.1
 
-ExtUtils::MM_DOS 0.02
+ExtUtils::MM_DOS 0.04
 
-ExtUtils::MM_MacOS 1.08
+ExtUtils::MM_MacOS 1.1
 
-ExtUtils::MM_NW5 2.08
+ExtUtils::MM_NW5 2.1
 
-ExtUtils::MM_OS2 1.05
+ExtUtils::MM_OS2 1.07
 
-ExtUtils::MM_QNX 0.02
+ExtUtils::MM_QNX 0.04
 
-ExtUtils::MM_UWIN 0.02
+ExtUtils::MM_UWIN 0.04
 
-ExtUtils::MM_Unix 1.50
+ExtUtils::MM_Unix 1.52
 
-ExtUtils::MM_VMS 5.73
+ExtUtils::MM_VMS 5.75
 
-ExtUtils::MM_VOS 0.02
+ExtUtils::MM_VOS 0.04
 
-ExtUtils::MM_Win32 1.12
+ExtUtils::MM_Win32 1.14
 
-ExtUtils::MM_Win95 0.04
+ExtUtils::MM_Win95 0.06
 
-ExtUtils::MY 0.01
+ExtUtils::MY 0.03
 
-ExtUtils::MakeMaker 6.30
+ExtUtils::MakeMaker 6.32
 
-ExtUtils::MakeMaker::Config 0.02
+ExtUtils::MakeMaker::Config 0.04
 
-ExtUtils::MakeMaker::bytes 0.01
+ExtUtils::MakeMaker::bytes 0.03
 
-ExtUtils::MakeMaker::vmsish 0.01
+ExtUtils::MakeMaker::vmsish 0.03
 
-ExtUtils::Manifest 1.46
+ExtUtils::Manifest 1.51
 
-ExtUtils::Mkbootstrap 1.15
+ExtUtils::Mkbootstrap 1.17
 
-ExtUtils::Mksymlists 1.19
+ExtUtils::Mksymlists 1.21
 
-ExtUtils::Packlist 0.04
+ExtUtils::Packlist 1.41
 
 ExtUtils::ParseXS 2.17
 
@@ -2568,7 +2800,7 @@ ExtUtils::XSBuilder::TypeMap undef
 
 ExtUtils::XSBuilder::WrapXS 0.03
 
-ExtUtils::testlib 1.15
+ExtUtils::testlib 1.17
 
 FCGI 0.67
 
@@ -2576,7 +2808,7 @@ Fatal 1.03
 
 Fcntl 1.05
 
-File::BOM 0.11
+File::BOM 0.14
 
 File::Basename 2.74
 
@@ -2592,23 +2824,23 @@ File::Find 1.10
 
 File::Find::Rule 0.30
 
-File::Flat 0.96
+File::Flat 1.00
 
 File::Glob 1.05
 
-File::HomeDir 0.58
+File::HomeDir 0.64
 
-File::HomeDir::Darwin 0.58
+File::HomeDir::Darwin 0.64
 
-File::HomeDir::MacOS9 0.58
+File::HomeDir::MacOS9 0.64
 
-File::HomeDir::Unix 0.58
+File::HomeDir::Unix 0.64
 
-File::HomeDir::Windows 0.58
+File::HomeDir::Windows 0.64
 
 File::Listing 1.15
 
-File::MMagic 1.26
+File::MMagic 1.27
 
 File::NCopy 0.34
 
@@ -2618,11 +2850,11 @@ File::Path::Expand 1.02
 
 File::Remove 0.34
 
-File::ShareDir 0.04
+File::ShareDir 0.05
 
 File::Slurp 9999.12
 
-File::Spec 3.12
+File::Spec 3.24
 
 File::Spec::Cygwin 1.1
 
@@ -2642,7 +2874,9 @@ File::Spec::Win32 1.6
 
 File::Tail 0.99.3
 
-File::Temp 0.16
+File::Temp 0.18
+
+File::Which 0.05
 
 File::stat 1.00
 
@@ -2692,7 +2926,9 @@ Frontier::Daemon undef
 
 Frontier::RPC2 undef
 
-GD 2.34
+Frontier::Responder undef
+
+GD 2.35
 
 GD::Barcode 1.15
 
@@ -2760,7 +2996,7 @@ GD::Text::Wrap 1.20
 
 GDBM_File 1.08
 
-GSSAPI 0.23
+GSSAPI 0.24
 
 GSSAPI::OID undef
 
@@ -2770,7 +3006,7 @@ GSSAPI::Status undef
 
 Getopt::Declare 1.11
 
-Getopt::Long 2.35
+Getopt::Long 2.36
 
 Getopt::Std 1.05
 
@@ -2810,7 +3046,7 @@ GnuPG::UserId undef
 
 HTML::AsSubs 1.16
 
-HTML::Element 3.21
+HTML::Element 3.23
 
 HTML::Element::traverse undef
 
@@ -2838,7 +3074,7 @@ HTML::Lint::Error undef
 
 HTML::Lint::HTML4 undef
 
-HTML::Mason 1.33
+HTML::Mason 1.35
 
 HTML::Mason::ApacheHandler 1.69
 
@@ -2894,23 +3130,23 @@ HTML::Mason::Utils undef
 
 HTML::Parse 2.71
 
-HTML::Parser 3.51
+HTML::Parser 3.56
 
-HTML::PullParser 2.08
+HTML::PullParser 2.09
 
 HTML::Scrubber 0.08
 
 HTML::Tagset 3.10
 
-HTML::Template 2.8
+HTML::Template 2.9
 
 HTML::Template::Expr 0.07
 
-HTML::TokeParser 2.35
+HTML::TokeParser 2.37
 
-HTML::Tree 3.21
+HTML::Tree 3.23
 
-HTML::TreeBuilder 3.21
+HTML::TreeBuilder 3.23
 
 HTTP::Cookies 1.39
 
@@ -2940,7 +3176,7 @@ HTTP::Request::Common 1.26
 
 HTTP::Response 1.53
 
-HTTP::Server::Simple 0.24
+HTTP::Server::Simple 0.27
 
 HTTP::Server::Simple::CGI undef
 
@@ -2952,7 +3188,7 @@ HTTP::Server::Simple::Recorder 0.02
 
 HTTP::Status 1.28
 
-Hash::Merge 0.07
+Hash::Merge 0.08
 
 Hash::Util 0.05
 
@@ -2968,17 +3204,41 @@ I18N::LangTags::List 0.35
 
 I18N::Langinfo 0.02
 
-IO 1.22
+IO 1.23
 
 IO::AtomicFile 2.110
 
 IO::CaptureOutput 1.03
 
-IO::Dir 1.05
+IO::Compress::Adapter::Deflate 2.003
 
-IO::File 1.13
+IO::Compress::Adapter::Identity 2.003
 
-IO::Handle 1.25
+IO::Compress::Base 2.003
+
+IO::Compress::Base::Common 2.003
+
+IO::Compress::Deflate 2.003
+
+IO::Compress::Gzip 2.003
+
+IO::Compress::Gzip::Constants 2.003
+
+IO::Compress::RawDeflate 2.003
+
+IO::Compress::Zip 2.003
+
+IO::Compress::Zip::Constants 2.003
+
+IO::Compress::Zlib::Constants 2.003
+
+IO::Compress::Zlib::Extra 2.003
+
+IO::Dir 1.06
+
+IO::File 1.14
+
+IO::Handle 1.27
 
 IO::InnerFile 2.110
 
@@ -3000,11 +3260,15 @@ IO::Seekable 1.10
 
 IO::Select 1.17
 
-IO::Socket 1.29
+IO::Socket 1.30
 
-IO::Socket::INET 1.29
+IO::Socket::INET 1.31
 
-IO::Socket::UNIX 1.22
+IO::Socket::INET6 2.51
+
+IO::Socket::SSL 1.01
+
+IO::Socket::UNIX 1.23
 
 IO::String 1.08
 
@@ -3014,13 +3278,31 @@ IO::Tee 0.64
 
 IO::Tty 1.07
 
+IO::Uncompress::Adapter::Identity 2.003
+
+IO::Uncompress::Adapter::Inflate 2.003
+
+IO::Uncompress::AnyInflate 2.003
+
+IO::Uncompress::AnyUncompress 2.003
+
+IO::Uncompress::Base 2.003
+
+IO::Uncompress::Gunzip 2.003
+
+IO::Uncompress::Inflate 2.003
+
+IO::Uncompress::RawInflate 2.003
+
+IO::Uncompress::Unzip 2.003
+
 IO::Wrap 2.110
 
 IO::WrapTie 2.110
 
 IO::Zlib 1.04
 
-IPC::Cmd 0.24
+IPC::Cmd 0.36
 
 IPC::Msg 1.02
 
@@ -3054,7 +3336,7 @@ Image::Base 1.07
 
 Image::Random 0.04
 
-Image::Size 3.0
+Image::Size 3.01
 
 Image::Xbm 1.08
 
@@ -3078,233 +3360,35 @@ Inline::Pdlpp 0.2
 
 Inline::denter undef
 
-JSON::Syck 0.14
+JSON::Syck 0.21
 
-Jcode 2.03
+JUNOS::Access undef
 
-Jifty 0.60722
+JUNOS::Access::clear_text undef
 
-Jifty::API undef
+JUNOS::Access::rsh undef
 
-Jifty::Action undef
+JUNOS::Access::ssh undef
 
-Jifty::Action::Autocomplete undef
+JUNOS::Access::ssl undef
 
-Jifty::Action::Record undef
+JUNOS::Access::stubs undef
 
-Jifty::Action::Record::Create undef
+JUNOS::Access::telnet undef
 
-Jifty::Action::Record::Delete undef
+JUNOS::Access::xnm undef
 
-Jifty::Action::Record::Update undef
+JUNOS::DOM::Parser undef
 
-Jifty::Action::Redirect undef
+JUNOS::Device undef
 
-Jifty::Bootstrap undef
+JUNOS::Methods undef
 
-Jifty::ClassLoader undef
+JUNOS::Response undef
 
-Jifty::Client undef
+JUNOS::Trace undef
 
-Jifty::Collection undef
-
-Jifty::Config undef
-
-Jifty::Continuation undef
-
-Jifty::CurrentUser undef
-
-Jifty::DBI 0.23
-
-Jifty::DBI::Collection undef
-
-Jifty::DBI::Collection::Union undef
-
-Jifty::DBI::Collection::Unique 0.01
-
-Jifty::DBI::Column 0.01
-
-Jifty::DBI::Filter undef
-
-Jifty::DBI::Filter::Date undef
-
-Jifty::DBI::Filter::DateTime undef
-
-Jifty::DBI::Filter::Storable undef
-
-Jifty::DBI::Filter::Truncate undef
-
-Jifty::DBI::Filter::base64 undef
-
-Jifty::DBI::Filter::utf8 undef
-
-Jifty::DBI::Handle 0.01
-
-Jifty::DBI::Handle::Informix undef
-
-Jifty::DBI::Handle::ODBC undef
-
-Jifty::DBI::Handle::Oracle undef
-
-Jifty::DBI::Handle::Pg undef
-
-Jifty::DBI::Handle::SQLite undef
-
-Jifty::DBI::Handle::Sybase undef
-
-Jifty::DBI::Handle::mysql undef
-
-Jifty::DBI::Handle::mysqlPP undef
-
-Jifty::DBI::HasFilters undef
-
-Jifty::DBI::Record 0.01
-
-Jifty::DBI::Record::Cachable undef
-
-Jifty::DBI::Record::Memcached undef
-
-Jifty::DBI::Schema undef
-
-Jifty::DBI::SchemaGenerator 0.01
-
-Jifty::DateTime undef
-
-Jifty::Dispatcher undef
-
-Jifty::Everything undef
-
-Jifty::Handle undef
-
-Jifty::Handler undef
-
-Jifty::I18N undef
-
-Jifty::JSON undef
-
-Jifty::LetMe undef
-
-Jifty::Logger undef
-
-Jifty::Mason::Halo undef
-
-Jifty::Model::Metadata undef
-
-Jifty::Model::Session undef
-
-Jifty::Model::SessionCollection undef
-
-Jifty::Notification undef
-
-Jifty::Object undef
-
-Jifty::Param undef
-
-Jifty::Param::Schema undef
-
-Jifty::Plugin undef
-
-Jifty::Plugin::ClassLoader undef
-
-Jifty::Record undef
-
-Jifty::Request undef
-
-Jifty::Request::Mapper undef
-
-Jifty::Response undef
-
-Jifty::Result undef
-
-Jifty::RightsFrom undef
-
-Jifty::Script undef
-
-Jifty::Script::Action undef
-
-Jifty::Script::App undef
-
-Jifty::Script::Deps undef
-
-Jifty::Script::FastCGI undef
-
-Jifty::Script::Help undef
-
-Jifty::Script::Model undef
-
-Jifty::Script::Plugin undef
-
-Jifty::Script::Po undef
-
-Jifty::Script::Schema undef
-
-Jifty::Script::Server undef
-
-Jifty::Server undef
-
-Jifty::Test undef
-
-Jifty::Test::WWW::Mechanize undef
-
-Jifty::TestServer undef
-
-Jifty::Upgrade undef
-
-Jifty::Upgrade::Internal undef
-
-Jifty::Util undef
-
-Jifty::View::Mason::Handler undef
-
-Jifty::View::Static::Handler undef
-
-Jifty::Web undef
-
-Jifty::Web::Form undef
-
-Jifty::Web::Form::Clickable undef
-
-Jifty::Web::Form::Element undef
-
-Jifty::Web::Form::Field undef
-
-Jifty::Web::Form::Field::Button undef
-
-Jifty::Web::Form::Field::Checkbox undef
-
-Jifty::Web::Form::Field::Combobox undef
-
-Jifty::Web::Form::Field::Date undef
-
-Jifty::Web::Form::Field::Hidden undef
-
-Jifty::Web::Form::Field::InlineButton undef
-
-Jifty::Web::Form::Field::Password undef
-
-Jifty::Web::Form::Field::Radio undef
-
-Jifty::Web::Form::Field::ResetButton undef
-
-Jifty::Web::Form::Field::Select undef
-
-Jifty::Web::Form::Field::Text 1
-
-Jifty::Web::Form::Field::Textarea undef
-
-Jifty::Web::Form::Field::Unrendered undef
-
-Jifty::Web::Form::Field::Upload undef
-
-Jifty::Web::Form::Link undef
-
-Jifty::Web::Menu undef
-
-Jifty::Web::PageRegion undef
-
-Jifty::Web::Session undef
-
-Jifty::YAML undef
+Jcode 2.06
 
 LWP 5.805
 
@@ -3366,7 +3450,7 @@ Lingua::EN::Inflect 1.89
 
 Lingua::EN::Inflect::Number 1.1
 
-List::Util 1.18
+List::Util 1.19
 
 Locale::Constants 2.07
 
@@ -3376,7 +3460,7 @@ Locale::Currency 2.07
 
 Locale::Language 2.07
 
-Locale::Maketext 1.09
+Locale::Maketext 1.10
 
 Locale::Maketext::Extract 0.21
 
@@ -3398,7 +3482,7 @@ Locale::Maketext::Lexicon::Msgcat 0.03
 
 Locale::Maketext::Lexicon::Tie 0.04
 
-Locale::Maketext::Simple 0.16
+Locale::Maketext::Simple 0.18
 
 Locale::Messages undef
 
@@ -3696,7 +3780,7 @@ Locale::gettext_pp undef
 
 Locale::gettext_xs undef
 
-Log::Dispatch 2.13
+Log::Dispatch 2.16
 
 Log::Dispatch::ApacheLog 1.09
 
@@ -3718,13 +3802,15 @@ Log::Dispatch::File::Locked undef
 
 Log::Dispatch::Handle 1.16
 
+Log::Dispatch::Null undef
+
 Log::Dispatch::Output 1.26
 
 Log::Dispatch::Screen 1.17
 
 Log::Dispatch::Syslog 1.18
 
-Log::Log4perl 1.04
+Log::Log4perl 1.09
 
 Log::Log4perl::Appender undef
 
@@ -3856,9 +3942,9 @@ MIME::QuotedPrint 3.07
 
 MIME::Tools 5.420
 
-MIME::Type 1.17
+MIME::Type 1.18
 
-MIME::Types 1.17
+MIME::Types 1.18
 
 MIME::WordDecoder undef
 
@@ -3876,97 +3962,7 @@ Mail::Address 1.74
 
 Mail::Alias 1.12
 
-Mail::Box 2.068
-
-Mail::Box::Collection 2.068
-
-Mail::Box::Dbx 2.068
-
-Mail::Box::Dbx::Message 2.068
-
-Mail::Box::Dir 2.068
-
-Mail::Box::Dir::Message 2.068
-
-Mail::Box::FastScalar 2.068
-
-Mail::Box::File 2.068
-
-Mail::Box::File::Message 2.068
-
-Mail::Box::IMAP4 2.068
-
-Mail::Box::IMAP4::Head 2.068
-
-Mail::Box::IMAP4::Message 2.068
-
-Mail::Box::Identity 2.068
-
-Mail::Box::Locker 2.068
-
-Mail::Box::Locker::DotLock 2.068
-
-Mail::Box::Locker::Flock 2.068
-
-Mail::Box::Locker::Multi 2.068
-
-Mail::Box::Locker::Mutt 2.068
-
-Mail::Box::Locker::NFS 2.068
-
-Mail::Box::Locker::POSIX 2.068
-
-Mail::Box::MH 2.068
-
-Mail::Box::MH::Index 2.068
-
-Mail::Box::MH::Labels 2.068
-
-Mail::Box::MH::Message 2.068
-
-Mail::Box::Maildir 2.068
-
-Mail::Box::Maildir::Message 2.068
-
-Mail::Box::Manage::User 2.068
-
-Mail::Box::Manager 2.068
-
-Mail::Box::Mbox 2.068
-
-Mail::Box::Mbox::Message 2.068
-
-Mail::Box::Message 2.068
-
-Mail::Box::Message::Destructed 2.068
-
-Mail::Box::Net 2.068
-
-Mail::Box::Net::Message 2.068
-
-Mail::Box::POP3 2.068
-
-Mail::Box::POP3::Message 2.068
-
-Mail::Box::Parser 2.068
-
-Mail::Box::Parser::Perl 2.068
-
-Mail::Box::Search 2.068
-
-Mail::Box::Search::Grep 2.068
-
-Mail::Box::Search::SpamAssassin 2.068
-
-Mail::Box::Thread::Manager 2.068
-
-Mail::Box::Thread::Node 2.068
-
-Mail::Box::Tie 2.068
-
-Mail::Box::Tie::ARRAY 2.068
-
-Mail::Box::Tie::HASH 2.068
+Mail::Box::Parser::C 3.006
 
 Mail::Cap 1.74
 
@@ -3982,7 +3978,7 @@ Mail::GnuPG 0.08
 
 Mail::Header 1.74
 
-Mail::Identity 0.90
+Mail::Identity 0.91
 
 Mail::Internet 1.74
 
@@ -4010,100 +4006,6 @@ Mail::Mbox::MessageParser::MetaInfo 0.0101
 
 Mail::Mbox::MessageParser::Perl 1.6003
 
-Mail::Message 2.068
-
-Mail::Message::Body 2.068
-
-Mail::Message::Body::Delayed 2.068
-
-Mail::Message::Body::File 2.068
-
-Mail::Message::Body::Lines 2.068
-
-Mail::Message::Body::Multipart 2.068
-
-Mail::Message::Body::Nested 2.068
-
-Mail::Message::Body::String 2.068
-
-Mail::Message::Convert 2.068
-
-Mail::Message::Convert::Html 2.068
-
-Mail::Message::Convert::HtmlFormatPS 2.068
-
-Mail::Message::Convert::HtmlFormatText 2.068
-
-Mail::Message::Convert::MailInternet 2.068
-
-Mail::Message::Convert::MimeEntity 2.068
-
-Mail::Message::Convert::TextAutoformat 2.068
-
-Mail::Message::Dummy 2.068
-
-Mail::Message::Field 2.068
-
-Mail::Message::Field::AddrGroup 2.068
-
-Mail::Message::Field::Address 2.068
-
-Mail::Message::Field::Addresses 2.068
-
-Mail::Message::Field::Attribute 2.068
-
-Mail::Message::Field::Fast 2.068
-
-Mail::Message::Field::Flex 2.068
-
-Mail::Message::Field::Full 2.068
-
-Mail::Message::Field::Structured 2.068
-
-Mail::Message::Field::URIs 2.068
-
-Mail::Message::Field::Unstructured 2.068
-
-Mail::Message::Head 2.068
-
-Mail::Message::Head::Complete 2.068
-
-Mail::Message::Head::Delayed 2.068
-
-Mail::Message::Head::FieldGroup 2.068
-
-Mail::Message::Head::ListGroup 2.068
-
-Mail::Message::Head::Partial 2.068
-
-Mail::Message::Head::ResentGroup 2.068
-
-Mail::Message::Head::SpamGroup 2.068
-
-Mail::Message::Head::Subset 2.068
-
-Mail::Message::Part 2.068
-
-Mail::Message::Replace::MailHeader 2.068
-
-Mail::Message::Replace::MailInternet 2.068
-
-Mail::Message::TransferEnc 2.068
-
-Mail::Message::TransferEnc::Base64 2.068
-
-Mail::Message::TransferEnc::Binary 2.068
-
-Mail::Message::TransferEnc::EightBit 2.068
-
-Mail::Message::TransferEnc::QuotedPrint 2.068
-
-Mail::Message::TransferEnc::SevenBit 2.068
-
-Mail::Message::Wrapper::SpamAssassin 2.068
-
-Mail::Reporter 2.068
-
 Mail::SPF::Query 1.999.1
 
 Mail::Send 1.74
@@ -4112,17 +4014,7 @@ Mail::Sender 0.8.13
 
 Mail::Sendmail 0.79
 
-Mail::Server 2.068
-
-Mail::Server::IMAP4 2.068
-
-Mail::Server::IMAP4::Fetch 2.068
-
-Mail::Server::IMAP4::List 2.068
-
-Mail::Server::IMAP4::Search 2.068
-
-Mail::SpamAssassin 3.001007
+Mail::SpamAssassin 3.001008
 
 Mail::SpamAssassin::AICache undef
 
@@ -4266,45 +4158,27 @@ Mail::SpamAssassin::Util::Progress undef
 
 Mail::SpamAssassin::Util::RegistrarBoundaries undef
 
-Mail::Transport 2.068
-
-Mail::Transport::Exim 2.068
-
-Mail::Transport::IMAP4 2.068
-
-Mail::Transport::Mailx 2.068
-
-Mail::Transport::POP3 2.068
-
-Mail::Transport::Qmail 2.068
-
-Mail::Transport::Receive 2.068
-
-Mail::Transport::SMTP 2.068
-
-Mail::Transport::Send 2.068
-
-Mail::Transport::Sendmail 2.068
+Mail::Transport::Dbx 0.07
 
 Mail::Util 1.74
 
-Math::BigFloat 1.51
+Math::BigFloat 1.53
 
 Math::BigFloat::Trace 0.01
 
-Math::BigInt 1.77
+Math::BigInt 1.79
 
-Math::BigInt::Calc 0.47
+Math::BigInt::Calc 0.48
 
 Math::BigInt::CalcEmu 0.05
 
 Math::BigInt::Trace 0.01
 
-Math::BigRat 0.15
+Math::BigRat 0.17
 
-Math::Complex 1.35
+Math::Complex 1.37
 
-Math::Trig 1.03
+Math::Trig 1.04
 
 Memoize 1.01
 
@@ -4330,11 +4204,11 @@ ModPerl::Code 0.01
 
 ModPerl::Config undef
 
-ModPerl::Const 2.000002
+ModPerl::Const 2.000003
 
 ModPerl::FunctionMap undef
 
-ModPerl::Global 2.000002
+ModPerl::Global 2.000003
 
 ModPerl::MM undef
 
@@ -4342,7 +4216,7 @@ ModPerl::Manifest undef
 
 ModPerl::MapUtil undef
 
-ModPerl::MethodLookup 2.000002
+ModPerl::MethodLookup 2.000003
 
 ModPerl::ParseSource 0.01
 
@@ -4368,17 +4242,19 @@ ModPerl::TestRun undef
 
 ModPerl::TypeMap undef
 
-ModPerl::Util 2.000002
+ModPerl::Util 2.000003
 
 ModPerl::WrapXS 0.01
 
-Module::AutoInstall 1.02
+Module::AutoInstall 1.03
 
-Module::Build 0.2805
+Module::Build 0.2806
 
 Module::Build::Base undef
 
 Module::Build::Compat 0.03
+
+Module::Build::Config undef
 
 Module::Build::Cookbook undef
 
@@ -4424,87 +4300,87 @@ Module::Build::YAML 0.50
 
 Module::CoreList 2.09
 
-Module::Install 0.63
+Module::Install 0.64
 
-Module::Install::Admin 0.63
+Module::Install::Admin 0.64
 
-Module::Install::Admin::Bundle 0.63
+Module::Install::Admin::Bundle 0.64
 
-Module::Install::Admin::Find 0.63
+Module::Install::Admin::Find 0.64
 
-Module::Install::Admin::Include 0.63
+Module::Install::Admin::Include 0.64
 
-Module::Install::Admin::Makefile 0.63
+Module::Install::Admin::Makefile 0.64
 
-Module::Install::Admin::Manifest 0.63
+Module::Install::Admin::Manifest 0.64
 
-Module::Install::Admin::Metadata 0.63
+Module::Install::Admin::Metadata 0.64
 
-Module::Install::Admin::ScanDeps 0.63
+Module::Install::Admin::ScanDeps 0.64
 
-Module::Install::Admin::WriteAll 0.63
+Module::Install::Admin::WriteAll 0.64
 
-Module::Install::AutoInstall 0.63
+Module::Install::AutoInstall 0.64
 
-Module::Install::Base 0.63
+Module::Install::Base 0.64
 
-Module::Install::Build 0.63
+Module::Install::Build 0.64
 
-Module::Install::Bundle 0.63
+Module::Install::Bundle 0.64
 
-Module::Install::Can 0.63
+Module::Install::Can 0.64
 
-Module::Install::Compiler 0.63
+Module::Install::Compiler 0.64
 
-Module::Install::Deprecated 0.63
+Module::Install::Deprecated 0.64
 
-Module::Install::External 0.63
+Module::Install::External 0.64
 
-Module::Install::Fetch 0.63
+Module::Install::Fetch 0.64
 
-Module::Install::Include 0.63
+Module::Install::Include 0.64
 
-Module::Install::Inline 0.63
+Module::Install::Inline 0.64
 
-Module::Install::MakeMaker 0.63
+Module::Install::MakeMaker 0.64
 
-Module::Install::Makefile 0.63
+Module::Install::Makefile 0.64
 
-Module::Install::Makefile::Name 0.63
+Module::Install::Makefile::Name 0.64
 
-Module::Install::Makefile::Version 0.63
+Module::Install::Makefile::Version 0.64
 
-Module::Install::Metadata 0.63
+Module::Install::Metadata 0.64
 
-Module::Install::PAR 0.63
+Module::Install::PAR 0.64
 
-Module::Install::Run 0.63
+Module::Install::Run 0.64
 
-Module::Install::Scripts 0.63
+Module::Install::Scripts 0.64
 
-Module::Install::Share 0.63
+Module::Install::Share 0.64
 
-Module::Install::TestBase 0.10
+Module::Install::TestBase 0.11
 
-Module::Install::Win32 0.63
+Module::Install::Win32 0.64
 
-Module::Install::With 0.63
+Module::Install::With 0.64
 
-Module::Install::WriteAll 0.63
+Module::Install::WriteAll 0.64
 
 Module::Load 0.10
 
-Module::Load::Conditional 0.08
+Module::Load::Conditional 0.16
 
-Module::Pluggable 3.1
+Module::Pluggable 3.5
 
 Module::Pluggable::Object undef
 
 Module::Refresh 0.09
 
-Module::ScanDeps 0.70
+Module::ScanDeps 0.72
 
-Module::ScanDeps::DataFeed 0.07
+Module::ScanDeps::DataFeed 0.09
 
 Module::Signature 0.55
 
@@ -4516,7 +4392,7 @@ Mysql::Statement 1.2401
 
 NEXT 0.60
 
-Net::Amazon 0.35
+Net::Amazon 0.39
 
 Net::Amazon::Attribute::Review undef
 
@@ -4526,27 +4402,45 @@ Net::Amazon::Property undef
 
 Net::Amazon::Property::Book undef
 
+Net::Amazon::Property::CE undef
+
 Net::Amazon::Property::DVD undef
 
 Net::Amazon::Property::Music undef
+
+Net::Amazon::Property::Software undef
+
+Net::Amazon::Property::VideoGames undef
 
 Net::Amazon::Request undef
 
 Net::Amazon::Request::ASIN undef
 
+Net::Amazon::Request::Actor undef
+
 Net::Amazon::Request::Artist undef
+
+Net::Amazon::Request::Author undef
 
 Net::Amazon::Request::Blended undef
 
 Net::Amazon::Request::BrowseNode undef
 
+Net::Amazon::Request::EAN undef
+
 Net::Amazon::Request::Exchange undef
+
+Net::Amazon::Request::ISBN undef
 
 Net::Amazon::Request::Keyword undef
 
 Net::Amazon::Request::Manufacturer undef
 
+Net::Amazon::Request::MusicLabel undef
+
 Net::Amazon::Request::Power undef
+
+Net::Amazon::Request::Publisher undef
 
 Net::Amazon::Request::Seller undef
 
@@ -4562,19 +4456,31 @@ Net::Amazon::Response undef
 
 Net::Amazon::Response::ASIN undef
 
+Net::Amazon::Response::Actor undef
+
 Net::Amazon::Response::Artist undef
+
+Net::Amazon::Response::Author undef
 
 Net::Amazon::Response::Blended undef
 
 Net::Amazon::Response::BrowseNode undef
 
+Net::Amazon::Response::EAN undef
+
 Net::Amazon::Response::Exchange undef
+
+Net::Amazon::Response::ISBN undef
 
 Net::Amazon::Response::Keyword undef
 
 Net::Amazon::Response::Manufacturer undef
 
+Net::Amazon::Response::MusicLabel undef
+
 Net::Amazon::Response::Power undef
+
+Net::Amazon::Response::Publisher undef
 
 Net::Amazon::Response::Seller undef
 
@@ -4590,9 +4496,355 @@ Net::Amazon::Result::Seller undef
 
 Net::Amazon::Result::Seller::Listing undef
 
+Net::Amazon::Validate::ItemSearch undef
+
+Net::Amazon::Validate::ItemSearch::ca::Actor undef
+
+Net::Amazon::Validate::ItemSearch::ca::Artist undef
+
+Net::Amazon::Validate::ItemSearch::ca::AudienceRating undef
+
+Net::Amazon::Validate::ItemSearch::ca::Author undef
+
+Net::Amazon::Validate::ItemSearch::ca::Brand undef
+
+Net::Amazon::Validate::ItemSearch::ca::BrowseNode undef
+
+Net::Amazon::Validate::ItemSearch::ca::Composer undef
+
+Net::Amazon::Validate::ItemSearch::ca::Condition undef
+
+Net::Amazon::Validate::ItemSearch::ca::Conductor undef
+
+Net::Amazon::Validate::ItemSearch::ca::Count undef
+
+Net::Amazon::Validate::ItemSearch::ca::DeliveryMethod undef
+
+Net::Amazon::Validate::ItemSearch::ca::Director undef
+
+Net::Amazon::Validate::ItemSearch::ca::EAN undef
+
+Net::Amazon::Validate::ItemSearch::ca::ItemPage undef
+
+Net::Amazon::Validate::ItemSearch::ca::Keywords undef
+
+Net::Amazon::Validate::ItemSearch::ca::Manufacturer undef
+
+Net::Amazon::Validate::ItemSearch::ca::MaximumPrice undef
+
+Net::Amazon::Validate::ItemSearch::ca::MerchantId undef
+
+Net::Amazon::Validate::ItemSearch::ca::MinimumPrice undef
+
+Net::Amazon::Validate::ItemSearch::ca::MusicLabel undef
+
+Net::Amazon::Validate::ItemSearch::ca::Power undef
+
+Net::Amazon::Validate::ItemSearch::ca::Publisher undef
+
+Net::Amazon::Validate::ItemSearch::ca::Sort undef
+
+Net::Amazon::Validate::ItemSearch::ca::Title undef
+
+Net::Amazon::Validate::ItemSearch::ca::UPC undef
+
+Net::Amazon::Validate::ItemSearch::de::Actor undef
+
+Net::Amazon::Validate::ItemSearch::de::Artist undef
+
+Net::Amazon::Validate::ItemSearch::de::Author undef
+
+Net::Amazon::Validate::ItemSearch::de::BrowseNode undef
+
+Net::Amazon::Validate::ItemSearch::de::Composer undef
+
+Net::Amazon::Validate::ItemSearch::de::Condition undef
+
+Net::Amazon::Validate::ItemSearch::de::Conductor undef
+
+Net::Amazon::Validate::ItemSearch::de::Count undef
+
+Net::Amazon::Validate::ItemSearch::de::DeliveryMethod undef
+
+Net::Amazon::Validate::ItemSearch::de::Director undef
+
+Net::Amazon::Validate::ItemSearch::de::EAN undef
+
+Net::Amazon::Validate::ItemSearch::de::ItemPage undef
+
+Net::Amazon::Validate::ItemSearch::de::Keywords undef
+
+Net::Amazon::Validate::ItemSearch::de::MPAARating undef
+
+Net::Amazon::Validate::ItemSearch::de::Manufacturer undef
+
+Net::Amazon::Validate::ItemSearch::de::MaximumPrice undef
+
+Net::Amazon::Validate::ItemSearch::de::MerchantId undef
+
+Net::Amazon::Validate::ItemSearch::de::MinimumPrice undef
+
+Net::Amazon::Validate::ItemSearch::de::MusicLabel undef
+
+Net::Amazon::Validate::ItemSearch::de::Power undef
+
+Net::Amazon::Validate::ItemSearch::de::Publisher undef
+
+Net::Amazon::Validate::ItemSearch::de::Sort undef
+
+Net::Amazon::Validate::ItemSearch::de::Title undef
+
+Net::Amazon::Validate::ItemSearch::de::UPC undef
+
+Net::Amazon::Validate::ItemSearch::fr::Actor undef
+
+Net::Amazon::Validate::ItemSearch::fr::Artist undef
+
+Net::Amazon::Validate::ItemSearch::fr::AudienceRating undef
+
+Net::Amazon::Validate::ItemSearch::fr::Author undef
+
+Net::Amazon::Validate::ItemSearch::fr::Brand undef
+
+Net::Amazon::Validate::ItemSearch::fr::BrowseNode undef
+
+Net::Amazon::Validate::ItemSearch::fr::Composer undef
+
+Net::Amazon::Validate::ItemSearch::fr::Condition undef
+
+Net::Amazon::Validate::ItemSearch::fr::Conductor undef
+
+Net::Amazon::Validate::ItemSearch::fr::Count undef
+
+Net::Amazon::Validate::ItemSearch::fr::DeliveryMethod undef
+
+Net::Amazon::Validate::ItemSearch::fr::Director undef
+
+Net::Amazon::Validate::ItemSearch::fr::EAN undef
+
+Net::Amazon::Validate::ItemSearch::fr::ItemPage undef
+
+Net::Amazon::Validate::ItemSearch::fr::Keywords undef
+
+Net::Amazon::Validate::ItemSearch::fr::Manufacturer undef
+
+Net::Amazon::Validate::ItemSearch::fr::MaximumPrice undef
+
+Net::Amazon::Validate::ItemSearch::fr::MerchantId undef
+
+Net::Amazon::Validate::ItemSearch::fr::MinimumPrice undef
+
+Net::Amazon::Validate::ItemSearch::fr::MusicLabel undef
+
+Net::Amazon::Validate::ItemSearch::fr::Power undef
+
+Net::Amazon::Validate::ItemSearch::fr::Publisher undef
+
+Net::Amazon::Validate::ItemSearch::fr::Sort undef
+
+Net::Amazon::Validate::ItemSearch::fr::Title undef
+
+Net::Amazon::Validate::ItemSearch::fr::UPC undef
+
+Net::Amazon::Validate::ItemSearch::jp::Actor undef
+
+Net::Amazon::Validate::ItemSearch::jp::Artist undef
+
+Net::Amazon::Validate::ItemSearch::jp::Author undef
+
+Net::Amazon::Validate::ItemSearch::jp::Brand undef
+
+Net::Amazon::Validate::ItemSearch::jp::BrowseNode undef
+
+Net::Amazon::Validate::ItemSearch::jp::Composer undef
+
+Net::Amazon::Validate::ItemSearch::jp::Condition undef
+
+Net::Amazon::Validate::ItemSearch::jp::Conductor undef
+
+Net::Amazon::Validate::ItemSearch::jp::Director undef
+
+Net::Amazon::Validate::ItemSearch::jp::EAN undef
+
+Net::Amazon::Validate::ItemSearch::jp::ItemPage undef
+
+Net::Amazon::Validate::ItemSearch::jp::Keywords undef
+
+Net::Amazon::Validate::ItemSearch::jp::Manufacturer undef
+
+Net::Amazon::Validate::ItemSearch::jp::MaximumPrice undef
+
+Net::Amazon::Validate::ItemSearch::jp::MerchantId undef
+
+Net::Amazon::Validate::ItemSearch::jp::MinimumPrice undef
+
+Net::Amazon::Validate::ItemSearch::jp::MusicLabel undef
+
+Net::Amazon::Validate::ItemSearch::jp::Orchestra undef
+
+Net::Amazon::Validate::ItemSearch::jp::Power undef
+
+Net::Amazon::Validate::ItemSearch::jp::Publisher undef
+
+Net::Amazon::Validate::ItemSearch::jp::Sort undef
+
+Net::Amazon::Validate::ItemSearch::jp::Title undef
+
+Net::Amazon::Validate::ItemSearch::jp::UPC undef
+
+Net::Amazon::Validate::ItemSearch::uk::Actor undef
+
+Net::Amazon::Validate::ItemSearch::uk::Artist undef
+
+Net::Amazon::Validate::ItemSearch::uk::Author undef
+
+Net::Amazon::Validate::ItemSearch::uk::Brand undef
+
+Net::Amazon::Validate::ItemSearch::uk::BrowseNode undef
+
+Net::Amazon::Validate::ItemSearch::uk::Composer undef
+
+Net::Amazon::Validate::ItemSearch::uk::Condition undef
+
+Net::Amazon::Validate::ItemSearch::uk::Conductor undef
+
+Net::Amazon::Validate::ItemSearch::uk::Director undef
+
+Net::Amazon::Validate::ItemSearch::uk::EAN undef
+
+Net::Amazon::Validate::ItemSearch::uk::ItemPage undef
+
+Net::Amazon::Validate::ItemSearch::uk::Keywords undef
+
+Net::Amazon::Validate::ItemSearch::uk::MPAARating undef
+
+Net::Amazon::Validate::ItemSearch::uk::Manufacturer undef
+
+Net::Amazon::Validate::ItemSearch::uk::MaximumPrice undef
+
+Net::Amazon::Validate::ItemSearch::uk::MerchantId undef
+
+Net::Amazon::Validate::ItemSearch::uk::MinimumPrice undef
+
+Net::Amazon::Validate::ItemSearch::uk::MusicLabel undef
+
+Net::Amazon::Validate::ItemSearch::uk::Orchestra undef
+
+Net::Amazon::Validate::ItemSearch::uk::Power undef
+
+Net::Amazon::Validate::ItemSearch::uk::Publisher undef
+
+Net::Amazon::Validate::ItemSearch::uk::Sort undef
+
+Net::Amazon::Validate::ItemSearch::uk::Title undef
+
+Net::Amazon::Validate::ItemSearch::uk::UPC undef
+
+Net::Amazon::Validate::ItemSearch::us::Actor undef
+
+Net::Amazon::Validate::ItemSearch::us::Artist undef
+
+Net::Amazon::Validate::ItemSearch::us::AudienceRating undef
+
+Net::Amazon::Validate::ItemSearch::us::Author undef
+
+Net::Amazon::Validate::ItemSearch::us::Brand undef
+
+Net::Amazon::Validate::ItemSearch::us::BrowseNode undef
+
+Net::Amazon::Validate::ItemSearch::us::City undef
+
+Net::Amazon::Validate::ItemSearch::us::Composer undef
+
+Net::Amazon::Validate::ItemSearch::us::Condition undef
+
+Net::Amazon::Validate::ItemSearch::us::Conductor undef
+
+Net::Amazon::Validate::ItemSearch::us::Count undef
+
+Net::Amazon::Validate::ItemSearch::us::Cuisine undef
+
+Net::Amazon::Validate::ItemSearch::us::DeliveryMethod undef
+
+Net::Amazon::Validate::ItemSearch::us::Director undef
+
+Net::Amazon::Validate::ItemSearch::us::ISPUPostalCode undef
+
+Net::Amazon::Validate::ItemSearch::us::ItemPage undef
+
+Net::Amazon::Validate::ItemSearch::us::Keywords undef
+
+Net::Amazon::Validate::ItemSearch::us::MPAARating undef
+
+Net::Amazon::Validate::ItemSearch::us::Manufacturer undef
+
+Net::Amazon::Validate::ItemSearch::us::MaximumPrice undef
+
+Net::Amazon::Validate::ItemSearch::us::MerchantId undef
+
+Net::Amazon::Validate::ItemSearch::us::MinimumPrice undef
+
+Net::Amazon::Validate::ItemSearch::us::MusicLabel undef
+
+Net::Amazon::Validate::ItemSearch::us::Neighborhood undef
+
+Net::Amazon::Validate::ItemSearch::us::Orchestra undef
+
+Net::Amazon::Validate::ItemSearch::us::Power undef
+
+Net::Amazon::Validate::ItemSearch::us::Publisher undef
+
+Net::Amazon::Validate::ItemSearch::us::Sort undef
+
+Net::Amazon::Validate::ItemSearch::us::State undef
+
+Net::Amazon::Validate::ItemSearch::us::TextStream undef
+
+Net::Amazon::Validate::ItemSearch::us::Title undef
+
+Net::Amazon::Validate::ItemSearch::us::UPC undef
+
+Net::Amazon::Validate::Type undef
+
+Net::Amazon::Validate::Type::BrowseNodeLookup undef
+
+Net::Amazon::Validate::Type::CartAdd undef
+
+Net::Amazon::Validate::Type::CartClear undef
+
+Net::Amazon::Validate::Type::CartCreate undef
+
+Net::Amazon::Validate::Type::CartGet undef
+
+Net::Amazon::Validate::Type::CartModify undef
+
+Net::Amazon::Validate::Type::CustomerContentLookup undef
+
+Net::Amazon::Validate::Type::CustomerContentSearch undef
+
+Net::Amazon::Validate::Type::Help undef
+
+Net::Amazon::Validate::Type::ItemLookup undef
+
+Net::Amazon::Validate::Type::ItemSearch undef
+
+Net::Amazon::Validate::Type::ListLookup undef
+
+Net::Amazon::Validate::Type::ListSearch undef
+
+Net::Amazon::Validate::Type::SellerListingLookup undef
+
+Net::Amazon::Validate::Type::SellerListingSearch undef
+
+Net::Amazon::Validate::Type::SellerLookup undef
+
+Net::Amazon::Validate::Type::SimilarityLookup undef
+
+Net::Amazon::Validate::Type::TransactionLookup undef
+
 Net::CIDR::Lite 0.20
 
-Net::Cmd 2.26
+Net::Cmd 2.27
 
 Net::Config 1.10
 
@@ -4686,11 +4938,11 @@ Net::DNS::Resolver::UNIX 482
 
 Net::DNS::Update 517
 
-Net::Domain 2.19
+Net::Domain 2.19_01
 
-Net::FTP 2.75
+Net::FTP 2.77
 
-Net::FTP::A 1.16
+Net::FTP::A 1.17
 
 Net::FTP::E 0.01
 
@@ -4699,6 +4951,8 @@ Net::FTP::I 1.12
 Net::FTP::L 0.01
 
 Net::FTP::dataconn 0.11
+
+Net::Finger 1.06
 
 Net::HTTP 1.00
 
@@ -4712,15 +4966,15 @@ Net::IP 1.25
 
 Net::IP::CMatch 0.02
 
-Net::LDAP 0.33
+Net::LDAP 0.34
 
-Net::LDAP::ASN 0.03
+Net::LDAP::ASN 0.04
 
 Net::LDAP::Bind 1.02
 
 Net::LDAP::Constant 0.04
 
-Net::LDAP::Control 0.05
+Net::LDAP::Control 0.06
 
 Net::LDAP::Control::EntryChange 0.01
 
@@ -4740,9 +4994,9 @@ Net::LDAP::Control::VLV 0.03
 
 Net::LDAP::Control::VLVResponse 0.03
 
-Net::LDAP::DSML 0.12
+Net::LDAP::DSML 0.13
 
-Net::LDAP::Entry 0.22
+Net::LDAP::Entry 0.23
 
 Net::LDAP::Extension 1.01
 
@@ -4752,31 +5006,33 @@ Net::LDAP::Extension::WhoAmI 0.01
 
 Net::LDAP::Extra 0.01
 
-Net::LDAP::Filter 0.14
+Net::LDAP::Filter 0.15
 
-Net::LDAP::LDIF 0.16
+Net::LDAP::FilterMatch 0.17
 
-Net::LDAP::Message 1.08
+Net::LDAP::LDIF 0.17
+
+Net::LDAP::Message 1.09
 
 Net::LDAP::RootDSE 0.01
 
-Net::LDAP::Schema 0.9903
+Net::LDAP::Schema 0.9905
 
-Net::LDAP::Search 0.10
+Net::LDAP::Search 0.11
 
-Net::LDAP::Util 0.10
+Net::LDAP::Util 0.11
 
-Net::LDAPI 0.02
+Net::LDAPI 0.03
 
 Net::LDAPS 0.05
 
 Net::NNTP 2.23
 
-Net::Netmask 1.9012
+Net::Netmask 1.9015
 
 Net::Netrc 2.12
 
-Net::POP3 2.28
+Net::POP3 2.28_2
 
 Net::Patricia 1.014
 
@@ -4784,13 +5040,17 @@ Net::Ping 2.31
 
 Net::SCP 0.07
 
-Net::SMTP 2.29
+Net::SMTP 2.30
 
 Net::SSH 0.08
 
-Net::SSL 2.77
+Net::SSL 2.78
 
-Net::Server 0.94
+Net::SSLeay 1.30
+
+Net::SSLeay::Handle 0.61
+
+Net::Server 0.95
 
 Net::Server::Daemonize 0.05
 
@@ -4838,15 +5098,15 @@ O 1.00
 
 OLE::Storage_Lite 0.14
 
-Object::Declare 0.13
+Object::Declare 0.22
 
 Object::Realize::Later 0.15
 
 Opcode 1.06
 
-PAR::Dist 0.15
+PAR::Dist 0.21
 
-PAR::Dist::FromCPAN 0.03
+PAR::Dist::FromCPAN 0.04
 
 PDL 2.4.2
 
@@ -4956,13 +5216,13 @@ PDL::Version 2.4.2
 
 POSIX 1.09
 
-PadWalker 1.2
+PadWalker 1.5
 
 Params::Check 0.25
 
 Params::Util 0.22
 
-Params::Validate 0.86
+Params::Validate 0.87
 
 Parse::RecDescent 1.94
 
@@ -5006,6 +5266,8 @@ PerlIO 1.04
 
 PerlIO::encoding 0.09
 
+PerlIO::gzip 0.18
+
 PerlIO::scalar 0.04
 
 PerlIO::via 0.03
@@ -5016,7 +5278,7 @@ PerlReq::Utils undef
 
 Pod::Checker 1.43
 
-Pod::Coverage 0.17
+Pod::Coverage 0.18
 
 Pod::Coverage::CountParents undef
 
@@ -5036,7 +5298,7 @@ Pod::InputObjects 1.3
 
 Pod::LaTeX 0.58
 
-Pod::Man 1.37
+Pod::Man 2.12
 
 Pod::POM 0.17
 
@@ -5058,9 +5320,9 @@ Pod::POM::View::Text 1.03
 
 Pod::ParseLink 1.06
 
-Pod::ParseUtils 1.33
+Pod::ParseUtils 1.35
 
-Pod::Parser 1.32
+Pod::Parser 1.35
 
 Pod::Perldoc 3.14
 
@@ -5088,9 +5350,9 @@ Pod::PlainText 2.02
 
 Pod::Plainer 0.01
 
-Pod::Readme 0.081
+Pod::Readme 0.09
 
-Pod::Select 1.3
+Pod::Select 1.35
 
 Pod::Simple 3.04
 
@@ -5148,17 +5410,17 @@ Pod::Simple::XMLOutStream 2.02
 
 Pod::Tests 0.18
 
-Pod::Text 2.21
+Pod::Text 3.08
 
-Pod::Text::Color 1.04
+Pod::Text::Color 2.03
 
-Pod::Text::Overstrike 1.1
+Pod::Text::Overstrike 2
 
-Pod::Text::Termcap 1.11
+Pod::Text::Termcap 2.03
 
-Pod::Usage 1.33
+Pod::Usage 1.35
 
-RPM::Specfile 1.19
+RPM::Specfile 1.51
 
 Readonly 1.03
 
@@ -5230,7 +5492,7 @@ Regexp::Common::whitespace 2.103
 
 Regexp::Common::zip 2.112
 
-Return::Value 1.301
+Return::Value 1.302
 
 SDBM_File 1.05
 
@@ -5240,7 +5502,7 @@ SGMLS::Output undef
 
 SGMLS::Refs undef
 
-SQL::Abstract 1.21
+SQL::Abstract 1.22
 
 SQL::Abstract::Limit 0.12
 
@@ -5268,7 +5530,7 @@ Safe 2.12
 
 Scalar::Defer 0.07
 
-Scalar::Util 1.18
+Scalar::Util 1.19
 
 Search::Dict 1.02
 
@@ -5280,13 +5542,17 @@ Set::IntSpan 1.09
 
 Shell 0.6
 
+Shell::Command 0.03
+
 Socket 1.78
+
+Socket6 0.19
 
 Sort::Versions 1.5
 
 Spiffy 0.30
 
-Spreadsheet::WriteExcel 2.17
+Spreadsheet::WriteExcel 2.18
 
 Spreadsheet::WriteExcel::BIFFwriter 2.01
 
@@ -5294,7 +5560,7 @@ Spreadsheet::WriteExcel::Big 2.01
 
 Spreadsheet::WriteExcel::Chart 2.13
 
-Spreadsheet::WriteExcel::Format 2.16
+Spreadsheet::WriteExcel::Format 2.18
 
 Spreadsheet::WriteExcel::Formula 2.04
 
@@ -5302,11 +5568,11 @@ Spreadsheet::WriteExcel::OLEwriter 2.15
 
 Spreadsheet::WriteExcel::Utility 2.01
 
-Spreadsheet::WriteExcel::Workbook 2.16
+Spreadsheet::WriteExcel::Workbook 2.18
 
 Spreadsheet::WriteExcel::WorkbookBig 2.15
 
-Spreadsheet::WriteExcel::Worksheet 2.16
+Spreadsheet::WriteExcel::Worksheet 2.18
 
 Storable 2.15
 
@@ -5324,13 +5590,15 @@ Sub::Override 0.08
 
 Sub::Uplevel 0.14
 
-Switch 2.10_01
+Switch 2.12
 
 Symbol 1.06
 
 Sys::Hostname 1.11
 
-Sys::Syslog 0.13
+Sys::Hostname::Long 1.4
+
+Sys::Syslog 0.18
 
 TeX::Hyphen 0.140
 
@@ -5338,7 +5606,7 @@ TeX::Hyphen::czech 0.121
 
 TeX::Hyphen::german 0.121
 
-Term::ANSIColor 1.10
+Term::ANSIColor 1.11
 
 Term::Cap 1.09
 
@@ -5348,25 +5616,27 @@ Term::ReadKey 2.30
 
 Term::ReadLine 1.02
 
+Term::ReadLine::Perl 1.0302
+
 Test 1.25
 
-Test::Base 0.50
+Test::Base 0.53
 
 Test::Base::Filter undef
 
-Test::Builder 0.32
+Test::Builder 0.36
 
-Test::Builder::Module 0.02
+Test::Builder::Module 0.06
 
-Test::Builder::Tester 1.02
+Test::Builder::Tester 1.07
 
 Test::Builder::Tester::Color undef
 
-Test::ClassAPI 1.02
+Test::ClassAPI 1.03
 
 Test::Dependencies 0.08
 
-Test::Exception 0.21
+Test::Exception 0.25
 
 Test::Expect 0.30
 
@@ -5374,7 +5644,7 @@ Test::HTML::Lint 2.02
 
 Test::HTTP::Server::Simple 0.03
 
-Test::Harness 2.62
+Test::Harness 2.64
 
 Test::Harness::Assert 0.02
 
@@ -5382,33 +5652,35 @@ Test::Harness::Iterator 0.02
 
 Test::Harness::Point 0.01
 
+Test::Harness::Results 0.01
+
 Test::Harness::Straps 0.26
 
 Test::Harness::Util 0.01
 
-Test::Inline 2.105
+Test::Inline 2.201
 
-Test::Inline::Content 2.105
+Test::Inline::Content 2.201
 
-Test::Inline::Content::Default 2.105
+Test::Inline::Content::Default 2.201
 
-Test::Inline::Content::Legacy 2.105
+Test::Inline::Content::Legacy 2.201
 
-Test::Inline::Content::Simple 2.105
+Test::Inline::Content::Simple 2.201
 
-Test::Inline::Extract 2.105
+Test::Inline::Extract 2.201
 
-Test::Inline::IO::File 2.105
+Test::Inline::IO::File 2.201
 
-Test::Inline::Script 2.105
+Test::Inline::Script 2.201
 
-Test::Inline::Section 2.105
+Test::Inline::Section 2.201
 
-Test::Inline::Util 2.105
+Test::Inline::Util 2.201
 
-Test::LongString 0.10
+Test::LongString 0.11
 
-Test::Manifest 1.14
+Test::Manifest 1.17
 
 Test::Memory::Cycle 1.04
 
@@ -5418,7 +5690,11 @@ Test::MockObject 1.07
 
 Test::MockObject::Extends 1.07
 
-Test::More 0.62
+Test::More 0.67
+
+Test::NoWarnings 0.083
+
+Test::NoWarnings::Warning undef
 
 Test::Pod 1.26
 
@@ -5426,19 +5702,29 @@ Test::Pod::Coverage 1.08
 
 Test::Portability::Files 0.05
 
-Test::Simple 0.62
+Test::Simple 0.67
 
 Test::Taint 1.04
+
+Test::Tester 0.104
+
+Test::Tester::Capture undef
+
+Test::Tester::CaptureRunner undef
+
+Test::Tester::Delegate undef
 
 Test::WWW::Mechanize 1.12
 
 Test::Warn 0.08
 
+Test::use::ok 0.02
+
 Text::Abbrev 1.01
 
 Text::Autoformat 1.13
 
-Text::Balanced 1.95
+Text::Balanced v2.0.0
 
 Text::CSV_XS 0.23
 
@@ -5454,13 +5740,13 @@ Text::Kakasi 2.04
 
 Text::ParseWords 3.24
 
-Text::Quoted 1.8
+Text::Quoted 2.02
 
 Text::Reform 1.11
 
-Text::Soundex 1.01
+Text::Soundex 3.02
 
-Text::Tabs 2005.0824
+Text::Tabs 2007.1117
 
 Text::Template 1.44
 
@@ -5470,7 +5756,7 @@ Text::WikiFormat 0.78
 
 Text::WikiFormat::Blocks undef
 
-Text::Wrap 2005.082401
+Text::Wrap 2006.1117
 
 Text::Wrapper 1.000
 
@@ -5506,21 +5792,21 @@ Time::CTime 99.062201
 
 Time::DaysInMonth 99.1117
 
-Time::HiRes 1.86
+Time::HiRes 1.9705
 
 Time::JulianDay 2003.1125
 
-Time::Local 1.11
+Time::Local 1.17
 
-Time::ParseDate 2003.1126
+Time::ParseDate 2006.0814
 
-Time::Piece 1.08
+Time::Piece 1.11
 
 Time::Piece::MySQL 0.05
 
 Time::Seconds undef
 
-Time::Timezone 2003.0211
+Time::Timezone 2006.0814
 
 Time::Zone 2.22
 
@@ -5546,7 +5832,7 @@ UNIVERSAL::isa 0.06
 
 UNIVERSAL::moniker 0.08
 
-UNIVERSAL::require 0.10
+UNIVERSAL::require 0.11
 
 URI 1.35
 
@@ -5654,37 +5940,37 @@ Unicode::Map8 0.12
 
 Unicode::MapUTF8 1.11
 
-Unicode::Normalize 0.32
+Unicode::Normalize 1.01
 
 Unicode::String 2.09
 
 Unicode::UCD 0.24
 
-Unix::Statgrab 0.03
+Unix::Statgrab 0.04
 
-Unix::Syslog 0.100
+Unix::Syslog 0.99
 
-User::Identity 0.90
+User::Identity 0.91
 
-User::Identity::Archive 0.90
+User::Identity::Archive 0.91
 
-User::Identity::Archive::Plain 0.90
+User::Identity::Archive::Plain 0.91
 
-User::Identity::Collection 0.90
+User::Identity::Collection 0.91
 
-User::Identity::Collection::Emails 0.90
+User::Identity::Collection::Emails 0.91
 
-User::Identity::Collection::Locations 0.90
+User::Identity::Collection::Locations 0.91
 
-User::Identity::Collection::Systems 0.90
+User::Identity::Collection::Systems 0.91
 
-User::Identity::Collection::Users 0.90
+User::Identity::Collection::Users 0.91
 
-User::Identity::Item 0.90
+User::Identity::Item 0.91
 
-User::Identity::Location 0.90
+User::Identity::Location 0.91
 
-User::Identity::System 0.90
+User::Identity::System 0.91
 
 User::grent 1.01
 
@@ -5776,27 +6062,31 @@ XML::Handler::Subs 0.08
 
 XML::Handler::XMLWriter 0.08
 
-XML::LibXML 1.58
+XML::LibXML 1.62
 
-XML::LibXML::Boolean undef
+XML::LibXML::Boolean 1.62
 
 XML::LibXML::Common 0.13
 
-XML::LibXML::Literal undef
+XML::LibXML::Literal 1.62
 
-XML::LibXML::NodeList undef
+XML::LibXML::NodeList 1.62
 
-XML::LibXML::Number undef
+XML::LibXML::Number 1.62
 
-XML::LibXML::SAX 1.00
+XML::LibXML::Reader 1.62
 
-XML::LibXML::SAX::Builder undef
+XML::LibXML::SAX 1.62
 
-XML::LibXML::SAX::Generator undef
+XML::LibXML::SAX::Builder 1.62
 
-XML::LibXML::SAX::Parser 1.50
+XML::LibXML::SAX::Generator 1.62
 
-XML::LibXSLT 1.58
+XML::LibXML::SAX::Parser 1.62
+
+XML::LibXML::XPathContext 1.62
+
+XML::LibXSLT 1.62
 
 XML::NamespaceSupport 1.09
 
@@ -5824,11 +6114,11 @@ XML::PatAct::ToObjects 0.08
 
 XML::Perl2SAX 0.08
 
-XML::RSS 1.10
+XML::RSS 1.22
 
 XML::RegExp 0.02
 
-XML::SAX 0.13
+XML::SAX 0.15
 
 XML::SAX2Perl 0.08
 
@@ -5838,7 +6128,7 @@ XML::SAX::DocumentLocator undef
 
 XML::SAX::ParserFactory 1.01
 
-XML::SAX::PurePerl 0.90
+XML::SAX::PurePerl 0.91
 
 XML::SAX::PurePerl::DebugHandler undef
 
@@ -5854,13 +6144,13 @@ XML::SAX::PurePerl::Reader::String undef
 
 XML::SAX::PurePerl::Reader::URI undef
 
-XML::Simple 2.14
+XML::Simple 2.16
 
-XML::Twig 3.23
+XML::Twig 3.29
 
-XML::Twig::XPath 0.01
+XML::Twig::XPath 0.02
 
-XML::Writer 0.600
+XML::Writer 0.602
 
 XML::XPath 1.13
 
@@ -5934,7 +6224,7 @@ YAML::Marshall undef
 
 YAML::Node undef
 
-YAML::Syck 0.67
+YAML::Syck 0.82
 
 YAML::Tag undef
 
@@ -5948,11 +6238,11 @@ autouse 1.05
 
 base 2.07
 
-bigint 0.07
+bigint 0.09
 
-bignum 0.17
+bignum 0.19
 
-bigrat 0.08
+bigrat 0.09
 
 blib 1.03
 
@@ -5966,7 +6256,7 @@ constant 1.05
 
 diagnostics 1.15
 
-encoding 2.02
+encoding 2.04
 
 fake undef
 
@@ -5976,7 +6266,7 @@ filetest 1.01
 
 if 0.05
 
-inc::Module::Install 0.63
+inc::Module::Install 0.64
 
 integer 1.00
 
@@ -5986,7 +6276,9 @@ lib 0.5565
 
 locale 1.00
 
-mod_perl2 2.000002
+mod_perl2 2.000003
+
+ok 0.02
 
 open 1.05
 
@@ -5998,6 +6290,8 @@ prefork 1.01
 
 re 0.05
 
+readline 1.0302
+
 sigtrap 1.02
 
 sort 1.02
@@ -6006,17 +6300,17 @@ strict 1.03
 
 subs 1.00
 
-threads 1.07
+threads 1.59
 
-threads::shared 0.94
+threads::shared 1.07
 
 utf8 1.06
 
 vars 1.01
 
-version 0.6701
+version 0.70
 
-version::vxs 0.6701
+version::vxs 0.70
 
 vmsish 1.02
 
@@ -6030,8 +6324,8 @@ warnings::register 1.01
 Summary of my perl5 (revision 5 version 8 subversion 8) configuration:
   Platform:
     osname=linux, osvers=2.6.9-34.elsmp, archname=x86_64-linux-thread-multi
-    uname='linux ls20-bc2-14.build.redhat.com 2.6.9-34.elsmp #1 smp fri feb 24 16:56:28 est 2006 x86_64 x86_64 x86_64 gnulinux '
-    config_args='-des -Doptimize=-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -Dversion=5.8.8 -Dmyhostname=localhost -Dperladmin=root@localhost -Dcc=gcc -Dcf_by=Red Hat, Inc. -Dinstallprefix=/usr -Dprefix=/usr -Dlibpth=/usr/local/lib64 /lib64 /usr/lib64 -Dprivlib=/usr/lib/perl5/5.8.8 -Dsitelib=/usr/lib/perl5/site_perl/5.8.8 -Dvendorlib=/usr/lib/perl5/vendor_perl/5.8.8 -Darchlib=/usr/lib64/perl5/5.8.8/x86_64-linux-thread-multi -Dsitearch=/usr/lib64/perl5/site_perl/5.8.8/x86_64-linux-thread-multi -Dvendorarch=/usr/lib64/perl5/vendor_perl/5.8.8/x86_64-linux-thread-multi -Darchname=x86_64-linux -Dvendorprefix=/usr -Dsiteprefix=/usr -Duseshrplib -Dusethreads -Duseithreads -Duselargefiles -Dd_dosuid -Dd_semctl_semun -Di_db -Ui_ndbm -Di_gdbm -Di_shadow -Di_syslog -Dman3ext=3pm -Duseperlio -Dinstallusrbinperl=n -Ubincompat5005 -Uversiononly -Dpager=/usr/bin/less -isr -Dd_gethostent_r_proto -Ud_endhostent_r_proto -Ud_sethostent_r_proto -Ud_endprotoent_r_proto -Ud_setprotoent_r_proto -Ud_endservent_r_proto -Ud_setservent_r_proto -Dinc_version_list=5.8.7 5.8.6 5.8.5 5.8.4 5.8.3 -Dscriptdir=/usr/bin'
+    uname='linux hs20-bc1-5.build.redhat.com 2.6.9-34.elsmp #1 smp fri feb 24 16:56:28 est 2006 x86_64 x86_64 x86_64 gnulinux '
+    config_args='-des -Doptimize=-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -Dversion=5.8.8 -Dmyhostname=localhost -Dperladmin=root@localhost -Dcc=gcc -Dcf_by=Red Hat, Inc. -Dinstallprefix=/usr -Dprefix=/usr -Dlibpth=/usr/local/lib64 /lib64 /usr/lib64 -Dprivlib=/usr/lib/perl5/5.8.8 -Dsitelib=/usr/lib/perl5/site_perl/5.8.8 -Dvendorlib=/usr/lib/perl5/vendor_perl/5.8.8 -Darchlib=/usr/lib64/perl5/5.8.8/x86_64-linux-thread-multi -Dsitearch=/usr/lib64/perl5/site_perl/5.8.8/x86_64-linux-thread-multi -Dvendorarch=/usr/lib64/perl5/vendor_perl/5.8.8/x86_64-linux-thread-multi -Darchname=x86_64-linux -Dvendorprefix=/usr -Dsiteprefix=/usr -Duseshrplib -Dusethreads -Duseithreads -Duselargefiles -Dd_dosuid -Dd_semctl_semun -Di_db -Ui_ndbm -Di_gdbm -Di_shadow -Di_syslog -Dman3ext=3pm -Duseperlio -Dinstallusrbinperl=n -Ubincompat5005 -Uversiononly -Dpager=/usr/bin/less -isr -Dd_gethostent_r_proto -Ud_endhostent_r_proto -Ud_sethostent_r_proto -Ud_endprotoent_r_proto -Ud_setprotoent_r_proto -Ud_endservent_r_proto -Ud_setservent_r_proto -Dinc_version_list=5.8.7 5.8.6 5.8.5 -Dscriptdir=/usr/bin'
     hint=recommended, useposix=true, d_sigaction=define
     usethreads=define use5005threads=undef useithreads=define usemultiplicity=define
     useperlio=define d_sfio=undef uselargefiles=define usesocks=undef
@@ -6041,7 +6335,7 @@ Summary of my perl5 (revision 5 version 8 subversion 8) configuration:
     cc='gcc', ccflags ='-D_REENTRANT -D_GNU_SOURCE -fno-strict-aliasing -pipe -Wdeclaration-after-statement -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I/usr/include/gdbm',
     optimize='-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic',
     cppflags='-D_REENTRANT -D_GNU_SOURCE -fno-strict-aliasing -pipe -Wdeclaration-after-statement -I/usr/local/include -I/usr/include/gdbm'
-    ccversion='', gccversion='4.1.1 20060525 (Red Hat 4.1.1-1)', gccosandvers=''
+    ccversion='', gccversion='4.1.1 20060928 (Red Hat 4.1.1-28)', gccosandvers=''
     intsize=4, longsize=8, ptrsize=8, doublesize=8, byteorder=12345678
     d_longlong=define, longlongsize=8, d_longdbl=define, longdblsize=16
     ivtype='long', ivsize=8, nvtype='double', nvsize=8, Off_t='off_t', lseeksize=8
@@ -6052,10 +6346,10 @@ Summary of my perl5 (revision 5 version 8 subversion 8) configuration:
     libs=-lresolv -lnsl -lgdbm -ldb -ldl -lm -lcrypt -lutil -lpthread -lc
     perllibs=-lresolv -lnsl -ldl -lm -lcrypt -lutil -lpthread -lc
     libc=, so=so, useshrplib=true, libperl=libperl.so
-    gnulibc_version='2.4'
+    gnulibc_version='2.5'
   Dynamic Linking:
     dlsrc=dl_dlopen.xs, dlext=so, d_dlsymun=undef, ccdlflags='-Wl,-E -Wl,-rpath,/usr/lib64/perl5/5.8.8/x86_64-linux-thread-multi/CORE'
-    cccdlflags='-fPIC', lddlflags='-shared'
+    cccdlflags='-fPIC', lddlflags='-shared -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic'
 
 
 
