@@ -140,6 +140,14 @@ suexec: install-srpms
 install-suexec:
 	install -m 4510 -o 0 -g apache ${PWD}/sbin/suexec /usr/sbin/;
 
+frob-openafs:
+	@if [ ! -d "/etc/openafs/" ]; then \
+	echo "/etc/openafs does not exist"; \
+	exit 1; \
+	else \
+	ln -nfs /etc/openafs/* /usr/vice/etc/; \
+	fi
+
 # The following packages are needed for our packages
 # basic deps: kernel-devel through krb5-workstation
 # oursrc: hesinfo
