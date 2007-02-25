@@ -47,7 +47,7 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 
 %pre
 groupadd -g 102 signup
-useradd -u 102 -g signup -d /afs/athena.mit.edu/contrib/scripts/signup -m signup
+useradd -u 102 -g signup -d /afs/athena.mit.edu/contrib/scripts/signup -M signup
 
 %post
 cat >>/etc/sudoers <<END
