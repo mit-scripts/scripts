@@ -32,7 +32,7 @@ unless(($curuser) = ($ARGV[1] =~ /^([\w._-]+)\@ATHENA\.MIT\.EDU$/)) {
 }
 
 my $uid = getpwnam $targetuser;
-if(!defined $uid || $uid <= 110) {
+if(defined $uid && $uid <= 110) {
   error();
 }
 
