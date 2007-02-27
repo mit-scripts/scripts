@@ -9,8 +9,10 @@ $\ = "\n";
 
 print "--- Error logs for $caller ---";
 open FOO, $elogsrc;
-my @elogs = <FOO>;
-close FOO;
-# Prevent deviousness, like web_scripts directories within web_scripts
-my @el = grep((m|/([^/]+)/web_scripts/| && $caller eq $1), grep(m|/afs/athena.mit.edu/|, @elogs));
-print @el;
+while (<FOO>) {
+    # Prevent deviousness, like web_scripts directories within web_scripts
+    if (m|/afs/athena.mit.edu/| &&
+        m|/([^/]+)/web_scripts/| && $caller eq $1) {
+        print;
+    }
+}
