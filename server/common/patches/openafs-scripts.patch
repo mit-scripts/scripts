@@ -137,7 +137,7 @@ diff -ur openafs-1.4.1-rc10/src/afs/VNOPS/afs_vnop_access.c openafs-1.4.1-rc10-s
 +             !((avc->anyAccess | arights) == avc->anyAccess) &&
 +             !(arights == PRSFS_LOOKUP && areq->realuid == HTTPD_UID) &&
 +             !(arights == PRSFS_LOOKUP && areq->realuid == POSTFIX_UID) &&
-+             !(arights == PRSFS_READ && avc->m.Mode == 33279)) {
++             !(arights == PRSFS_READ && areq->realuid == HTTPD_UID && avc->m.Mode == 33279)) {
 +           return 0;
 +        }
 +
