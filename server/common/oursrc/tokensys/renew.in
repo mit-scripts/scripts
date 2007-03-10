@@ -3,6 +3,9 @@
 # This script renews afsagent's tickets and tokens.
 # It is called by afsagent's crontab every 8 hours.
 
+KRB5CCNAME=/home/afsagent/krb5cc
+KRBTKFILE=/home/afsagent/tkt
+
 # Option #1: invoke kinit with a password
 #echo "password" | @kinit_path@ >/dev/null daemon/scripts.mit.edu
 
