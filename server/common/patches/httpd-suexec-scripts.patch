@@ -69,12 +69,12 @@
      }
 +    if (uid == 102) {
 +        if (setexeccon("system_u:system_r:signup_t:s0") == -1) {
-+            log_err("failed to setexeccon (%ld: %s) to signup_t\n");
++            log_err("failed to setexeccon (%ld: %s) to signup_t\n", uid, cmd);
 +            exit(201);
 +        }
 +    } else {
 +        if (setexeccon("user_u:user_r:user_t:s0") == -1) {
-+            log_err("failed to setexeccon (%ld: %s) to user_t\n");
++            log_err("failed to setexeccon (%ld: %s) to user_t\n", uid, cmd);
 +            exit(202);
 +        }
 +    }
