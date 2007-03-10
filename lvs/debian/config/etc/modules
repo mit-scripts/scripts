@@ -1,0 +1,22 @@
+# /etc/modules: kernel modules to load at boot time.
+#
+# This file should contain the names of kernel modules that are
+# to be loaded at boot time, one per line.  Comments begin with
+# a "#", and everything on the line after them are ignored.
+
+ide-cd
+ide-detect
+ide-disk
+psmouse
+ip_vs_dh
+ip_vs_ftp
+ip_vs
+ip_vs_lblc
+ip_vs_lblcr
+ip_vs_lc
+ip_vs_nq
+ip_vs_rr
+ip_vs_sed
+ip_vs_sh
+ip_vs_wlc
+ip_vs_wrr

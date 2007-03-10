@@ -1,0 +1,13 @@
+#!/bin/sh
+## Joe Presbrey <presbrey@mit.edu>
+## SIPB Scripts LVS Firewall marks
+
+iptables -F -t mangle
+
+# scripts.mit.edu
+iptables -A PREROUTING -t mangle -m tcp -m multiport -p tcp -d 18.181.0.46/31 --dports 25,80,443 -j MARK --set-mark 2
+iptables -A PREROUTING -t mangle -m mark --mark 0 -d 18.181.0.46/31 -j MARK --set-mark 1
+
+# scripts-cert.mit.edu
+iptables -A PREROUTING -t mangle -m tcp -m multiport -p tcp -d 18.181.0.50/31 --dports 25,80,443 -j MARK --set-mark 2
+iptables -A PREROUTING -t mangle -m mark --mark 0 -d 18.181.0.50/31 -j MARK --set-mark 1
