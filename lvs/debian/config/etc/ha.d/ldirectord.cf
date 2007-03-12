@@ -4,17 +4,6 @@ autoreload=yes
 logfile="/var/log/ldirectord.log"
 quiescent=yes
 
-virtual=18.181.0.46:25
-        real=18.181.0.53:25 gate
-        real=18.181.0.57:25 gate
-        fallback=18.187.1.128:25 gate
-        service=smtp
-        request="heartbeat/smtp"
-        receive="1"
-        scheduler=wlc
-        protocol=tcp
-        checktype=connect
-
 virtual=18.181.0.46:80
         real=18.181.0.53:80 gate
         real=18.181.0.57:80 gate
