@@ -22,9 +22,11 @@ COMMIT
 -A INPUT -p tcp -m tcp --dport 5666 -s ! 18.187.1.128/255.255.255.255 -j REJECT
 -A INPUT -p tcp -m tcp --dport 199 -s ! 18.187.1.128/255.255.255.255 -j REJECT
 -A INPUT -p udp -m udp --dport 161 -s ! 18.187.1.128/255.255.255.255 -j REJECT
+-A INPUT -p tcp -m tcp -m multiport --dports 111,613,944,1004,2049 -s 127.0.0.1/255.0.0.0 -j ACCEPT
 -A INPUT -p tcp -m tcp -m multiport --dports 111,613,944,1004,2049 -s 18.181.0.53/255.255.255.255 -j ACCEPT
 -A INPUT -p tcp -m tcp -m multiport --dports 111,613,944,1004,2049 -s 18.181.0.57/255.255.255.255 -j ACCEPT
 -A INPUT -p tcp -m tcp -m multiport --dports 111,613,944,1004,2049 -j REJECT
+-A INPUT -p udp -m udp -m multiport --dports 111,2049 -s 127.0.0.1/255.0.0.0 -j ACCEPT
 -A INPUT -p udp -m udp -m multiport --dports 111,2049 -s 18.181.0.53/255.255.255.255 -j ACCEPT
 -A INPUT -p udp -m udp -m multiport --dports 111,2049 -s 18.181.0.57/255.255.255.255 -j ACCEPT
 -A INPUT -p udp -m udp -m multiport --dports 111,2049 -j REJECT
