@@ -55,7 +55,8 @@ static int check_afsgroup_access(request_rec *r)
     int m = r->method_number;
     int required_afsgroup = 0;
     register int x;
-    const char *t, *w;
+    const char *t;
+    char *w;
     const apr_array_header_t *reqs_arr = ap_requires(r);
     require_line *reqs;
 
@@ -77,11 +78,13 @@ static int check_afsgroup_access(request_rec *r)
             while (t[0]) {
 		int pfd[2];
 		pid_t cpid;
+		int status;
 		FILE *fp;
 		char *line = NULL;
 		char buf[256];
 		size_t len = 0;
 		ssize_t read;
+		int found = 0;
                 w = ap_getword_conf(r->pool, &t);
 		if (pipe(pfd) == -1) {
 		    ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
@@ -90,6 +93,8 @@ static int check_afsgroup_access(request_rec *r)
 		}
 		cpid = fork();
 		if (cpid == -1) {
+		    close(pfd[0]);
+		    close(pfd[1]);
 		    ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
 				  "fork() failed!");
 		    return HTTP_INTERNAL_SERVER_ERROR;
@@ -120,13 +125,25 @@ static int check_afsgroup_access(request_rec *r)
 		    continue;
 		}
 		while ((read = getline(&line, &len, fp)) != -1) {
-		    if (strcmp(line, buf) == 0) {
-			return OK;
-		    }
+		    if (strcmp(line, buf) == 0)
+			found = 1;
 		}
 		if (line)
 		    free(line);
 		fclose(fp);
+		if (waitpid(cpid, &status, 0) == -1) {
+		    ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+				  "waitpid() failed!");
+		    return HTTP_INTERNAL_SERVER_ERROR;
+		}
+		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+		    ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+				  "`pts membership -nameorid %s` failed!",
+				  w);
+		    return HTTP_INTERNAL_SERVER_ERROR;
+		}
+		if (found)
+		    return OK;
             }
         }
     }
