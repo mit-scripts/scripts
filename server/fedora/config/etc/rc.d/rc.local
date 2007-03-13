@@ -2,4 +2,8 @@
 
 touch /var/lock/subsys/local
 
+if [ -r "/afs/athena.mit.edu" ]; then
+	/sbin/service postfix start
+fi
+
 /bin/mkdir -pm 1773 /tmp/sessions
