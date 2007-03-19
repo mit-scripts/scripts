@@ -1,5 +1,5 @@
 /* mod_auth_sslcert
- * version 1.0, released 2006-01-04
+ * version 1.0, released 2007-01-04
  * Anders Kaseorg <anders@kaseorg.com>
  *
  * This module does authentication based on SSL client certificates:

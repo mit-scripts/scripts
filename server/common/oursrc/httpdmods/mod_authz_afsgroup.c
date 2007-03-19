@@ -1,5 +1,5 @@
 /* mod_authz_afsgroup
- * version 1.0, released 2006-01-04
+ * version 1.1, released 2007-03-13
  * Anders Kaseorg <anders@kaseorg.com>
  *
  * This module does authorization based on AFS groups:
