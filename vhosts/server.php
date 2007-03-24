@@ -51,10 +51,10 @@ if (count($settings)) {
 $baseURL = $mySSL?$baseHTTPS:$baseHTTP;
 ?>
 <html>
-<head><title><?=$myTitle?></title></head>
+<head><title><?=htmlspecialchars($myTitle)?></title></head>
 
 <frameset rows="*">
-	<frame src="<?=$baseURL?><?=$req?>" />
+	<frame src="<?=htmlspecialchars($baseURL . $req)?>" />
 </frameset>
 
 </html>
