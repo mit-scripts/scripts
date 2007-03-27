@@ -46,6 +46,18 @@ if (count($settings)) {
 	if (count($settings) >= 0 && '' != trim($settings[0])) $myTitle = trim($settings[0]);
 	if (count($settings) >= 1 && '' != trim($settings[1])) $baseHTTP = trim($settings[1]);
 	if (count($settings) >= 2 && '' != trim($settings[2])) $baseHTTPS = trim($settings[2]);
+} else {
+	header ("HTTP/1.0 404 Not Found");
+?>
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>The requested URL <?=htmlspecialchars($req)?> was not found on this server.</p>
+</body></html>
+<?
+	exit;
 }
 
 $baseURL = $mySSL?$baseHTTPS:$baseHTTP;
