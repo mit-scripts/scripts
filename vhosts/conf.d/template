@@ -4,15 +4,18 @@
 	ServerName hname.mit.edu
 	ServerAlias hname
 	DocumentRoot /afs/athena.mit.edu/path/web_scripts
+	Alias /~uname /afs/athena.mit.edu/path/web_scripts
 	SuExecUserGroup uname uname
+	Include conf.d/vhosts-common.conf
 </VirtualHost>
 
-<VirtualHost *:443>
-	ServerName hname.mit.edu
-	ServerAlias hname
-	DocumentRoot /afs/athena.mit.edu/path/web_scripts
-	SuExecUserGroup uname uname
-	<IfModule mod_ssl.c>
-	SSLEngine on
-	</IfModule>
-</VirtualHost>
+<IfModule ssl_module>
+	<VirtualHost *:443>
+		ServerName hname.mit.edu
+		ServerAlias hname
+		DocumentRoot /afs/athena.mit.edu/path/web_scripts
+		Alias /~uname /afs/athena.mit.edu/path/web_scripts
+		SuExecUserGroup uname uname
+		Include conf.d/vhosts-common-ssl.conf
+	</VirtualHost>
+</IfModule>
