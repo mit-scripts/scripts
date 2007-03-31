@@ -46,6 +46,7 @@ my @static = qw(
  tgz
  tar
  jar
+ zip
  pdf
  ps
  doc
@@ -53,6 +54,9 @@ my @static = qw(
  ppt
  swf
  mp3
+ mov
+ wmv
+ il
  JPG
 );
 

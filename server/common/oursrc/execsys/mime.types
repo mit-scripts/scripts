@@ -49,7 +49,7 @@ application/news-message-id
 application/news-transmission
 application/ocsp-request
 application/ocsp-response
-application/octet-stream	bin dms lha lzh exe class so dll img iso
+application/octet-stream	bin dms lha lzh exe class so dll img iso il
 application/ogg			ogg
 application/parityfec
 application/pdf			pdf
@@ -503,4 +503,5 @@ video/vnd.nokia.interleaved-multimedia
 video/vnd.vivo
 video/x-msvideo			avi
 video/x-sgi-movie		movie
+video/x-ms-wmv			wmv
 x-conference/x-cooltalk		ice
