@@ -1,6 +1,6 @@
 # scripts.mit.edu openafs patch
 # Copyright (C) 2006  Jeff Arnold <jbarnold@mit.edu>
-#                     Joe Presbrey <presbrey@mit.edu>
+# with modifications by Joe Presbrey <presbrey@mit.edu>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -132,7 +132,7 @@ diff -ur openafs-1.4.1-rc10/src/afs/VNOPS/afs_vnop_access.c openafs-1.4.1-rc10-s
  	return (arights == afs_GetAccessBits(avc, arights, areq));
      } else {
  	/* some rights come from dir and some from file.  Specifically, you 
-@@ -171,6 +181,17 @@
+@@ -171,6 +182,17 @@
  		    fileBits |= PRSFS_READ;
  	    }
  	}
@@ -150,7 +150,7 @@ diff -ur openafs-1.4.1-rc10/src/afs/VNOPS/afs_vnop_access.c openafs-1.4.1-rc10-s
  	return ((fileBits & arights) == arights);	/* true if all rights bits are on */
      }
  }
-@@ -192,6 +213,7 @@
+@@ -192,6 +218,7 @@
      OSI_VC_CONVERT(avc);
  
      AFS_STATCNT(afs_access);
