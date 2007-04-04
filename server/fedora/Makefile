@@ -36,7 +36,7 @@ tree		= $(topdir) $(tmp_build) $(tmp_specs) $(tmp_src) $(out_rpms) $(out_srpms)
 out_sbin	= ${PWD}/sbin
 
 dload		= ${PWD}/.dload
-server_url	= "http://scripts.mit.edu/src"
+server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
 
 rpm_args	= -E '%define _smp_mflags -j4' -E '%define _topdir $(topdir)' -E '%define _rpmdir $(out_rpms)' -E '%define _srcrpmdir $(out_srpms)'
