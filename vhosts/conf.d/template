@@ -3,7 +3,7 @@
 <VirtualHost *:80>
 	ServerName hname.mit.edu
 	ServerAlias hname
-	DocumentRoot /afs/athena.mit.edu/path/web_scripts
+	DocumentRoot /afs/athena.mit.edu/path/web_scripts/subdir
 	Alias /~uname /afs/athena.mit.edu/path/web_scripts
 	SuExecUserGroup uname uname
 	Include conf.d/vhosts-common.conf
@@ -13,7 +13,7 @@
 	<VirtualHost *:443>
 		ServerName hname.mit.edu
 		ServerAlias hname
-		DocumentRoot /afs/athena.mit.edu/path/web_scripts
+		DocumentRoot /afs/athena.mit.edu/path/web_scripts/subdir
 		Alias /~uname /afs/athena.mit.edu/path/web_scripts
 		SuExecUserGroup uname uname
 		Include conf.d/vhosts-common-ssl.conf
