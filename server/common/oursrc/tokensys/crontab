@@ -1,2 +1,2 @@
-@reboot	/home/afsagent/renew
-0  */3  *  *  *	/home/afsagent/renew
+@reboot	afsagent /home/afsagent/renew
+0 */3 * * * afsagent /home/afsagent/renew

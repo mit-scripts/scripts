@@ -28,14 +28,14 @@ See http://scripts.mit.edu/wiki for more information.
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
 install -D renew $RPM_BUILD_ROOT/home/afsagent/renew
-install -D crontab $RPM_BUILD_ROOT/home/afsagent/crontab
+install -D crontab $RPM_BUILD_ROOT/etc/cron.d/afsagent
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(0644, afsagent, afsagent)
-/home/afsagent/crontab
+%defattr(0600, root, root)
+/etc/cron.d/afsagent
 %defattr(0755, afsagent, afsagent)
 /home/afsagent/renew
 
@@ -43,16 +43,13 @@ install -D crontab $RPM_BUILD_ROOT/home/afsagent/crontab
 groupadd -g 101 afsagent
 useradd -u 101 -g 101 afsagent
 
-%post
-crontab -u afsagent /home/afsagent/crontab
-
-%preun
-crontab -u afsagent -r
-
 %postun
 userdel -r afsagent
 
 %changelog
+
+* Wed Apr 11 2007  Joe Presbrey <presbrey@mit.edu>
+- crontab moved system-wide (/etc/cron.d) to isolate from fail-over cron service
 
 * Sat Sep 30 2006  Jeff Arnold <jbarnold@MIT.EDU> 0.00
 - initial prerelease version
