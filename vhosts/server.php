@@ -6,7 +6,7 @@ if (isset($_SERVER['SERVER_PORT'])) $port = $_SERVER['SERVER_PORT']; else $port 
 
 if ($req == '/robots.txt') {
 	header('Content-Type: text/plain');
-	fpassthru('/afs/athena.mit.edu/contrib/scripts/web_scripts/robots.txt');
+	file_get_contents('/afs/athena.mit.edu/contrib/scripts/web_scripts/robots.txt');
 	exit;
 }
 
