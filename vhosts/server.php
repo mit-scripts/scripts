@@ -4,6 +4,12 @@ if (isset($_SERVER['REQUEST_URI'])) $req = $_SERVER['REQUEST_URI']; else $req = 
 if (isset($_SERVER['PATH_INFO'])) $pi = explode('/',$_SERVER['PATH_INFO']);
 if (isset($_SERVER['SERVER_PORT'])) $port = $_SERVER['SERVER_PORT']; else $port = '80';
 
+if ($req == '/robots.txt') {
+	header('Content-Type: text/plain');
+	fpassthru('/afs/athena.mit.edu/contrib/scripts/web_scripts/robots.txt');
+	exit;
+}
+
 if (array_shift(explode('.',$name)) == 'www') {
 	$name = explode('.',$name);
 	array_shift($name);
