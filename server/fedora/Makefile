@@ -130,7 +130,7 @@ suexec: install-srpms
 	patch -p1 < ${patches}/httpd-suexec-scripts.patch; \
 	./configure --prefix=/etc/httpd --with-suexec-userdir=web_scripts --with-suexec-caller=apache --with-suexec-uidmin=50 --with-suexec-gidmin=50 --with-suexec-docroot=/; \
 	pushd support; \
-	make suexec && mkdir ${out_sbin} && cp suexec ${out_sbin}; \
+	mkdir -p ${out_sbin}; make suexec && cp suexec ${out_sbin}; \
 	popd; \
 	rm -rf httpd-2*; \
 	echo; \
