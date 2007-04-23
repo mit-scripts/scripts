@@ -150,7 +150,7 @@
 +    size_t expected_len = strlen(target_homedir)+1+strlen(AP_USERDIR_SUFFIX)+1;
 +    char *expected = malloc(expected_len);
 +    snprintf(expected, expected_len, "%s/%s", target_homedir, AP_USERDIR_SUFFIX);
-+    if (strncmp(cwd, expected, expected_len) != 0) {
++    if (strncmp(cwd, expected, expected_len-1) != 0) {
 +        log_err("error: file's directory not a subdirectory of user's home directory (%s, %s)\n", cwd, expected);
 +        exit(114);
 +    }
