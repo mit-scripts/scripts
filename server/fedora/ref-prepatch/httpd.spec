@@ -59,8 +59,6 @@ Obsoletes: apache, secureweb, mod_dav, mod_gzip, stronghold-apache, stronghold-h
 Obsoletes: mod_put, mod_roaming, mod_jk
 Conflicts: pcre < 4.0
 
-Patch1000: httpd-suexec-scripts.patch
-
 %description
 The Apache HTTP Server is a powerful, efficient, and extensible
 web server.
@@ -127,8 +125,6 @@ Security (TLS) protocols.
 
 # Patch in vendor/release string
 sed "s/@RELEASE@/%{vstring}/" < %{PATCH20} | patch -p1
-
-%patch1000 -p1 -b .scripts
 
 # Safety check: prevent build if defined MMN does not equal upstream MMN.
 vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
@@ -289,9 +285,9 @@ rmdir $RPM_BUILD_ROOT%{_sysconfdir}/httpd/logs
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/httpd
 
 # symlinks for /etc/httpd
-ln -s $RPM_BUILD_ROOT%{_localstatedir}/log/httpd $RPM_BUILD_ROOT/etc/httpd/logs
-ln -s $RPM_BUILD_ROOT%{_localstatedir}/run $RPM_BUILD_ROOT/etc/httpd/run
-ln -s $RPM_BUILD_ROOT%{_libdir}/httpd/modules $RPM_BUILD_ROOT/etc/httpd/modules
+ln -s ../..%{_localstatedir}/log/httpd $RPM_BUILD_ROOT/etc/httpd/logs
+ln -s ../..%{_localstatedir}/run $RPM_BUILD_ROOT/etc/httpd/run
+ln -s ../..%{_libdir}/httpd/modules $RPM_BUILD_ROOT/etc/httpd/modules
 
 # install SYSV init stuff
 mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
