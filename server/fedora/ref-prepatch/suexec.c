@@ -95,7 +95,6 @@ static const char *const safe_env_lst[] =
 {
     /* variable name starts with */
     "HTTP_",
-    "HTTPS_",
     "SSL_",
 
     /* variable name is */
@@ -141,7 +140,6 @@ static const char *const safe_env_lst[] =
     "UNIQUE_ID=",
     "USER_NAME=",
     "TZ=",
-    "PHPRC=",
     NULL
 };
 
@@ -515,12 +513,6 @@ int main(int argc, char *argv[])
             exit(113);
         }
     }
-    char *expected = malloc(strlen(target_homedir)+strlen(AP_USERDIR_SUFFIX)+1);
-    sprintf(expected, "%s/%s", target_homedir, AP_USERDIR_SUFFIX);
-    if ((strncmp(cwd, expected, strlen(expected))) != 0) {
-        log_err("error: file's directory not a subdirectory of user's home directory (%s, %s)\n", cwd, expected);
-        exit(114);
-    }
 
     if ((strncmp(cwd, dwd, strlen(dwd))) != 0) {
         log_err("command not in docroot (%s/%s)\n", cwd, cmd);
@@ -538,17 +530,15 @@ int main(int argc, char *argv[])
     /*
      * Error out if cwd is writable by others.
      */
-#if 0
     if ((dir_info.st_mode & S_IWOTH) || (dir_info.st_mode & S_IWGRP)) {
         log_err("directory is writable by others: (%s)\n", cwd);
         exit(116);
     }
-#endif
 
     /*
      * Error out if we cannot stat the program.
      */
-    if (((lstat(cmd, &prg_info)) != 0) /*|| (S_ISLNK(prg_info.st_mode))*/) {
+    if (((lstat(cmd, &prg_info)) != 0) || (S_ISLNK(prg_info.st_mode))) {
         log_err("cannot stat program: (%s)\n", cmd);
         exit(117);
     }
@@ -556,12 +546,10 @@ int main(int argc, char *argv[])
     /*
      * Error out if the program is writable by others.
      */
-#if 0
     if ((prg_info.st_mode & S_IWOTH) || (prg_info.st_mode & S_IWGRP)) {
         log_err("file is writable by others: (%s/%s)\n", cwd, cmd);
         exit(118);
     }
-#endif
 
     /*
      * Error out if the file is setuid or setgid.
@@ -575,7 +563,6 @@ int main(int argc, char *argv[])
      * Error out if the target name/group is different from
      * the name/group of the cwd or the program.
      */
-#if 0
     if ((uid != dir_info.st_uid) ||
         (gid != dir_info.st_gid) ||
         (uid != prg_info.st_uid) ||
@@ -587,7 +574,6 @@ int main(int argc, char *argv[])
                 prg_info.st_uid, prg_info.st_gid);
         exit(120);
     }
-#endif
     /*
      * Error out if the program is not executable for the user.
      * Otherwise, she won't find any error in the logs except for
