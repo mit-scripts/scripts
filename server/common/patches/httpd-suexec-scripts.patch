@@ -29,8 +29,17 @@
  htcacheclean_OBJECTS = htcacheclean.lo
  htcacheclean: $(htcacheclean_OBJECTS)
 --- httpd-2.2.2/support/suexec.c.old	2006-04-21 21:53:06.000000000 -0400
-+++ httpd-2.2.2/support/suexec.c	2006-08-25 10:04:22.000000000 -0400
-@@ -46,6 +46,7 @@
++++ httpd-2.2.2/support/suexec.c	2007-04-23 03:04:56.000000000 -0400
+@@ -30,6 +30,8 @@
+  *
+  */
+ 
++#define STATIC_CAT_PATH "/usr/local/bin/static-cat"
++
+ #include "apr.h"
+ #include "ap_config.h"
+ #include "suexec.h"
+@@ -46,6 +48,7 @@
  #include <stdio.h>
  #include <stdarg.h>
  #include <stdlib.h>
@@ -38,7 +47,7 @@
  
  #ifdef HAVE_PWD_H
  #include <pwd.h>
-@@ -95,6 +96,7 @@
+@@ -95,6 +98,7 @@
  {
      /* variable name starts with */
      "HTTP_",
@@ -46,7 +55,7 @@
      "SSL_",
  
      /* variable name is */
-@@ -140,6 +142,7 @@
+@@ -140,6 +144,7 @@
      "UNIQUE_ID=",
      "USER_NAME=",
      "TZ=",
@@ -54,7 +63,60 @@
      NULL
  };
  
-@@ -450,7 +453,7 @@
+@@ -245,6 +250,52 @@
+     environ = cleanenv;
+ }
+ 
++static const char *static_extensions[] = {
++    "html",
++    "css",
++    "gif",
++    "jpg",
++    "png",
++    "htm",
++    "jpeg",
++    "js",
++    "ico",
++    "xml",
++    "xsl",
++    "tiff",
++    "tif",
++    "tgz",
++    "tar",
++    "jar",
++    "zip",
++    "pdf",
++    "ps",
++    "doc",
++    "xls",
++    "ppt",
++    "swf",
++    "mp3",
++    "mov",
++    "wmv",
++    "mpg",
++    "mpeg",
++    "avi",
++    "il",
++    "JPG",
++    NULL
++};
++
++static int is_static_extension(const char *file)
++{
++    const char *extension = strrchr(file, '.');
++    const char **p;
++    if (extension == NULL) return 0;
++    for (p = static_extensions; *p; ++p) {
++        if (strcmp(extension + 1, *p) == 0) return 1;
++    }
++    return 0;
++}
++
+ int main(int argc, char *argv[])
+ {
+     int userdir = 0;        /* ~userdir flag             */
+@@ -450,7 +501,7 @@
       * Error out if attempt is made to execute as root or as
       * a UID less than AP_UID_MIN.  Tsk tsk.
       */
@@ -63,7 +125,7 @@
          log_err("cannot run as forbidden uid (%d/%s)\n", uid, cmd);
          exit(107);
      }
-@@ -482,6 +485,17 @@
+@@ -482,6 +533,17 @@
          log_err("failed to setuid (%ld: %s)\n", uid, cmd);
          exit(110);
      }
@@ -81,20 +143,21 @@
  
      /*
       * Get the current working directory, as well as the proper
-@@ -513,6 +527,12 @@
+@@ -513,6 +575,13 @@
              exit(113);
          }
      }
-+    char *expected = malloc(strlen(target_homedir)+strlen(AP_USERDIR_SUFFIX)+1);
-+    sprintf(expected, "%s/%s", target_homedir, AP_USERDIR_SUFFIX);
-+    if ((strncmp(cwd, expected, strlen(expected))) != 0) {
++    size_t expected_len = strlen(target_homedir)+1+strlen(AP_USERDIR_SUFFIX)+1;
++    char *expected = malloc(expected_len);
++    snprintf(expected, expected_len, "%s/%s", target_homedir, AP_USERDIR_SUFFIX);
++    if (strncmp(cwd, expected, expected_len) != 0) {
 +        log_err("error: file's directory not a subdirectory of user's home directory (%s, %s)\n", cwd, expected);
 +        exit(114);
 +    }
  
      if ((strncmp(cwd, dwd, strlen(dwd))) != 0) {
          log_err("command not in docroot (%s/%s)\n", cwd, cmd);
-@@ -530,15 +550,17 @@
+@@ -530,15 +598,17 @@
      /*
       * Error out if cwd is writable by others.
       */
@@ -113,7 +176,7 @@
          log_err("cannot stat program: (%s)\n", cmd);
          exit(117);
      }
-@@ -546,10 +568,12 @@
+@@ -546,10 +616,12 @@
      /*
       * Error out if the program is writable by others.
       */
@@ -126,7 +189,7 @@
  
      /*
       * Error out if the file is setuid or setgid.
-@@ -563,6 +587,7 @@
+@@ -563,6 +635,7 @@
       * Error out if the target name/group is different from
       * the name/group of the cwd or the program.
       */
@@ -134,7 +197,7 @@
      if ((uid != dir_info.st_uid) ||
          (gid != dir_info.st_gid) ||
          (uid != prg_info.st_uid) ||
-@@ -574,6 +599,7 @@
+@@ -574,6 +647,7 @@
                  prg_info.st_uid, prg_info.st_gid);
          exit(120);
      }
@@ -142,3 +205,17 @@
      /*
       * Error out if the program is not executable for the user.
       * Otherwise, she won't find any error in the logs except for
+@@ -609,6 +683,13 @@
+         log = NULL;
+     }
+ 
++    if (is_static_extension(cmd)) {
++        argv[2] = STATIC_CAT_PATH;
++        execv(STATIC_CAT_PATH, &argv[2]);
++	log_err("(%d)%s: static_cat exec failed (%s)\n", errno, strerror(errno), argv[2]);
++	exit(255);
++    }
++
+     /*
+      * Execute the command, replacing our image with its own.
+      */
