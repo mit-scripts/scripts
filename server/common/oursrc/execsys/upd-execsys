@@ -97,9 +97,9 @@ foreach my $ext (@dynamic) {
   print BINFMT "echo \":${ext}:E::${ext}::${path}:\" > /proc/sys/fs/binfmt_misc/register\n" if($path);
 }
 
-foreach my $ext (@static) {
-	print BINFMT "echo \":${ext}:E::${ext}::$ENV{syscat_path}:\" > /proc/sys/fs/binfmt_misc/register\n";
-}
+#foreach my $ext (@static) {
+#	print BINFMT "echo \":${ext}:E::${ext}::$ENV{syscat_path}:\" > /proc/sys/fs/binfmt_misc/register\n";
+#}
 print BINFMT $fend;
 close(BINFMT);
 
