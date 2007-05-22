@@ -40,7 +40,7 @@ server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
 
 rpm_args	= -E '%define _smp_mflags -j4' -E '%define _topdir $(topdir)' -E '%define _rpmdir $(out_rpms)' -E '%define _srcrpmdir $(out_srpms)'
-#-E '%define kernvers %(rpm -q --whatprovides kernel | sort | tail -1)'
+openafs_rpm_args = -E "%define kernvers $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)"
 
 .PHONY: minimal-clean
 
@@ -121,7 +121,7 @@ $(allsrc): setup
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild $(rpm_args) -bb --define "build_userspace 0" --define "build_modules 1" ${tmp_specs}/openafs*.spec
+	rpmbuild $(rpm_args) $(openafs_rpm_args) -bb --define "build_userspace 0" --define "build_modules 1" ${tmp_specs}/openafs*.spec
 
 suexec: install-srpms
 	@rm -rf ${tmp_src}/httpd-2*/; \
