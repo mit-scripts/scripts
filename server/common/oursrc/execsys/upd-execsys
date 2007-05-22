@@ -61,6 +61,7 @@ my @static = qw(
  avi
  il
  JPG
+ xhtml
 );
 
 my %map;
