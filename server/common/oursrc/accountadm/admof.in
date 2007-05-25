@@ -60,7 +60,7 @@ if($ARGV[2] && !getpwnam($targetuser)) {
 }
 
 for(my $i = 2; $i < @fs; $i++) {
-  my ($id) = ($fs[$i] =~ /^  ([\w:_-]+) rlidwka$/);
+  my ($id) = ($fs[$i] =~ /^  ([\w:_\.-]+) rlidwka$/);
   if($id eq "") { next; }
   my $group;
   if($id eq $curuser) { success(); }
