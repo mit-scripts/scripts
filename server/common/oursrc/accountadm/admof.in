@@ -27,7 +27,13 @@ unless(($targetuser) = ($ARGV[0] =~ /^([\w._-]+)$/)) {
   error("Invalid locker name: <$ARGV[0]>.");
 }
 my $curuser;
-unless(($curuser) = ($ARGV[1] =~ /^([\w._-]+)\@ATHENA\.MIT\.EDU$/)) {
+unless(($curuser) = ($ARGV[1] =~ /^([\w._\/-]+)\@ATHENA\.MIT\.EDU$/)) {
+  error("An internal error has occurred.\nContact scripts\@mit.edu for assistance.");
+}
+
+($curuser) =~ s|/|.|; # Replace first instance of a / only; pts membership prints foo/root as foo.root
+
+if (($curuser) =~ m|/|) { # There were two /'s in their name. What?
   error("An internal error has occurred.\nContact scripts\@mit.edu for assistance.");
 }
 
