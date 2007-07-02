@@ -153,9 +153,9 @@ frob-openafs:
 # oursrc: hesinfo
 # httpdmods: httpd-devel
 # httpd: xmlto through distcache-devel
-# krb5: bison through texinfo
+# krb5: bison through texinfo keyutils-libs-devel
 # openafs: pam-devel through automake
 # mit-zephyr: readline-devel hesiod.i386 libXt.i386 compat-readline43
 install-deps:
-	yum -y install kernel-devel rpm-build gcc autoconf patch krb5-workstation hesinfo httpd-devel xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel bison ncurses-devel texinfo pam-devel automake readline-devel hesiod.i386 libXt.i386
+	yum -y install kernel-devel rpm-build gcc autoconf patch krb5-workstation hesinfo httpd-devel xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel bison ncurses-devel texinfo keyutils-libs-devel pam-devel automake readline-devel hesiod.i386 libXt.i386
 	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
