@@ -26,20 +26,18 @@ patches		= ${PWD}/../common/patches
 metapatches	= ${PWD}/meta-patches
 specs		= ${PWD}/specs
 
-topdir		= ${PWD}/.tmp
-tmp_build	= ${PWD}/.tmp/BUILD
-tmp_specs	= ${PWD}/.tmp/SPECS
-tmp_src		= ${PWD}/.tmp/SOURCES
-out_rpms	= ${PWD}/RPMS
-out_srpms	= ${PWD}/SRPMS
-tree		= $(topdir) $(tmp_build) $(tmp_specs) $(tmp_src) $(out_rpms) $(out_srpms) 
-out_sbin	= ${PWD}/sbin
+topdir		= ${HOME}/rpmbuild
+tmp_build	= $(topdir)/BUILD
+tmp_specs	= $(topdir)/SPECS
+tmp_src		= $(topdir)/SOURCES
+out_rpms	= $(topdir)/RPMS
+out_srpms	= $(topdir)/SRPMS
+out_sbin	= $(topdir)/sbin
 
 dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
 
-rpm_args	= -E '%define _smp_mflags -j4' -E '%define _topdir $(topdir)' -E '%define _rpmdir $(out_rpms)' -E '%define _srcrpmdir $(out_srpms)'
 openafs_rpm_args = -E "%define kernvers $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)"
 
 .PHONY: minimal-clean
@@ -56,7 +54,9 @@ clean: minimal-clean
 	rm -rf $(out_rpms) $(out_srpms) $(out_sbin)
 
 mkdir-tree:
-	@mkdir -p $(tree);
+	@rpmdev-setuptree; \
+	mkdir -p $(out_sbin); \
+	ln -s $(topdir) rpmbuild;
 
 download:
 	-@wget -O- -nv $(server_url)/$(server_arch) | wget -i- -nv -N -B $(server_url)/ -nd -nH -P $(dload);
@@ -117,11 +117,11 @@ all:
 
 $(allsrc): setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild $(rpm_args) -ba ${tmp_specs}/$@*.spec
+	rpmbuild -ba ${tmp_specs}/$@*.spec
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild $(rpm_args) $(openafs_rpm_args) -bb --define "build_userspace 0" --define "build_modules 1" ${tmp_specs}/openafs*.spec
+	rpmbuild $(openafs_rpm_args) -bb --define "build_userspace 0" --define "build_modules 1" ${tmp_specs}/openafs*.spec
 
 suexec: install-srpms
 	@rm -rf ${tmp_src}/httpd-2*/; \
@@ -157,5 +157,5 @@ frob-openafs:
 # openafs: pam-devel through automake
 # mit-zephyr: readline-devel hesiod.i386 libXt.i386 compat-readline43
 install-deps:
-	yum -y install kernel-devel rpm-build gcc autoconf patch krb5-workstation hesinfo httpd-devel xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel bison ncurses-devel texinfo keyutils-libs-devel pam-devel automake readline-devel hesiod.i386 libXt.i386
+	yum -y install kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstation hesinfo httpd-devel xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel bison ncurses-devel texinfo keyutils-libs-devel pam-devel automake readline-devel hesiod.i386 libXt.i386
 	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
