@@ -1,4 +1,4 @@
-package Bundle::Snapshot_2007_02_24_01;
+package Bundle::Snapshot_2007_07_07_00;
 
 $VERSION = '0.01';
 
@@ -8,11 +8,11 @@ __END__
 
 =head1 NAME
 
-Bundle::Snapshot_2007_02_24_01 - Snapshot of installation on localhost on Sat Feb 24 23:01:05 2007
+Bundle::Snapshot_2007_07_07_00 - Snapshot of installation on localhost on Sat Jul  7 14:57:22 2007
 
 =head1 SYNOPSIS
 
-perl -MCPAN -e 'install Bundle::Snapshot_2007_02_24_01'
+perl -MCPAN -e 'install Bundle::Snapshot_2007_07_07_00'
 
 =head1 CONTENTS
 
@@ -158,7 +158,7 @@ Apache::LogRegex 1.4
 
 Apache::Mason 0.4
 
-Apache::Session 1.81
+Apache::Session 1.82
 
 Apache::Session::DB_File 1.01
 
@@ -168,13 +168,13 @@ Apache::Session::Flex 1.01
 
 Apache::Session::Generate::MD5 2.1
 
-Apache::Session::Generate::ModUniqueId 0.02
+Apache::Session::Generate::ModUniqueId 0.01
 
-Apache::Session::Generate::ModUsertrack 0.02
+Apache::Session::Generate::ModUsertrack 0.01
 
 Apache::Session::Informix 1.01
 
-Apache::Session::Lock::File 1.02
+Apache::Session::Lock::File 1.03
 
 Apache::Session::Lock::MySQL 1.00
 
@@ -278,12 +278,6 @@ Apache::TestUtil 0.02
 
 Apache::XMLRPC undef
 
-App::CLI 0.07
-
-App::CLI::Command undef
-
-App::CLI::Command::Help undef
-
 AppConfig 1.64
 
 AppConfig::Args 1.64
@@ -306,11 +300,25 @@ Archive::Tar::File 0.02
 
 Archive::Zip 1.18
 
+Archive::Zip::Archive 1.18
+
 Archive::Zip::BufferedFileHandle 1.18
+
+Archive::Zip::DirectoryMember 1.18
+
+Archive::Zip::FileMember 1.18
+
+Archive::Zip::Member 1.18
 
 Archive::Zip::MemberRead 1.18
 
 Archive::Zip::MockFileHandle 1.18
+
+Archive::Zip::NewFileMember 1.18
+
+Archive::Zip::StringMember 1.18
+
+Archive::Zip::ZipFileMember 1.18
 
 Array::Compare 1.13
 
@@ -386,8 +394,6 @@ Barcode::Cuecat 1.20
 
 Benchmark 1.07
 
-Benchmark::Timer 0.7100
-
 BerkeleyDB 0.31
 
 BerkeleyDB::Btree undef
@@ -402,8 +408,6 @@ Bit::Vector::String 6.4
 
 Business::Hours 0.07
 
-Business::ISBN 1.84
-
 Business::ISBN::Data 1.13
 
 Business::UPC 0.04
@@ -415,8 +419,6 @@ CGI 3.25
 CGI::Carp 1.29
 
 CGI::Cookie 1.27
-
-CGI::Cookie::Splitter 0.02
 
 CGI::Fast 1.07
 
@@ -528,8 +530,6 @@ Class::Accessor::Fast 0.30
 
 Class::Accessor::Faster 0.30
 
-Class::Accessor::Named 0.006
-
 Class::Autouse 1.27
 
 Class::Autouse::Parent 1.27
@@ -608,7 +608,7 @@ Class::Factory::Util 1.6
 
 Class::ISA 0.33
 
-Class::InsideOut 1.0301
+Class::InsideOut 1.06
 
 Class::Inspector 1.16
 
@@ -642,7 +642,7 @@ Compress::Zlib 2.003
 
 Config undef
 
-Config::General 2.31
+Config::General 2.32
 
 Config::General::Extended 2.02
 
@@ -778,7 +778,7 @@ DBI::Util::_accessor 0.009091
 
 DBIx::ContextualFetch 1.03
 
-DBIx::DBSchema 0.31
+DBIx::DBSchema 0.32
 
 DBIx::DBSchema::ColGroup undef
 
@@ -786,7 +786,7 @@ DBIx::DBSchema::ColGroup::Index undef
 
 DBIx::DBSchema::ColGroup::Unique undef
 
-DBIx::DBSchema::Column 0.06
+DBIx::DBSchema::Column 0.08
 
 DBIx::DBSchema::DBD 0.03
 
@@ -800,7 +800,7 @@ DBIx::DBSchema::DBD::Sybase 0.03
 
 DBIx::DBSchema::DBD::mysql 0.04
 
-DBIx::DBSchema::Table 0.02
+DBIx::DBSchema::Table 0.03
 
 DBIx::DBSchema::_util undef
 
@@ -937,20 +937,6 @@ Date::Simple::ISO undef
 DateTime 0.36
 
 DateTime::Duration undef
-
-DateTime::Format::Builder 0.7807
-
-DateTime::Format::Builder::Parser 0.77
-
-DateTime::Format::Builder::Parser::Dispatch 0.78
-
-DateTime::Format::Builder::Parser::Quick 0.77
-
-DateTime::Format::Builder::Parser::Regex 0.77
-
-DateTime::Format::Builder::Parser::Strptime 0.77
-
-DateTime::Format::Builder::Parser::generic 0.77
 
 DateTime::Format::Mail 0.30
 
@@ -2502,7 +2488,7 @@ Devel::Peek 1.03
 
 Devel::SelfStubber 1.03
 
-Devel::StackTrace 1.13
+Devel::StackTrace 1.15
 
 Devel::Symdump 2.07
 
@@ -2540,35 +2526,7 @@ Dumpvalue 1.12
 
 DynaLoader 1.05
 
-Email::Abstract 2.131
-
-Email::Abstract::EmailMIME undef
-
-Email::Abstract::EmailSimple undef
-
-Email::Abstract::MIMEEntity undef
-
-Email::Abstract::MailInternet undef
-
-Email::Abstract::MailMessage undef
-
 Email::Address 1.884
-
-Email::Date 1.101
-
-Email::Filter 1.03
-
-Email::Folder 0.852
-
-Email::Folder::Ezmlm undef
-
-Email::Folder::MH undef
-
-Email::Folder::Maildir undef
-
-Email::Folder::Mbox undef
-
-Email::Folder::Reader undef
 
 Email::FolderType 0.812
 
@@ -2580,41 +2538,15 @@ Email::FolderType::Maildir undef
 
 Email::FolderType::Mbox undef
 
-Email::LocalDelivery 0.214
-
-Email::LocalDelivery::Maildir 1.10
-
-Email::LocalDelivery::Mbox 1.102
-
-Email::MIME 1.858
-
 Email::MIME::ContentType 1.012
-
-Email::MIME::Creator 1.451
 
 Email::MIME::Encodings 1.310
 
-Email::MIME::Modifier 1.441
-
 Email::MessageID 1.35
-
-Email::Send 2.185
-
-Email::Send::IO 2.15
-
-Email::Send::NNTP 2.04
-
-Email::Send::Qmail 2.15
-
-Email::Send::SMTP 2.182
-
-Email::Send::Sendmail 2.15
-
-Email::Send::Test 2.04
 
 Email::Simple 1.998
 
-Email::Simple::Creator 1.41
+Email::Simple::Header 1.997_02
 
 Email::Simple::Headers 1.970
 
@@ -2956,34 +2888,6 @@ GD::Barcode::UPCA 1.1
 
 GD::Barcode::UPCE 1.1
 
-GD::Graph 1.4308
-
-GD::Graph::Data 1.21.2.2
-
-GD::Graph::Error 1.8
-
-GD::Graph::area 1.16.2.3
-
-GD::Graph::axestype 1.44.2.14
-
-GD::Graph::bars 1.25.2.9
-
-GD::Graph::colour 1.10
-
-GD::Graph::hbars 1.3
-
-GD::Graph::lines 1.15
-
-GD::Graph::linespoints 1.8
-
-GD::Graph::mixed 1.12.2.1
-
-GD::Graph::pie 1.20.2.4
-
-GD::Graph::points 1.13
-
-GD::Graph::utils 1.7
-
 GD::Polyline 0.2
 
 GD::Simple undef
@@ -3010,7 +2914,7 @@ Getopt::Long 2.36
 
 Getopt::Std 1.05
 
-Glib 1.141
+Glib 1.143
 
 Glib::CodeGen 0.03
 
@@ -3184,8 +3088,6 @@ HTTP::Server::Simple::CGI::Environment undef
 
 HTTP::Server::Simple::Mason 0.09
 
-HTTP::Server::Simple::Recorder 0.02
-
 HTTP::Status 1.28
 
 Hash::Merge 0.08
@@ -3266,7 +3168,7 @@ IO::Socket::INET 1.31
 
 IO::Socket::INET6 2.51
 
-IO::Socket::SSL 1.01
+IO::Socket::SSL 1.02
 
 IO::Socket::UNIX 1.23
 
@@ -3301,8 +3203,6 @@ IO::Wrap 2.110
 IO::WrapTie 2.110
 
 IO::Zlib 1.04
-
-IPC::Cmd 0.36
 
 IPC::Msg 1.02
 
@@ -3994,17 +3894,17 @@ Mail::Mailer::smtp undef
 
 Mail::Mailer::testfile 0.02
 
-Mail::Mbox::MessageParser 1.4005
+Mail::Mbox::MessageParser 1.5000
 
-Mail::Mbox::MessageParser::Cache 1.3000
+Mail::Mbox::MessageParser::Cache 1.3001
 
 Mail::Mbox::MessageParser::Config 0.0101
 
-Mail::Mbox::MessageParser::Grep 1.7003
+Mail::Mbox::MessageParser::Grep 1.7004
 
-Mail::Mbox::MessageParser::MetaInfo 0.0101
+Mail::Mbox::MessageParser::MetaInfo 0.0200
 
-Mail::Mbox::MessageParser::Perl 1.6003
+Mail::Mbox::MessageParser::Perl 1.6004
 
 Mail::SPF::Query 1.999.1
 
@@ -4370,15 +4270,13 @@ Module::Install::WriteAll 0.64
 
 Module::Load 0.10
 
-Module::Load::Conditional 0.16
-
 Module::Pluggable 3.5
 
 Module::Pluggable::Object undef
 
-Module::Refresh 0.09
+Module::Refresh 0.13
 
-Module::ScanDeps 0.72
+Module::ScanDeps 0.74
 
 Module::ScanDeps::DataFeed 0.09
 
@@ -4546,8 +4444,6 @@ Net::Amazon::Validate::ItemSearch::ca::Sort undef
 
 Net::Amazon::Validate::ItemSearch::ca::Title undef
 
-Net::Amazon::Validate::ItemSearch::ca::UPC undef
-
 Net::Amazon::Validate::ItemSearch::de::Actor undef
 
 Net::Amazon::Validate::ItemSearch::de::Artist undef
@@ -4593,8 +4489,6 @@ Net::Amazon::Validate::ItemSearch::de::Publisher undef
 Net::Amazon::Validate::ItemSearch::de::Sort undef
 
 Net::Amazon::Validate::ItemSearch::de::Title undef
-
-Net::Amazon::Validate::ItemSearch::de::UPC undef
 
 Net::Amazon::Validate::ItemSearch::fr::Actor undef
 
@@ -4644,8 +4538,6 @@ Net::Amazon::Validate::ItemSearch::fr::Sort undef
 
 Net::Amazon::Validate::ItemSearch::fr::Title undef
 
-Net::Amazon::Validate::ItemSearch::fr::UPC undef
-
 Net::Amazon::Validate::ItemSearch::jp::Actor undef
 
 Net::Amazon::Validate::ItemSearch::jp::Artist undef
@@ -4689,8 +4581,6 @@ Net::Amazon::Validate::ItemSearch::jp::Publisher undef
 Net::Amazon::Validate::ItemSearch::jp::Sort undef
 
 Net::Amazon::Validate::ItemSearch::jp::Title undef
-
-Net::Amazon::Validate::ItemSearch::jp::UPC undef
 
 Net::Amazon::Validate::ItemSearch::uk::Actor undef
 
@@ -4737,8 +4627,6 @@ Net::Amazon::Validate::ItemSearch::uk::Publisher undef
 Net::Amazon::Validate::ItemSearch::uk::Sort undef
 
 Net::Amazon::Validate::ItemSearch::uk::Title undef
-
-Net::Amazon::Validate::ItemSearch::uk::UPC undef
 
 Net::Amazon::Validate::ItemSearch::us::Actor undef
 
@@ -5098,8 +4986,6 @@ O 1.00
 
 OLE::Storage_Lite 0.14
 
-Object::Declare 0.22
-
 Object::Realize::Later 0.15
 
 Opcode 1.06
@@ -5115,8 +5001,6 @@ PDL::Basic undef
 PDL::CallExt undef
 
 PDL::Char undef
-
-PDL::Core 1.56
 
 PDL::Core::Dev undef
 
@@ -5135,8 +5019,6 @@ PDL::Demos::TkTriD_demo undef
 PDL::Demos::Transform_demo undef
 
 PDL::Demos::TriD1 undef
-
-PDL::Demos::TriD2 undef
 
 PDL::Demos::TriDGallery undef
 
@@ -5178,11 +5060,7 @@ PDL::IO::Dumper 1.3.1
 
 PDL::IO::FITS 0.9
 
-PDL::IO::FastRaw undef
-
 PDL::IO::FlexRaw undef
-
-PDL::IO::NDF 1.02
 
 PDL::IO::Pic undef
 
@@ -5220,9 +5098,9 @@ PadWalker 1.5
 
 Params::Check 0.25
 
-Params::Util 0.22
+Params::Util 0.23
 
-Params::Validate 0.87
+Params::Validate 0.88
 
 Parse::RecDescent 1.94
 
@@ -5538,7 +5416,7 @@ SelectSaver 1.01
 
 SelfLoader 1.0904
 
-Set::IntSpan 1.09
+Set::IntSpan 1.11
 
 Shell 0.6
 
@@ -5632,9 +5510,85 @@ Test::Builder::Tester 1.07
 
 Test::Builder::Tester::Color undef
 
-Test::ClassAPI 1.03
+Test::ClassAPI 1.04
 
-Test::Dependencies 0.08
+Test::Deep 0.096
+
+Test::Deep::All undef
+
+Test::Deep::Any undef
+
+Test::Deep::Array undef
+
+Test::Deep::ArrayEach undef
+
+Test::Deep::ArrayElementsOnly undef
+
+Test::Deep::ArrayLength undef
+
+Test::Deep::ArrayLengthOnly undef
+
+Test::Deep::Blessed undef
+
+Test::Deep::Boolean undef
+
+Test::Deep::Cache undef
+
+Test::Deep::Cache::Simple undef
+
+Test::Deep::Class undef
+
+Test::Deep::Cmp undef
+
+Test::Deep::Code undef
+
+Test::Deep::Hash undef
+
+Test::Deep::HashEach undef
+
+Test::Deep::HashElements undef
+
+Test::Deep::HashKeys undef
+
+Test::Deep::HashKeysOnly undef
+
+Test::Deep::Ignore undef
+
+Test::Deep::Isa undef
+
+Test::Deep::ListMethods undef
+
+Test::Deep::MM undef
+
+Test::Deep::Methods undef
+
+Test::Deep::NoTest undef
+
+Test::Deep::Number undef
+
+Test::Deep::Ref undef
+
+Test::Deep::RefType undef
+
+Test::Deep::Regexp undef
+
+Test::Deep::RegexpMatches undef
+
+Test::Deep::RegexpRef undef
+
+Test::Deep::RegexpRefOnly undef
+
+Test::Deep::ScalarRef undef
+
+Test::Deep::ScalarRefOnly undef
+
+Test::Deep::Set undef
+
+Test::Deep::Shallow undef
+
+Test::Deep::Stack undef
+
+Test::Deep::String undef
 
 Test::Exception 0.25
 
@@ -5716,7 +5670,7 @@ Test::Tester::Delegate undef
 
 Test::WWW::Mechanize 1.12
 
-Test::Warn 0.08
+Test::Warn 0.10
 
 Test::use::ok 0.02
 
@@ -5732,7 +5686,7 @@ Text::Diff 0.35
 
 Text::Diff::Table 1.2
 
-Text::Glob 0.07
+Text::Glob 0.08
 
 Text::Iconv 1.4
 
@@ -5758,7 +5712,7 @@ Text::WikiFormat::Blocks undef
 
 Text::Wrap 2006.1117
 
-Text::Wrapper 1.000
+Text::Wrapper 1.01
 
 Thread 2.00
 
@@ -5782,7 +5736,7 @@ Tie::Memoize 1.0
 
 Tie::RDBM 0.70
 
-Tie::RefHash 1.32
+Tie::RefHash 1.35
 
 Tie::Scalar 1.00
 
@@ -5976,7 +5930,7 @@ User::grent 1.01
 
 User::pwent 1.00
 
-WWW::Mechanize 1.20
+WWW::Mechanize 1.22
 
 WWW::Mechanize::Image undef
 
@@ -5986,7 +5940,7 @@ WWW::RobotRules 1.33
 
 WWW::RobotRules::AnyDBM_File 1.11
 
-Want 0.12
+Want 0.14
 
 X11::Auth 0.05
 
@@ -6086,7 +6040,7 @@ XML::LibXML::SAX::Parser 1.62
 
 XML::LibXML::XPathContext 1.62
 
-XML::LibXSLT 1.62
+XML::LibXSLT 1.58
 
 XML::NamespaceSupport 1.09
 
