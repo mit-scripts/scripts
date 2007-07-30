@@ -17,7 +17,5 @@
 		Alias /~uname /afs/athena.mit.edu/path/web_scripts
 		SuExecUserGroup uname uname
 		Include conf.d/vhosts-common-ssl.conf
-		# Uncomment the following line to require certificates:
-		# Include conf.d/vhosts-common-ssl-cert.conf
 	</VirtualHost>
 </IfModule>
