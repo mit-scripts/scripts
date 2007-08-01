@@ -1,4 +1,14 @@
-This document will eventually be a how-to for installing a scripts.mit.edu
-server.
+This document is a how-to for installing a Fedora scripts.mit.edu server.
 
-[note to self: remember to include noatime step]
+1.  Check out the scripts.mit.edu svn repository.
+2.  cd to server/fedora in the svn repository.
+3.  Run "make install-deps" to install various prereqs.
+4.  Use the Makefile to build the scripts.mit.edu-specific Fedora packages.
+5.  Install the full list of RPMs that users expect to be on the
+    scripts.mit.edu servers.  See server/doc/rpm and server/doc/rpm_snapshot.
+6.  Install the full list of perl modules that users expect to be on the
+    scripts.mit.edu servers.  See server/doc/perl and server/doc/perl_snapshot.
+7.  Install the credentials (machine keytab, daemon.scripts keytab, SSL certs).
+8.  Configure apache (the apache config is not handled by the packages).
+9.  I recommend setting noatime for the root filesystem in /etc/fstab.
+10. Possibly perform other steps that I've neglected to put in this document.
