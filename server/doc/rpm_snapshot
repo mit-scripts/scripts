@@ -119,6 +119,7 @@ distcache-devel.i386
 distcache-devel.x86_64
 distcache.i386
 distcache.x86_64
+Django.noarch
 dmidecode.x86_64
 dmraid.x86_64
 docbook-dtds.noarch
