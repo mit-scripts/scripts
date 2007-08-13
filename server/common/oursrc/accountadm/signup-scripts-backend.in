@@ -39,6 +39,9 @@ else {
 	complain("athena user not found");
 }
 
+# Tell AFS that we don't want to trigger fakestat
+chdir $homedir;
+
 # Run ls to confirm user's homedir and obtain user's homedir uid
 my $ls_regexp = '^\S*\s+\S*\s+(\S*)\s+(\S*)\s+\S*\s+\S*\s+\S*\s+\S*\s+(\S*).*$';
 my ($uid1, $gid1, $name1) = (`@ls_path@ -dln '$homedir'` =~ $ls_regexp);
