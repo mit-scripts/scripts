@@ -1,6 +1,6 @@
 /* mod_auth_sslcert
- * version 1.0, released 2007-01-04
- * Anders Kaseorg <anders@kaseorg.com>
+ * version 1.1, released 2007-09-01 [NOT RELEASED YET]
+ * Anders Kaseorg <andersk@mit.edu>
  *
  * This module does authentication based on SSL client certificates:
  *   AuthType SSLCert
@@ -17,6 +17,7 @@
 #include "http_config.h"
 #include "http_core.h"
 #include "http_log.h"
+#include "http_request.h"
 
 #include "mod_auth.h"
 #include "mod_ssl.h"
@@ -24,21 +25,33 @@
 static APR_OPTIONAL_FN_TYPE(ssl_var_lookup) *ssl_var_lookup;
 
 typedef struct {
-    char *dir;
     int authoritative;
     char *var;
     char *strip_suffix;
+    int strip_suffix_required;
 } auth_sslcert_config_rec;
 
-static void *create_auth_sslcert_dir_config(apr_pool_t *p, char *d)
+static void *create_auth_sslcert_dir_config(apr_pool_t *p, char *dirspec)
 {
     auth_sslcert_config_rec *conf = apr_pcalloc(p, sizeof(*conf));
 
-    conf->dir = d;
-    /* Any failures are fatal. */
     conf->authoritative = 1;
     conf->var = NULL;
     conf->strip_suffix = NULL;
+    conf->strip_suffix_required = 1;
+
+    return conf;
+}
+
+static void *merge_auth_sslcert_dir_config(apr_pool_t *p, void *parent_conf, void *newloc_conf)
+{
+    auth_sslcert_config_rec *pconf = parent_conf, *nconf = newloc_conf,
+	*conf = apr_pcalloc(p, sizeof(*conf));
+
+    conf->authoritative = nconf->authoritative;
+    conf->var = (nconf->var != NULL) ? nconf->var : pconf->var;
+    conf->strip_suffix = (nconf->var != NULL || nconf->strip_suffix != NULL) ?
+	nconf->strip_suffix : pconf->strip_suffix;
 
     return conf;
 }
@@ -58,6 +71,11 @@ static const command_rec auth_sslcert_cmds[] =
 		  (void*)APR_OFFSETOF(auth_sslcert_config_rec, strip_suffix),
 		  OR_AUTHCFG,
 		  "An optional suffix to strip from the username"),
+    AP_INIT_FLAG("AuthSSLCertStripSuffixRequired", ap_set_flag_slot,
+		 (void *)APR_OFFSETOF(auth_sslcert_config_rec, strip_suffix_required),
+		 OR_AUTHCFG,
+		 "Set to 'Off' to allow certs that don't end with a recognized "
+		 "suffix to still authenticate"),
     {NULL}
 };
 
@@ -93,10 +111,13 @@ static int authenticate_sslcert_user(request_rec *r)
 		if (i >= 0 && strcasecmp(user + i, conf->strip_suffix) == 0) {
 		    r->user = apr_pstrmemdup(r->pool, user, i);
 		    return OK;
+		} else if (!conf->strip_suffix_required) {
+		    r->user = user;
+		    return OK;
 		} else {
 		    ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
 				  "SSL username for \"%s\" has wrong suffix: \"%s\"",
-				  r->uri, r->user);
+				  r->uri, user);
 		}
 	    } else {
 		r->user = user;
@@ -106,8 +127,8 @@ static int authenticate_sslcert_user(request_rec *r)
 	    ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
 			  "no SSL username for \"%s\"", r->uri);
 	}
-    } else {
-        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+    } else if (conf->authoritative) {
+	ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
 		      "SSL client not verified for \"%s\"", r->uri);
     }
 
@@ -129,15 +150,15 @@ static void import_ssl_var_lookup()
 
 static void register_hooks(apr_pool_t *p)
 {
-    ap_hook_check_user_id(authenticate_sslcert_user,NULL,NULL,APR_HOOK_MIDDLE);
-    ap_hook_optional_fn_retrieve(import_ssl_var_lookup,NULL,NULL,APR_HOOK_MIDDLE);
+    ap_hook_check_user_id(authenticate_sslcert_user, NULL, NULL, APR_HOOK_MIDDLE);
+    ap_hook_optional_fn_retrieve(import_ssl_var_lookup, NULL, NULL, APR_HOOK_MIDDLE);
 }
 
 module AP_MODULE_DECLARE_DATA auth_sslcert_module =
 {
     STANDARD20_MODULE_STUFF,
     create_auth_sslcert_dir_config,  /* dir config creater */
-    NULL,                            /* dir merger --- default is to override */
+    merge_auth_sslcert_dir_config,   /* dir merger */
     NULL,                            /* server config */
     NULL,                            /* merge server config */
     auth_sslcert_cmds,               /* command apr_table_t */

@@ -1,6 +1,6 @@
 APXS = apxs
 
-MODS = mod_auth_sslcert mod_authz_afsgroup
+MODS = mod_auth_sslcert mod_authz_afsgroup mod_auth_optional
 
 all-local: $(patsubst %,.libs/%.so,$(MODS))
 
