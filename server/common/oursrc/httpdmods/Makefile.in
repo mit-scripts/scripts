@@ -1,13 +1,11 @@
-CC = @CC@
-CFLAGS = -fpic -DSHARED_MODULE @CFLAGS@
-LDFLAGS = -Bshareable
-prefix = @prefix@
+APXS = apxs
 
-all-local: mod_auth_sslcert mod_authz_afsgroup
+MODS = mod_auth_sslcert mod_authz_afsgroup
 
-mod_auth_sslcert mod_authz_afsgroup:
-	$(CC) $(CFLAGS) -c $@.c
-	ld $(LDFLAGS) $@.o -o $@.so
+all-local: $(patsubst %,.libs/%.so,$(MODS))
+
+.libs/%.so: %.c
+	$(APXS) -c $<
 
 clean:
-	rm -f mod_auth_sslcert.*o mod_authz_afsgroup.*o
+	rm -f .libs $(MODS:=.o) $(MODS:=.la) $(MODS:=.lo) $(MODS:=.slo)

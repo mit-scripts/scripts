@@ -27,8 +27,8 @@ make
 
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
-install -D mod_auth_sslcert.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_auth_sslcert.so
-install -D mod_authz_afsgroup.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_authz_afsgroup.so
+install -D .libs/mod_auth_sslcert.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_auth_sslcert.so
+install -D .libs/mod_authz_afsgroup.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_authz_afsgroup.so
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
