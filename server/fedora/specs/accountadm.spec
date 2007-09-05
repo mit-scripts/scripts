@@ -46,8 +46,8 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 /usr/local/sbin/signup-scripts-frontend
 
 %pre
-groupadd -g 102 signup
-useradd -u 102 -g signup -d /afs/athena.mit.edu/contrib/scripts/signup -M signup
+groupadd -g 102 signup || [ $? -eq 9 ]
+useradd -u 102 -g signup -d /afs/athena.mit.edu/contrib/scripts/signup -M signup || [ $? -eq 9 ]
 
 %post
 cat >>/etc/sudoers <<END
