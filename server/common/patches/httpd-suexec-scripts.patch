@@ -47,17 +47,15 @@
  
  #ifdef HAVE_PWD_H
  #include <pwd.h>
-@@ -95,6 +98,9 @@
+@@ -95,6 +98,7 @@
  {
      /* variable name starts with */
      "HTTP_",
 +    "HTTPS_",
      "SSL_",
-+    "PERL",
-+    "PYTHON",
  
      /* variable name is */
-@@ -140,6 +146,7 @@
+@@ -140,6 +144,7 @@
      "UNIQUE_ID=",
      "USER_NAME=",
      "TZ=",
@@ -65,7 +63,7 @@
      NULL
  };
  
-@@ -245,6 +252,53 @@
+@@ -245,6 +250,53 @@
      environ = cleanenv;
  }
  
@@ -119,7 +117,7 @@
  int main(int argc, char *argv[])
  {
      int userdir = 0;        /* ~userdir flag             */
-@@ -450,7 +504,7 @@
+@@ -450,7 +501,7 @@
       * Error out if attempt is made to execute as root or as
       * a UID less than AP_UID_MIN.  Tsk tsk.
       */
@@ -128,27 +126,25 @@
          log_err("cannot run as forbidden uid (%d/%s)\n", uid, cmd);
          exit(107);
      }
-@@ -482,6 +536,19 @@
+@@ -482,6 +533,17 @@
          log_err("failed to setuid (%ld: %s)\n", uid, cmd);
          exit(110);
      }
-+    if (is_selinux_enabled()) {
-+	if (uid == 102) {
-+	    if (setexeccon("system_u:system_r:signup_t:s0") == -1) {
-+		log_err("failed to setexeccon (%ld: %s) to signup_t\n", uid, cmd);
-+		exit(201);
-+	    }
-+	} else {
-+	    if (setexeccon("user_u:user_r:user_t:s0") == -1) {
-+		log_err("failed to setexeccon (%ld: %s) to user_t\n", uid, cmd);
-+		exit(202);
-+	    }
-+	}
++    if (uid == 102) {
++        if (setexeccon("system_u:system_r:signup_t:s0") == -1) {
++            log_err("failed to setexeccon (%ld: %s) to signup_t\n", uid, cmd);
++            exit(201);
++        }
++    } else {
++        if (setexeccon("user_u:user_r:user_t:s0") == -1) {
++            log_err("failed to setexeccon (%ld: %s) to user_t\n", uid, cmd);
++            exit(202);
++        }
 +    }
  
      /*
       * Get the current working directory, as well as the proper
-@@ -513,6 +580,13 @@
+@@ -513,6 +575,13 @@
              exit(113);
          }
      }
@@ -162,7 +158,7 @@
  
      if ((strncmp(cwd, dwd, strlen(dwd))) != 0) {
          log_err("command not in docroot (%s/%s)\n", cwd, cmd);
-@@ -530,15 +604,17 @@
+@@ -530,15 +598,17 @@
      /*
       * Error out if cwd is writable by others.
       */
@@ -181,7 +177,7 @@
          log_err("cannot stat program: (%s)\n", cmd);
          exit(117);
      }
-@@ -546,10 +622,12 @@
+@@ -546,10 +616,12 @@
      /*
       * Error out if the program is writable by others.
       */
@@ -194,7 +190,7 @@
  
      /*
       * Error out if the file is setuid or setgid.
-@@ -563,6 +641,7 @@
+@@ -563,6 +635,7 @@
       * Error out if the target name/group is different from
       * the name/group of the cwd or the program.
       */
@@ -202,7 +198,7 @@
      if ((uid != dir_info.st_uid) ||
          (gid != dir_info.st_gid) ||
          (uid != prg_info.st_uid) ||
-@@ -574,6 +653,7 @@
+@@ -574,6 +647,7 @@
                  prg_info.st_uid, prg_info.st_gid);
          exit(120);
      }
@@ -210,7 +206,7 @@
      /*
       * Error out if the program is not executable for the user.
       * Otherwise, she won't find any error in the logs except for
-@@ -609,6 +689,13 @@
+@@ -609,6 +683,13 @@
          log = NULL;
      }
  
