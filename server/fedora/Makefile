@@ -54,9 +54,9 @@ clean: minimal-clean
 	rm -rf $(out_rpms) $(out_srpms) $(out_sbin)
 
 mkdir-tree:
-	@rpmdev-setuptree; \
-	mkdir -p $(out_sbin); \
-	ln -s $(topdir) rpmbuild;
+	@rpmdev-setuptree
+	mkdir -p $(out_sbin)
+	ln -sTf $(topdir) rpmbuild
 
 download:
 	-@wget -O- -nv $(server_url)/$(server_arch) | wget -i- -nv -N -B $(server_url)/ -nd -nH -P $(dload);
