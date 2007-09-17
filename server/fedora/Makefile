@@ -138,7 +138,7 @@ suexec: install-srpms
 	echo "Run 'make install-suexec' as root to install it.";
 
 install-suexec:
-	install -m 4510 -o 0 -g apache ${PWD}/sbin/suexec /usr/sbin/;
+	install -m 4510 -o 0 -g apache ${out_sbin}/suexec /usr/sbin/;
 
 frob-openafs:
 	@if [ ! -d "/etc/openafs/" ]; then \
