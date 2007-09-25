@@ -4,4 +4,8 @@
 ::1		localhost.localdomain localhost
 
 18.181.0.46	scripts.mit.edu
+18.181.0.50	scripts-cert.mit.edu
 18.181.0.52	sql.mit.edu
+
+18.181.0.53	old-faithful.mit.edu old-faithful
+18.181.0.57	better-mousetrap.mit.edu better-mousetrap
