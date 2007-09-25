@@ -1,0 +1,5 @@
+You must log in to the scripts service using Kerberos tickets, but
+your ssh client did not pass a valid ticket to the scripts server.
+
+See http://scripts.mit.edu/faq/41
+

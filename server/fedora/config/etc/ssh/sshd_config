@@ -1,7 +1,7 @@
 Protocol 2
 SyslogFacility AUTHPRIV
-PasswordAuthentication yes
-ChallengeResponseAuthentication no
+PasswordAuthentication no
+ChallengeResponseAuthentication yes
 GSSAPIAuthentication yes
 GSSAPICleanupCredentials yes
 UsePAM yes
