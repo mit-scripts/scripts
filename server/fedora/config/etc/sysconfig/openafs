@@ -1,4 +1,4 @@
-AFSD_ARGS="-afsdb -dynroot -fakestat -daemons 6"
+AFSD_ARGS="-afsdb -dynroot -fakestat-all -daemons 6"
 BOSSERVER_ARGS=
 
 /sbin/sysctl -q afs.GCPAGs=0
