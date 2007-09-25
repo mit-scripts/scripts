@@ -95,5 +95,12 @@ decode:		root
 # Person who should get root's mail
 root:		rootjoe@gmail.com, andersk@mit.edu, quentin@mit.edu
 
+scripts:	root
+signup:		root
+afsagent:	root
+logview:	root
+scripts-build:	root
+
 # People who are abusing the mail system
 aston:          /dev/null
+golem:		/dev/null
