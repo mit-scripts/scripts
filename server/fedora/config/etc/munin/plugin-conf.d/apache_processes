@@ -1,0 +1,2 @@
+[apache_processes]
+env.url http://munin:SsQWsHZWU5OJJOob78pD3UbxKu42Ka9ExGx9zYmvrWE1O5PCq4sBWJsQaJENi4R@127.0.0.1:%d/server-status/?auto
