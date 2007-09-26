@@ -39,24 +39,17 @@ else {
 	complain("athena user not found");
 }
 
-# Tell AFS that we don't want to trigger fakestat
-chdir $homedir;
+# Tell AFS that we don't want to trigger fakestat, and confirm user's homedir
+chdir $homedir or complain("athena homedir not found");
 
-# Run ls to confirm user's homedir and obtain user's homedir uid
-my $ls_regexp = '^\S*\s+\S*\s+(\S*)\s+(\S*)\s+\S*\s+\S*\s+\S*\s+\S*\s+(\S*).*$';
-my ($uid1, $gid1, $name1) = (`@ls_path@ -dln '$homedir'` =~ $ls_regexp);
-
-# Complain if user's homedir does not exist
-complain("athena homedir not found") unless($name1 eq $homedir);
+# Obtain user's homedir uid
+my ($spam, $spam, $spam, $spam, $uid1, $gid1, $spam, $spam, $spam, $spam, $spam, $egg, $spam) = stat '.' or complain("athena homedir not found");
 
 # Complain if user's uid is too low or too high
 complain("bad uid") unless($uid1 > 110 and $uid1 < (1 << 31));
 
-# Run ls to confirm user's .scripts-signup file
-my ($uid2, $gid2, $name2) = (`@ls_path@ -dln '$homedir/.scripts-signup'` =~ $ls_regexp);
-
 # Complain if user's .scripts-signup file does not exist
-#complain("scripts-signup file not found") unless($name2 eq "$homedir/.scripts-signup");
+#complain("scripts-signup file not found") unless(-e '.scripts-signup');
 
 # Complain if the user's username is already taken
 complain("username already taken") if(getpwnam $username);
