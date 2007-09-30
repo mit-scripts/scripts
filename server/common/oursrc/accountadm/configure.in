@@ -41,6 +41,8 @@ LOCATE(useradd)
 LOCATE(groupadd)
 LOCATE(setquota)
 LOCATE(hesinfo)
+LOCATE(sort)
+LOCATE(head)
 
 dnl Needed by mbash.in
 

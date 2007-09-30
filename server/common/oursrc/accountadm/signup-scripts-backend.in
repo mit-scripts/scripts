@@ -30,9 +30,9 @@ complain("bad username") unless($username =~ /^[\w._-]+$/);
 complain("banned username") if(`@grep_path@ '$username' /afs/athena.mit.edu/contrib/scripts/admin/users.banned` != "");
 
 my $homedir;
-my $filsys = `@hesinfo_path@ $username filsys`;
+my $filsys = `@hesinfo_path@ $username filsys | @sort_path@ -nk5 | @head_path@ -n1`;
 # AFS /afs/athena.mit.edu/user/j/b/jbarnold w /mit/jbarnold
-if($filsys =~ /^AFS\s(\/afs\/[\w\._\/-]+)\s.*\s\/mit\/$username$/) {
+if($filsys =~ /^AFS\s(\/afs\/[\w\._\/-]+)\s.*\s\/mit\/$username(?: [0-9]+)?$/) {
 	$homedir = $1;
 }
 else {
@@ -66,7 +66,7 @@ complain("gid already taken") if(getgrgid $gid1);
 
 # Add user to /etc/passwd
 `@sudo_path@ -u root @groupadd_path@ -g '$gid1' '$username'`;
-`@sudo_path@ -u root @useradd_path@ -d '$homedir' -s '/usr/local/bin/mbash' -u '$uid1' -g '$gid1' -G users '$username'`;
+`@sudo_path@ -u root @useradd_path@ -M -d '$homedir' -s '/usr/local/bin/mbash' -u '$uid1' -g '$gid1' -G users '$username'`;
 # Add disk quota for user
 `@sudo_path@ -u root @setquota_path@ '$username' 0 25000 0 10000 -a`;
 
