@@ -1,5 +1,5 @@
 /* mod_auth_sslcert
- * version 1.1, released 2007-09-01 [NOT RELEASED YET]
+ * version 1.1.1, released 2007-10-01
  * Anders Kaseorg <andersk@mit.edu>
  *
  * This module does authentication based on SSL client certificates:
@@ -35,10 +35,10 @@ static void *create_auth_sslcert_dir_config(apr_pool_t *p, char *dirspec)
 {
     auth_sslcert_config_rec *conf = apr_pcalloc(p, sizeof(*conf));
 
-    conf->authoritative = 1;
+    conf->authoritative = -1;
     conf->var = NULL;
     conf->strip_suffix = NULL;
-    conf->strip_suffix_required = 1;
+    conf->strip_suffix_required = -1;
 
     return conf;
 }
@@ -48,10 +48,14 @@ static void *merge_auth_sslcert_dir_config(apr_pool_t *p, void *parent_conf, voi
     auth_sslcert_config_rec *pconf = parent_conf, *nconf = newloc_conf,
 	*conf = apr_pcalloc(p, sizeof(*conf));
 
-    conf->authoritative = nconf->authoritative;
-    conf->var = (nconf->var != NULL) ? nconf->var : pconf->var;
+    conf->authoritative = (nconf->authoritative != -1) ?
+	nconf->authoritative : pconf->authoritative;
+    conf->var = (nconf->var != NULL) ?
+	nconf->var : pconf->var;
     conf->strip_suffix = (nconf->var != NULL || nconf->strip_suffix != NULL) ?
 	nconf->strip_suffix : pconf->strip_suffix;
+    conf->strip_suffix_required = (nconf->var != NULL || nconf->strip_suffix_required != -1) ?
+	nconf->authoritative : pconf->authoritative;
 
     return conf;
 }
