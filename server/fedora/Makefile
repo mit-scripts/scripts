@@ -18,7 +18,7 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream	= openafs krb5 httpd mit-zephyr
+upstream	= openafs krb5 httpd mit-zephyr openssh
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
@@ -149,13 +149,14 @@ frob-openafs:
 	fi
 
 # The following packages are needed for our packages
-# basic deps: kernel-devel through krb5-workstation
-# oursrc: hesinfo
-# httpdmods: httpd-devel
-# httpd: xmlto through distcache-devel
-# krb5: bison through texinfo keyutils-libs-devel
-# openafs: pam-devel through automake
-# mit-zephyr: readline-devel hesiod.i386 libXt.i386 compat-readline43
+basic-deps	= kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstation 
+oursrc-deps	= hesinfo
+httpdmods-deps	= httpd-devel
+httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel
+krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel
+openafs-deps	= pam-devel automake
+mit-zephyr-deps	= readline-devel hesiod.i386 libXt.i386 #compat-readline43
+openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth
 install-deps:
-	yum -y install kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstation hesinfo httpd-devel xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel bison ncurses-devel texinfo keyutils-libs-devel pam-devel automake readline-devel hesiod.i386 libXt.i386
+	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(mit-zephyr-deps) $(openssh-deps)
 	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm

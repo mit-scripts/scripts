@@ -1,0 +1,18 @@
+--- openssh.spec.orig	2007-03-20 05:13:40.000000000 -0400
++++ openssh.spec	2007-10-01 21:16:51.000000000 -0400
+@@ -90,6 +90,7 @@
+ Patch48: openssh-4.3p2-pam-session.patch
+ Patch49: openssh-4.3p2-gssapi-canohost.patch
+ Patch50: openssh-4.5p1-mls.patch
++Patch1000: openssh-4.5p1-multihomed.patch
+ License: BSD
+ Group: Applications/Internet
+ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+@@ -217,6 +218,7 @@
+ %patch48 -p1 -b .pam-sesssion
+ %patch49 -p1 -b .canohost
+ %patch50 -p1 -b .mls
++%patch1000 -p1 -b .multihomed
+ 
+ autoreconf
+ 
