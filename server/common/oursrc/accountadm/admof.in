@@ -37,36 +37,52 @@ if (($curuser) =~ m|/|) { # There were two /'s in their name. What?
   error("An internal error has occurred.\nContact scripts\@mit.edu for assistance.");
 }
 
-my $uid = getpwnam $targetuser;
-if(defined $uid && $uid <= 1000) {
-  error();
+my (undef, undef, $uid, undef, undef, undef, undef, $home, undef, undef)
+  = getpwnam $targetuser;
+if(defined $uid) {
+  error() if ($uid <= 1000);
+} else {
+  $home = "/mit/$targetuser";
 }
 
-my $fs = `@fs_path@ 2>/dev/null la /mit/$targetuser/`;
-my @fs = split(/\n/, $fs);
+my $cell;
+unless(open WHICHCELL, '-|') {
+  close STDERR;
+  exec '@fs_path@', 'whichcell', '-path', $home;
+  die;
+}
+
+unless(($cell) = (<WHICHCELL> =~ /^File \Q$home\E lives in cell '(.*)'$/)) {
+  error("Cannot find locker <$targetuser>.");
+}
+close WHICHCELL;
+
+open LISTACL, '-|', '@fs_path@', 'listacl', '-path', $home;
 
 #Access list for . is
 #Normal rights:
 #  system:scripts-root rlidwka
 #  system:anyuser rl
 
-unless($fs[0] =~ /^Access list for \/mit\/$targetuser\/ is$/ &&
-       $fs[1] =~ /^Normal rights:$/) {
+unless(<LISTACL> eq "Access list for $home is\n" &&
+       <LISTACL> eq "Normal rights:\n") {
   error("Cannot find locker <$targetuser>.");
 }
 
-if($ARGV[2] && !getpwnam($targetuser)) {
+if($ARGV[2] && !defined $uid) {
   error("Locker <$targetuser> does not have a scripts.mit.edu account.");
 }
 
-for(my $i = 2; $i < @fs; $i++) {
-  my ($id) = ($fs[$i] =~ /^  ([\w:_\.-]+) rlidwka$/);
-  if($id eq "") { next; }
-  my $group;
-  if($id eq $curuser) { success(); }
-  elsif(($group) = ($id =~ /^(system:.+)/)) {
-    my $mems = `@pts_path@ 2>/dev/null membership $group`;
-    my @mems = split(/\n/, $mems);
+while(<LISTACL>) {
+  last unless /^  /;
+  my ($name) = /^  ([\w:_.-]+) \w*a\w*$/ or next;
+  if($name eq $curuser) { success(); }
+  elsif($name =~ /:/) {
+    unless(open MEMBERSHIP, '-|') {
+      close STDERR;
+      exec '@pts_path@', 'membership', '-nameorid', $name, '-cell', $cell;
+      die;
+    }
 
 #Members of system:scripts-root (id: -56104) are:
 #  hartmans
@@ -75,11 +91,11 @@ for(my $i = 2; $i < @fs; $i++) {
 #  tabbott
 #  hartmans.root
 
-    next if($mems[0] !~ /^Members of $group \(id: \S+\) are:$/);
-    
-    if($mems =~ /\s+\Q$curuser\E\s+/) {
-	success();
+    next unless(<MEMBERSHIP> =~ /^Members of \Q$name\E \(id: \S+\) are:$/);
+    while(<MEMBERSHIP>) {
+      success() if($_ eq "  $curuser\n");
     }
+    close MEMBERSHIP;
   }
 }
 
