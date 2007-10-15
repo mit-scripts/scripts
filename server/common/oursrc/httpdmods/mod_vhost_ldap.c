@@ -584,7 +584,8 @@ fallback:
 	    return DECLINED;
 	}
 	if (strncmp(r->uri + 2, username, strlen(username)) == 0 &&
-	    r->uri[2 + strlen(username)] == '/') {
+	    (r->uri[2 + strlen(username)] == '/' ||
+	     r->uri[2 + strlen(username)] == '\0')) {
 	    char *homedir;
 	    if (apr_uid_homepath_get(&homedir, username, r->pool) != APR_SUCCESS) {
 		ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
