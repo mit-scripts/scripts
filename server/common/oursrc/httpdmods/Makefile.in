@@ -1,11 +1,13 @@
 APXS = apxs
 
-MODS = mod_auth_sslcert mod_authz_afsgroup mod_auth_optional
+MODS = mod_auth_sslcert mod_authz_afsgroup mod_auth_optional mod_vhost_ldap
 
 all-local: $(patsubst %,.libs/%.so,$(MODS))
 
+APXSFLAGS_mod_vhost_ldap = -Wc,-DMOD_VHOST_LDAP_VERSION=\\\"mod_vhost_ldap/1.2.0scripts\\\" -lldap_r
+
 .libs/%.so: %.c
-	$(APXS) -c $<
+	$(APXS) $(APXSFLAGS_$*) -c $<
 
 clean:
 	rm -f .libs $(MODS:=.o) $(MODS:=.la) $(MODS:=.lo) $(MODS:=.slo)

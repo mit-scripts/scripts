@@ -17,6 +17,7 @@ Contains:
  - module to do authentication based on SSL certificates <mod_auth_sslcert>
  - module to do authorization based on Athena AFS groups <mod_authz_afsgroup>
  - module to enable optional authentication <mod_auth_optional>
+ - module to get vhosts from LDAP, taken from Debian <mod_vhost_ldap>
 See http://scripts.mit.edu/wiki for more information.
 
 %prep
@@ -31,6 +32,7 @@ make
 install -D .libs/mod_auth_sslcert.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_auth_sslcert.so
 install -D .libs/mod_authz_afsgroup.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_authz_afsgroup.so
 install -D .libs/mod_auth_optional.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_auth_optional.so
+install -D .libs/mod_vhost_ldap.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_vhost_ldap.so
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
@@ -40,6 +42,7 @@ install -D .libs/mod_auth_optional.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mo
 /usr/lib64/httpd/modules/mod_auth_sslcert.so
 /usr/lib64/httpd/modules/mod_authz_afsgroup.so
 /usr/lib64/httpd/modules/mod_auth_optional.so
+/usr/lib64/httpd/modules/mod_vhost_ldap.so
 
 %changelog
 
