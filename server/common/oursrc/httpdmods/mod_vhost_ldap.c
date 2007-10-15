@@ -49,6 +49,7 @@
 
 #define MIN_UID 100
 #define MIN_GID 100
+const char USERDIR[] = "web_scripts";
 
 module AP_MODULE_DECLARE_DATA vhost_ldap_module;
 
@@ -559,6 +560,7 @@ fallback:
 
     cgi = NULL;
   
+#if 0
     if (reqc->cgiroot) {
 	cgi = strstr(r->uri, "cgi-bin/");
 	if (cgi && (cgi != r->uri + strspn(r->uri, "/"))) {
@@ -569,6 +571,28 @@ fallback:
 	r->filename = apr_pstrcat (r->pool, reqc->cgiroot, cgi + strlen("cgi-bin"), NULL);
 	r->handler = "cgi-script";
 	apr_table_setn(r->notes, "alias-forced-type", r->handler);
+#endif
+    /* This is a quick, dirty hack. I should be shot for taking 6.170
+     * this term and being willing to write a quick, dirty hack. */
+    
+    if (strncmp(r->uri, "/~", 2) == 0) {
+	char *username;
+	uid_t uid = (uid_t)atoll(reqc->uid);
+	if (apr_uid_name_get(&username, uid, r->pool) != APR_SUCCESS) {
+	    ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
+		          "could not get username for uid %d", uid);
+	    return DECLINED;
+	}
+	if (strncmp(r->uri + 2, username, strlen(username)) == 0 &&
+	    r->uri[2 + strlen(username)] == '/') {
+	    char *homedir;
+	    if (apr_uid_homepath_get(&homedir, username, r->pool) != APR_SUCCESS) {
+		ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
+			      "could not get home directory for user %s", username);
+		return DECLINED;
+	    }
+	    r->filename = apr_pstrcat(r->pool, homedir, "/", USERDIR, r->uri + 2 + strlen(username), NULL);
+	}
     } else if (r->uri[0] == '/') {
 	r->filename = apr_pstrcat (r->pool, reqc->docroot, r->uri, NULL);
     } else {
