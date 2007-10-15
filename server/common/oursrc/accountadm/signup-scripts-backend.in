@@ -27,12 +27,11 @@ my $username = $ARGV[0];
 # Complain unless submitted username contains only valid characters
 complain("bad username") unless($username =~ /^[\w._-]+$/);
 
-open(BANNEDUSERS,
-        "</afs/athena.mit.edu/contrib/scripts/admin/users.banned");
+open BANNEDUSERS, "</afs/athena.mit.edu/contrib/scripts/admin/users.banned" or
+    complain("internal error");
 while (<BANNEDUSERS>) {
     chomp;
-    if ($_ eq $username)
-        complain("banned username");
+    complain("banned username") if ($_ eq $username);
 }
 close(BANNEDUSERS);
 
