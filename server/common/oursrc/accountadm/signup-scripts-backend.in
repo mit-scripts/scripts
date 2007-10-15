@@ -27,7 +27,14 @@ my $username = $ARGV[0];
 # Complain unless submitted username contains only valid characters
 complain("bad username") unless($username =~ /^[\w._-]+$/);
 
-complain("banned username") if(`@grep_path@ '$username' /afs/athena.mit.edu/contrib/scripts/admin/users.banned` != "");
+open(BANNEDUSERS,
+        "</afs/athena.mit.edu/contrib/scripts/admin/users.banned");
+while (<BANNEDUSERS>) {
+    chomp;
+    if ($_ eq $username)
+        complain("banned username");
+}
+close(BANNEDUSERS);
 
 my $homedir;
 my $filsys = `@hesinfo_path@ $username filsys | @sort_path@ -nk5 | @head_path@ -n1`;
