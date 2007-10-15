@@ -64,11 +64,41 @@ if($homedir !~ /\/afs\/athena\.mit\.edu\/user\//) {
 # Complain if user's gid is already taken
 complain("gid already taken") if(getgrgid $gid1);
 
-# Add user to /etc/passwd
-`@sudo_path@ -u root @groupadd_path@ -g '$gid1' '$username'`;
-`@sudo_path@ -u root @useradd_path@ -M -d '$homedir' -s '/usr/local/bin/mbash' -u '$uid1' -g '$gid1' -G users '$username'`;
+my $pid;
+defined ($pid = open LDAP, '|-') or complain("internal error");
+if (!$pid) {
+	close STDOUT;
+	open STDOUT, '>/dev/null';
+	exec '@ldapadd_path@', '-c', '-x', '-D', 'cn=Directory Manager', '-y', '/etc/signup-ldap-pw';
+	exit 1;
+}
+print LDAP <<EOF;
+dn: uid=$username,ou=People,dc=scripts,dc=mit,dc=edu
+objectClass: posixAccount
+cn: $username
+uid: $username
+uidNumber: $uid1
+gidNumber: $gid1
+homeDirectory: $homedir
+loginShell: /usr/local/bin/mbash
+
+dn: cn=$username,ou=Groups,dc=scripts,dc=mit,dc=edu
+objectClass: posixGroup
+cn: $username
+gidNumber: $gid1
+
+dn: apacheServerName=$username.scripts.mit.edu,ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
+objectclass: apacheConfig
+apacheServerName: $username.scripts.mit.edu
+apacheServerAlias: $username.scripts
+apacheDocumentRoot: $homedir
+apacheSuexecUid: $uid1
+apacheSuexecGid: $gid1
+
+EOF
+close LDAP or complain("internal error");
 # Add disk quota for user
-`@sudo_path@ -u root @setquota_path@ '$username' 0 25000 0 10000 -a`;
+#system('@sudo_path@', '-u', 'root', '/usr/sbin/setquota', $username, '0', '25000', '0', '10000', '-a');
 
 printexit("done", 0);
 

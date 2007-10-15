@@ -43,6 +43,7 @@ LOCATE(setquota)
 LOCATE(hesinfo)
 LOCATE(sort)
 LOCATE(head)
+LOCATE(ldapadd)
 
 dnl Needed by mbash.in
 

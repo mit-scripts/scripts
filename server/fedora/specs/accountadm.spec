@@ -49,20 +49,6 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 groupadd -g 102 signup || [ $? -eq 9 ]
 useradd -u 102 -g signup -d /afs/athena.mit.edu/contrib/scripts/signup -M signup || [ $? -eq 9 ]
 
-%post
-cat >>/etc/sudoers <<END
-signup  ALL=(root) NOPASSWD: /usr/sbin/useradd
-signup  ALL=(root) NOPASSWD: /usr/sbin/groupadd
-signup  ALL=(root) NOPASSWD: /usr/sbin/setquota
-END
-chmod 0440 /etc/sudoers
-
-%preun
-touch /etc/sudoers.tmp
-chmod 600 /etc/sudoers.tmp
-grep -v "^signup" /etc/sudoers > /etc/sudoers.tmp
-mv /etc/sudoers.tmp /etc/sudoers
-
 %postun
 userdel signup
 
