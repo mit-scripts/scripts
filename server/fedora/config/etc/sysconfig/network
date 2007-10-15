@@ -1,3 +1,3 @@
 NETWORKING=yes
-HOSTNAME=scripts.mit.edu
+HOSTNAME=better-mousetrap.mit.edu
 GATEWAY=18.181.0.1
