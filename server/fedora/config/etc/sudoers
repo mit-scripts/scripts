@@ -19,6 +19,3 @@ Defaults    env_keep = "COLORS DISPLAY HOSTNAME HISTSIZE INPUTRC KDEDIR \
 
 root	ALL=(ALL) 	ALL
 
-signup  ALL=(root) NOPASSWD: /usr/sbin/useradd
-signup  ALL=(root) NOPASSWD: /usr/sbin/groupadd
-signup  ALL=(root) NOPASSWD: /usr/sbin/setquota
