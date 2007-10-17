@@ -1,3 +1,4 @@
+
 #!/usr/bin/perl
 use strict;
 
@@ -73,7 +74,12 @@ if($ARGV[2] && !defined $uid) {
   error("Locker <$targetuser> does not have a scripts.mit.edu account.");
 }
 
-while(<LISTACL>) {
+my @targetacl = <LISTACL>;
+push(@targetacl, "  system:scripts-root rlidwka");
+
+close LISTACL;
+
+foreach(@targetacl) {
   last unless /^  /;
   my ($name) = /^  ([\w:_.-]+) \w*a\w*$/ or next;
   if($name eq $curuser) { success(); }
