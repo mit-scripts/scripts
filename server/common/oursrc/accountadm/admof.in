@@ -74,7 +74,7 @@ if($ARGV[2] && !defined $uid) {
 }
 
 my @targetacl = <LISTACL>;
-push(@targetacl, "  system:scripts-root rlidwka");
+unshift(@targetacl, "  system:scripts-root a");
 
 close LISTACL;
 
