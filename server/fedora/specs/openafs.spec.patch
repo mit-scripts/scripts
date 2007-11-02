@@ -9,13 +9,11 @@
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -556,6 +558,10 @@
+@@ -556,6 +558,8 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
 +%patch1000 -p1 -b .scripts
-+
-+grep -rl '#include <linux/config.h>' . | xargs perl -pi -e's,#include <linux/config.h>,/* #include <linux/config.h> */,'
 +
  # Patch openafs to build a kernel module named "openafs" instead of "libafs"
  %patch0 -p1 -b .kmod26

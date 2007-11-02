@@ -38,8 +38,6 @@ dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
 
-openafs_rpm_args = -E "%define kernvers $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)"
-
 .PHONY: minimal-clean
 
 info:
@@ -117,11 +115,15 @@ all:
 
 $(allsrc): setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild -ba ${tmp_specs}/$@*.spec
+	rpmbuild $(rpmbuild_args) -ba ${tmp_specs}/$@*.spec
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild $(openafs_rpm_args) -bb --define "build_userspace 0" --define "build_modules 1" ${tmp_specs}/openafs*.spec
+	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/openafs*.spec
+
+openafs_rpmbuild_args = --define "fedorakmod 1" --define "kvariants ''" --define "kernvers $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)"
+openafs: rpmbuild_args += $(openafs_rpmbuild_args)
+openafs-kernel: rpmbuild_args += $(openafs_rpmbuild_args) --define "build_userspace 0" --define "build_modules 1"
 
 suexec: install-srpms
 	@rm -rf ${tmp_src}/httpd-2*/; \
