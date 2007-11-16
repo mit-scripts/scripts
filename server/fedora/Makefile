@@ -121,7 +121,9 @@ openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/openafs*.spec
 
-openafs_rpmbuild_args = --define "fedorakmod 1" --define "kvariants ''" --define "kernvers $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)"
+kernvers = $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)
+kvariants = ''
+openafs_rpmbuild_args = --define "fedorakmod 1" --define "kvariants $(kvariants)" --define "kernvers $(kernvers)"
 openafs: rpmbuild_args += $(openafs_rpmbuild_args)
 openafs-kernel: rpmbuild_args += $(openafs_rpmbuild_args) --define "build_userspace 0" --define "build_modules 1"
 
