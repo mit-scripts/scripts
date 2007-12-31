@@ -154,13 +154,13 @@ frob-openafs:
 
 # The following packages are needed for our packages
 basic-deps	= kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstation 
-oursrc-deps	= hesinfo
+oursrc-deps	= hesinfo openldap-clients
 httpdmods-deps	= httpd-devel
 httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel
 krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel
 openafs-deps	= pam-devel automake
 mit-zephyr-deps	= readline-devel hesiod.i386 libXt.i386 #compat-readline43
-openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth
+openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth gobject-devel pango-devel cairo-devel
 install-deps:
 	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(mit-zephyr-deps) $(openssh-deps)
 	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
