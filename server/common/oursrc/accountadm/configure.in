@@ -14,42 +14,18 @@ AC_PATH_PROG($1_path, $1)
 REQUIRE_PATH($1)
 ])
 
-dnl Needed by admof.in
-
-AC_ARG_WITH(fs,
-[  --with-fs[=PATH]          fs is located at PATH],[
-  if test "$withval" != "no" -a "$withval" != "yes"; then
-    fs_path="$withval"
-  fi
-])
-REQUIRE_PATH(fs)
-
-AC_ARG_WITH(pts,
-[  --with-pts[=PATH]         pts is located at PATH],[
-  if test "$withval" != "no" -a "$withval" != "yes"; then
-    pts_path="$withval"
-  fi
-])
-REQUIRE_PATH(pts)
-
 dnl Needed by signup-scripts-backend.in
 
-LOCATE(ls)
-LOCATE(grep)
-LOCATE(sudo)
-LOCATE(useradd)
-LOCATE(groupadd)
-LOCATE(setquota)
 LOCATE(hesinfo)
 LOCATE(sort)
 LOCATE(head)
 LOCATE(ldapadd)
+LOCATE(sudo)
 
 dnl Needed by mbash.in
 
 LOCATE(bash)
 
 AC_OUTPUT(Makefile)
-AC_OUTPUT(admof)
 AC_OUTPUT(signup-scripts-backend)
 AC_OUTPUT(mbash)

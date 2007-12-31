@@ -1,4 +1,5 @@
 CC = @CC@
+CPPFLAGS = @CPPFLAGS@
 CFLAGS = @CFLAGS@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -6,7 +7,10 @@ sbindir = @sbindir@
 bindir = @bindir@
 sysconfdir = @sysconfdir@
 
-all-local: signup-scripts-frontend
+all-local: admof signup-scripts-frontend
+
+admof: admof.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< -L/usr/lib/afs -L/usr/lib64/afs -lprot -lauth -lrxkad -lubik -laudit -lsys -lrx -llwp -lsys -lafsutil -lcom_err -lresolv -lkrb5 -ldes -lkrb4 -o $@
 
 install:
 	install -p -m644 -D mbashrc $(DESTDIR)$(sysconfdir)/mbashrc
@@ -17,8 +21,9 @@ install:
 	install -p -m755 -D signup-scripts-backend $(DESTDIR)$(sbindir)/signup-scripts-backend
 
 clean:
-	rm -f signup-scripts-frontend
+	rm -f admof signup-scripts-frontend
 
 distclean: clean
+	rm -f mbash signup-scripts-backend
 	rm -f configure config.* Makefile
 	rm -rf auto*.cache
