@@ -4,5 +4,6 @@ mcast eth0 225.0.0.1 694 1 0
 auto_failback off
 node        not-forward
 node        not-backward
+node        rack-forward
 respawn hacluster /usr/lib/heartbeat/ipfail
 apiauth ipfail gid=haclient uid=hacluster
