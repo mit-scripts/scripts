@@ -1,13 +1,14 @@
 logfacility        local0
-debug 1
+debug 0
 use_logd on
 bcast        eth0                # Linux
 auto_failback off
 node        rack-forward
 node        not-backward
+ping	18.181.0.1
 crm on
-apiauth cibmon uid=hacluster
-respawn hacluster /usr/lib/heartbeat/cibmon -d
+#apiauth cibmon uid=hacluster
+#respawn hacluster /usr/lib/heartbeat/cibmon -d
 
 #respawn hacluster /usr/lib/heartbeat/ipfail
 #apiauth ipfail gid=haclient uid=hacluster
