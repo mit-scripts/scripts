@@ -3,9 +3,8 @@ debug 1
 use_logd on
 bcast        eth0                # Linux
 auto_failback off
-node        not-forward
-node        not-backward
 node        rack-forward
+node        not-backward
 crm on
 apiauth cibmon uid=hacluster
 respawn hacluster /usr/lib/heartbeat/cibmon -d
