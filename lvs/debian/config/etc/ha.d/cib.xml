@@ -24,19 +24,6 @@
 		<resources>
 			<group id="scripts_LVS">
 				<primitive class="heartbeat" id="scripts_LVS_ldirectord" provider="heartbeat" type="ldirectord">
-					<operations>
-						<op id="scripts_LVS_ldirectord_mon" interval="120s" name="monitor" timeout="60s"/>
-					</operations>
-				</primitive>
-				<primitive class="heartbeat" id="LVSSyncDaemonSwap_2" provider="heartbeat" type="LVSSyncDaemonSwap">
-					<operations>
-						<op id="LVSSyncDaemonSwap_2_mon" interval="120s" name="monitor" timeout="60s"/>
-					</operations>
-					<instance_attributes id="LVSSyncDaemonSwap_2_inst_attr">
-						<attributes>
-							<nvpair id="LVSSyncDaemonSwap_2_attr_1" name="1" value="master"/>
-						</attributes>
-					</instance_attributes>
 				</primitive>
 				<primitive class="ocf" id="ip_scripts.mit.edu" provider="heartbeat" type="IPaddr2">
 					<operations>
