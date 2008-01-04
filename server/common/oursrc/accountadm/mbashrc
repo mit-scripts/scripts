@@ -11,7 +11,7 @@ shopt -s checkwinsize
 #fi
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
-export PS1='[\u@scripts]:\w\$ '
+export PS1='[\u@\h]:\w\$ '
 umask 022
 
 alias su='echo "Instead of running su USERNAME, ssh USERNAME@scripts.mit.edu from Athena" #'
@@ -28,8 +28,8 @@ alias su='echo "Instead of running su USERNAME, ssh USERNAME@scripts.mit.edu fro
 # alias cp='cp -i'
 # alias mv='mv -i'
 
-if [ -f /mit/$USER/.bashrc.scripts ]; then
-	. /mit/$USER/.bashrc.scripts
+if [ -f ~/.bashrc.scripts ]; then
+	. ~/.bashrc.scripts
 fi
 
 if [ -d ~/web_scripts ]; then
