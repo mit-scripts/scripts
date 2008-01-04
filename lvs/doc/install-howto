@@ -1,0 +1,25 @@
+- TO TEMPORARILY DISABLE HEARTBEAT: on an existing node, run
+  crm_attribute -n is_managed_default -v false
+- confirm that the change occurred with crm_attribute -n is_managed_default -G
+- Install Debian 4.0 from a minimal Debian install CD
+- Edit lvs/config/etc/ha.d/ha.cf in SVN to add "node foo", where foo is the new machine's hostname as reported by uname -n
+- Synchronize /etc out of SVN by running
+cd /; svn co https://scripts.mit.edu:1111/lvs/config/etc
+and moving files/directories out of the way as it checks out.
+- aptitude update; aptitude install heartbeat ldirectord; # should install version >= 2.1.2
+- aptitude install munin-node
+- Copy /etc/ha.d/authkeys from an existing LVS node
+- svn up on each existing LVS node and then run /etc/init.d/heartbeat reload
+- Run /etc/init.d/heartbeat start on the new node
+- No services will be allocated to this node. To allocate scripts_LVS to it, run
+cibadmin -M -X '
+       <rsc_location id="rsc_location_scripts_LVS_all" rsc="scripts_LVS">
+         <rule id="prefered_rsc_location_scripts_LVS_all" score="-INFINITY" boolean_op="and">
+           <expression attribute="#uname" id="733286ca-cde9-4941-bab0-59af8bd6b55a" operation="ne" value="rack-forward"/>
+           <expression attribute="#uname" id="55373ba0-9e5e-43de-adf6-ac77bfe5bac6" operation="ne" value="not-backward"/>
+	   <expression attribute="#uname" id="UNIQUE_ID" operation="ne" value="new-node"/>
+         </rule>
+       </rsc_location>
+'
+- TO REENABLE HEARTBEAT, run crm_attribute -n is_managed_default -v true
+- Watch /var/log/messages and /var/log/syslog to make sure heartbeat is working
