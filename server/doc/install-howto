@@ -9,9 +9,14 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
 * Use the Makefile to build the scripts.mit.edu-specific Fedora
   packages.
 
+* Run "make suexec" and "make suexec-install" to overwrite
+  /usr/sbin/suexec with one that works. The one installed by the
+  newly-built Apache RPM is misconfigured.
+
 * Install the full list of RPMs that users expect to be on the
   scripts.mit.edu servers.  See server/doc/rpm and
-  server/doc/rpm_snapshot.
+  server/doc/rpm_snapshot.  (Note that this is only a snapshot, and not
+  all packages may in fact be in use.)
 
 * Install the full list of perl modules that users expect to be on the
   scripts.mit.edu servers.  See server/doc/perl and
@@ -22,7 +27,22 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
 * Install the credentials (machine keytab, daemon.scripts keytab, SSL
   certs).
 
-* Configure apache (the apache config is not handled by the packages).
+* Attempt to check out server/fedora/config/etc into /etc. This involves
+  individually renaming directories out of the way, copying over any
+  configuration files from SVN (and the .svn directory), and moving the
+  original directory back.
+
+  - Configure Apache.
+
+  - Try not to misconfigure PAM or SSH in the process.
+
+  - If you are setting up a test server, pay attention to
+  /etc/sysconfig/network-scripts and do not bind scripts' IP address.
+  You will also need to modify /etc/ldap.conf and
+  /etc/httpd/conf.d/vhost_ldap.conf to use scripts.mit.edu instead of
+  localhost.
+
+* (Optional) Beat your head against a wall.
 
 * I recommend setting noatime for the root filesystem in /etc/fstab.
 
