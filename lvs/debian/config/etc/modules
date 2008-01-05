@@ -1,13 +1,9 @@
 # /etc/modules: kernel modules to load at boot time.
 #
-# This file should contain the names of kernel modules that are
-# to be loaded at boot time, one per line.  Comments begin with
-# a "#", and everything on the line after them are ignored.
+# This file contains the names of kernel modules that should be loaded
+# at boot time, one per line. Lines beginning with "#" are ignored.
 
-ide-cd
-ide-detect
-ide-disk
-psmouse
+loop
 ip_vs_dh
 ip_vs_ftp
 ip_vs
