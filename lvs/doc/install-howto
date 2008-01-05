@@ -2,6 +2,10 @@
   crm_attribute -n is_managed_default -v false
 - confirm that the change occurred with crm_attribute -n is_managed_default -G
 - Install Debian 4.0 from a minimal Debian install CD
+- aptitude install openssh-server krb5-user krb5-clients
+- dpkg-reconfigure krb5-config
+- Set GSSAPIAuthentication yes in /etc/ssh/sshd_config
+- Add keytab and .k5login
 - Edit lvs/debian/config/etc/ha.d/ha.cf in SVN to add "node foo", where foo is the new machine's hostname as reported by uname -n
 - Synchronize /etc out of SVN by running
 svn co https://scripts.mit.edu:1111/lvs/config/etc /etc
@@ -23,3 +27,4 @@ cibadmin -M -X '
 '
 - TO REENABLE HEARTBEAT, run crm_attribute -n is_managed_default -v true
 - Watch /var/log/messages and /var/log/syslog to make sure heartbeat is working
+- Add machine to noc/munin/munin.conf (hodge-podge:/etc/munin/munin.conf)
