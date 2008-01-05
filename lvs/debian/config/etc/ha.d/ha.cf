@@ -12,6 +12,7 @@ warntime 3
 
 auto_failback off
 node        rack-forward
+node        rack-backward
 node        not-backward
 ping	18.181.0.1
 crm on
