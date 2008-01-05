@@ -82,7 +82,7 @@ main(int argc, const char *argv[])
     int n;
     struct passwd *pwd = getpwnam(locker);
     if (pwd != NULL)
-	n = snprintf(dir, sizeof dir, pwd->pw_dir);
+	n = snprintf(dir, sizeof dir, "%s", pwd->pw_dir);
     else
 	n = snprintf(dir, sizeof dir, "/mit/%s", locker);
     if (n < 0 || n >= sizeof dir)
