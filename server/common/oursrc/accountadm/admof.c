@@ -25,6 +25,7 @@
 #include <afs/afsutil.h>
 #include <krb5.h>
 #include <kerberosIV/krb.h>
+#include <stdbool.h>
 
 extern int pioctl(char *, afs_int32, struct ViceIoctl *, afs_int32);
 
@@ -34,7 +35,7 @@ extern int pioctl(char *, afs_int32, struct ViceIoctl *, afs_int32);
 
 #define OVERLORDS "system:scripts-root"
 
-static int
+static bool
 ismember(const char *user, const char *group)
 {
     int flag;
@@ -87,6 +88,37 @@ main(int argc, const char *argv[])
 	n = snprintf(dir, sizeof dir, "/mit/%s", locker);
     if (n < 0 || n >= sizeof dir)
 	die("internal error\n");
+
+    /* For non-AFS homedirs, read the .k5login file. */
+    if (strncmp(dir, "/afs/", 5) != 0 && strncmp(dir, "/mit/", 5) != 0) {
+	if (chdir(dir) != 0)
+	    die("internal error: chdir: %m\n");
+	FILE *fp = fopen(".k5login", "r");
+	if (fp == NULL)
+	    die("internal error: .k5login: %m\n");
+	bool found = false;
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read;
+	while ((read = getline(&line, &len, fp)) != -1) {
+	    if (read > 0 && line[read - 1] == '\n')
+		line[read - 1] = '\0';
+	    if (strcmp(name, line) == 0) {
+		found = true;
+		break;
+	    }
+	}
+	if (line)
+	    free(line);
+	fclose(fp);
+	if (found) {
+	    printf("yes\n");
+	    exit(33);
+	} else {
+	    printf("no\n");
+	    exit(1);
+	}
+    }
 
     /* Get the locker's cell. */
     char cell[MAXCELLCHARS];
