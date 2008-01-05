@@ -13,7 +13,9 @@
 #include <limits.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <pwd.h>
+#include <unistd.h>
 #include <netinet/in.h>
 #include <afs/vice.h>
 #include <afs/venus.h>
@@ -96,6 +98,13 @@ main(int argc, const char *argv[])
 	FILE *fp = fopen(".k5login", "r");
 	if (fp == NULL)
 	    die("internal error: .k5login: %m\n");
+	struct stat st;
+	if (fstat(fileno(fp), &st) != 0)
+	    die("internal error: fstat: %m\n");
+	if (st.st_uid != pwd->pw_uid && st.st_uid != 0) {
+	    fclose(fp);
+	    die("internal error: bad .k5login permissions\n");
+	}
 	bool found = false;
 	char *line = NULL;
 	size_t len = 0;
