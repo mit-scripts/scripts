@@ -70,6 +70,28 @@ virtual=18.181.0.49:443
         protocol=tcp
         checktype=connect
 
+virtual=18.181.0.33:80
+        real=18.181.0.53:80 gate 1024
+        real=18.181.0.57:80 gate 1024
+        fallback=18.187.1.128:80 gate
+        service=http
+        request="heartbeat/http"
+        receive="1"
+        scheduler=sh
+        protocol=tcp
+        checktype=connect
+
+virtual=18.181.0.33:443
+        real=18.181.0.53:443 gate 1024
+        real=18.181.0.57:443 gate 1024
+        fallback=18.187.1.128:443 gate
+        service=https
+        request="heartbeat/https"
+        receive="1"
+        scheduler=sh
+        protocol=tcp
+        checktype=connect
+
 virtual=1
         real=18.181.0.53 gate "heartbeat/services", "1"
         real=18.181.0.57 gate "heartbeat/services", "2"
