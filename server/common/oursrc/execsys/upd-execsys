@@ -62,6 +62,7 @@ my @static = qw(
  il
  JPG
  xhtml
+ svg
 );
 
 my %map;
