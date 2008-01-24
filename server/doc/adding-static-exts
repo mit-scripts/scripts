@@ -1,0 +1,6 @@
+1. Update server/common/patches/httpd-suexec-scripts.patch and
+   server/common/oursrc/execsys/upd-execsys
+2. make suexec
+3. make install-suexec
+4. make execsys
+5. rpm -Uvh --replacepkgs --replacefiles execsys-0.00-0.x86_64.rpm
