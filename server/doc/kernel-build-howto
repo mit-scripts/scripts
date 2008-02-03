@@ -1,0 +1,31 @@
+<Build kernel>
+
+[root@old-faithful ~]# su - scripts-build
+[scripts-build@old-faithful ~]$ wget -N http://download.fedora.redhat.com/pub/fedora/linux/updates/testing/7/SRPMS/kernel-2.6.23.1-28.fc7.src.rpm
+[scripts-build@old-faithful ~]$ rpm -i kernel-2.6.23.1-28.fc7.src.rpm
+[scripts-build@old-faithful ~]$ cd rpmbuild/SOURCES
+[scripts-build@old-faithful SOURCES]$ wget -N http://kernel.org/pub/linux/kernel/v2.6/linux-2.6.23.tar.bz2
+[scripts-build@old-faithful SOURCES]$ wget -N http://kernel.org/pub/linux/kernel/v2.6/patch-2.6.23.8.bz2
+[scripts-build@old-faithful SOURCES]$ rename 2.6.23.1 2.6.23.8 kernel-2.6.23.1-*.config
+[scripts-build@old-faithful SOURCES]$ cd ../SPECS
+[scripts-build@old-faithful SPECS]$ emacs kernel-2.6.spec
+ change:
+ %define build_id .scripts1
+ %define base_sublevel 23
+ %define stable_update 8
+[scripts-build@old-faithful SPECS]$ rpmbuild --with baseonly --with vanilla -bb kernel-2.6.spec
+[scripts-build@old-faithful ~]$ logout
+[root@old-faithful ~]# cp -a /home/scripts-build/rpmbuild/RPMS/x86_64/kernel-vanilla*-2.6.23.8-28.scripts1.fc7.x86_64.rpm .
+[root@old-faithful ~]# rpm -ivh kernel-vanilla{,-devel}-2.6.23.8-28.scripts1.fc7.x86_64.rpm
+
+<Build kmod-openafs>
+
+[root@old-faithful ~]# su scripts-build -
+[scripts-build@old-faithful ~]$ cd repository
+[scripts-build@old-faithful repository]$ svn up
+[scripts-build@old-faithful repository]$ cd server/fedora
+[scripts-build@old-faithful fedora]$ make openafs-kernel kernvers=2.6.23.8-28.scripts1.fc7
+[scripts-build@old-faithful fedora]$ logout
+[root@old-faithful ~]# cp -a /home/scripts-build/rpmbuild/RPMS/x86_64/kmod-openafs-1.4.5-1.2.6.23.8_28.scripts1.fc7.x86_64.rpm .
+[root@old-faithful ~]# rpm -ivh kmod-openafs-1.4.5-1.2.6.23.8_28.scripts1.fc7.x86_64.rpm
+
