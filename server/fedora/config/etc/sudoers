@@ -19,3 +19,4 @@ Defaults    env_keep = "COLORS DISPLAY HOSTNAME HISTSIZE INPUTRC KDEDIR \
 
 root	ALL=(ALL) 	ALL
 
+scripts	ALL=(signup)	NOPASSWD: /usr/local/bin/ldap-backup
