@@ -32,3 +32,6 @@ user root
 
 [smart_*]
 user root
+
+[if_*]
+user root
