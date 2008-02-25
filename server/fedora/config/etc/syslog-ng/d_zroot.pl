@@ -6,7 +6,7 @@ use Sys::Hostname;
 
 sub sendmsg {
     my ($message) = @_;
-    open(ZWRITE, "|-", qw|/usr/bin/zwrite -d -c scripts|, '-i', 'root.'.hostname, '-s', hostname) or die "Couldn't open zwrite";
+    open(ZWRITE, "|-", qw|/usr/bin/zwrite -d -c scripts-auto|, '-i', 'root.'.hostname, '-s', hostname) or die "Couldn't open zwrite";
     print ZWRITE $message;
     close(ZWRITE);
 }
