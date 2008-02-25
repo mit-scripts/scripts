@@ -4,9 +4,11 @@ use strict;
 use warnings;
 use Sys::Hostname;
 
-sub sendmsg {
-    my ($message) = @_;
-    open(ZWRITE, "|-", qw|/usr/bin/zwrite -d -c scripts-auto|, '-i', 'root.'.hostname, '-s', hostname) or die "Couldn't open zwrite";
+sub sendmsg($;$$) {
+    my ($message, $class, $instance) = @_;
+    $class ||= "scripts-auto";
+    $instance ||= 'root.'.hostname;
+    open(ZWRITE, "|-", qw|/usr/bin/zwrite -d -c|, $class, '-i', $instance, '-s', hostname) or die "Couldn't open zwrite";
     print ZWRITE $message;
     close(ZWRITE);
 }
@@ -24,6 +26,9 @@ while (my $message = <>) {
 	if ($2 eq "root" or $2 eq "logview") {
 	    sendmsg($send);
 	}
+    } elsif ($message =~ m|session \S+ for user root |) {
+	sendmsg($message);
     }
+
     $last = $message;
 }
