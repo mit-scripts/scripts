@@ -3,32 +3,60 @@
 use strict;
 use warnings;
 use Sys::Hostname;
+use Time::HiRes qw(ualarm);
 
-sub sendmsg($;$$) {
+our $ZCLASS = "scripts-auto";
+our @USERS = qw/root logview/;
+
+our %USERS;
+@USERS{@USERS} = undef;
+
+sub zwrite($;$$) {
     my ($message, $class, $instance) = @_;
-    $class ||= "scripts-auto";
+    $class ||= $ZCLASS;
     $instance ||= 'root.'.hostname;
-    open(ZWRITE, "|-", qw|/usr/bin/zwrite -d -c|, $class, '-i', $instance, '-s', hostname) or die "Couldn't open zwrite";
+    open(ZWRITE, "|-", qw|/usr/bin/zwrite -d -O log -c|, $class, '-i', $instance, '-s', hostname) or die "Couldn't open zwrite";
     print ZWRITE $message;
     close(ZWRITE);
 }
 
-my $last;
+my %toclass;
 
-while (my $message = <>) {
-    chomp $message;
-    $message =~ s/^(.*?): //;
-    if ($message =~ m|Accepted (\S+) for (\S+)|) {
-	my $send = $message;
-	if ($1 eq "gssapi-with-mic") {
-	    $send = $last."\n".$send;
+while (1) {
+    my @message = scalar(<>);
+    eval {
+        local $SIG{ALRM} = sub { die "alarm\n" }; # NB: \n required
+        ualarm(500*1000);
+        while (<>) { push @message, $_; }
+    };
+    chomp @message;
+    map { s/^(.*?): // } @message;
+    %toclass = ();
+    foreach my $message (@message) {
+	sub sendmsg ($;$) {
+	    my ($message, $class) = @_;
+	    $class ||= $ZCLASS;
+	    $toclass{$class} .= $message."\n";
 	}
-	if ($2 eq "root" or $2 eq "logview") {
-	    sendmsg($send);
+	if ($message =~ m|Accepted (\S+) for (\S+)|) {
+	    sendmsg($message) if exists $USERS{$2}
+	} elsif ($message =~ m|Authorized to (\S+),|) {
+	    sendmsg($message) if exists $USERS{$1};
+	} elsif ($message =~ m|Root (\S+) shell|) {
+	    sendmsg($message);
+	} elsif ($message =~ m|session \S+ for user root\b|) {
+	    sendmsg($message);
+	} elsif ($message =~ m|^Connection closed|) {
+	    # Do nothing
+	} elsif ($message =~ m|^Invalid user|) {
+	} elsif ($message =~ m|^input_userauth_request: invalid user|) {
+	} elsif ($message =~ m|^Received disconnect from|) {
+	} else {
+	    sendmsg($message, "scripts-spew");
 	}
-    } elsif ($message =~ m|session \S+ for user root |) {
-	sendmsg($message);
     }
 
-    $last = $message;
+    foreach my $class (keys %toclass) {
+	zwrite($toclass{$class}, $class);
+    }
 }
