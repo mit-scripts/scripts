@@ -51,6 +51,7 @@ while (1) {
 	} elsif ($message =~ m|^Invalid user|) {
 	} elsif ($message =~ m|^input_userauth_request: invalid user|) {
 	} elsif ($message =~ m|^Received disconnect from|) {
+	} elsif ($message =~ m|^fatal: Read from socket failed: Connection reset by peer$|) {
 	} else {
 	    sendmsg($message, "scripts-spew");
 	}
