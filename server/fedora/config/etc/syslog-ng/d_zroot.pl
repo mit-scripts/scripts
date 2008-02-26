@@ -44,8 +44,8 @@ while (1) {
 	    sendmsg($message) if exists $USERS{$1};
 	} elsif ($message =~ m|Root (\S+) shell|) {
 	    sendmsg($message);
-	} elsif ($message =~ m|session \S+ for user root\b|) {
-	    sendmsg($message);
+	} elsif ($message =~ m|session \S+ for user (\S+)|) {
+	    sendmsg($message) if exists $USERS{$1};
 	} elsif ($message =~ m|^Connection closed|) {
 	    # Do nothing
 	} elsif ($message =~ m|^Invalid user|) {
