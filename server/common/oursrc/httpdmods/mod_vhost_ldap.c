@@ -419,32 +419,23 @@ command_rec mod_vhost_ldap_cmds[] = {
     {NULL}
 };
 
-char* mod_vhost_ldap_sanitize(apr_pool_t* p, const char* source) {
-    char* target = apr_palloc(p, 3*strlen(source)+1);
+char *mod_vhost_ldap_escape(apr_pool_t *p, const char *source)
+{
+    char *target = apr_palloc(p, 3 * strlen(source) + 1);
+    char *result = target;
     for (; *source; source++) {
 	switch (*source) {
-	    case '*':
-		strcpy(target, "\\2a");
-		target += 3;
-		break;
-	    case '(':
-		strcpy(target, "\\28");
-		target += 3;
-		break;
-	    case ')':
-		strcpy(target, "\\29");
-		target += 3;
-		break;
-	    case '\\':
-		strcpy(target, "\\5c");
+	    case '*': case '(': case ')': case '\\':
+		sprintf(target, "\\%02hhx", *source);
 		target += 3;
 		break;
 	    default:
 		*target++ = *source;
+		break;
 	}
     }
     *target = '\0';
-    return target;
+    return result;
 }
 
 #define FILTER_LENGTH MAX_STRING_LEN
@@ -498,7 +489,7 @@ fallback:
     ap_log_rerror(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, 0, r,
 		   "[mod_vhost_ldap.c]: translating %s", r->uri);
 
-    s_hostname = mod_vhost_ldap_sanitize(r->pool, hostname);
+    s_hostname = mod_vhost_ldap_escape(r->pool, hostname);
     apr_snprintf(filtbuf, FILTER_LENGTH, "(&(%s)(|(apacheServerName=%s)(apacheServerAlias=%s)))", conf->filter, s_hostname, s_hostname);
 
     result = util_ldap_cache_getuserdn(r, ldc, conf->url, conf->basedn, conf->scope,
