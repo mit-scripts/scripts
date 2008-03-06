@@ -425,22 +425,22 @@ char* mod_vhost_ldap_sanitize(apr_pool_t* p, const char* source) {
 	switch (*source) {
 	    case '*':
 		strcpy(target, "\\2a");
-		target += 2;
+		target += 3;
 		break;
 	    case '(':
 		strcpy(target, "\\28");
-		target += 2;
+		target += 3;
 		break;
 	    case ')':
 		strcpy(target, "\\29");
-		target += 2;
+		target += 3;
 		break;
 	    case '\\':
 		strcpy(target, "\\5c");
-		target += 2;
+		target += 3;
 		break;
 	    default:
-		*target = *source;
+		*target++ = *source;
 	}
     }
     *target = '\0';
