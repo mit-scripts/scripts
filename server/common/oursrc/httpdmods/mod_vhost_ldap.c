@@ -483,6 +483,8 @@ start_over:
     }
 
     hostname = r->hostname;
+    if (hostname == NULL)
+	goto null;
 
 fallback:
 
@@ -518,6 +520,8 @@ fallback:
 	    hostname = parent_hostname;
 	    goto fallback;
 	}
+
+    null:
 	if (conf->fallback && (is_fallback++ <= 0)) {
 	    ap_log_rerror(APLOG_MARK, APLOG_NOTICE|APLOG_NOERRNO, 0, r,
 			  "[mod_vhost_ldap.c] translate: "
