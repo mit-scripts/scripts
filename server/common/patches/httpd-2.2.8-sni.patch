@@ -1,0 +1,342 @@
+httpd-2.2.8-sni.patch - server name indication support for Apache 2.2
+(see RFC 4366, "Transport Layer Security (TLS) Extensions")
+
+based on a patch from the EdelKey project
+(http://www.edelweb.fr/EdelKey/files/apache-2.2.0+0.9.9+servername.patch)
+
+Needs openssl-SNAP-20060330 / OpenSSL 0.9.8f or later
+to work properly (ftp://ftp.openssl.org/snapshot/). The 0.9.8 versions
+must be configured explicitly for TLS extension support at compile time
+("./config enable-tlsext").
+
+Index: httpd-2.2.x/modules/ssl/ssl_private.h
+===================================================================
+--- httpd-2.2.x/modules/ssl/ssl_private.h	(revision 627519)
++++ httpd-2.2.x/modules/ssl/ssl_private.h	(working copy)
+@@ -35,6 +35,7 @@
+ #include "http_connection.h"
+ #include "http_request.h"
+ #include "http_protocol.h"
++#include "http_vhost.h"
+ #include "util_script.h"
+ #include "util_filter.h"
+ #include "util_ebcdic.h"
+@@ -555,6 +556,9 @@
+ SSL_SESSION *ssl_callback_GetSessionCacheEntry(SSL *, unsigned char *, int, int *);
+ void         ssl_callback_DelSessionCacheEntry(SSL_CTX *, SSL_SESSION *);
+ void         ssl_callback_LogTracingState(MODSSL_INFO_CB_ARG_TYPE, int, int);
++#ifndef OPENSSL_NO_TLSEXT
++int          ssl_callback_ServerNameIndication(SSL *, int *, modssl_ctx_t *);
++#endif
+ 
+ /**  Session Cache Support  */
+ void         ssl_scache_init(server_rec *, apr_pool_t *);
+Index: httpd-2.2.x/modules/ssl/ssl_engine_init.c
+===================================================================
+--- httpd-2.2.x/modules/ssl/ssl_engine_init.c	(revision 627519)
++++ httpd-2.2.x/modules/ssl/ssl_engine_init.c	(working copy)
+@@ -355,6 +355,33 @@
+     }
+ }
+ 
++#ifndef OPENSSL_NO_TLSEXT
++static void ssl_init_ctx_tls_extensions(server_rec *s,
++                                        apr_pool_t *p,
++                                        apr_pool_t *ptemp,
++                                        modssl_ctx_t *mctx)
++{
++    /*
++     * Configure TLS extensions support
++     */
++    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
++                 "Configuring TLS extension handling");
++
++    /*
++     * Server name indication (SNI)
++     */
++    if (!SSL_CTX_set_tlsext_servername_callback(mctx->ssl_ctx,
++                          ssl_callback_ServerNameIndication) ||
++        !SSL_CTX_set_tlsext_servername_arg(mctx->ssl_ctx, mctx)) {
++        ap_log_error(APLOG_MARK, APLOG_ERR, 0, s,
++                     "Unable to initialize TLS servername extension "
++                     "callback (incompatible OpenSSL version?)");
++        ssl_log_ssl_error(APLOG_MARK, APLOG_ERR, s);
++        ssl_die();
++    }
++}
++#endif
++
+ static void ssl_init_ctx_protocol(server_rec *s,
+                                   apr_pool_t *p,
+                                   apr_pool_t *ptemp,
+@@ -687,6 +714,9 @@
+     if (mctx->pks) {
+         /* XXX: proxy support? */
+         ssl_init_ctx_cert_chain(s, p, ptemp, mctx);
++#ifndef OPENSSL_NO_TLSEXT
++        ssl_init_ctx_tls_extensions(s, p, ptemp, mctx);
++#endif
+     }
+ }
+ 
+@@ -1038,7 +1068,11 @@
+         if ((ps = (server_rec *)apr_hash_get(table, key, klen))) {
+             ap_log_error(APLOG_MARK, APLOG_WARNING, 0,
+                          base_server,
++#ifdef OPENSSL_NO_TLSEXT
+                          "Init: SSL server IP/port conflict: "
++#else
++                         "Init: SSL server IP/port overlap: "
++#endif
+                          "%s (%s:%d) vs. %s (%s:%d)",
+                          ssl_util_vhostid(p, s),
+                          (s->defn_name ? s->defn_name : "unknown"),
+@@ -1055,8 +1089,14 @@
+ 
+     if (conflict) {
+         ap_log_error(APLOG_MARK, APLOG_WARNING, 0, base_server,
++#ifdef OPENSSL_NO_TLSEXT
+                      "Init: You should not use name-based "
+                      "virtual hosts in conjunction with SSL!!");
++#else
++                     "Init: Name-based SSL virtual hosts only "
++                     "work for clients with TLS server name indication "
++                     "support (RFC 4366)");
++#endif
+     }
+ }
+ 
+Index: httpd-2.2.x/modules/ssl/ssl_engine_vars.c
+===================================================================
+--- httpd-2.2.x/modules/ssl/ssl_engine_vars.c	(revision 627519)
++++ httpd-2.2.x/modules/ssl/ssl_engine_vars.c	(working copy)
+@@ -320,6 +320,12 @@
+     else if (ssl != NULL && strcEQ(var, "COMPRESS_METHOD")) {
+         result = ssl_var_lookup_ssl_compress_meth(ssl);
+     }
++#ifndef OPENSSL_NO_TLSEXT
++    else if (ssl != NULL && strcEQ(var, "TLS_SNI")) {
++        result = apr_pstrdup(p, SSL_get_servername(ssl,
++                                                   TLSEXT_NAMETYPE_host_name));
++    }
++#endif
+     return result;
+ }
+ 
+Index: httpd-2.2.x/modules/ssl/ssl_engine_kernel.c
+===================================================================
+--- httpd-2.2.x/modules/ssl/ssl_engine_kernel.c	(revision 627519)
++++ httpd-2.2.x/modules/ssl/ssl_engine_kernel.c	(working copy)
+@@ -31,6 +31,9 @@
+ #include "ssl_private.h"
+ 
+ static void ssl_configure_env(request_rec *r, SSLConnRec *sslconn);
++#ifndef OPENSSL_NO_TLSEXT
++static int ssl_find_vhost(void *servername, conn_rec *c, server_rec *s);
++#endif
+ 
+ /*
+  *  Post Read Request Handler
+@@ -39,6 +42,9 @@
+ {
+     SSLConnRec *sslconn = myConnConfig(r->connection);
+     SSL *ssl;
++#ifndef OPENSSL_NO_TLSEXT
++    const char *servername;
++#endif
+ 
+     if (!sslconn) {
+         return DECLINED;
+@@ -87,6 +93,14 @@
+     if (!ssl) {
+         return DECLINED;
+     }
++#ifndef OPENSSL_NO_TLSEXT
++    if (!r->hostname &&
++        (servername = SSL_get_servername(ssl, TLSEXT_NAMETYPE_host_name))) {
++        /* Use the SNI extension as the hostname if no Host: header was sent */
++        r->hostname = apr_pstrdup(r->pool, servername);
++        ap_update_vhost_from_headers(r);
++    }
++#endif
+     SSL_set_app_data2(ssl, r);
+ 
+     /*
+@@ -997,6 +1011,9 @@
+     SSLDirConfigRec *dc = myDirConfig(r);
+     apr_table_t *env = r->subprocess_env;
+     char *var, *val = "";
++#ifndef OPENSSL_NO_TLSEXT
++    const char *servername;
++#endif
+     STACK_OF(X509) *peer_certs;
+     SSL *ssl;
+     int i;
+@@ -1018,6 +1035,13 @@
+     /* the always present HTTPS (=HTTP over SSL) flag! */
+     apr_table_setn(env, "HTTPS", "on");
+ 
++#ifndef OPENSSL_NO_TLSEXT
++    /* add content of SNI TLS extension (if supplied with ClientHello) */
++    if ((servername = SSL_get_servername(ssl, TLSEXT_NAMETYPE_host_name))) {
++        apr_table_set(env, "SSL_TLS_SNI", servername);
++    }
++#endif
++
+     /* standard SSL environment variables */
+     if (dc->nOptions & SSL_OPT_STDENVVARS) {
+         for (i = 0; ssl_hook_Fixup_vars[i]; i++) {
+@@ -1810,3 +1834,136 @@
+     }
+ }
+ 
++#ifndef OPENSSL_NO_TLSEXT
++/*
++ * This callback function is executed when OpenSSL encounters an extended
++ * client hello with a server name indication extension ("SNI", cf. RFC 4366).
++ */
++int ssl_callback_ServerNameIndication(SSL *ssl, int *al, modssl_ctx_t *mctx)
++{
++    const char *servername =
++                SSL_get_servername(ssl, TLSEXT_NAMETYPE_host_name);
++
++    if (servername) {
++        conn_rec *c = (conn_rec *)SSL_get_app_data(ssl);
++        if (c) {
++            if (ap_vhost_iterate_given_conn(c, ssl_find_vhost,
++                                            (void *)servername)) {
++                ap_log_cerror(APLOG_MARK, APLOG_DEBUG, 0, c,
++                              "SSL virtual host for servername %s found",
++                              servername);
++                return SSL_TLSEXT_ERR_OK;
++            }
++            else {
++                ap_log_cerror(APLOG_MARK, APLOG_DEBUG, 0, c,
++                              "No matching SSL virtual host for servername "
++                              "%s found (using default/first virtual host)",
++                              servername);
++                return SSL_TLSEXT_ERR_ALERT_WARNING;
++            }
++        }
++    }
++
++    return SSL_TLSEXT_ERR_NOACK;
++}
++
++/*
++ * Find a (name-based) SSL virtual host where either the ServerName
++ * or one of the ServerAliases matches the supplied name (to be used
++ * with ap_vhost_iterate_given_conn())
++ */
++static int ssl_find_vhost(void *servername, conn_rec *c, server_rec *s) 
++{
++    SSLSrvConfigRec *sc;
++    SSL *ssl;
++    BOOL found = FALSE;
++    apr_array_header_t *names;
++    int i;
++
++    /* check ServerName */
++    if (!strcasecmp(servername, s->server_hostname)) {
++        found = TRUE;
++    }
++
++    /* 
++     * if not matched yet, check ServerAlias entries
++     * (adapted from vhost.c:matches_aliases())
++     */
++    if (!found) {
++        names = s->names;
++        if (names) {
++            char **name = (char **)names->elts;
++            for (i = 0; i < names->nelts; ++i) {
++                if (!name[i])
++                    continue;
++                if (!strcasecmp(servername, name[i])) {
++                    found = TRUE;
++                    break;
++                }
++            }
++        }
++    }
++
++    /* if still no match, check ServerAlias entries with wildcards */
++    if (!found) {
++        names = s->wild_names;
++        if (names) {
++            char **name = (char **)names->elts;
++            for (i = 0; i < names->nelts; ++i) {
++                if (!name[i])
++                    continue;
++                if (!ap_strcasecmp_match(servername, name[i])) {
++                    found = TRUE;
++                    break;
++                }
++            }
++        }
++    }
++
++    /* set SSL_CTX (if matched) */
++    if (found && (ssl = ((SSLConnRec *)myConnConfig(c))->ssl) &&
++        (sc = mySrvConfig(s))) {
++        SSL_set_SSL_CTX(ssl, sc->server->ssl_ctx);
++        /*
++         * SSL_set_SSL_CTX() only deals with the server cert,
++         * so we need to duplicate a few additional settings
++         * from the ctx by hand
++         */
++        SSL_set_options(ssl, SSL_CTX_get_options(ssl->ctx));
++        if ((SSL_get_verify_mode(ssl) == SSL_VERIFY_NONE) ||
++            (SSL_num_renegotiations(ssl) == 0)) {
++           /*
++            * Only initialize the verification settings from the ctx
++            * if they are not yet set, or if we're called when a new
++            * SSL connection is set up (num_renegotiations == 0).
++            * Otherwise, we would possibly reset a per-directory
++            * configuration which was put into effect by ssl_hook_Access.
++            */
++            SSL_set_verify(ssl, SSL_CTX_get_verify_mode(ssl->ctx),
++                           SSL_CTX_get_verify_callback(ssl->ctx));
++        }
++
++        /*
++         * We also need to make sure that the correct mctx is
++         * assigned to the connection - the CRL callback e.g.
++         * makes use of it for retrieving its store (mctx->crl).
++         * Since logging in callbacks uses c->base_server in many
++         * cases, it also ensures that these messages are routed
++         * to the proper log. And finally, there is one special
++         * filter callback, which is set very early depending on the
++         * base_server's log level. If this is not the first vhost
++         * we're now selecting (and the first vhost doesn't use
++         * APLOG_DEBUG), then we need to set that callback here.
++         */
++        c->base_server = s;
++        if (c->base_server->loglevel >= APLOG_DEBUG) {
++            BIO_set_callback(SSL_get_rbio(ssl), ssl_io_data_cb);
++            BIO_set_callback_arg(SSL_get_rbio(ssl), (void *)ssl);
++        }
++
++        return 1;
++    }
++
++    return 0;
++}
++#endif
+Index: httpd-2.2.x/modules/ssl/ssl_toolkit_compat.h
+===================================================================
+--- httpd-2.2.x/modules/ssl/ssl_toolkit_compat.h	(revision 627519)
++++ httpd-2.2.x/modules/ssl/ssl_toolkit_compat.h	(working copy)
+@@ -264,6 +264,12 @@
+ #define SSL_SESS_CACHE_NO_INTERNAL  SSL_SESS_CACHE_NO_INTERNAL_LOOKUP
+ #endif
+ 
++#ifndef OPENSSL_NO_TLSEXT
++#ifndef SSL_CTRL_SET_TLSEXT_HOSTNAME
++#define OPENSSL_NO_TLSEXT
++#endif
++#endif
++
+ #endif /* SSL_TOOLKIT_COMPAT_H */
+ 
+ /** @} */

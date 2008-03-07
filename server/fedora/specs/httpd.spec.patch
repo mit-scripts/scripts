@@ -1,19 +1,21 @@
 --- httpd.spec.old	2006-09-08 15:04:31.000000000 -0400
 +++ httpd.spec	2006-09-16 21:32:05.000000000 -0400
-@@ -59,6 +59,8 @@
+@@ -59,6 +59,9 @@
  Obsoletes: mod_put, mod_roaming, mod_jk
  Conflicts: pcre < 4.0
  
 +Patch1000: httpd-suexec-scripts.patch
++Patch1001: httpd-2.2.8-sni.patch
 +
  %description
  The Apache HTTP Server is a powerful, efficient, and extensible
  web server.
-@@ -127,6 +129,8 @@
+@@ -127,6 +129,9 @@
  # Patch in vendor/release string
  sed "s/@RELEASE@/%{vstring}/" < %{PATCH20} | patch -p1
  
 +%patch1000 -p1 -b .scripts
++%patch1001 -p1 -b .sni
 +
  # Safety check: prevent build if defined MMN does not equal upstream MMN.
  vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
