@@ -507,17 +507,15 @@ fallback:
     }
 
     if ((result == LDAP_NO_SUCH_OBJECT)) {
-	char* parent_hostname = apr_pstrdup(r->pool, hostname);
-	do {
-	    parent_hostname = strchr(parent_hostname + 1, '.');
-	} while (parent_hostname && parent_hostname[-1] != '*');
-	if (parent_hostname) {
-	    *(--parent_hostname) = '*';
+	if (strcmp(hostname, "*") != 0) {
+	    if (strncmp(hostname, "*.", 2) == 0)
+		hostname += 2;
+	    hostname += strcspn(hostname, ".");
+	    hostname = apr_pstrcat(r->pool, "*", hostname, NULL);
 	    ap_log_rerror(APLOG_MARK, APLOG_NOTICE|APLOG_NOERRNO, 0, r,
 		          "[mod_vhost_ldap.c] translate: "
 			  "virtual host not found, trying wildcard %s",
-			  parent_hostname);
-	    hostname = parent_hostname;
+			  hostname);
 	    goto fallback;
 	}
 
