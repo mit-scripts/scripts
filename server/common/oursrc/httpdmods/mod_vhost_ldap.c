@@ -419,25 +419,6 @@ command_rec mod_vhost_ldap_cmds[] = {
     {NULL}
 };
 
-char *mod_vhost_ldap_escape(apr_pool_t *p, const char *source)
-{
-    char *target = apr_palloc(p, 3 * strlen(source) + 1);
-    char *result = target;
-    for (; *source; source++) {
-	switch (*source) {
-	    case '*': case '(': case ')': case '\\':
-		sprintf(target, "\\%02hhx", *source);
-		target += 3;
-		break;
-	    default:
-		*target++ = *source;
-		break;
-	}
-    }
-    *target = '\0';
-    return result;
-}
-
 #define FILTER_LENGTH MAX_STRING_LEN
 static int mod_vhost_ldap_translate_name(request_rec *r)
 {
@@ -455,7 +436,7 @@ static int mod_vhost_ldap_translate_name(request_rec *r)
     int result = 0;
     const char *dn = NULL;
     char *cgi;
-    const char *hostname = NULL, *s_hostname = NULL;
+    const char *hostname = NULL;
     int is_fallback = 0;
 
     reqc =
@@ -483,7 +464,7 @@ start_over:
     }
 
     hostname = r->hostname;
-    if (hostname == NULL)
+    if (hostname == NULL || hostname[0] == '\0')
 	goto null;
 
 fallback:
@@ -491,8 +472,12 @@ fallback:
     ap_log_rerror(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, 0, r,
 		   "[mod_vhost_ldap.c]: translating %s", r->uri);
 
-    s_hostname = mod_vhost_ldap_escape(r->pool, hostname);
-    apr_snprintf(filtbuf, FILTER_LENGTH, "(&(%s)(|(apacheServerName=%s)(apacheServerAlias=%s)))", conf->filter, s_hostname, s_hostname);
+    struct berval hostnamebv, shostnamebv;
+    ber_str2bv(hostname, 0, 0, &hostnamebv);
+    if (ldap_bv2escaped_filter_value(&hostnamebv, &shostnamebv) != 0)
+	goto null;
+    apr_snprintf(filtbuf, FILTER_LENGTH, "(&(%s)(|(apacheServerName=%s)(apacheServerAlias=%s)))", conf->filter, shostnamebv.bv_val, shostnamebv.bv_val);
+    ber_memfree(shostnamebv.bv_val);
 
     result = util_ldap_cache_getuserdn(r, ldc, conf->url, conf->basedn, conf->scope,
 				       attributes, filtbuf, &dn, &vals);
