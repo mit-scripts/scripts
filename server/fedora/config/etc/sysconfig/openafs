@@ -1,7 +1,10 @@
 AFSD_ARGS="-afsdb -dynroot -fakestat-all -stat 10000 -daemons 6 -volumes 400 -files 40000 -chunksize 19"
 BOSSERVER_ARGS=
 
-/sbin/sysctl -q afs.GCPAGs=0
-/usr/bin/fs setcrypt on
-/usr/bin/fs sysname 'amd64_linux26' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux2' 'i386_linux1'
-/usr/bin/fs setcell -nosuid -c athena
+postinit () {
+	/sbin/sysctl -q afs.GCPAGs=0
+	/usr/bin/fs setcrypt on
+	/usr/bin/fs sysname 'amd64_linux26' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux2' 'i386_linux1'
+	/usr/bin/fs setcell -nosuid -c athena
+}
+AFS_POST_INIT=postinit
