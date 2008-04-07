@@ -20,6 +20,7 @@ COMMIT
 *filter
 :INPUT ACCEPT [292118:164733476]
 -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 5666 -s 18.181.0.65/255.255.255.255 -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 5666 -s ! 18.187.1.128/255.255.255.255 -j REJECT
 -A INPUT -p tcp -m tcp --dport 199 -s ! 18.187.1.128/255.255.255.255 -j REJECT
 -A INPUT -p udp -m udp --dport 161 -s ! 18.0.0.0/8 -j REJECT
