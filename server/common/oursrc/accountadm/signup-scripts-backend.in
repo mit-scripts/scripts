@@ -44,7 +44,7 @@ while (<HESINFO>) {
 	%filsys = %f if (($f{order} || 9999) <= ($filsys{order} || 9999));
 }
 close HESINFO;
-unless (defined(%filsys) &&
+unless (%filsys &&
 	$filsys{type} eq 'AFS' &&
 	$filsys{path} =~ /^\/afs\/[\w\._\/-]+/ &&
 	$filsys{mount} eq "/mit/$username") {
