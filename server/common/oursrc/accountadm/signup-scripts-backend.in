@@ -35,21 +35,28 @@ while (<BANNEDUSERS>) {
 }
 close(BANNEDUSERS);
 
-my $homedir;
-my $filsys = `@hesinfo_path@ $username filsys | @sort_path@ -nk5 | @head_path@ -n1`;
-# AFS /afs/athena.mit.edu/user/j/b/jbarnold w /mit/jbarnold
-if($filsys =~ /^AFS\s(\/afs\/[\w\._\/-]+)\s.*\s\/mit\/$username(?: [0-9]+)?$/) {
-	$homedir = $1;
+my %filsys;
+open HESINFO, '-|', '@hesinfo_path@', '--', $username, 'filsys' or
+    complain("internal error");
+while (<HESINFO>) {
+	chomp;
+	my %f; @f{qw(type path rw mount order)} = split / /;
+	%filsys = %f if (($f{order} || 9999) <= ($filsys{order} || 9999));
 }
-else {
+close HESINFO;
+unless (defined(%filsys) &&
+	$filsys{type} eq 'AFS' &&
+	$filsys{path} =~ /^\/afs\/[\w\._\/-]+/ &&
+	$filsys{mount} eq "/mit/$username") {
 	complain("athena user not found");
 }
+my $homedir = $filsys{path};
 
 # Tell AFS that we don't want to trigger fakestat, and confirm user's homedir
 chdir $homedir or complain("athena homedir not found");
 
 # Obtain user's homedir uid
-my ($spam, $spam, $spam, $spam, $uid1, $gid1, $spam, $spam, $spam, $spam, $spam, $egg, $spam) = stat '.' or complain("athena homedir not found");
+my (undef, undef, undef, undef, $uid1, $gid1, undef, undef, undef, undef, undef, undef, undef) = stat '.' or complain("athena homedir not found");
 
 # Complain if user's uid is too low or too high
 complain("bad uid") unless($uid1 > 110 and $uid1 < (1 << 31));

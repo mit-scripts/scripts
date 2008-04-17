@@ -17,8 +17,6 @@ REQUIRE_PATH($1)
 dnl Needed by signup-scripts-backend.in
 
 LOCATE(hesinfo)
-LOCATE(sort)
-LOCATE(head)
 LOCATE(ldapadd)
 LOCATE(sudo)
 
