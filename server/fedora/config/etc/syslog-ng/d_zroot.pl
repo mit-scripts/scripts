@@ -54,6 +54,8 @@ while (1) {
 	} elsif ($message =~ m|^fatal: Read from socket failed: Connection reset by peer$|) {
 	} elsif ($message =~ m|^reverse mapping checking getaddrinfo|) {
 	} elsif ($message =~ m|^pam_succeed_if\(sshd\:auth\)\:|) {
+	} elsif ($message =~ m|^Postponed keyboard-interactive for invalid user |) {
+	} elsif ($message =~ m|^Failed keyboard-interactive/pam for invalid user |) {
 	} else {
 	    sendmsg($message, "scripts-spew");
 	}
