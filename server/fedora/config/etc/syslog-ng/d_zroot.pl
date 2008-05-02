@@ -56,6 +56,7 @@ while (1) {
 	} elsif ($message =~ m|^pam_succeed_if\(sshd\:auth\)\:|) {
 	} elsif ($message =~ m|^Postponed keyboard-interactive for invalid user |) {
 	} elsif ($message =~ m|^Failed keyboard-interactive/pam for invalid user |) {
+	} elsif ($message =~ m|^Address \S+ maps to \S+, but this does not map back to the address|) {
 	} else {
 	    sendmsg($message, "scripts-spew");
 	}
