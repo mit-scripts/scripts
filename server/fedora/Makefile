@@ -19,7 +19,7 @@
 # See /COPYRIGHT in this repository for more information.
 
 upstream	= openafs krb5 httpd mit-zephyr openssh
-oursrc		= execsys tokensys accountadm httpdmods logview sql-signup
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i386
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
@@ -113,9 +113,13 @@ upstream:
 all:
 	make $(allsrc)
 
-$(allsrc): setup
+$(filter %.i386,$(allsrc)): %.i386: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild $(rpmbuild_args) -ba ${tmp_specs}/$@*.spec
+	setarch i386 rpmbuild $(rpmbuild_args) --target=i386 --define="_lib lib" -bb ${tmp_specs}/$**.spec
+
+$(filter-out %.i386,$(allsrc)): %: setup
+	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
+	rpmbuild $(rpmbuild_args) -ba ${tmp_specs}/$**.spec
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \

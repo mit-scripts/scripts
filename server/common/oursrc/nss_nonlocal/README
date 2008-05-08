@@ -1,0 +1,10 @@
+This is nss_nonlocal, an nsswitch module that acts as a proxy for other 
+nsswitch modules like hesiod, but prevents non-local users from 
+potentially gaining local privileges by spoofing local UIDs and GIDs.
+
+To use it, configure /etc/nsswitch.conf as follows:
+
+passwd:         compat nonlocal
+passwd_nonlocal: hesiod
+group:          compat nonlocal
+group_nonlocal: hesiod
