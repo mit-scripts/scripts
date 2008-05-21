@@ -1,0 +1,17 @@
+#!/bin/sh
+. /usr/lib64/nagios/plugins/utils.sh
+
+CHECKS=`/usr/bin/fs checks -all -fast`
+STATUS=$?
+
+$ECHO "$CHECKS"
+
+if [ $STATUS -gt 0 ]; then
+    if $ECHO "$CHECKS" | grep -i AEGISTHUS; then
+	exit $STATE_CRITICAL;
+    else
+	exit $STATE_WARNING;
+    fi
+else
+    exit $STATE_OK;
+fi
