@@ -7,7 +7,7 @@ STATUS=$?
 $ECHO "$CHECKS"
 
 if [ $STATUS -gt 0 ]; then
-    if $ECHO "$CHECKS" | grep -i AEGISTHUS; then
+    if $ECHO "$CHECKS" | grep -i AEGISTHUS >/dev/null; then
 	exit $STATE_CRITICAL;
     else
 	exit $STATE_WARNING;
