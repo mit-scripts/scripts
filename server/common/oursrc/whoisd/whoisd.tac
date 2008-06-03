@@ -19,7 +19,8 @@ class WhoisFactory(protocol.ServerFactory):
         self.ldap = ldap.initialize(self.ldap_URL)
         self.ldap_base = ldap_base
         self.vhosts = {}
-        self.rescanVhosts()
+        if vhostDir:
+            self.rescanVhosts()
     def rescanVhosts(self):
         newVhosts = {}
         for f in glob.iglob(os.path.join(self.vhostDir, "*.conf")):
@@ -67,7 +68,7 @@ class WhoisFactory(protocol.ServerFactory):
                 attrs[attr] = attrs[attr][0]
             user = pwd.getpwuid(int(attrs['apacheSuexecUid']))
             if user:
-                attrs['locker'] = user.pw_name
+                attrs['locker'] = user.pw_namep
             else:
                 attrs['locker'] = None
             return attrs
@@ -86,7 +87,7 @@ class WhoisFactory(protocol.ServerFactory):
         return defer.succeed(ret)
 
 application = service.Application('whois', uid=99, gid=99)
-factory = WhoisFactory("/etc/httpd/vhosts.d",
+factory = WhoisFactory(None,
     "ldap://localhost", "ou=VirtualHosts,dc=scripts,dc=mit,dc=edu")
 internet.TCPServer(43, factory).setServiceParent(
     service.IServiceCollection(application))
