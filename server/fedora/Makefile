@@ -57,7 +57,11 @@ mkdir-tree:
 	ln -sTf $(topdir) rpmbuild
 
 download:
-	-@wget -O- -nv $(server_url)/$(server_arch) | wget -i- -nv -N -B $(server_url)/ -nd -nH -P $(dload);
+	@mkdir -p $(dload); \
+	wget -qO- -nv $(server_url)/$(server_arch) | xargs make
+
+%.src.rpm:
+	wget -q -nv -N -B $(server_url) -nd -nH -P $(dload) $(server_url)/$*.src.rpm
 
 copy-patches: mkdir-tree
 	@cp $(patches)/*.patch $(tmp_src); \
@@ -95,14 +99,8 @@ create-tarballs: mkdir-tree
 		tar -czf $(tmp_src)/$$i.tar.gz $$i; \
 	done;
 
-setup: install-srpms copy-patches copy-specs patch-specs create-tarballs
-
-# Do not work:
-#rpms: setup
-#	rpmbuild $(rpm_args) -bb ${tmp_specs}/$(allsrc);
-#
-#srpms: setup
-#	rpmbuild $(rpm_args) -bs ${tmp_specs}/$(allsrc);
+#setup: install-srpms copy-patches copy-specs patch-specs create-tarballs
+setup: create-tarballs
 
 oursrc:
 	make $(oursrc)
@@ -113,13 +111,16 @@ upstream:
 all:
 	make $(allsrc)
 
-$(filter %.i386,$(allsrc)): %.i386: setup
+$(filter %.i386,$(oursrc)): %.i386: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	setarch i386 rpmbuild $(rpmbuild_args) --target=i386 --define="_lib lib" -bb ${tmp_specs}/$**.spec
 
-$(filter-out %.i386,$(allsrc)): %: setup
+$(filter-out %.i386,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild $(rpmbuild_args) -ba ${tmp_specs}/$**.spec
+	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/$**.spec
+
+$(upstream):
+	rpmbuild $(rpmbuild_args) --rebuild $(dload)/$@*.src.rpm
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
@@ -127,7 +128,7 @@ openafs-kernel: setup
 
 kernvers = $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)
 kvariants = ''
-openafs_rpmbuild_args = --define "fedorakmod 1" --define "kvariants $(kvariants)" --define "kernvers $(kernvers)"
+openafs_rpmbuild_args = --define "fedorakmod 1" --define "kvariants $(kvariants)" --define "kernvers $(kernvers)" --nodeps
 openafs: rpmbuild_args += $(openafs_rpmbuild_args)
 openafs-kernel: rpmbuild_args += $(openafs_rpmbuild_args) --define "build_userspace 0" --define "build_modules 1"
 
@@ -164,7 +165,13 @@ httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel a
 krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel
 openafs-deps	= pam-devel automake
 mit-zephyr-deps	= readline-devel hesiod.i386 libXt.i386 #compat-readline43
-openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth gobject-devel pango-devel cairo-devel
+openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth gobject-devel pango-devel cairo-devel libedit-devel
 install-deps:
 	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(mit-zephyr-deps) $(openssh-deps)
 	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
+
+fedora:
+	make install-deps
+	make upstream
+	rpm -ivh $(out_rpms)/`uname -m`/openafs-devel*.rpm
+	make oursrc
