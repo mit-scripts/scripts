@@ -1,0 +1,7 @@
+install:
+	install -Dpm 644 whoisd.tac ${DESTDIR}@libexecdir@/whoisd.tac
+	install -Dpm 644 crontab ${DESTDIR}/etc/cron.d/whoisd
+
+clean:
+	rm -f ${DESTDIR}@libexecdir@/whoisd.tac
+	rm -f ${DESTDIR}/etc/cron.d/whoisd

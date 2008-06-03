@@ -19,7 +19,7 @@
 # See /COPYRIGHT in this repository for more information.
 
 upstream	= openafs krb5 httpd mit-zephyr openssh
-oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i386
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i386 whoisd
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
@@ -86,7 +86,7 @@ patch-specs: install-srpms
 
 # 1. use the package's Makefile to delete leftover files and run autoconf
 # 2. create a tarball (we want it to contain the autoconf output)
-create-tarballs: mkdir-tree
+tarballs: mkdir-tree
 	@cd ${oursrcdir}; \
 	list=`find -mindepth 1 -maxdepth 1 -type d | grep -v ".svn"`; \
 	for i in $$list; do \
@@ -99,13 +99,13 @@ create-tarballs: mkdir-tree
 		tar -czf $(tmp_src)/$$i.tar.gz $$i; \
 	done;
 
-#setup: install-srpms copy-patches copy-specs patch-specs create-tarballs
-setup: create-tarballs
+#setup: install-srpms copy-patches copy-specs patch-specs tarballs
+setup: copy-patches copy-specs tarballs
 
 oursrc:
 	make $(oursrc)
 
-upstream:
+upstream: mkdir-tree download
 	make $(upstream)
 
 all:
