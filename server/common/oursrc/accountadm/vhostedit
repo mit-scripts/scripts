@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ ! "$1" ]; then
+    echo "Usage: $0 <vhost>"
+    exit 2
+fi
+
+exec ldapvi "(&(objectClass=apacheConfig)(|(apacheServerName=$1)(apacheServerAlias=$1)))"

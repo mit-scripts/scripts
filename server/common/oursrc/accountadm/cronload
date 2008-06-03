@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ -n "$2" ]; then
+  cd "$2"
+fi
+
+/bin/cat "$1" | /usr/bin/crontab -
+
+echo "New crontab for $USER:"
+echo ""
+/usr/bin/crontab -l

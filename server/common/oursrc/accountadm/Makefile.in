@@ -19,6 +19,9 @@ install:
 	install -p -m755 -D admof $(DESTDIR)$(sbindir)/ssh-admof
 	install -p -m755 -D signup-scripts-frontend $(DESTDIR)$(sbindir)/signup-scripts-frontend
 	install -p -m755 -D signup-scripts-backend $(DESTDIR)$(sbindir)/signup-scripts-backend
+	install -p -m755 -D cronload $(DESTDIR)$(bindir)/cronload
+	install -p -m755 -D vhostadd $(DESTDIR)$(sbindir)/vhostadd
+	install -p -m755 -D vhostedit $(DESTDIR)$(sbindir)/vhostedit
 
 clean:
 	rm -f admof signup-scripts-frontend

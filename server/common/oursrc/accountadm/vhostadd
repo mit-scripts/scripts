@@ -1,0 +1,54 @@
+#!/bin/bash
+set -e
+
+printf "Host name: " >&2
+if [ "$1" ]; then
+    host="$1"; shift
+    echo "$host"
+else
+    read host
+fi
+
+if ! grep -Fq "." <<< "$host"; then host=$host.mit.edu; fi
+
+printf "User: " >&2
+if [ "$1" ]; then
+    user="$1"; shift
+    echo "$user"
+else
+    read user
+fi
+
+pw=$(getent passwd "$user")
+if [ $? -ne 0 ]; then
+    echo "User not found." >&2
+    exit $?
+fi
+IFS=: read user x uid gid x home x <<< "$pw"
+
+printf "Docroot: $home/web_scripts" >&2
+read subdir
+
+tmpfile=$(mktemp -t vhostadd.XXXXXX) || exit $?
+trap 'rm -f "$tmpfile"' EXIT
+
+cat <<EOF > "$tmpfile"
+dn: apacheServerName=$host,ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
+objectClass: apacheConfig
+objectClass: top
+apacheServerName: $host
+EOF
+
+if [ "${host%mit.edu}" != "$host" ]; then
+    cat <<EOF >> "$tmpfile"
+apacheServerAlias: ${host%.mit.edu}
+EOF
+fi
+
+cat <<EOF >> "$tmpfile"
+apacheDocumentRoot: $home/web_scripts$subdir
+apacheSuexecUid: $uid
+apacheSuexecGid: $gid
+EOF
+
+exec ldapvi --add --in "$tmpfile"

@@ -19,6 +19,8 @@ Contains:
  - Perl script for checking whether a user is a locker admin <admof>
  - setuid C program used to start a signup request <signup-scripts-frontend>
  - Perl script that handles signup requests <signup-scripts-backend>
+ - vhostadd,vhostedit: admin tools for adding and editing virtualhosts
+ - cronload: userspace tool for setting crontab from Athena
 See http://scripts.mit.edu/wiki for more information.
 
 %prep
@@ -41,8 +43,11 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 %defattr(0755, root, root)
 /usr/local/bin/mbash
 /usr/local/bin/admof
+/usr/local/bin/cronload
 /usr/local/sbin/ssh-admof
 /usr/local/sbin/signup-scripts-backend
+/usr/local/sbin/vhostadd
+/usr/local/sbin/vhostedit
 %defattr(4755, signup, signup)
 /usr/local/sbin/signup-scripts-frontend
 
