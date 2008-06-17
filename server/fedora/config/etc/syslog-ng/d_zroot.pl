@@ -60,7 +60,7 @@ while (1) {
 	} elsif ($message =~ m|^Failed keyboard-interactive/pam for invalid user |) {
 	} elsif ($message =~ m|^Address \S+ maps to \S+, but this does not map back to the address|) {
 	} else {
-	    sendmsg($message, "scripts-spew");
+#	    sendmsg($message, "scripts-spew");
 	}
     }
 
