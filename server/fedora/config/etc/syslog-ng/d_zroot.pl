@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Sys::Hostname;
 use Time::HiRes qw(ualarm);
+use File::Temp;
 
 our $ZCLASS = "scripts-auto";
 our @USERS = qw/root logview/;
@@ -21,6 +22,35 @@ sub zwrite($;$$) {
 }
 
 my %toclass;
+
+my %sshkeys;
+
+sub buildKeyMap($) {
+    my ($file) = @_;
+    open (KEYS, $file) or warn "Couldn't open $file: $!";
+    while (<KEYS>) {
+	chomp;
+	my ($fingerprint, $comment) = parseKey($_);
+	$sshkeys{$fingerprint} = $comment;
+    }
+    close(KEYS);
+}
+
+sub parseKey($) {
+    my ($key) = @_;
+    my $tmp = new File::Temp;
+    print $tmp $key;
+    close $tmp;
+    open (KEYGEN, "-|", qw(/usr/bin/ssh-keygen -l -f), $tmp) or die "Couldn't call ssh-keygen: $!";
+    my ($line) = <KEYGEN>;
+    close(KEYGEN);
+    my (undef, $fingerprint, undef) = split(' ', $line, 3);
+    my (undef, undef, $comment) = split(' ', $key, 3);
+    print "$fingerprint $comment";
+    return ($fingerprint, $comment);
+}
+
+buildKeyMap("/root/.ssh/authorized_keys2");
 
 while (1) {
     my @message = scalar(<>);
@@ -46,8 +76,16 @@ while (1) {
 	    sendmsg($message);
 	} elsif ($message =~ m|session \S+ for user (\S+)|) {
 	    sendmsg($message) if exists $USERS{$1};
+	} elsif ($message =~ m|^Found matching (\w+) key: (\S+)|) {
+	    if ($sshkeys{$2}) {
+		sendmsg($message." (".$sshkeys{$2}.")");
+	    } else {
+		sendmsg($message." (UNKNOWN KEY)");
+	    }
 	} elsif ($message =~ m|^Connection closed|) {
 	    # Do nothing
+	} elsif ($message =~ m|^Closing connection to |) {
+	} elsif ($message =~ m|^Connection from (\S+) port (\S+)|) {
 	} elsif ($message =~ m|^Invalid user|) {
 	} elsif ($message =~ m|^input_userauth_request: invalid user|) {
 	} elsif ($message =~ m|^Received disconnect from|) {
@@ -58,9 +96,10 @@ while (1) {
 	} elsif ($message =~ m|^pam_unix\(sshd:auth\): authentication failure|) {
 	} elsif ($message =~ m|^Postponed keyboard-interactive for invalid user |) {
 	} elsif ($message =~ m|^Failed keyboard-interactive/pam for invalid user |) {
+	} elsif ($message =~ m|^Postponed gssapi-with-mic for |) {
 	} elsif ($message =~ m|^Address \S+ maps to \S+, but this does not map back to the address|) {
 	} else {
-#	    sendmsg($message, "scripts-spew");
+	    sendmsg($message, "scripts-spew");
 	}
     }
 
