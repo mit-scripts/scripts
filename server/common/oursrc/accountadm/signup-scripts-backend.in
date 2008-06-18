@@ -54,7 +54,7 @@ my $homedir = $filsys{path};
 
 # Tell AFS that we don't want to trigger fakestat, and confirm user's homedir
 chdir $homedir or complain("athena homedir not found");
-opendir TEMP, '.' or complain("internal error");
+opendir TEMP, '.';
 closedir TEMP;
 
 # Obtain user's homedir uid
