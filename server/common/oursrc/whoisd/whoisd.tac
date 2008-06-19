@@ -6,11 +6,16 @@ import os, sys, pwd, glob
 
 class WhoisProtocol(basic.LineReceiver):
     def lineReceived(self, hostname):
-        self.factory.getWhois(hostname
-        ).addErrback(lambda _: "Internal error in server"
-        ).addCallback(lambda m:
-                      (self.transport.write(m+"\r\n"),
-                       self.transport.loseConnection()))
+    	(key, hostname) = hostname.split('=',2)
+	if key != '0xvVk043ZT61jR1bAlX0JSzM':
+            self.transport.write("Unauthorized to use whois"+"\r\n")
+	    self.transport.loseConnection()
+	else:
+            self.factory.getWhois(hostname
+            ).addErrback(lambda _: "Internal error in server"
+            ).addCallback(lambda m:
+                          (self.transport.write(m+"\r\n"),
+                           self.transport.loseConnection()))
 class WhoisFactory(protocol.ServerFactory):
     protocol = WhoisProtocol
     def __init__(self, vhostDir, ldap_URL, ldap_base):
@@ -68,7 +73,7 @@ class WhoisFactory(protocol.ServerFactory):
                 attrs[attr] = attrs[attr][0]
             user = pwd.getpwuid(int(attrs['apacheSuexecUid']))
             if user:
-                attrs['locker'] = user.pw_namep
+                attrs['locker'] = user.pw_name
             else:
                 attrs['locker'] = None
             return attrs
