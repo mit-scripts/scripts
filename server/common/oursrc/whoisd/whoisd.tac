@@ -7,7 +7,7 @@ import os, sys, pwd, glob
 class WhoisProtocol(basic.LineReceiver):
     def lineReceived(self, hostname):
     	(key, hostname) = hostname.split('=',2)
-	if key != '0xvVk043ZT61jR1bAlX0JSzM':
+	if key != self.factory.key:
             self.transport.write("Unauthorized to use whois"+"\r\n")
 	    self.transport.loseConnection()
 	else:
@@ -18,7 +18,7 @@ class WhoisProtocol(basic.LineReceiver):
                            self.transport.loseConnection()))
 class WhoisFactory(protocol.ServerFactory):
     protocol = WhoisProtocol
-    def __init__(self, vhostDir, ldap_URL, ldap_base):
+    def __init__(self, vhostDir, ldap_URL, ldap_base, keyFile):
         self.vhostDir = vhostDir
         self.ldap_URL = ldap_URL
         self.ldap = ldap.initialize(self.ldap_URL)
@@ -26,6 +26,7 @@ class WhoisFactory(protocol.ServerFactory):
         self.vhosts = {}
         if vhostDir:
             self.rescanVhosts()
+        self.key = file(keyFile).read()
     def rescanVhosts(self):
         newVhosts = {}
         for f in glob.iglob(os.path.join(self.vhostDir, "*.conf")):
@@ -93,6 +94,6 @@ class WhoisFactory(protocol.ServerFactory):
 
 application = service.Application('whois', uid=99, gid=99)
 factory = WhoisFactory(None,
-    "ldap://localhost", "ou=VirtualHosts,dc=scripts,dc=mit,dc=edu")
+    "ldap://localhost", "ou=VirtualHosts,dc=scripts,dc=mit,dc=edu", "/etc/whoisd-password")
 internet.TCPServer(43, factory).setServiceParent(
     service.IServiceCollection(application))
