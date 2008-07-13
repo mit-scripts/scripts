@@ -4,7 +4,14 @@ BOSSERVER_ARGS=
 postinit () {
 	/sbin/sysctl -q afs.GCPAGs=0
 	/usr/bin/fs setcrypt on
-	/usr/bin/fs sysname 'amd64_linux26' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux2' 'i386_linux1'
+	case "$(lsb_release -cs)" in
+	  Moonshine)
+	    /usr/bin/fs sysname 'amd64_fedora7_scripts' 'amd64_fedora7' 'amd64_linux26' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux26' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux2' 'i386_linux1' 'scripts' ;;
+	  Sulphur)
+	    /usr/bin/fs sysname 'amd64_fedora9_scripts' 'amd64_fedora9' 'amd64_linux26' 'amd64_fedora7' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux26' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux3' 'i386_linux2' 'i386_linux1' 'scripts' ;;
+	  *)
+	    echo "Warning: unknown platform. AFS sysname not set."
+	esac
 	/usr/bin/fs setcell -nosuid -c athena
 }
 AFS_POST_INIT=postinit
