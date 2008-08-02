@@ -6,8 +6,18 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
 
 * Run "make install-deps" to install various prereqs.
 
+* Create a scripts-build account, and set up rpm to build in $HOME.
+  Or you can just use the default setup, which will generate packages
+  in /usr/src/redhat.
+
 * Use the Makefile to build the scripts.mit.edu-specific Fedora
   packages.
+  - make download
+  - make setup
+  - make all
+  - openafs-devel is a build-dependency of accountadm, so you'll need to
+    install it by hand.
+  Then install all the packages as root.
 
 * Run "make suexec" and "make suexec-install" to overwrite
   /usr/sbin/suexec with one that works. The one installed by the
@@ -23,6 +33,9 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
   server/doc/perl_snapshot.
 
 * Install rails (versions 1.1.6 and 1.2.2).
+
+* Install the Python eggs and Ruby gems that are on the other scripts.mit.edu
+  servers and do not have RPMs.
 
 * Install the credentials (machine keytab, daemon.scripts keytab, SSL
   certs).
@@ -41,6 +54,8 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
   You will also need to modify /etc/ldap.conf and
   /etc/httpd/conf.d/vhost_ldap.conf to use scripts.mit.edu instead of
   localhost.
+
+* Install fedora-ds-base and set up replication (see /mit/scripts/doc).
 
 * (Optional) Beat your head against a wall.
 
