@@ -8,15 +8,20 @@ use File::Temp;
 
 our $ZCLASS = "scripts-auto";
 our @USERS = qw/root logview/;
+my $k5login;
+open $k5login, '/root/.k5login';
+our @RECIPIENTS = map {chomp; m|([^/@]*)| && $1} <$k5login>;
+close $k5login;
 
 our %USERS;
 @USERS{@USERS} = undef;
 
-sub zwrite($;$$) {
-    my ($message, $class, $instance) = @_;
+sub zwrite($;$$@) {
+    my ($message, $class, $instance, @recipients) = @_;
     $class ||= $ZCLASS;
     $instance ||= 'root.'.hostname;
-    open(ZWRITE, "|-", qw|/usr/bin/zwrite -d -O log -c|, $class, '-i', $instance, '-s', hostname) or die "Couldn't open zwrite";
+    # @recipients ||= @RECIPIENTS;
+    open(ZWRITE, "|-", qw|/usr/bin/zwrite -d -n -O log -c|, $class, '-i', $instance, '-s', hostname, @RECIPIENTS) or die "Couldn't open zwrite";
     print ZWRITE $message;
     close(ZWRITE);
 }
