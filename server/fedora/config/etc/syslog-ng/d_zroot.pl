@@ -20,8 +20,7 @@ sub zwrite($;$$@) {
     my ($message, $class, $instance, @recipients) = @_;
     $class ||= $ZCLASS;
     $instance ||= 'root.'.hostname;
-    # @recipients ||= @RECIPIENTS;
-    open(ZWRITE, "|-", qw|/usr/bin/zwrite -d -n -O log -c|, $class, '-i', $instance, '-s', hostname, @RECIPIENTS) or die "Couldn't open zwrite";
+    open(ZWRITE, "|-", qw|/usr/bin/zwrite -d -n -O log -c|, $class, '-i', $instance, '-s', hostname, @recipients) or die "Couldn't open zwrite";
     print ZWRITE $message;
     close(ZWRITE);
 }
@@ -51,7 +50,7 @@ sub parseKey($) {
     close(KEYGEN);
     my (undef, $fingerprint, undef) = split(' ', $line, 3);
     my (undef, undef, $comment) = split(' ', $key, 3);
-    print "$fingerprint $comment";
+    #print "$fingerprint $comment";
     return ($fingerprint, $comment);
 }
 
@@ -109,6 +108,10 @@ while (1) {
     }
 
     foreach my $class (keys %toclass) {
-	zwrite($toclass{$class}, $class);
+	if ($class eq "scripts-auto") {
+	    zwrite($toclass{$class}, $class);
+	} else {
+	    zwrite($toclass{$class}, $class, undef, @RECIPIENTS);
+	}
     }
 }
