@@ -158,7 +158,7 @@ frob-openafs:
 	fi
 
 # The following packages are needed for our packages
-basic-deps	= kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstation 
+basic-deps	= kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstation glibc-devel.i386
 oursrc-deps	= hesinfo openldap-clients
 httpdmods-deps	= httpd-devel
 httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel
