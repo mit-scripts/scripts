@@ -1,6 +1,7 @@
 This document is a how-to for installing a Fedora scripts.mit.edu server.
 
-* Check out the scripts.mit.edu svn repository.
+* Check out the scripts.mit.edu svn repository. Configure svn not to cache
+  credentials.
 
 * cd to server/fedora in the svn repository.
 
@@ -22,6 +23,18 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
 * Run "make suexec" and "make suexec-install" to overwrite
   /usr/sbin/suexec with one that works. The one installed by the
   newly-built Apache RPM is misconfigured.
+
+* Check out the scripts /etc configuration, which is done most easily by
+  - svn co http://scripts.mit.edu:1111/server/fedora/config/etc
+  - \cp -a etc /
+
+* Install various dependencies of the scripts system, including syslog-ng,
+  glibc-devel.i386, python-twisted-core, and mod_fcgid.
+
+* Disable SELinux and NetworkManager.
+
+* Figure out why Zephyr isn't working and why the openafs /usr/vice/etc <->
+  /etc/openafs mapping isn't in sync.
 
 * Install the full list of RPMs that users expect to be on the
   scripts.mit.edu servers.  See server/doc/rpm and
