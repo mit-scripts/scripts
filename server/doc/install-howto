@@ -28,7 +28,7 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
   newly-built Apache RPM is misconfigured.
 
 * Check out the scripts /etc configuration, which is done most easily by
-  - svn co http://scripts.mit.edu:1111/server/fedora/config/etc
+  - svn co https://scripts.mit.edu:1111/server/fedora/config/etc
   - \cp -a etc /
 
 * Install various dependencies of the scripts system, including syslog-ng,
