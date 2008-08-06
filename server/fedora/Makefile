@@ -18,12 +18,12 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream	= openafs krb5 httpd openssh
+upstream_yum	= krb5 httpd openssh
+upstream	= openafs $(upstream_yum)
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i386 whoisd mit-zephyr 
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
-metapatches	= ${PWD}/meta-patches
 specs		= ${PWD}/specs
 
 topdir		= ${HOME}/rpmbuild
@@ -37,6 +37,7 @@ out_sbin	= $(topdir)/sbin
 dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
+openafs_url	= "http://dl.openafs.org/dl/openafs/1.4.7/openafs-1.4.7-1.1.1.src.rpm"
 
 .PHONY: minimal-clean
 
@@ -56,20 +57,20 @@ mkdir-tree:
 	mkdir -p $(out_sbin)
 	ln -sTf $(topdir) rpmbuild
 
-download:
+download: download_stamp
+download_stamp:
 	@mkdir -p $(dload); \
-	wget -qO- -nv $(server_url)/$(server_arch) | xargs make
+	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
+	cd $(dload) && yumdownloader --source $(upstream_yum)
+	wget -P $(dload) $(openafs_url)
+	touch download_stamp
 
 %.src.rpm:
 	wget -q -nv -N -B $(server_url) -nd -nH -P $(dload) $(server_url)/$*.src.rpm
 
 copy-patches: mkdir-tree
 	@cp $(patches)/*.patch $(tmp_src); \
-	cd $(tmp_src); \
-	list=`ls $(metapatches)/*.patch`; \
-        for i in $$list; do \
-                patch < $$i; \
-        done;
+	cd $(tmp_src);
 
 install-srpms: mkdir-tree download
 	rpm $(rpm_args) -i $(dload)/*.src.rpm 2>/dev/null;
@@ -120,13 +121,15 @@ $(filter-out %.i386,$(oursrc)): %: setup
 	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/$**.spec
 
 $(upstream):
-	rpmbuild $(rpmbuild_args) --rebuild $(dload)/$@*.src.rpm
+	rpmbuild $(rpmbuild_args) -ba ${tmp_specs}/$@.spec
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/openafs*.spec
 
-kernvers = $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)
+#sort -n sorts "2.6.25-1" later than "2.6.25.1-1", so it's Wrong
+#kernvers = $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)
+kernvers = $(shell uname -r | sed "s/\(.*\)[.].*/\1/")
 kvariants = ''
 openafs_rpmbuild_args = --define "fedorakmod 1" --define "kvariants $(kvariants)" --define "kernvers $(kernvers)" --nodeps
 openafs: rpmbuild_args += $(openafs_rpmbuild_args)
@@ -162,7 +165,7 @@ basic-deps	= kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstat
 oursrc-deps	= hesinfo openldap-clients
 httpdmods-deps	= httpd-devel
 httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel
-krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel
+krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel texinfo-tex
 openafs-deps	= pam-devel automake
 mit-zephyr-deps	= readline-devel hesiod-devel hesiod-devel.i386 hesiod.i386 libXt.i386 #compat-readline43
 openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth gobject-devel pango-devel cairo-devel libedit-devel nss-devel
