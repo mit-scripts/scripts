@@ -32,7 +32,7 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
   - \cp -a etc /
 
 * Install various dependencies of the scripts system, including syslog-ng,
-  glibc-devel.i386, python-twisted-core, and mod_fcgid.
+  glibc-devel.i386, python-twisted-core, mod_fcgid, nrpe, nagios-plugins-all.
 
 * Disable SELinux and NetworkManager.
 
