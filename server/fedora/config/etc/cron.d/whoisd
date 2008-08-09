@@ -1,1 +1,1 @@
-@reboot root /usr/bin/twistd -l /var/log/scripts-whoisd.log --pidfile /var/run/whoisd.pid -y /root/whoisd/whoisd.tac
+@reboot root /usr/bin/twistd -l /var/log/scripts-whoisd.log --pidfile /var/run/whoisd.pid -y /usr/local/libexec/whoisd.tac
