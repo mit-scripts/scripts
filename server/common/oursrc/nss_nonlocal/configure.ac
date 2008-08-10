@@ -1,4 +1,4 @@
-AC_INIT([nss_nonlocal], [1.7], [andersk@mit.edu])
+AC_INIT([nss_nonlocal], [1.8], [andersk@mit.edu])
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 

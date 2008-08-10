@@ -473,7 +473,7 @@ _nss_nonlocal_initgroups_dyn(const char *user, gid_t group, long int *start,
 		    if (newsize > limit)
 			newsize = limit;
 		}
-		newgroups = realloc(*groupsp, *size * sizeof((*groupsp)[0]));
+		newgroups = realloc(*groupsp, newsize * sizeof((*groupsp)[0]));
 		if (newgroups == NULL) {
 		    *errnop = ENOMEM;
 		    errno = old_errno;

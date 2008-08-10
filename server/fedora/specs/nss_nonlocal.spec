@@ -1,7 +1,7 @@
 Summary: nsswitch proxy module to prevent local account spoofing
 Group: System Environment/Libraries
 Name: nss_nonlocal
-Version: 1.7
+Version: 1.8
 Release: 0
 URL: http://debathena.mit.edu/nss_nonlocal/
 BuildRequires: autoconf
