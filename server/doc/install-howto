@@ -31,6 +31,9 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
   - svn co https://scripts.mit.edu:1111/server/fedora/config/etc
   - \cp -a etc /
 
+* Copy over root's dotfiles. Note that this sets the umask to 077, so you
+  should do 'umask 022' when installing things that aren't secret keys.
+
 * Install various dependencies of the scripts system, including syslog-ng,
   glibc-devel.i386, python-twisted-core, mod_fcgid, nrpe, nagios-plugins-all.
 
@@ -72,6 +75,8 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
   localhost.
 
 * Install fedora-ds-base and set up replication (see /mit/scripts/doc).
+
+* Run fmtutil-sys --all, which does something that makes TeX work.
 
 * (Optional) Beat your head against a wall.
 
