@@ -1,24 +1,22 @@
 --- httpd.spec.orig	2008-02-19 02:05:36.000000000 -0500
 +++ httpd.spec	2008-05-20 19:39:59.000000000 -0400
-@@ -54,6 +54,11 @@
+@@ -54,6 +54,10 @@
  Conflicts: pcre < 4.0
  Requires: httpd-tools = %{version}-%{release}
  
 +Patch1000: httpd-suexec-scripts.patch
 +Patch1001: httpd-2.2.8-sni.patch
-+Patch1002: httpd-2.2.x-broken-ldap-caching.patch
 +Patch1003: httpd-2.2.x-mod_status-security.patch
 +
  %description
  The Apache HTTP Server is a powerful, efficient, and extensible
  web server.
-@@ -127,6 +131,11 @@
+@@ -127,6 +131,10 @@
  # Patch in vendor/release string
  sed "s/@RELEASE@/%{vstring}/" < %{PATCH20} | patch -p1
  
 +%patch1000 -p1 -b .scripts
 +%patch1001 -p1 -b .sni
-+%patch1002 -p1 -b .broken-ldap
 +%patch1003 -p1 -b .permitstatus
 +
  # Safety check: prevent build if defined MMN does not equal upstream MMN.
