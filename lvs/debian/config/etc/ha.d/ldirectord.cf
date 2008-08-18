@@ -6,7 +6,7 @@ quiescent=no
 
 virtual=18.181.0.46:80
         real=18.181.0.53:80 gate 1024
-        #real=18.181.0.57:80 gate 1024
+        real=18.181.0.57:80 gate 1024
         real=18.181.0.167:80 gate 1024
         fallback=18.187.1.128:80 gate
         service=http
@@ -18,7 +18,7 @@ virtual=18.181.0.46:80
 
 virtual=18.181.0.46:443
         real=18.181.0.53:443 gate 1024
-        #real=18.181.0.57:443 gate 1024
+        real=18.181.0.57:443 gate 1024
         real=18.181.0.167:443 gate 1024
         fallback=18.187.1.128:443 gate
         service=https
@@ -31,7 +31,7 @@ virtual=18.181.0.46:443
 
 virtual=18.181.0.46:444
         real=18.181.0.53:444 gate 1024
-        #real=18.181.0.57:444 gate 1024
+        real=18.181.0.57:444 gate 1024
         real=18.181.0.167:444 gate 1024
         fallback=18.187.1.128:444 gate
         service=https
@@ -44,7 +44,7 @@ virtual=18.181.0.46:444
 
 virtual=18.181.0.50:80
         real=18.181.0.53:80 gate 1024
-        #real=18.181.0.57:80 gate 1024
+        real=18.181.0.57:80 gate 1024
         real=18.181.0.167:80 gate 1024
         fallback=18.187.1.128:80 gate
         service=http
@@ -56,7 +56,7 @@ virtual=18.181.0.50:80
 
 virtual=18.181.0.50:443
         real=18.181.0.53:443 gate 1024
-        #real=18.181.0.57:443 gate 1024
+        real=18.181.0.57:443 gate 1024
         real=18.181.0.167:443 gate 1024
         fallback=18.187.1.128:443 gate
         service=https
@@ -68,7 +68,7 @@ virtual=18.181.0.50:443
 
 virtual=18.181.0.50:444
         real=18.181.0.53:444 gate 1024
-        #real=18.181.0.57:444 gate 1024
+        real=18.181.0.57:444 gate 1024
         real=18.181.0.167:444 gate 1024
         fallback=18.187.1.128:444 gate
         service=https
@@ -80,7 +80,7 @@ virtual=18.181.0.50:444
 
 virtual=18.181.0.49:80
         real=18.181.0.53:80 gate 1024
-        #real=18.181.0.57:80 gate 1024
+        real=18.181.0.57:80 gate 1024
         real=18.181.0.167:443 gate 1024
         fallback=18.187.1.128:80 gate
         service=http
@@ -92,7 +92,7 @@ virtual=18.181.0.49:80
 
 virtual=18.181.0.49:443
         real=18.181.0.53:443 gate 1024
-        #real=18.181.0.57:443 gate 1024
+        real=18.181.0.57:443 gate 1024
         real=18.181.0.167:443 gate 1024
         fallback=18.187.1.128:443 gate
         service=https
@@ -104,7 +104,7 @@ virtual=18.181.0.49:443
 
 virtual=1
         real=18.181.0.53 gate "heartbeat/services", "1"
-        #real=18.181.0.57 gate "heartbeat/services", "2"
+        real=18.181.0.57 gate "heartbeat/services", "2"
         real=18.181.0.167 gate "heartbeat/services", "3"
 	service=http
         scheduler=wrr
