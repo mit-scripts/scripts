@@ -12,7 +12,7 @@
  %description
  The Apache HTTP Server is a powerful, efficient, and extensible
  web server.
-@@ -127,6 +132,11 @@
+@@ -127,6 +131,11 @@
  # Patch in vendor/release string
  sed "s/@RELEASE@/%{vstring}/" < %{PATCH20} | patch -p1
  
@@ -24,7 +24,7 @@
  # Safety check: prevent build if defined MMN does not equal upstream MMN.
  vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
  if test "x${vmmn}" != "x%{mmn}"; then
-@@ -175,10 +184,11 @@
+@@ -175,10 +183,11 @@
          --with-apr=%{_prefix} --with-apr-util=%{_prefix} \
  	--enable-suexec --with-suexec \
  	--with-suexec-caller=%{suexec_caller} \
