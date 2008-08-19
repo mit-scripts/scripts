@@ -31,8 +31,7 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
   - svn co https://scripts.mit.edu:1111/server/fedora/config/etc
   - \cp -a etc /
 
-* Copy over root's dotfiles. Note that this sets the umask to 077, so you
-  should do 'umask 022' when installing things that aren't secret keys.
+* Copy over root's dotfiles.
 
 * Install various dependencies of the scripts system, including syslog-ng,
   glibc-devel.i386, python-twisted-core, mod_fcgid, nrpe, nagios-plugins-all.
@@ -51,30 +50,33 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
   scripts.mit.edu servers.  See server/doc/perl and
   server/doc/perl_snapshot.
 
+  - Run 'cpan', accept the default configuration, and do 'o conf
+    prerequisites_policy follow'.
+  - Copy the autobundle file into /root/.cpan/Bundle, and run
+    perl -MCPAN -e 'notest install Bundle::Snapshot_...' in a screen.
+
 * Install rails (versions 1.1.6 and 1.2.2).
 
-* Install the Python eggs and Ruby gems that are on the other scripts.mit.edu
-  servers and do not have RPMs.
+* Install the Python eggs and Ruby gems and PEAR/PECL doohickeys that are on
+  the other scripts.mit.edu servers and do not have RPMs.
+
+* echo 'import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.5/site-packages"))' > /usr/lib/python2.5/site-packages/00scripts-home.pth
 
 * Install the credentials (machine keytab, daemon.scripts keytab, SSL
   certs).
 
-* Attempt to check out server/fedora/config/etc into /etc. This involves
-  individually renaming directories out of the way, copying over any
-  configuration files from SVN (and the .svn directory), and moving the
-  original directory back.
-
-  - Configure Apache.
-
-  - Try not to misconfigure PAM or SSH in the process.
+* Attempt to check out server/fedora/config/etc into /etc. The easiest way to
+  do this is to create a checkout of etc in another directory and mv -f this on
+  top of /etc.
 
   - If you are setting up a test server, pay attention to
   /etc/sysconfig/network-scripts and do not bind scripts' IP address.
-  You will also need to modify /etc/ldap.conf and
+  You will also need to modify /etc/ldap.conf, /etc/openldap/ldap.conf, and
   /etc/httpd/conf.d/vhost_ldap.conf to use scripts.mit.edu instead of
   localhost.
 
-* Install fedora-ds-base and set up replication (see /mit/scripts/doc).
+* Install fedora-ds-base and set up replication (see /mit/scripts/doc
+  and /mit/geofft/Public/fedora-ds-enable-ssl-and-kerberos.diff).
 
 * Run fmtutil-sys --all, which does something that makes TeX work.
 
