@@ -52,13 +52,14 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
 
   - Run 'cpan', accept the default configuration, and do 'o conf
     prerequisites_policy follow'.
-  - Copy the autobundle file into /root/.cpan/Bundle, and run
-    perl -MCPAN -e 'notest install Bundle::Snapshot_...' in a screen.
-
-* Install rails (versions 1.1.6 and 1.2.2).
+  - Parse the output of perldoc -u perllocal | grep head2 on an existing
+    server, and "notest install" them from the cpan prompt.
 
 * Install the Python eggs and Ruby gems and PEAR/PECL doohickeys that are on
   the other scripts.mit.edu servers and do not have RPMs.
+  - Look at /usr/lib/python2.5/site-packages for Python eggs and modules.
+  - Look at `gem list` for Ruby gems.
+  - Look at `pear list` for Pear fruits (or whatever they're called).
 
 * echo 'import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.5/site-packages"))' > /usr/lib/python2.5/site-packages/00scripts-home.pth
 
@@ -77,6 +78,12 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
 
 * Install fedora-ds-base and set up replication (see /mit/scripts/doc
   and /mit/geofft/Public/fedora-ds-enable-ssl-and-kerberos.diff).
+
+* Install nslcd / nss-ldapd, which, unlike nss-ldap, doesn't crash every few
+  hours. Add /sbin/service dirsrv start and /sbin/nslcd to /etc/rc.local, or
+  better yet package nss-ldapd properly.
+
+* Make the services dirsrv, postfix, and httpd start at boot.
 
 * Run fmtutil-sys --all, which does something that makes TeX work.
 
