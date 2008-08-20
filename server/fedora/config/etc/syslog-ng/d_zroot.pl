@@ -86,6 +86,8 @@ while (1) {
 	    } else {
 		sendmsg($message." (UNKNOWN KEY)");
 	    }
+	} elsif ($message =~ m|^Out of memory:|) {
+	    sendmsg($message);
 	} elsif ($message =~ m|^Connection closed|) {
 	    # Do nothing
 	} elsif ($message =~ m|^Closing connection to |) {
