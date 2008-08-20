@@ -5,7 +5,7 @@
  Requires: httpd-tools = %{version}-%{release}
  
 +Patch1000: httpd-suexec-scripts.patch
-+Patch1001: httpd-2.2.8-sni.patch
++Patch1001: httpd-2.2.x-sni.patch
 +Patch1003: httpd-2.2.x-mod_status-security.patch
 +
  %description
