@@ -120,7 +120,7 @@ $(filter-out %.i386,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/$**.spec
 
-$(upstream):
+$(upstream): setup patch-specs
 	rpmbuild $(rpmbuild_args) -ba ${tmp_specs}/$@.spec
 
 openafs-kernel: setup
