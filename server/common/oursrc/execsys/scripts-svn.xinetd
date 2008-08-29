@@ -1,0 +1,12 @@
+service svn
+{
+	disable			= no
+	port			= 3690
+	socket_type		= stream
+	protocol		= tcp
+	wait			= no
+	user			= apache
+	passenv			= PATH
+	server			= /usr/local/sbin/svnproxy.pl
+#	bind			= 127.0.0.1
+}

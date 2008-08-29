@@ -4,8 +4,10 @@ prefix = @prefix@
 exec_prefix = @exec_prefix@
 libexecdir = @libexecdir@
 sysconfdir = @sysconfdir@
+sbindir = @sbindir@
 APACHEDIR = /etc/httpd
 SYSCATPATH = /usr/local/bin
+trusteddir = /usr/libexec/scripts-trusted
 
 all-local: static-cat execsys-binfmt
 
@@ -16,6 +18,10 @@ install: all-local
 	install -D -p -m644 execsys.conf $(DESTDIR)$(APACHEDIR)/conf.d/execsys.conf
 	install -D -p -m755 execsys-binfmt $(DESTDIR)/etc/init.d/execsys-binfmt
 	install -D -p -m755 static-cat $(DESTDIR)$(SYSCATPATH)/static-cat
+	install -D -p -m755 svnproxy.pl $(DESTDIR)$(sbindir)/svnproxy.pl
+	install -D -p -m755 ldapize.pl $(DESTDIR)$(sbindir)/ldapize.pl
+	install -D -p -m755 svn $(DESTDIR)$(trusteddir)/svn
+	install -D -p -m644 scripts-svn.xinetd $(DESTDIR)/etc/xinetd.d/scripts-svn
 
 clean:
 	rm -f static-cat

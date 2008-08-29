@@ -23,12 +23,12 @@ See http://scripts.mit.edu/wiki for more information.
 %setup -q -n %{name}
 
 %build
-./configure --with-pl=/usr/bin/perl --with-php=/usr/bin/php-cgi --with-py=/usr/bin/python --with-exe=/usr/bin/mono
+./configure --prefix=/usr/local --with-pl=/usr/bin/perl --with-php=/usr/bin/php-cgi --with-py=/usr/bin/python --with-exe=/usr/bin/mono
 make SYSCATDIR=/usr/local/sbin
 
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local SYSCATDIR=/usr/local/sbin
+make install DESTDIR=$RPM_BUILD_ROOT SYSCATDIR=/usr/local/sbin
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
@@ -39,14 +39,22 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local SYSCATDIR=/usr/local/sbin
 %defattr(0755, root, root)
 /usr/local/bin/static-cat
 /etc/init.d/execsys-binfmt
+/usr/local/sbin/svnproxy.pl
+/usr/local/sbin/ldapize.pl
+/usr/libexec/scripts-trusted/svn
+/etc/xinetd.d/scripts-svn
 
 %post
 chkconfig --add execsys-binfmt
 service execsys-binfmt start
+service xinetd reload
 
 %preun
 service execsys-binfmt stop
 chkconfig --del execsys-binfmt
+
+%postun
+service xinetd reload
 
 %changelog
 

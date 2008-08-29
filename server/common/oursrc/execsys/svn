@@ -1,0 +1,15 @@
+#!/bin/sh
+
+export HOME=$(echo ~)
+
+case "$1" in
+*/.. | */../*)
+    exit 1
+    ;;
+${HOME%/Scripts}/Scripts/svn/*)
+    exec /usr/bin/svnserve -i -r "$1"
+    ;;
+*)
+    exit 1
+    ;;
+esac
