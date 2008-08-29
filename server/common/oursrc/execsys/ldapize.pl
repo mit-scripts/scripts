@@ -11,11 +11,14 @@ my ($proto, $hostname, $path) = $url =~ m|^(.*?)://([^/]*)(.*)| or die "Could no
 my $mesg;
 
 # oh my gosh Net::LDAP::Filter SUCKS
-my $filter = bless({or =>
-    [{equalityMatch => {attributeDesc  => 'scriptsVhostName',
-                        assertionValue => $hostname}},
-     {equalityMatch => {attributeDesc  => 'scriptsVhostAlias',
-                        assertionValue => $hostname}}]},
+my $filter = bless({and =>
+    [{equalityMatch => {attributeDesc  => 'objectClass',
+                        assertionValue => 'scriptsVhost'}},
+     {or =>
+         [{equalityMatch => {attributeDesc  => 'scriptsVhostName',
+                             assertionValue => $hostname}},
+          {equalityMatch => {attributeDesc  => 'scriptsVhostAlias',
+                             assertionValue => $hostname}}]}]},
     'Net::LDAP::Filter');
 
 my $ldap = Net::LDAP->new("ldapi://%2fvar%2frun%2fdirsrv%2fslapd-scripts.socket/");
