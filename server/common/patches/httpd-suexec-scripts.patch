@@ -1,5 +1,8 @@
 # scripts.mit.edu httpd suexec patch
-# Copyright (C) 2006, 2007  Jeff Arnold <jbarnold@mit.edu>, Joe Presbrey <presbrey@mit.edu>, Anders Kaseorg <andersk@mit.edu>
+# Copyright (C) 2006, 2007, 2008  Jeff Arnold <jbarnold@mit.edu>,
+#                                 Joe Presbrey <presbrey@mit.edu>,
+#                                 Anders Kaseorg <andersk@mit.edu>,
+#                                 Geoffrey Thomas <geofft@mit.edu>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -28,6 +31,19 @@
 
  htcacheclean_OBJECTS = htcacheclean.lo
  htcacheclean: $(htcacheclean_OBJECTS)
+--- httpd-2.2.2/configure.in.old	2007-07-17 10:48:25.000000000 -0400
++++ httpd-2.2.2/configure.in	2008-08-29 08:15:41.000000000 -0400
+@@ -559,6 +559,10 @@
+ APACHE_HELP_STRING(--with-suexec-userdir,User subdirectory),[
+   AC_DEFINE_UNQUOTED(AP_USERDIR_SUFFIX, "$withval", [User subdirectory] ) ] )
+ 
++AC_ARG_WITH(suexec-trusteddir,
++APACHE_HELP_STRING(--with-suexec-trusteddir,Trusted SuExec directory),[
++  AC_DEFINE_UNQUOTED(AP_TRUSTED_DIRECTORY, "$withval", [Trusted SuExec directory] ) ] )
++
+ AC_ARG_WITH(suexec-docroot,
+ APACHE_HELP_STRING(--with-suexec-docroot,SuExec root directory),[
+   AC_DEFINE_UNQUOTED(AP_DOC_ROOT, "$withval", [SuExec root directory] ) ] )
 --- httpd-2.2.2/support/suexec.c.old	2006-04-21 21:53:06.000000000 -0400
 +++ httpd-2.2.2/support/suexec.c	2007-05-22 10:32:04.000000000 -0400
 @@ -30,6 +30,8 @@
@@ -63,7 +79,7 @@
      NULL
  };
  
-@@ -245,6 +250,54 @@
+@@ -245,9 +250,58 @@
      environ = cleanenv;
  }
  
@@ -118,7 +134,40 @@
  int main(int argc, char *argv[])
  {
      int userdir = 0;        /* ~userdir flag             */
-@@ -450,7 +501,7 @@
++    int trusteddir = 0;     /* TRUSTED_DIRECTORY flag    */
+     uid_t uid;              /* user information          */
+     gid_t gid;              /* target group placeholder  */
+     char *target_uname;     /* target user name          */
+@@ -350,6 +404,20 @@
+ #endif /*_OSD_POSIX*/
+ 
+     /*
++     * First check if this is an absolute path to the directory
++     * of trusted executables. These are supposed to be security
++     * audited to check parameters and validity on their own...
++     */
++    if (strstr(cmd, AP_TRUSTED_DIRECTORY) == cmd) {
++        if (strstr(cmd, "/../") != NULL) {
++            log_err("invalid command (%s)\n", cmd);
++            exit(104);
++        }
++        trusteddir = 1;
++        goto TRUSTED_DIRECTORY;
++    }
++
++    /*
+      * Check for a leading '/' (absolute path) in the command to be executed,
+      * or attempts to back up out of the current directory,
+      * to protect against attacks.  If any are
+@@ -371,6 +439,7 @@
+         userdir = 1;
+     }
+ 
++TRUSTED_DIRECTORY:
+     /*
+      * Error out if the target username is invalid.
+      */
+@@ -450,7 +519,7 @@
       * Error out if attempt is made to execute as root or as
       * a UID less than AP_UID_MIN.  Tsk tsk.
       */
@@ -127,7 +176,7 @@
          log_err("cannot run as forbidden uid (%d/%s)\n", uid, cmd);
          exit(107);
      }
-@@ -482,6 +533,19 @@
+@@ -482,6 +551,19 @@
          log_err("failed to setuid (%ld: %s)\n", uid, cmd);
          exit(110);
      }
@@ -147,21 +196,29 @@
  
      /*
       * Get the current working directory, as well as the proper
-@@ -513,6 +575,13 @@
-             exit(113);
+@@ -504,6 +586,21 @@
+             log_err("cannot get docroot information (%s)\n", target_homedir);
+             exit(112);
          }
-     }
-+    size_t expected_len = strlen(target_homedir)+1+strlen(AP_USERDIR_SUFFIX)+1;
-+    char *expected = malloc(expected_len);
-+    snprintf(expected, expected_len, "%s/%s", target_homedir, AP_USERDIR_SUFFIX);
-+    if (strncmp(cwd, expected, expected_len-1) != 0) {
-+        log_err("error: file's directory not a subdirectory of user's home directory (%s, %s)\n", cwd, expected);
-+        exit(114);
++        size_t expected_len = strlen(target_homedir)+1+strlen(AP_USERDIR_SUFFIX)+1;
++        char *expected = malloc(expected_len);
++        snprintf(expected, expected_len, "%s/%s", target_homedir, AP_USERDIR_SUFFIX);
++        if (strncmp(cwd, expected, expected_len-1) != 0) {
++            log_err("error: file's directory not a subdirectory of user's home directory (%s, %s)\n", cwd, expected);
++            exit(114);
++        }
 +    }
- 
-     if ((strncmp(cwd, dwd, strlen(dwd))) != 0) {
-         log_err("command not in docroot (%s/%s)\n", cwd, cmd);
-@@ -530,15 +598,17 @@
++    else if (trusteddir) {
++        if (((chdir(AP_TRUSTED_DIRECTORY)) != 0) ||
++            ((getcwd(dwd, AP_MAXPATH)) == NULL) |
++            ((chdir(cwd)) != 0)) {
++            log_err("cannot get docroot information (%s)\n", AP_TRUSTED_DIRECTORY);
++            exit(112);
++        }
+     }
+     else {
+         if (((chdir(AP_DOC_ROOT)) != 0) ||
+@@ -530,15 +627,17 @@
      /*
       * Error out if cwd is writable by others.
       */
@@ -180,7 +237,7 @@
          log_err("cannot stat program: (%s)\n", cmd);
          exit(117);
      }
-@@ -546,10 +616,12 @@
+@@ -546,10 +645,12 @@
      /*
       * Error out if the program is writable by others.
       */
@@ -193,7 +250,7 @@
  
      /*
       * Error out if the file is setuid or setgid.
-@@ -563,6 +635,7 @@
+@@ -563,6 +664,7 @@
       * Error out if the target name/group is different from
       * the name/group of the cwd or the program.
       */
@@ -201,7 +258,7 @@
      if ((uid != dir_info.st_uid) ||
          (gid != dir_info.st_gid) ||
          (uid != prg_info.st_uid) ||
-@@ -574,6 +647,7 @@
+@@ -574,6 +676,7 @@
                  prg_info.st_uid, prg_info.st_gid);
          exit(120);
      }
@@ -209,8 +266,8 @@
      /*
       * Error out if the program is not executable for the user.
       * Otherwise, she won't find any error in the logs except for
-@@ -609,6 +683,13 @@
-         log = NULL;
+@@ -606,6 +709,13 @@
+       exit(122);
      }
  
 +    if (is_static_extension(cmd)) {

@@ -140,7 +140,8 @@ suexec: #install-srpms
 	tar zxvf ${tmp_src}/httpd-2*.tar.gz; \
 	cd httpd-2*; \
 	patch -p1 < ${patches}/httpd-suexec-scripts.patch; \
-	./configure --prefix=/etc/httpd --with-suexec-userdir=web_scripts --with-suexec-caller=apache --with-suexec-uidmin=50 --with-suexec-gidmin=50 --with-suexec-docroot=/; \
+	autoreconf; \
+	./configure --prefix=/etc/httpd --with-suexec-userdir=web_scripts --with-suexec-caller=apache --with-suexec-uidmin=50 --with-suexec-gidmin=50 --with-suexec-docroot=/ --with-suexec-trusteddir=/usr/libexec/scripts-trusted; \
 	pushd support; \
 	mkdir -p ${out_sbin}; make suexec && cp suexec ${out_sbin}; \
 	popd; \
