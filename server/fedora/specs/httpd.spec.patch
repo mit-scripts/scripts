@@ -22,13 +22,14 @@
  # Safety check: prevent build if defined MMN does not equal upstream MMN.
  vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
  if test "x${vmmn}" != "x%{mmn}"; then
-@@ -175,10 +183,11 @@
+@@ -175,10 +183,12 @@
          --with-apr=%{_prefix} --with-apr-util=%{_prefix} \
  	--enable-suexec --with-suexec \
  	--with-suexec-caller=%{suexec_caller} \
 -	--with-suexec-docroot=%{contentdir} \
 +	--with-suexec-docroot=/ \
 +	--with-suexec-userdir=web_scripts \
++	--with-suexec-trusteddir=/usr/libexec/scripts-trusted \
  	--with-suexec-logfile=%{_localstatedir}/log/httpd/suexec.log \
  	--with-suexec-bin=%{_sbindir}/suexec \
 -	--with-suexec-uidmin=500 --with-suexec-gidmin=100 \
