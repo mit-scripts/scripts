@@ -26,6 +26,8 @@ if [ $? -ne 0 ]; then
 fi
 IFS=: read user x uid gid x home x <<< "$pw"
 
+user_dn=$(ldapsearch -LLL -x -b ou=People,dc=scripts,dc=mit,dc=edu '(uid=andersk)' dn | perl -0pe 's/\n //g; s/^dn: //')
+
 printf "Docroot: $home/web_scripts" >&2
 read subdir
 
@@ -49,6 +51,22 @@ cat <<EOF >> "$tmpfile"
 apacheDocumentRoot: $home/web_scripts$subdir
 apacheSuexecUid: $uid
 apacheSuexecGid: $gid
+
+dn: scriptsVhostName=$host,ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
+objectClass: scriptsVhost
+objectClass: top
+scriptsVhostName: $host
+EOF
+
+if [ "${host%mit.edu}" != "$host" ]; then
+    cat <<EOF >> "$tmpfile"
+scriptsVhostAlias: ${host%.mit.edu}
+EOF
+fi
+
+cat <<EOF >> "$tmpfile"
+scriptsVhostAccount: $user_dn
+scriptsVhostDirectory: ${subdir#/}
 EOF
 
 exec ldapvi --add --in "$tmpfile"

@@ -103,12 +103,19 @@ cn: $username
 gidNumber: $gid1
 
 dn: apacheServerName=$username.scripts.mit.edu,ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
-objectclass: apacheConfig
+objectClass: apacheConfig
 apacheServerName: $username.scripts.mit.edu
 apacheServerAlias: $username.scripts
 apacheDocumentRoot: $homedir/web_scripts
 apacheSuexecUid: $uid1
 apacheSuexecGid: $gid1
+
+dn: scriptsVhostName=$username.scripts.mit.edu,ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
+objectClass: scriptsVhost
+scriptsVhostName: $username.scripts.mit.edu
+scriptsVhostAlias: $username.scripts
+scriptsVhostAccount: uid=$username,ou=People,dc=scripts,dc=mit,dc=edu
+scriptsVhostDirectory: 
 
 EOF
 close LDAP or complain("internal error");
