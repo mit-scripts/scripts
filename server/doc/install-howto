@@ -50,6 +50,7 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
   scripts.mit.edu servers.  See server/doc/perl and
   server/doc/perl_snapshot.
 
+  - export PERL_MM_USE_DEFAULT=1
   - Run 'cpan', accept the default configuration, and do 'o conf
     prerequisites_policy follow'.
   - Parse the output of perldoc -u perllocal | grep head2 on an existing
