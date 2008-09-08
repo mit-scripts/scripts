@@ -81,23 +81,14 @@ while ($greeting ne '') {
     $greeting =~ s/^\Q$buf\E// or die "$0: unexpected greeting from svnserve";
 }
 
-# Write the client's response to svnserve.
-$buf = $response;
-while ($buf ne '') {
-    my $n = syswrite(OUT, $buf);
-    next if $n < 0 and $! == EINTR;
-    $n >= 0 or die "$0: write: $!";
-    $buf = substr($buf, $n);
-}
-
 # Finally, go into a select loop to transfer the remaining data
-# (STDIN -> OUT, IN -> STDOUT).
-my ($cbuf, $sbuf) = ('', '');
+# (STDIN -> OUT, IN -> STDOUT), including the client's response to svnserve.
+my ($cbuf, $sbuf) = ($response, '');
 my ($rin, $win, $ein) = ('', '', '');
 my ($stdout, $out, $stdin, $in) = (fileno(STDOUT), fileno(OUT), fileno(STDIN), fileno(IN));
 vec($win, $stdout, 1) = 0;
-vec($win, $out, 1) = 0;
-vec($rin, $stdin, 1) = 1;
+vec($win, $out, 1) = 1;
+vec($rin, $stdin, 1) = 0;
 vec($rin, $in, 1) = 1;
 while (vec($win, $stdout, 1) or vec($win, $out, 1) or
        vec($rin, $stdin, 1) or vec($rin, $in, 1)) {
