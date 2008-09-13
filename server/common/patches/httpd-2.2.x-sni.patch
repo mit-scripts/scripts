@@ -213,7 +213,7 @@ Index: httpd-2.2.x/modules/ssl/ssl_engine_kernel.c
       */
 -    if (dc->nVerifyDepth != UNSET) {
 +    if ((dc->nVerifyDepth != UNSET) ||
-+        (sc->server->auth.verify_depth != UNSET)) {
++        (sc->server->auth.verify_depth != 1)) {
          /* XXX: doesnt look like sslconn->verify_depth is actually used */
          if (!(n = sslconn->verify_depth)) {
              sslconn->verify_depth = n = sc->server->auth.verify_depth;
