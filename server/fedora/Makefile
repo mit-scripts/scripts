@@ -20,7 +20,7 @@
 
 upstream_yum	= krb5 httpd openssh
 upstream	= openafs $(upstream_yum)
-oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i386 whoisd mit-zephyr 
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i386 whoisd mit-zephyr python-routefs
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
