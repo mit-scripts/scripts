@@ -101,7 +101,7 @@ tarballs: mkdir-tree
 	done;
 
 #setup: install-srpms copy-patches copy-specs patch-specs tarballs
-setup: copy-patches copy-specs tarballs
+setup: copy-patches copy-specs patch-specs tarballs
 
 oursrc:
 	make $(oursrc)

@@ -9,20 +9,22 @@
  %endif
  
  # deal with cmdline specification
-@@ -240,6 +242,8 @@
+@@ -240,6 +242,9 @@
  %endif
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
 +Patch1000: openafs-scripts.patch
++Patch1001: openafs-2626.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -678,6 +682,7 @@
+@@ -678,6 +682,8 @@
  
  # Patch openafs to build a kernel module named "openafs" instead of "libafs"
  %patch0 -p1 -b .kmod26
 +%patch1000 -p1 -b .scripts
++%patch1001 -p1 -b .2626
  
  ##############################################################################
  #
