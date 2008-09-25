@@ -1,0 +1,85 @@
+===================================================================
+RCS file: /cvs/openafs/src/afs/LINUX/osi_vnodeops.c,v
+retrieving revision 1.81.2.64
+retrieving revision 1.81.2.63
+diff -u -r1.81.2.64 -r1.81.2.63
+--- openafs/src/afs/LINUX/osi_vnodeops.c	2008/04/15 12:29:54	1.81.2.64
++++ openafs/src/afs/LINUX/osi_vnodeops.c	2008/04/02 18:27:13	1.81.2.63
+@@ -22,7 +22,7 @@
+ #include "afs/param.h"
+ 
+ RCSID
+-    ("$Header: /cvs/openafs/src/afs/LINUX/osi_vnodeops.c,v 1.81.2.64 2008/04/15 12:29:54 shadow Exp $");
++    ("$Header: /cvs/openafs/src/afs/LINUX/osi_vnodeops.c,v 1.81.2.63 2008/04/02 18:27:13 shadow Exp $");
+ 
+ #include "afs/sysincludes.h"
+ #include "afsincludes.h"
+@@ -803,14 +803,8 @@
+ 	if (vcp == afs_globalVp)
+ 	    goto good_dentry;
+ 
+-	if (vcp->mvstat == 1) {         /* mount point */
+-	    if (vcp->mvid && (vcp->states & CMValid)) {
+-		/* a mount point, not yet replaced by its directory */
+-		goto bad_dentry;
+-	    }
+-	} else
+-	    if (*dp->d_name.name != '/' && vcp->mvstat == 2) /* root vnode */
+-		check_bad_parent(dp);	/* check and correct mvid */
++	if (*dp->d_name.name != '/' && vcp->mvstat == 2)	/* root vnode */
++	    check_bad_parent(dp);	/* check and correct mvid */
+ 
+ #ifdef notdef
+ 	/* If the last looker changes, we should make sure the current
+===================================================================
+RCS file: /cvs/openafs/src/afs/VNOPS/afs_vnop_lookup.c,v
+retrieving revision 1.50.2.21
+retrieving revision 1.50.2.20
+diff -u -r1.50.2.21 -r1.50.2.20
+--- openafs/src/afs/VNOPS/afs_vnop_lookup.c	2008/04/15 12:29:56	1.50.2.21
++++ openafs/src/afs/VNOPS/afs_vnop_lookup.c	2008/03/07 17:34:08	1.50.2.20
+@@ -18,7 +18,7 @@
+ #include "afs/param.h"
+ 
+ RCSID
+-    ("$Header: /cvs/openafs/src/afs/VNOPS/afs_vnop_lookup.c,v 1.50.2.21 2008/04/15 12:29:56 shadow Exp $");
++    ("$Header: /cvs/openafs/src/afs/VNOPS/afs_vnop_lookup.c,v 1.50.2.20 2008/03/07 17:34:08 shadow Exp $");
+ 
+ #include "afs/sysincludes.h"	/* Standard vendor system headers */
+ #include "afsincludes.h"	/* Afs-based standard headers */
+@@ -1120,7 +1120,6 @@
+     register afs_int32 code;
+     register afs_int32 bulkcode = 0;
+     int pass = 0, hit = 0;
+-    int force_eval = afs_fakestat_enable ? 0 : 1;
+     long dirCookie;
+     extern afs_int32 afs_mariner;	/*Writing activity to log? */
+     afs_hyper_t versionNo;
+@@ -1443,6 +1442,8 @@
+     }				/* sub-block just to reduce stack usage */
+ 
+     if (tvc) {
++	int force_eval = afs_fakestat_enable ? 0 : 1;
++
+ 	if (adp->states & CForeign)
+ 	    tvc->states |= CForeign;
+ 	tvc->parentVnode = adp->fid.Fid.Vnode;
+@@ -1463,9 +1464,6 @@
+ 		force_eval = 1;
+ 	    ReleaseReadLock(&tvc->lock);
+ 	}
+-	if (tvc->mvstat == 1 && (tvc->states & CMValid) && tvc->mvid != NULL)
+-	  force_eval = 1; /* This is now almost for free, get it correct */
+-
+ #if defined(UKERNEL) && defined(AFS_WEB_ENHANCEMENTS)
+ 	if (!(flags & AFS_LOOKUP_NOEVAL))
+ 	    /* don't eval mount points */
+@@ -1591,7 +1589,7 @@
+ 	     * rather than the vc of the mount point itself.  we can still find the
+ 	     * mount point's vc in the vcache by its fid. */
+ #endif /* UKERNEL && AFS_WEB_ENHANCEMENTS */
+-	    if (!hit && force_eval) {
++	    if (!hit) {
+ 		osi_dnlc_enter(adp, aname, tvc, &versionNo);
+ 	    } else {
+ #ifdef AFS_LINUX20_ENV
