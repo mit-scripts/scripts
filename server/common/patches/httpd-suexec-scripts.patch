@@ -46,11 +46,12 @@
    AC_DEFINE_UNQUOTED(AP_DOC_ROOT, "$withval", [SuExec root directory] ) ] )
 --- httpd-2.2.2/support/suexec.c.old	2006-04-21 21:53:06.000000000 -0400
 +++ httpd-2.2.2/support/suexec.c	2007-05-22 10:32:04.000000000 -0400
-@@ -30,6 +30,8 @@
+@@ -30,6 +30,9 @@
   *
   */
  
 +#define STATIC_CAT_PATH "/usr/local/bin/static-cat"
++#define PHP_PATH "/usr/bin/php-cgi"
 +
  #include "apr.h"
  #include "ap_config.h"
@@ -71,15 +72,7 @@
      "SSL_",
  
      /* variable name is */
-@@ -140,6 +144,7 @@
-     "UNIQUE_ID=",
-     "USER_NAME=",
-     "TZ=",
-+    "PHPRC=",
-     NULL
- };
- 
-@@ -245,9 +250,58 @@
+@@ -245,9 +250,65 @@
      environ = cleanenv;
  }
  
@@ -129,6 +122,13 @@
 +        if (strcmp(extension + 1, *p) == 0) return 1;
 +    }
 +    return 0;
++}
++
++static int is_php_extension(const char *file)
++{
++    const char *extension = strrchr(file, '.');
++    if (extension == NULL) return 0;
++    return strcmp(extension + 1, "php") == 0;
 +}
 +
  int main(int argc, char *argv[])
@@ -258,7 +258,7 @@
      if ((uid != dir_info.st_uid) ||
          (gid != dir_info.st_gid) ||
          (uid != prg_info.st_uid) ||
-@@ -574,6 +676,7 @@
+@@ -574,12 +676,14 @@
                  prg_info.st_uid, prg_info.st_gid);
          exit(120);
      }
@@ -266,7 +266,15 @@
      /*
       * Error out if the program is not executable for the user.
       * Otherwise, she won't find any error in the logs except for
-@@ -606,6 +709,13 @@
+      * "[error] Premature end of script headers: ..."
+      */
+-    if (!(prg_info.st_mode & S_IXUSR)) {
++    if (!is_static_extension(cmd) && !is_php_extension(cmd) &&
++        !(prg_info.st_mode & S_IXUSR)) {
+         log_err("file has no execute permission: (%s/%s)\n", cwd, cmd);
+         exit(121);
+     }
+@@ -606,6 +709,21 @@
        exit(122);
      }
  
@@ -274,6 +282,14 @@
 +        argv[2] = STATIC_CAT_PATH;
 +        execv(STATIC_CAT_PATH, &argv[2]);
 +	log_err("(%d)%s: static_cat exec failed (%s)\n", errno, strerror(errno), argv[2]);
++	exit(255);
++    }
++    if (is_php_extension(cmd)) {
++        setenv("PHPRC", ".", 1);
++        argv[1] = PHP_PATH;
++        argv[2] = "-f";
++        execv(PHP_PATH, &argv[1]);
++	log_err("(%d)%s: php exec failed (%s)\n", errno, strerror(errno), argv[2]);
 +	exit(255);
 +    }
 +
