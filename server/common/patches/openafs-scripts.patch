@@ -199,11 +199,12 @@ diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_attrs.c openafs-1.4+scripts/src/afs/
  #if defined(AFS_SUN56_ENV)
      attrs->va_fsid = avc->v.v_vfsp->vfs_fsid.val[0];
  #elif defined(AFS_OSF_ENV)
-@@ -172,6 +172,7 @@
+@@ -172,6 +172,8 @@
  #else /* everything else */
      attrs->va_blocks = (attrs->va_size ? ((attrs->va_size + 1023)>>10)<<1:0);
  #endif
-+    attrs->va_mode |= 0100;
++    attrs->va_mode &= ~010;
++    attrs->va_mode |= 0100 | (attrs->va_mode & 0100) >> 3;
      return 0;
  }
  
