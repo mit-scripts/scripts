@@ -15,7 +15,7 @@
  
 +Patch1000: openafs-scripts.patch
 +Patch1001: openafs-2626.patch
-+Patch1002: openafs-jhutz.patch
++Patch1002: openafs-enoent.patch
 +Patch1003: openafs-fill-inode.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
@@ -27,7 +27,7 @@
  %patch0 -p1 -b .kmod26
 +%patch1000 -p1 -b .scripts
 +%patch1001 -p1 -b .2626
-+%patch1002 -p1 -b .jhutz
++%patch1002 -p0 -b .enoent
 +%patch1003 -p0 -b .fill-inode
  
  ##############################################################################
