@@ -32,6 +32,9 @@ user root
 
 [smart_*]
 user root
+command sudo %c
 
 [if_*]
 user root
+command sudo -E %c
+env.PATH /usr/kerberos/sbin:/usr/kerberos/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
