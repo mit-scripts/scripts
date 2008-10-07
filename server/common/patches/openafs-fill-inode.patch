@@ -1,0 +1,18 @@
+Index: LINUX/osi_vnodeops.c
+===================================================================
+RCS file: /cvs/openafs/src/afs/LINUX/osi_vnodeops.c,v
+retrieving revision 1.81.2.67
+diff -u -r1.81.2.67 osi_vnodeops.c
+--- src/afs/LINUX/osi_vnodeops.c	7 Jul 2008 16:54:28 -0000	1.81.2.67
++++ src/afs/LINUX/osi_vnodeops.c	7 Oct 2008 03:23:08 -0000
+@@ -743,8 +743,8 @@
+ 
+     credp = crref();
+     code = afs_getattr(vcp, &vattr, credp);
+-    if (!code)
+-        vattr2inode(AFSTOV(vcp), &vattr);
++    if (!code) 
++	afs_fill_inode(AFSTOV(vcp), &vattr);
+ 
+     AFS_GUNLOCK();
+ #ifdef AFS_LINUX24_ENV
