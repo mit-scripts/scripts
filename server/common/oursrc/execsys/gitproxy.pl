@@ -33,7 +33,7 @@ for (;;) {
     $n > 0 or die "$0: unexpected message from client";
     $msg .= $buf;
     my $len;
-    if (($len) = $msg =~ m/^([[:xdigit:]]{4})/) {
+    if (($len) = $msg =~ m/^([[:xdigit:]]{4})/ and length($') >= hex($len)) {
 	foreach (split("\0", $')) {
 	    last if ($host) = m/^host=(.*)$/;
 	}
