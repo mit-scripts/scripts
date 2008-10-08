@@ -39,10 +39,13 @@ make install DESTDIR=$RPM_BUILD_ROOT SYSCATDIR=/usr/local/sbin
 %defattr(0755, root, root)
 /usr/local/bin/static-cat
 /etc/init.d/execsys-binfmt
-/usr/local/sbin/svnproxy.pl
 /usr/local/sbin/ldapize.pl
+/usr/local/sbin/svnproxy.pl
 /usr/libexec/scripts-trusted/svn
 /etc/xinetd.d/scripts-svn
+/usr/local/sbin/gitproxy.pl
+/usr/libexec/scripts-trusted/git
+/etc/xinetd.d/scripts-git
 
 %post
 chkconfig --add execsys-binfmt

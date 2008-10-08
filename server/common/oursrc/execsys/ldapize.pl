@@ -43,6 +43,9 @@ my ($homeDirectory, $uidNumber, $gidNumber) =
 if ($proto eq 'svn') {
   chdir '/usr/libexec/scripts-trusted';
   exec('/usr/sbin/suexec', $uidNumber, $gidNumber, '/usr/libexec/scripts-trusted/svn', "$homeDirectory/Scripts/svn/$vhostDirectory");
+} elsif ($proto eq 'git') {
+  chdir '/usr/libexec/scripts-trusted';
+  exec('/usr/sbin/suexec', $uidNumber, $gidNumber, '/usr/libexec/scripts-trusted/git', "$homeDirectory/Scripts/git/$vhostDirectory");
 } elsif ($proto eq 'http') {
   print "suexec $uidNumber $gidNumber $homeDirectory/Scripts/web/$vhostDirectory/$path\n";
 } else {
