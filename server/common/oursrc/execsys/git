@@ -7,7 +7,7 @@ case "$1" in
     exit 1
     ;;
 ${HOME%/Scripts}/Scripts/git/*)
-    exec /usr/bin/git-daemon --inetd --base-path="$1"
+    exec /usr/bin/git daemon --inetd --base-path="$1"
     ;;
 *)
     exit 1
