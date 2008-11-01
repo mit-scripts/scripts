@@ -6,6 +6,7 @@ Release: 0
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
 License: GPL
+Requires: xinetd
 Source: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 %define debug_package %{nil}
