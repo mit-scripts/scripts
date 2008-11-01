@@ -20,7 +20,7 @@
 
 upstream_yum	= krb5 httpd openssh
 upstream	= openafs $(upstream_yum)
-oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i386 whoisd mit-zephyr python-routefs
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i386 whoisd mit-zephyr
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
@@ -58,7 +58,7 @@ mkdir-tree:
 	ln -sTf $(topdir) rpmbuild
 
 download: download_stamp
-download_stamp: SRPMS/mit-zephyr-2.1-6.src.rpm
+download_stamp: | SRPMS/mit-zephyr-2.1-6.src.rpm
 	@mkdir -p $(dload); \
 	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
 	cd $(dload) && yumdownloader --source $(upstream_yum)
@@ -162,7 +162,7 @@ frob-openafs:
 	fi
 
 # The following packages are needed for our packages
-basic-deps	= kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstation glibc-devel.i386
+basic-deps	= kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstation glibc-devel.i386 glibc-devel libtool libgcc.i386
 oursrc-deps	= hesinfo openldap-clients
 httpdmods-deps	= httpd-devel
 httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel
