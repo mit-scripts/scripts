@@ -58,7 +58,7 @@ mkdir-tree:
 	ln -sTf $(topdir) rpmbuild
 
 download: download_stamp
-download_stamp:
+download_stamp: SRPMS/mit-zephyr-2.1-6.src.rpm
 	@mkdir -p $(dload); \
 	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
 	cd $(dload) && yumdownloader --source $(upstream_yum)
@@ -172,7 +172,8 @@ mit-zephyr-deps	= readline-devel hesiod-devel hesiod-devel.i386 hesiod.i386 libX
 openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth gobject-devel pango-devel cairo-devel libedit-devel nss-devel
 install-deps:
 	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(mit-zephyr-deps) $(openssh-deps)
-	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
+	rpm -ivh ftp://ftp.muug.mb.ca/mirror/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
+#	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
 
 fedora:
 	make install-deps
