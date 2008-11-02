@@ -1,15 +1,29 @@
 This document is a how-to for installing a Fedora scripts.mit.edu server.
 
+Helper files for the install are located in server/fedora/config.
+
+* Start with a normal install of Fedora 9.
+
+* Edit /etc/selinux/config so it has SELINUX=disabled.
+
 * Check out the scripts.mit.edu svn repository. Configure svn not to cache
   credentials.
 
 * cd to server/fedora in the svn repository.
 
-* Run "make install-deps" to install various prereqs.
+* Run "make install-deps" to install various prereqs.  Nonstandard
+  deps are in /mit/scripts/rpm.
 
-* Create a scripts-build account, and set up rpm to build in $HOME.
-  If you just use the default setup, it will generate packages
-  in /usr/src/redhat.
+* Create a scripts-build user account, and set up rpm to build in 
+  $HOME by doing a 
+  cp config/home/scripts-build/.rpmmacros /home/scripts-build/
+  (If you just use the default setup, it will generate packages 
+  in /usr/src/redhat.)
+
+* su scripts-build -
+
+* Make sure that server/fedora (where you currently are) is writable
+  by user scripts-build.
 
 * Use the Makefile to build the scripts.mit.edu-specific Fedora
   packages.
@@ -18,28 +32,51 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
   - make setup
   - make all
   - openafs-devel is a build-dependency of accountadm, so you'll need to
-    install it by hand when that fails.
-  Then install all the packages as root.
+    install the openafs-devel package you just built by hand when that fails.
+
+* Then install the packages you just built as root:
+   - yum localinstall --nogpgcheck accountadm-0.00-0.x86_64.rpm \
+       execsys-0.00-0.x86_64.rpm httpd* \
+       kmod-openafs-1.4.7-1.1.2.6.25_14.fc9.x86_64.rpm \
+       krb5-{debuginfo,devel,libs,pki,workstation-1}* \
+       logview-0.00-0.x86_64.rpm mit-zephyr-2.1-6-linux.x86_64.rpm \
+       mod_ssl-2.2.8-3.x86_64.rpm nss_nonlocal-* \
+       openafs-1.4.7-1.1.1.x86_64.rpm \
+       openafs-{authlibs,client,debuginfo,devel,docs,krb5}* openssh* \
+       sql-signup-0.00-0.x86_64.rpm tokensys-0.00-0.x86_64.rpm \
+       whoisd-0.00-0.x86_64.rpm
 
 * Rebuild mit-zephyr on a 32-bit machine, like the one at Joe's home.
 
-* Run "make suexec" and "make suexec-install" to overwrite
+* Run "make suexec" and "make install-suexec" to overwrite
   /usr/sbin/suexec with one that works. The one installed by the
   newly-built Apache RPM is misconfigured.
 
-* Check out the scripts /etc configuration, which is done most easily by
-  - svn co https://scripts.mit.edu:1111/server/fedora/config/etc
-  - \cp -a etc /
+* Install and configure bind
+  - env NSS_NONLOCAL_IGNORE=1 yum install bind
+  - chkconfig named on
+  - service named start
 
-* Copy over root's dotfiles.
+* Check out the scripts /etc configuration, which is done most easily by
+  $ svn co svn://scripts.mit.edu/server/fedora/config/etc
+  # \cp -a etc /
+
+* Copy over root's dotfiles from one of the other machines.
+
+* Replace rsyslog with syslog-ng by doing:
+  # rpm -e --nodeps rsyslog
+  # yum install syslog-ng
 
 * Install various dependencies of the scripts system, including syslog-ng,
   glibc-devel.i386, python-twisted-core, mod_fcgid, nrpe, nagios-plugins-all.
 
-* Disable SELinux and NetworkManager.
+* Disable NetworkManager (with yum remove).
 
-* Figure out why Zephyr isn't working and why the openafs /usr/vice/etc <->
-  /etc/openafs mapping isn't in sync.
+* Fix the openafs /usr/vice/etc <-> /etc/openafs mapping by changing
+   /usr/vice/etc/cacheinfo to contain:
+        /afs:/usr/vice/cache:10000000
+
+* Figure out why Zephyr isn't working
 
 * Install the full list of RPMs that users expect to be on the
   scripts.mit.edu servers.  See server/doc/rpm and
@@ -77,8 +114,8 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
   /etc/httpd/conf.d/vhost_ldap.conf to use scripts.mit.edu instead of
   localhost.
 
-* Install fedora-ds-base and set up replication (see /mit/scripts/doc
-  and /mit/geofft/Public/fedora-ds-enable-ssl-and-kerberos.diff).
+* Install fedora-ds-base and set up replication (see ./HOWTO-SETUP-LDAP
+    and ./fedora-ds-enable-ssl-and-kerberos.diff).
 
 * Install nslcd / nss-ldapd, which, unlike nss-ldap, doesn't crash every few
   hours. Add /sbin/service dirsrv start and /sbin/nslcd to /etc/rc.local, or

@@ -1,0 +1,25 @@
+To set up a new LDAP server:
+
+- Install the RPM fedora-ds-base with yum
+- root# env NSS_NONLOCAL_IGNORE=1 useradd -r -d /var/lib/dirsrv fedora-ds
+- root# /usr/sbin/setup-ds.pl
+    - Choose a typical install
+    - Tell it to use the fedora-ds user and group
+    - Directory server identifier: scripts
+    - Suffix: dc=scripts,dc=mit,dc=edu
+    - Input directory manager password
+- yum install ldapvi
+- /sbin/service dirsrv start
+- Apply ./fedora-ds-enable-ssl-and-kerberos.diff manually
+- /sbin/service dirsrv stop
+- wget http://web.mit.edu/geofft/Public/scripts-ca.pem
+- certutil -d /etc/dirsrv/slapd-scripts -A -n "scripts.mit.edu CA" -t CT,, -a -i scripts-ca.pem
+- Generate a pkcs12 cert for the server
+- pk12util -i ldap-server-cert.p12 -d /etc/dirsrv/slapd-scripts
+- Put LDAP keytab in /etc/dirsrv/keytab
+- Uncomment and modify in /etc/syscnfig/dirsrv: KRB5_KTNAME=/etc/dirsrv/keytab ; export KRB5_KTNAME
+- mkdir -p /var/tmp/dirsrv
+- chown fedora-ds:fedora-ds /var/tmp/dirsrv
+- /sbin/service dirsrv restart
+
+- Set up replication
