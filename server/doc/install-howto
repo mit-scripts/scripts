@@ -126,7 +126,5 @@ Helper files for the install are located in server/fedora/config.
 
 * (Optional) Beat your head against a wall.
 
-* I recommend setting noatime for the root filesystem in /etc/fstab.
-
 * Possibly perform other steps that I've neglected to put in this
   document.
