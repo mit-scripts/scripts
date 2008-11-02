@@ -1,0 +1,5 @@
+[scripts]
+name=Scripts
+baseurl=http://web.mit.edu/scripts/rpm/
+enabled=1
+gpgcheck=0
