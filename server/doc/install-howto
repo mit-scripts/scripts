@@ -61,6 +61,9 @@ Helper files for the install are located in server/fedora/config.
   $ svn co svn://scripts.mit.edu/server/fedora/config/etc
   # \cp -a etc /
 
+* Reload the iptables config to take down the restrictive firewall 
+  service iptables restart
+
 * Copy over root's dotfiles from one of the other machines.
 
 * Replace rsyslog with syslog-ng by doing:
@@ -104,11 +107,7 @@ Helper files for the install are located in server/fedora/config.
 * Install the credentials (machine keytab, daemon.scripts keytab, SSL
   certs).
 
-* Attempt to check out server/fedora/config/etc into /etc. The easiest way to
-  do this is to create a checkout of etc in another directory and mv -f this on
-  top of /etc.
-
-  - If you are setting up a test server, pay attention to
+*  If you are setting up a test server, pay attention to
   /etc/sysconfig/network-scripts and do not bind scripts' IP address.
   You will also need to modify /etc/ldap.conf, /etc/openldap/ldap.conf, and
   /etc/httpd/conf.d/vhost_ldap.conf to use scripts.mit.edu instead of

@@ -14,7 +14,7 @@ To set up a new LDAP server:
 - /sbin/service dirsrv stop
 - wget http://web.mit.edu/geofft/Public/scripts-ca.pem
 - certutil -d /etc/dirsrv/slapd-scripts -A -n "scripts.mit.edu CA" -t CT,, -a -i scripts-ca.pem
-- Generate a pkcs12 cert for the server
+- Generate a pkcs12 cert for the server:
 - pk12util -i ldap-server-cert.p12 -d /etc/dirsrv/slapd-scripts
 - Put LDAP keytab in /etc/dirsrv/keytab
 - Uncomment and modify in /etc/syscnfig/dirsrv: KRB5_KTNAME=/etc/dirsrv/keytab ; export KRB5_KTNAME
@@ -22,4 +22,7 @@ To set up a new LDAP server:
 - chown fedora-ds:fedora-ds /var/tmp/dirsrv
 - /sbin/service dirsrv restart
 
-- Set up replication
+- Set up replication:
+  (basically, execute
+   http://directory.fedoraproject.org/sources/contrib/mmr.pl
+   manually)
