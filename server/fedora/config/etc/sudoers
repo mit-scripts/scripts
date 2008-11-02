@@ -72,4 +72,4 @@ scripts	ALL=(signup)	NOPASSWD: /usr/local/bin/ldap-backup
 rebecca	ALL=(root)	NOPASSWD: /sbin/service nscd restart
 
 munin ALL=(root) SETENV: NOPASSWD: /etc/munin/plugins/postfix_mailqueue , /etc/munin/plugins/postfix_mailvolume , /etc/munin/plugins/hddtemp_smartctl , /etc/munin/plugins/sendmail* , /etc/munin/plugins/if_*
-munin ALL=(root) NOPASSWD: /etc/munin/plugins/smart_*
+munin ALL=(root) NOPASSWD: /etc/munin/plugins/smart_*, /etc/munin/plugins/sensors_*
