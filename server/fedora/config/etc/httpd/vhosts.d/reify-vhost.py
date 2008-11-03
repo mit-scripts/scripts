@@ -51,7 +51,7 @@ if len(r) != 0:
 		Alias /~%(uname)s %(homedir)s/web_scripts
 		SuExecUserGroup %(uname)s %(uname)s
 		Include conf.d/vhosts-common-ssl.conf
-        SSLCertificateFile /etc/pki/tls/certs/%(hname)s.pem
+		SSLCertificateFile /etc/pki/tls/certs/%(hname)s.pem
 	</VirtualHost>
 	<VirtualHost *:444>
 		ServerName %(servername)s
@@ -61,7 +61,7 @@ if len(r) != 0:
 		SuExecUserGroup %(uname)s %(uname)s
 		Include conf.d/vhosts-common-ssl.conf
 		Include conf.d/vhosts-common-ssl-cert.conf
-        SSLCertificateFile /etc/pki/tls/certs/%(hname)s.pem
+		SSLCertificateFile /etc/pki/tls/certs/%(hname)s.pem
 	</VirtualHost>
 </IfModule>""" % {
     'servername': r[0][1]['apacheServerName'][0],
