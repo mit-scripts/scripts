@@ -44,13 +44,23 @@ if len(r) != 0:
 </VirtualHost>
 
 <IfModule ssl_module>
-	<VirtualHost *:443 *:444>
+	<VirtualHost *:443>
 		ServerName %(servername)s
 		ServerAlias %(serveralias)s
 		DocumentRoot %(docroot)s
 		Alias /~%(uname)s %(homedir)s/web_scripts
 		SuExecUserGroup %(uname)s %(uname)s
 		Include conf.d/vhosts-common-ssl.conf
+        SSLCertificateFile /etc/pki/tls/certs/%(hname)s.pem
+	</VirtualHost>
+	<VirtualHost *:444>
+		ServerName %(servername)s
+		ServerAlias %(serveralias)s
+		DocumentRoot %(docroot)s
+		Alias /~%(uname)s %(homedir)s/web_scripts
+		SuExecUserGroup %(uname)s %(uname)s
+		Include conf.d/vhosts-common-ssl.conf
+		Include conf.d/vhosts-common-ssl-cert.conf
         SSLCertificateFile /etc/pki/tls/certs/%(hname)s.pem
 	</VirtualHost>
 </IfModule>""" % {
