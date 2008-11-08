@@ -177,14 +177,6 @@ diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_access.c openafs-1.4+scripts/src/afs
  	return ((fileBits & arights) == arights);	/* true if all rights bits are on */
      }
  }
-@@ -192,6 +215,7 @@
-     OSI_VC_CONVERT(avc);
- 
-     AFS_STATCNT(afs_access);
-+    amode = amode & ~VEXEC;
-     afs_Trace3(afs_iclSetp, CM_TRACE_ACCESS, ICL_TYPE_POINTER, avc,
- 	       ICL_TYPE_INT32, amode, ICL_TYPE_OFFSET,
- 	       ICL_HANDLE_OFFSET(avc->m.Length));
 diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_attrs.c openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_attrs.c
 --- openafs-1.4/src/afs/VNOPS/afs_vnop_attrs.c	2007-11-05 23:08:46.000000000 -0500
 +++ openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_attrs.c	2007-12-18 19:22:59.000000000 -0500
@@ -199,12 +191,3 @@ diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_attrs.c openafs-1.4+scripts/src/afs/
  #if defined(AFS_SUN56_ENV)
      attrs->va_fsid = avc->v.v_vfsp->vfs_fsid.val[0];
  #elif defined(AFS_OSF_ENV)
-@@ -172,6 +172,8 @@
- #else /* everything else */
-     attrs->va_blocks = (attrs->va_size ? ((attrs->va_size + 1023)>>10)<<1:0);
- #endif
-+    attrs->va_mode &= ~010;
-+    attrs->va_mode |= 0100 | (attrs->va_mode & 0100) >> 3;
-     return 0;
- }
- 

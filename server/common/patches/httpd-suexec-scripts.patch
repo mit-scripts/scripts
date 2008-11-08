@@ -258,7 +258,7 @@
      if ((uid != dir_info.st_uid) ||
          (gid != dir_info.st_gid) ||
          (uid != prg_info.st_uid) ||
-@@ -574,14 +676,15 @@
+@@ -574,12 +676,14 @@
                  prg_info.st_uid, prg_info.st_gid);
          exit(120);
      }
@@ -270,12 +270,10 @@
       */
 -    if (!(prg_info.st_mode & S_IXUSR)) {
 +    if (!is_static_extension(cmd) && !is_php_extension(cmd) &&
-+        !(prg_info.st_mode & S_IXGRP)) {
++        !(prg_info.st_mode & S_IXUSR)) {
          log_err("file has no execute permission: (%s/%s)\n", cwd, cmd);
--        exit(121);
+         exit(121);
      }
- 
- #ifdef AP_SUEXEC_UMASK
 @@ -606,6 +709,21 @@
        exit(122);
      }
