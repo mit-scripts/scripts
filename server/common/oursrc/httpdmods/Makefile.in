@@ -10,4 +10,8 @@ APXSFLAGS_mod_vhost_ldap = -Wc,-DMOD_VHOST_LDAP_VERSION=\\\"mod_vhost_ldap/1.2.0
 	$(APXS) $(APXSFLAGS_$*) -c $<
 
 clean:
-	rm -f .libs $(MODS:=.o) $(MODS:=.la) $(MODS:=.lo) $(MODS:=.slo)
+	rm -f $(MODS:=.o) $(MODS:=.la) $(MODS:=.lo) $(MODS:=.slo)
+	rm -rf .libs
+
+distclean: clean
+	rm -f config.log config.cache config.status Makefile
