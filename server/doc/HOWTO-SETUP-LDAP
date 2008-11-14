@@ -12,6 +12,7 @@ To set up a new LDAP server:
 - /sbin/service dirsrv start
 - Apply ./fedora-ds-enable-ssl-and-kerberos.diff manually
 - /sbin/service dirsrv stop
+- Add the scripts schemas to /var/lib/dirsrv/slapd-scripts
 - wget http://web.mit.edu/geofft/Public/scripts-ca.pem
 - certutil -d /etc/dirsrv/slapd-scripts -A -n "scripts.mit.edu CA" -t CT,, -a -i scripts-ca.pem
 - Generate a pkcs12 cert for the server:
@@ -21,6 +22,29 @@ To set up a new LDAP server:
 - mkdir -p /var/tmp/dirsrv
 - chown fedora-ds:fedora-ds /var/tmp/dirsrv
 - /sbin/service dirsrv restart
+- Use ldapvi -b cn=config to add these indexes:
+
+add cn=apacheServerName, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
+objectClass: top
+objectClass: nsIndex
+cn: apacheServerName
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+
+add cn=apacheServerAlias, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
+objectClass: top
+objectClass: nsIndex
+cn: apacheServerAlias
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+
+- Build the indexes with:
+    - /usr/lib64/dirsrv/slapd-scripts/db2index.pl -D "cn=Directory Manager" -j /etc/signup-ldap-pw -n userRoot -t apacheServerName
+    - Watch the progress with: ldapsearch -x -y /etc/signup-ldap-pw -D 'cn=Directory Manager' -b cn=tasks,cn=config
+    - Wait for it to finish before:
+    - /usr/lib64/dirsrv/slapd-scripts/db2index.pl -D "cn=Directory Manager" -j /etc/signup-ldap-pw -n userRoot -t apacheServerAlias
 
 - Set up replication:
   (basically, execute
