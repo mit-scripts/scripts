@@ -73,7 +73,9 @@ Helper files for the install are located in server/fedora/config.
 * Install various dependencies of the scripts system, including syslog-ng,
   glibc-devel.i386, python-twisted-core, mod_fcgid, nrpe, nagios-plugins-all.
 
-* Disable NetworkManager (with yum remove).
+* Disable NetworkManager (with yum remove). Make sure to run
+  "chkconfig network on" to ensure that the network will still be
+  configured at next boot.
 
 * Fix the openafs /usr/vice/etc <-> /etc/openafs mapping by changing
    /usr/vice/etc/cacheinfo to contain:
@@ -120,9 +122,13 @@ Helper files for the install are located in server/fedora/config.
   hours. Add /sbin/service dirsrv start and /sbin/nslcd to /etc/rc.local, or
   better yet package nss-ldapd properly.
 
-* Make the services dirsrv, postfix, and httpd start at boot.
+* Make the services dirsrv, postfix, and httpd start at boot. Run
+  chkconfig to make sure the set of services to be run is correct.
 
 * Run fmtutil-sys --all, which does something that makes TeX work.
+
+* Reboot the machine to restore a consistent state, in case you
+  changed anything.
 
 * (Optional) Beat your head against a wall.
 
