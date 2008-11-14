@@ -3,9 +3,10 @@
 127.0.0.1	localhost.localdomain localhost
 ::1		localhost.localdomain localhost
 
-18.181.0.46	scripts.mit.edu
-18.181.0.50	scripts-cert.mit.edu
-18.181.0.52	sql.mit.edu
+18.181.0.46	scripts.mit.edu scripts
+18.181.0.50	scripts-cert.mit.edu scripts-cert
+18.181.0.52	sql.mit.edu sql
+18.181.0.229	scripts-test.mit.edu scripts-test
 
 18.181.0.53	old-faithful.mit.edu old-faithful scripts2.mit.edu scripts2
 18.181.0.57	better-mousetrap.mit.edu better-mousetrap scripts1.mit.edu scripts1
