@@ -2,9 +2,9 @@ This document is a how-to for installing a Fedora scripts.mit.edu server.
 
 Helper files for the install are located in server/fedora/config.
 
-* Start with a normal install of Fedora 9.
+* Start with a normal install of Fedora.
 
-* Edit /etc/selinux/config so it has SELINUX=disabled.
+* Edit /etc/selinux/config so it has SELINUX=disabled and reboot.
 
 * Check out the scripts.mit.edu svn repository. Configure svn not to cache
   credentials.
@@ -51,6 +51,10 @@ Helper files for the install are located in server/fedora/config.
 * Run "make suexec" and "make install-suexec" to overwrite
   /usr/sbin/suexec with one that works. The one installed by the
   newly-built Apache RPM is misconfigured.
+  ... Except Anders claims he fixed this.
+
+* Remember to set NSS_NONLOCAL_IGNORE=1 anytime you're setting up
+  anything, e.g. using yum
 
 * Install and configure bind
   - env NSS_NONLOCAL_IGNORE=1 yum install bind
@@ -73,15 +77,18 @@ Helper files for the install are located in server/fedora/config.
 * Install various dependencies of the scripts system, including syslog-ng,
   glibc-devel.i386, python-twisted-core, mod_fcgid, nrpe, nagios-plugins-all.
 
-* Disable NetworkManager (with yum remove). Make sure to run
-  "chkconfig network on" to ensure that the network will still be
-  configured at next boot.
+* Disable NetworkManager (with yum remove), if it makes you happy. Configure
+  networking on the front end and back end, and the routing table to send
+  traffic over the back end. Make sure to run "chkconfig network on" to ensure
+  that the network will still be configured at
+  next boot,  
 
 * Fix the openafs /usr/vice/etc <-> /etc/openafs mapping by changing
    /usr/vice/etc/cacheinfo to contain:
         /afs:/usr/vice/cache:10000000
 
-* Figure out why Zephyr isn't working
+* Figure out why Zephyr isn't working. Most recently, it was because there
+  was a 64-bit RPM installed; remove it and install Joe's 32-bit one
 
 * Install the full list of RPMs that users expect to be on the
   scripts.mit.edu servers.  See server/doc/rpm and
