@@ -28,6 +28,7 @@
 #include <krb5.h>
 #include <kerberosIV/krb.h>
 #include <stdbool.h>
+#include <syslog.h>
 
 extern int pioctl(char *, afs_int32, struct ViceIoctl *, afs_int32);
 
@@ -210,8 +211,12 @@ main(int argc, const char *argv[])
     int rights = parse_rights(nplus, &p, user);
     rights &= ~parse_rights(nminus, &p, user);
 #ifdef OVERLORDS
-    if (~rights & PRSFS_ADMINISTER && ismember(user, OVERLORDS))
+    if (~rights & PRSFS_ADMINISTER && ismember(user, OVERLORDS)) {
+	openlog("admof", 0, LOG_AUTHPRIV);
+	syslog(LOG_NOTICE, "giving %s admin rights on %s", user, locker);
+	closelog();
 	rights |= PRSFS_ADMINISTER;
+    }
 #endif
 
     pr_End();
