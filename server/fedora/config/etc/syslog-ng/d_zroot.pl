@@ -88,6 +88,8 @@ while (1) {
 	    }
 	} elsif ($message =~ m|^Out of memory:|) {
 	    sendmsg($message);
+	} elsif ($message =~ m|^giving \S+ admin rights|) {
+	    sendmsg($message);
 	} elsif ($message =~ m|^Connection closed|) {
 	    # Do nothing
 	} elsif ($message =~ m|^Closing connection to |) {
