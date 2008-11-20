@@ -87,7 +87,7 @@ while (1) {
 	    } else {
 		sendmsg($message." (UNKNOWN KEY)");
 	    }
-	} elsif ($message =~ m|^Failed keyboard-interactive/pam for root from ([^ ]*)| {
+	} elsif ($message =~ m|^Failed keyboard-interactive/pam for root from ([^ ]*)|) {
 	    my $count = ++$ips{$1};
 	    if ($count % 10 == 0 or $1 =~ /^18\./) {
 	    	sendmsg($message." (repeated $count times)", "scripts-spew");
