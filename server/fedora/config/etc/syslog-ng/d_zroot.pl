@@ -66,6 +66,7 @@ while (1) {
     chomp @message;
     map { s/^(.*?): // } @message;
     %toclass = ();
+    my %ips = ();
     foreach my $message (@message) {
 	sub sendmsg ($;$) {
 	    my ($message, $class) = @_;
@@ -85,6 +86,11 @@ while (1) {
 		sendmsg($message." (".$sshkeys{$2}.")");
 	    } else {
 		sendmsg($message." (UNKNOWN KEY)");
+	    }
+	} elsif ($message =~ m|^Failed keyboard-interactive/pam for root from ([^ ]*)| {
+	    my $count = ++$ips{$1};
+	    if ($count % 10 == 0 or $1 =~ /^18\./) {
+	    	sendmsg($message." (repeated $count times)", "scripts-spew");
 	    }
 	} elsif ($message =~ m|^Out of memory:|) {
 	    sendmsg($message);
