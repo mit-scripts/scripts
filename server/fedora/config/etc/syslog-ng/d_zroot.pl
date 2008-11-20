@@ -29,6 +29,8 @@ my %toclass;
 
 my %sshkeys;
 
+my %ips;
+
 sub buildKeyMap($) {
     my ($file) = @_;
     open (KEYS, $file) or warn "Couldn't open $file: $!";
@@ -66,7 +68,6 @@ while (1) {
     chomp @message;
     map { s/^(.*?): // } @message;
     %toclass = ();
-    my %ips = ();
     foreach my $message (@message) {
 	sub sendmsg ($;$) {
 	    my ($message, $class) = @_;
