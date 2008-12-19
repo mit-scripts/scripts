@@ -19,14 +19,16 @@ else
     read user
 fi
 
-pw=$(perl -e '$, = ":"; print getpwnam($ARGV[0]);' -- "$user")
-if [ $? -ne 0 ]; then
-    echo "User not found." >&2
-    exit $?
-fi
-IFS=: read user x uid gid x x x home x <<< "$pw"
-
-user_dn=$(ldapsearch -LLL -x -b ou=People,dc=scripts,dc=mit,dc=edu "(uid=$user)" dn | perl -0pe 's/\n //g; s/^dn: //')
+while read attr value; do
+    echo "$attr" "$value"
+    case "$attr" in
+	dn:) user_dn=$value;;
+	uid:) user=$value;;
+	uidNumber:) uid=$value;;
+	gidNumber:) gid=$value;;
+	homeDirectory:) home=$value;;
+    esac
+done < <(ldapsearch -LLL -x -b ou=People,dc=scripts,dc=mit,dc=edu "(uid=$user)" dn uid uidNumber gidNumber homeDirectory | perl -0pe 's/\n //g;')
 
 printf "Docroot: $home/web_scripts" >&2
 read subdir
