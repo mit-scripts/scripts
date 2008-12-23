@@ -37,7 +37,7 @@ out_sbin	= $(topdir)/sbin
 dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
-openafs_url	= "http://dl.openafs.org/dl/openafs/1.4.7/openafs-1.4.7-1.1.1.src.rpm"
+openafs_url	= "http://dl.openafs.org/dl/openafs/1.4.8/openafs-1.4.8-1.1.1.src.rpm"
 
 .PHONY: minimal-clean
 
