@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # gitproxy: Wrapper around git daemon for Git virtual hosting.
-# version 1.0, released 2008-10-08
+# version 1.1, released 2008-12-28
 # Copyright © 2008 Anders Kaseorg <andersk@mit.edu>
 #
 # This program is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@ use strict;
 use warnings;
 use IPC::Open2;
 use Errno qw(EINTR);
+use IO::Poll qw(POLLIN POLLOUT POLLHUP);
 
 # Receive the first message from the client, and parse out the URL.
 my $host;
@@ -45,59 +46,61 @@ for (;;) {
 }
 
 # Now start the real git daemon based on the URL.
-open2(\*IN, \*OUT, '/usr/local/sbin/ldapize.pl', "git://$host/") or die "$0: open: $!";
+my $pid = open2(\*IN, \*OUT, '/usr/local/sbin/ldapize.pl', "git://$host/") or die "$0: open: $!";
 
-# Finally, go into a select loop to transfer the remaining data
+# Finally, go into a poll loop to transfer the remaining data
 # (STDIN -> OUT, IN -> STDOUT), including the client's message to git daemon.
 my ($cbuf, $sbuf) = ($msg, '');
-my ($rin, $win, $ein) = ('', '', '');
-my ($stdout, $out, $stdin, $in) = (fileno(STDOUT), fileno(OUT), fileno(STDIN), fileno(IN));
-vec($win, $stdout, 1) = 0;
-vec($win, $out, 1) = 1;
-vec($rin, $stdin, 1) = 0;
-vec($rin, $in, 1) = 1;
-while (vec($win, $stdout, 1) or vec($win, $out, 1) or
-       vec($rin, $stdin, 1) or vec($rin, $in, 1)) {
-    my $n = select(my $rout = $rin, my $wout = $win, my $eout = $ein, undef);
+my $poll = new IO::Poll;
+$poll->mask(\*STDOUT => POLLHUP);
+$poll->mask(\*OUT => POLLOUT);
+$poll->remove(\*STDIN);
+$poll->mask(\*IN => POLLIN);
+while ($poll->handles()) {
+    my $n = $poll->poll();
     next if $n < 0 and $! == EINTR;
     $n >= 0 or die "select: $!";
-    if (vec($rout, $stdin, 1)) {
+    if ($poll->events(\*STDIN)) {
 	my $n = sysread(STDIN, $cbuf, 4096);
 	next if $n < 0 and $! == EINTR;
 	$n >= 0 or die "read: $!";
-	vec($rin, $stdin, 1) = 0;
-	vec($win, $out, 1) = 1;
-    } elsif (vec($rout, $in, 1)) {
+	$poll->remove(\*STDIN);
+	$poll->mask(\*OUT => POLLOUT);
+    } elsif ($poll->events(\*IN)) {
 	my $n = sysread(IN, $sbuf, 4096);
 	next if $n < 0 and $! == EINTR;
 	$n >= 0 or die "read: $!";
-	vec($rin, $in, 1) = 0;
-	vec($win, $stdout, 1) = 1;
-    } elsif (vec($wout, $stdout, 1) && $sbuf ne '') {
+	$poll->remove(\*IN);
+	$poll->mask(\*STDOUT => POLLOUT);
+    } elsif ($poll->events(\*STDOUT) & POLLOUT && $sbuf ne '') {
 	my $n = syswrite(STDOUT, $sbuf);
 	next if $n < 0 and $! == EINTR;
 	$n >= 0 or die "write: $!";
 	$sbuf = substr($sbuf, $n);
 	if ($sbuf eq '') {
-	    vec($win, $stdout, 1) = 0;
-	    vec($rin, $in, 1) = 1;
+	    $poll->mask(\*STDOUT => POLLHUP);
+	    $poll->mask(\*IN => POLLIN);
 	}
-    } elsif (vec($wout, $stdout, 1)) {
-	vec($win, $stdout, 1) = 0;
+    } elsif ($poll->events(\*STDOUT)) {
+	$poll->remove(\*STDOUT);
+	$poll->remove(\*IN);
 	close(STDOUT) or die "close: $!";
 	close(IN) or die "close: $!";
-    } elsif (vec($wout, $out, 1) && $cbuf ne '') {
+    } elsif ($poll->events(\*OUT) & POLLOUT && $cbuf ne '') {
 	my $n = syswrite(OUT, $cbuf);
 	next if $n < 0 and $! == EINTR;
 	$n >= 0 or die "write: $!";
 	$cbuf = substr($cbuf, $n);
 	if ($cbuf eq '') {
-	    vec($win, $out, 1) = 0;
-	    vec($rin, $stdin, 1) = 1;
+	    $poll->mask(\*OUT => POLLHUP);
+	    $poll->mask(\*STDIN => POLLIN);
 	}
-    } elsif (vec($wout, $out, 1)) {
-	vec($win, $out, 1) = 0;
+    } elsif ($poll->events(\*OUT)) {
+	$poll->remove(\*OUT);
+	$poll->remove(\*STDIN);
 	close(OUT) or die "close: $!";
 	close(STDIN) or die "close: $!";
     }
 }
+
+while (waitpid($pid, 0) == -1 && $! == EINTR) { }
