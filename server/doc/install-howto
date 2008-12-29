@@ -54,7 +54,8 @@ Helper files for the install are located in server/fedora/config.
   ... Except Anders claims he fixed this.
 
 * Remember to set NSS_NONLOCAL_IGNORE=1 anytime you're setting up
-  anything, e.g. using yum
+  anything, e.g. using yum. Otherwise useradd will query LDAP in a stupid way
+  that makes it hang forever.
 
 * Install and configure bind
   - env NSS_NONLOCAL_IGNORE=1 yum install bind
@@ -77,11 +78,10 @@ Helper files for the install are located in server/fedora/config.
 * Install various dependencies of the scripts system, including syslog-ng,
   glibc-devel.i386, python-twisted-core, mod_fcgid, nrpe, nagios-plugins-all.
 
-* Disable NetworkManager (with yum remove), if it makes you happy. Configure
+* Disable NetworkManager with chkconfig NetworkManager off. Configure
   networking on the front end and back end, and the routing table to send
-  traffic over the back end. Make sure to run "chkconfig network on" to ensure
-  that the network will still be configured at
-  next boot,  
+  traffic over the back end. Make sure that chkconfig reports "network" on, so
+  that the network will still be configured at next boot.
 
 * Fix the openafs /usr/vice/etc <-> /etc/openafs mapping by changing
    /usr/vice/etc/cacheinfo to contain:
