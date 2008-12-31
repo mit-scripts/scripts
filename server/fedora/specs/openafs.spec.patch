@@ -1,21 +1,23 @@
 --- openafs.spec.orig	2008-04-28 18:13:44.000000000 -0400
 +++ openafs.spec	2008-06-03 12:36:29.000000000 -0400
-@@ -240,6 +240,9 @@
+@@ -240,6 +240,10 @@
  %endif
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
 +Patch1000: openafs-scripts.patch
 +Patch1001: openafs-postinit.patch
++Patch1002: openafs-pts-encrypt.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -678,6 +681,8 @@
+@@ -678,6 +681,9 @@
  
  # Patch openafs to build a kernel module named "openafs" instead of "libafs"
  %patch0 -p1 -b .kmod26
 +%patch1000 -p1 -b .scripts
 +%patch1001 -p1 -b .postinit
++%patch1002 -p1 -b .pts-encrypt
  
  ##############################################################################
  #

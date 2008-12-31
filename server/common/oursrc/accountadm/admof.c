@@ -140,7 +140,7 @@ main(int argc, const char *argv[])
     if (pioctl(dir, VIOC_FILE_CELL_NAME, &vi, 1) != 0)
 	die("internal error: pioctl: %m\n");
 
-    if (pr_Initialize(0, (char *)AFSDIR_CLIENT_ETC_DIRPATH, cell) != 0)
+    if (pr_Initialize(3, (char *)AFSDIR_CLIENT_ETC_DIRPATH, cell) != 0)
 	die("internal error: pr_Initialize failed\n");
 
     /* Get the cell configuration. */
