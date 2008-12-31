@@ -176,7 +176,7 @@
          log_err("cannot run as forbidden uid (%d/%s)\n", uid, cmd);
          exit(107);
      }
-@@ -482,6 +551,19 @@
+@@ -482,6 +551,21 @@
          log_err("failed to setuid (%ld: %s)\n", uid, cmd);
          exit(110);
      }
@@ -193,6 +193,8 @@
 +            }
 +        }
 +    }
++
++    setenv("HOME", target_homedir, 1);
  
      /*
       * Get the current working directory, as well as the proper
