@@ -46,7 +46,6 @@ useradd -u 101 -g 101 afsagent || [ $? -eq 9 ]
 %postun
 if [ "$1" = "0" ] ; then
    userdel -r afsagent
-   groupdel afsagent
 fi
 
 %changelog

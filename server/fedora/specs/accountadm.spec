@@ -58,7 +58,6 @@ useradd -u 102 -g signup -d /afs/athena.mit.edu/contrib/scripts/signup -M signup
 %postun
 if [ "$1" = "0" ] ; then
    userdel signup
-   groupdel signup
 fi
 
 %changelog
