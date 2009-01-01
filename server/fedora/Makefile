@@ -85,6 +85,16 @@ patch-specs: install-srpms
 	list=`ls ${specs}/*.spec.patch`; \
 	for i in $$list; do \
 		patch < $$i; \
+	done; \
+	list2=`svn ls ${oursrcdir}`; \
+	for i in $$list2; do \
+		base=`basename $$i`; \
+		version=`svnversion ${oursrcdir}/$$i`; \
+		version=$${version//:/_}; \
+		echo "$$i version $$version"; \
+		sed --in-place \
+			-e "s/SVNVERSION_TO_UPDATE/$${version}/" \
+		${tmp_specs}/$$base.spec; \
 	done;
 
 # 1. use the package's Makefile to delete leftover files and run autoconf

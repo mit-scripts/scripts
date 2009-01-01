@@ -1,7 +1,7 @@
 Summary:        Signup interface to <sql.mit.edu> for <scripts.mit.edu>.
 Group:			Applications/System
 Name:           sql-signup
-Version:        0.00
+Version:        0.SVNVERSION_TO_UPDATE
 Release:        0
 Vendor:			The scripts.mit.edu Team (scripts@mit.edu)
 URL:			http://scripts.mit.edu

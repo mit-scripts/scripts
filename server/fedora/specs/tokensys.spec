@@ -1,7 +1,7 @@
 Summary: scripts.mit.edu AFS administration system
 Group: Applications/System
 Name: tokensys
-Version: 0.00
+Version: 0.SVNVERSION_TO_UPDATE
 Release: 0
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
