@@ -56,9 +56,14 @@ groupadd -g 102 signup || [ $? -eq 9 ]
 useradd -u 102 -g signup -d /afs/athena.mit.edu/contrib/scripts/signup -M signup || [ $? -eq 9 ]
 
 %postun
-userdel signup
+if [ "$1" = "0" ] ; then
+   userdel signup
+   groupdel signup
+fi
 
 %changelog
+* Wed Dec 31 2008  Quentin Smith <quentin@mit.edu> - 0.917-0
+- don't delete signup user on upgrades
 
 * Sat Sep 30 2006  Jeff Arnold <jbarnold@MIT.EDU> 0.00
 - prerelease

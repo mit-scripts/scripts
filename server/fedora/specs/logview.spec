@@ -33,7 +33,9 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 useradd logview
 
 %postun
-userdel logview
+if [ "$1" = "0" ] ; then
+   userdel logview
+fi
 
 %files
 %defattr(0755, root, root)
@@ -42,6 +44,8 @@ userdel logview
 /usr/local/bin/logview
 
 %changelog
+* Wed Dec 31 2008  <scripts-build@better-mousetrap.mit.edu> - 0.917-0
+- don't delete logview user on upgrades
 
 * Tue Jan 30 2006  Jeff Arnold <jbarnold@MIT.EDU> 0.00
 - prerelease
