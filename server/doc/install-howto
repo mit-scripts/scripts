@@ -44,7 +44,8 @@ Helper files for the install are located in server/fedora/config.
        openafs-1.4.7-1.1.1.x86_64.rpm \
        openafs-{authlibs,client,debuginfo,devel,docs,krb5}* openssh* \
        sql-signup-0.00-0.x86_64.rpm tokensys-0.00-0.x86_64.rpm \
-       whoisd-0.00-0.x86_64.rpm
+       whoisd-0.00-0.x86_64.rpm \
+       nss-ldapd*
 
 * Rebuild mit-zephyr on a 32-bit machine, like the one at Joe's home.
 
@@ -116,21 +117,18 @@ Helper files for the install are located in server/fedora/config.
 * Install the credentials (machine keytab, daemon.scripts keytab, SSL
   certs).
 
-*  If you are setting up a test server, pay attention to
+* If you are setting up a test server, pay attention to
   /etc/sysconfig/network-scripts and do not bind scripts' IP address.
-  You will also need to modify /etc/ldap.conf, /etc/openldap/ldap.conf, and
-  /etc/httpd/conf.d/vhost_ldap.conf to use scripts.mit.edu instead of
-  localhost.
+  You will also need to modify /etc/ldap.conf, /etc/nss-ldapd.conf,
+  /etc/openldap/ldap.conf, and /etc/httpd/conf.d/vhost_ldap.conf to
+  use scripts.mit.edu instead of localhost.
 
 * Install fedora-ds-base and set up replication (see ./HOWTO-SETUP-LDAP
     and ./fedora-ds-enable-ssl-and-kerberos.diff).
 
-* Install nslcd / nss-ldapd, which, unlike nss-ldap, doesn't crash every few
-  hours. Add /sbin/service dirsrv start and /sbin/nslcd to /etc/rc.local, or
-  better yet package nss-ldapd properly.
-
-* Make the services dirsrv, postfix, and httpd start at boot. Run
-  chkconfig to make sure the set of services to be run is correct.
+* Make the services dirsrv, nslcd, nscd, postfix, and httpd start at
+  boot. Run chkconfig to make sure the set of services to be run is
+  correct.
 
 * Run fmtutil-sys --all, which does something that makes TeX work.
 
