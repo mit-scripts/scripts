@@ -54,13 +54,17 @@ service execsys-binfmt start
 service xinetd reload
 
 %preun
-service execsys-binfmt stop
-chkconfig --del execsys-binfmt
+if [ "$1" = "0" ] ; then
+   service execsys-binfmt stop
+   chkconfig --del execsys-binfmt
+fi
 
 %postun
 service xinetd reload
 
 %changelog
+* Wed Dec 31 2008  Quentin Smith <quentin@mit.edu>
+- don't stop execsys on package updates
 
 * Sat Sep 30 2006  Jeff Arnold <jbarnold@MIT.EDU> 0.00
 - initial prerelease version
