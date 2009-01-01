@@ -30,7 +30,7 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
 
 %pre
-useradd logview
+useradd logview || [ $? -eq 9 ]
 
 %postun
 if [ "$1" = "0" ] ; then
@@ -44,7 +44,10 @@ fi
 /usr/local/bin/logview
 
 %changelog
-* Wed Dec 31 2008  <scripts-build@better-mousetrap.mit.edu> - 0.917-0
+* Wed Dec 31 2008  Quentin Smith <quentin@mit.edu>
+- ignore preexisting user
+
+* Wed Dec 31 2008  Quentin Smith <quentin@mit.edu> - 0.917-0
 - don't delete logview user on upgrades
 
 * Tue Jan 30 2006  Jeff Arnold <jbarnold@MIT.EDU> 0.00

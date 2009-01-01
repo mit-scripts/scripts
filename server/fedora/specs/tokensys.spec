@@ -40,8 +40,8 @@ install -D crontab $RPM_BUILD_ROOT/etc/cron.d/afsagent
 /home/afsagent/renew
 
 %pre
-groupadd -g 101 afsagent
-useradd -u 101 -g 101 afsagent
+groupadd -g 101 afsagent || [ $? -eq 9 ]
+useradd -u 101 -g 101 afsagent || [ $? -eq 9 ]
 
 %postun
 if [ "$1" = "0" ] ; then
@@ -52,6 +52,7 @@ fi
 %changelog
 * Wed Dec 31 2008  Quentin Smith <quentin@mit.edu>
 - only remove afsagent user on erase
+- ignore preexisting user
 
 * Wed Apr 11 2007  Joe Presbrey <presbrey@mit.edu>
 - crontab moved system-wide (/etc/cron.d) to isolate from fail-over cron service
