@@ -1,0 +1,59 @@
+--- nss-ldapd.spec.orig	2008-12-31 18:53:14.000000000 -0500
++++ nss-ldapd.spec	2008-12-31 18:53:22.000000000 -0500
+@@ -11,16 +11,16 @@
+ # norootforbuild
+ 
+ Name:           nss-ldapd
+-BuildRequires:  db-devel krb5-devel openldap2-devel
++BuildRequires:  db4-devel krb5-devel openldap-devel autoconf automake libtool
+ License:        LGPL v2.1 or later
+ Group:          Productivity/Networking/LDAP/Clients
+ Autoreqprov:    on
+ Version:        0.6.4
+-Release:        2.4
++Release:        3.0
+ Summary:        NSS LDAP Daemon and Module
+ URL:            http://ch.tudelft.nl/~arthur/nss-ldapd/
+ Source:         nss-ldapd-%{version}.tar.bz2
+-Source1:        rc.nslcd
++Patch1000:      rc.nslcd.patch
+ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+ 
+ %description
+@@ -34,11 +34,9 @@
+     West Consulting <info@west.nl>
+     Arthur de Jong <arthur@ch.tudelft.nl>
+ 
+-%debug_package
+-
+ %prep
+ %setup -q
+-cp -v %{S:1} .
++%patch1000 -p0 -b .rc
+ 
+ %build
+ %{?suse_update_config:%{suse_update_config -f}}
+@@ -58,7 +56,6 @@
+ mkdir -p $RPM_BUILD_ROOT/etc/init.d/
+ mkdir -p $RPM_BUILD_ROOT/usr/sbin/
+ install -m 755 rc.nslcd $RPM_BUILD_ROOT/etc/init.d/nslcd
+-ln -sf ../../etc/init.d/nslcd $RPM_BUILD_ROOT/usr/sbin/rcnslcd
+ make DESTDIR=$RPM_BUILD_ROOT install
+ mkdir -p $RPM_BUILD_ROOT/var/run/nslcd
+ install -m 644 man/nss-ldapd.conf.5 $RPM_BUILD_ROOT/usr/share/man/man5
+@@ -86,11 +83,14 @@
+ %doc %{_mandir}/man8/*
+ %config(noreplace) /etc/nss-ldapd.conf
+ %config /etc/init.d/nslcd
+-/usr/sbin/rcnslcd
+ %dir /var/run/nslcd
+ /usr/sbin/nslcd
+ 
+ %changelog
++* Wed Dec 31 2008  <quentin@mit.edu> - 0.6.4-3.0
++- add init script for Fedora
++* Wed Dec 31 2008  <quentin@mit.edu> - 0.6.4-2.4
++- port from openSUSE to Fedora
+ * Wed Aug  6 2008 rhafer@suse.de
+ - rename init script to nslcd to match the name of the daemon
+   binary

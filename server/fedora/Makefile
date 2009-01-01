@@ -38,6 +38,7 @@ dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
 openafs_url	= "http://dl.openafs.org/dl/openafs/1.4.8/openafs-1.4.8-1.1.1.src.rpm"
+nss_ldapd_url	= "http://download.opensuse.org/repositories/network:/ldap/openSUSE_Factory/src/nss-ldapd-0.6.4-2.4.src.rpm"
 
 .PHONY: minimal-clean
 
@@ -62,6 +63,7 @@ download_stamp: | SRPMS/mit-zephyr-2.1-6.src.rpm
 	@mkdir -p $(dload); \
 	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
 	cd $(dload) && yumdownloader --source $(upstream_yum)
+	wget -P $(dload) $(nss_ldapd_url)
 	wget -P $(dload) $(openafs_url)
 	touch download_stamp
 
