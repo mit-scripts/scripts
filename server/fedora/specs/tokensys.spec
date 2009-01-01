@@ -44,9 +44,14 @@ groupadd -g 101 afsagent
 useradd -u 101 -g 101 afsagent
 
 %postun
-userdel -r afsagent
+if [ "$1" = "0" ] ; then
+   userdel -r afsagent
+   groupdel afsagent
+fi
 
 %changelog
+* Wed Dec 31 2008  Quentin Smith <quentin@mit.edu>
+- only remove afsagent user on erase
 
 * Wed Apr 11 2007  Joe Presbrey <presbrey@mit.edu>
 - crontab moved system-wide (/etc/cron.d) to isolate from fail-over cron service
