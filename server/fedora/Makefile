@@ -124,20 +124,20 @@ upstream: mkdir-tree download
 all:
 	make $(allsrc)
 
+$(oursrc): rpmbuild_args += --define 'scriptsversion $(shell svnversion ${oursrcdir}/$** | tr ':' '_')'
+
 $(filter %.i386,$(oursrc)): %.i386: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	setarch i386 rpmbuild $(rpmbuild_args) --target=i386 --define="_lib lib" -bb ${tmp_specs}/$**.spec
 
 $(filter-out %.i386,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	version=`svnversion ${oursrcdir}/$**`; \
-	version=$${version//:/_}; \
-	rpmbuild $(rpmbuild_args) --define "scriptsversion $${version}" -bb ${tmp_specs}/$**.spec
+	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/$**.spec
+
+$(upstream) openafs-kernel: rpmbuild_args += --define 'scriptsversion $(shell svnversion ${patches} | tr ':' '_')'
 
 $(upstream): setup patch-specs
-	version=`svnversion ${patches}`; \
-	version=$${version//:/_}; \
-	rpmbuild $(rpmbuild_args) --define "scriptsversion $${version}" -ba ${tmp_specs}/$@.spec
+	rpmbuild $(rpmbuild_args) -ba ${tmp_specs}/$@.spec
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
