@@ -1,11 +1,11 @@
 --- krb5.spec.orig	2009-01-01 21:06:35.000000000 -0500
-+++ krb5.spec	2009-01-01 21:10:27.000000000 -0500
++++ krb5.spec	2009-01-01 22:53:25.000000000 -0500
 @@ -16,7 +16,7 @@
  Summary: The Kerberos network authentication system.
  Name: krb5
  Version: 1.6.3
 -Release: 10%{?dist}
-+Release: 10.scripts%{?dist}
++Release: 10%{?dist}.scripts.%{scriptsversion}
  # Maybe we should explode from the now-available-to-everybody tarball instead?
  # http://web.mit.edu/kerberos/dist/krb5/1.6/krb5-1.6.2-signed.tar
  Source0: krb5-%{version}.tar.gz

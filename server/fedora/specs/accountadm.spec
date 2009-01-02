@@ -1,7 +1,7 @@
 Summary: scripts.mit.edu locker administration system
 Group: Applications/System
 Name: accountadm
-Version: 0.SVNVERSION_TO_UPDATE
+Version: 0.%{scriptsversion}
 Release: 0
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu

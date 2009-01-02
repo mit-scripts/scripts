@@ -1,5 +1,14 @@
 --- openssh.spec.orig	2009-01-01 21:06:01.000000000 -0500
-+++ openssh.spec	2009-01-01 21:11:41.000000000 -0500
++++ openssh.spec	2009-01-01 22:52:02.000000000 -0500
+@@ -63,7 +63,7 @@
+ Summary: The OpenSSH implementation of SSH protocol versions 1 and 2
+ Name: openssh
+ Version: 5.1p1
+-Release: 3%{?dist}%{?rescue_rel}
++Release: 3%{?dist}%{?rescue_rel}.scripts.%{scriptsversion}
+ URL: http://www.openssh.com/portable.html
+ #Source0: ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz
+ #Source1: ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz.asc
 @@ -74,6 +74,7 @@
  Source1: openssh-nukeacss.sh
  Source2: sshd.pam

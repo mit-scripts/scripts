@@ -1,5 +1,14 @@
 --- httpd.spec.orig	2009-01-01 21:06:31.000000000 -0500
-+++ httpd.spec	2009-01-01 21:08:14.000000000 -0500
++++ httpd.spec	2009-01-01 22:52:19.000000000 -0500
+@@ -6,7 +6,7 @@
+ Summary: Apache HTTP Server
+ Name: httpd
+ Version: 2.2.9
+-Release: 1%{?dist}
++Release: 1%{?dist}.scripts.%{scriptsversion}
+ URL: http://httpd.apache.org/
+ Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.gz
+ Source1: index.html
 @@ -54,6 +54,11 @@
  Conflicts: pcre < 4.0
  Requires: httpd-tools = %{version}-%{release}

@@ -130,10 +130,14 @@ $(filter %.i386,$(oursrc)): %.i386: setup
 
 $(filter-out %.i386,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/$**.spec
+	version=`svnversion ${oursrcdir}/$**`; \
+	version=$${version//:/_}; \
+	rpmbuild $(rpmbuild_args) --define "scriptsversion $${version}" -bb ${tmp_specs}/$**.spec
 
 $(upstream): setup patch-specs
-	rpmbuild $(rpmbuild_args) -ba ${tmp_specs}/$@.spec
+	version=`svnversion ${patches}`; \
+	version=$${version//:/_}; \
+	rpmbuild $(rpmbuild_args) --define "scriptsversion $${version}" -ba ${tmp_specs}/$@.spec
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
