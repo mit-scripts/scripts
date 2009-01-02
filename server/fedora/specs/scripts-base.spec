@@ -8,7 +8,7 @@ URL: http://scripts.mit.edu
 License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
-Requires: accountadm, execsys, kmod-openafs = 1.1.scripts.2.6.27.9_73.fc9, scripts-krb5-libs, scripts-mod_ssl, openafs, scripts-opanfs-client, scripts-openafs-authlibs, scripts-openafs-devel, scripts-openafs-krb5, openafs-debuginfo, openafs-docs, scripts-openssh, sql-signup, tokensys, whoisd, logview, nss-ldapd
+Requires: accountadm, execsys, kmod-openafs = 1.4.8-1.1.scripts.2.6.27.9_73.fc9, scripts-krb5-libs, scripts-httpd, scripts-mod_ssl, openafs, scripts-openafs-client, scripts-openafs-authlibs, scripts-openafs-devel, scripts-openafs-krb5, openafs-debuginfo, openafs-docs, scripts-openssh-server, sql-signup, tokensys, whoisd, logview, nss-ldapd
 %define debug_package %{nil}
 
 %description 
