@@ -68,6 +68,15 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{PACKAGE_VERSION}
  Group: Networking/Filesystems
+@@ -550,7 +550,7 @@
+ %if %{build_modules}
+ 
+ %if %{fedorakmod}
+-%{expand:%(%{kmodtool} rpmtemplate %{kmod_name} %{kverrel} %{kvariants} 2>/dev/null)}
++%{expand:%(%{kmodtool} rpmtemplate %{kmod_name} %{kverrel} %{kvariants} | sed '/^%package/ aProvides: scripts-kmod-openafs' 2>/dev/null)}
+ 
+ %else
+ 
 @@ -699,6 +709,9 @@
  
  # Patch openafs to build a kernel module named "openafs" instead of "libafs"
