@@ -14,6 +14,10 @@ Helper files for the install are located in server/fedora/config.
 * Run "make install-deps" to install various prereqs.  Nonstandard
   deps are in /mit/scripts/rpm.
 
+* Check out the scripts /etc configuration, which is done most easily by
+  $ svn co svn://scripts.mit.edu/server/fedora/config/etc
+  # \cp -a etc /
+
 * Create a scripts-build user account, and set up rpm to build in 
   $HOME by doing a 
   cp config/home/scripts-build/.rpmmacros /home/scripts-build/
@@ -25,27 +29,7 @@ Helper files for the install are located in server/fedora/config.
 * Make sure that server/fedora (where you currently are) is writable
   by user scripts-build.
 
-* Use the Makefile to build the scripts.mit.edu-specific Fedora
-  packages.
-  - export PATH=$PATH:/usr/sbin
-  - make download
-  - make setup
-  - make all
-  - openafs-devel is a build-dependency of accountadm, so you'll need to
-    install the openafs-devel package you just built by hand when that fails.
-
-* Then install the packages you just built as root:
-   - yum localinstall --nogpgcheck accountadm-0.00-0.x86_64.rpm \
-       execsys-0.00-0.x86_64.rpm httpd* \
-       kmod-openafs-1.4.7-1.1.2.6.25_14.fc9.x86_64.rpm \
-       krb5-{debuginfo,devel,libs,pki,workstation-1}* \
-       logview-0.00-0.x86_64.rpm mit-zephyr-2.1-6-linux.x86_64.rpm \
-       mod_ssl-2.2.8-3.x86_64.rpm nss_nonlocal-* \
-       openafs-1.4.7-1.1.1.x86_64.rpm \
-       openafs-{authlibs,client,debuginfo,devel,docs,krb5}* openssh* \
-       sql-signup-0.00-0.x86_64.rpm tokensys-0.00-0.x86_64.rpm \
-       whoisd-0.00-0.x86_64.rpm \
-       nss-ldapd*
+* env NSS_NONLOCAL_IGNORE=1 yum install scripts-base
 
 * Rebuild mit-zephyr on a 32-bit machine, like the one at Joe's home.
 
@@ -62,10 +46,6 @@ Helper files for the install are located in server/fedora/config.
   - env NSS_NONLOCAL_IGNORE=1 yum install bind
   - chkconfig named on
   - service named start
-
-* Check out the scripts /etc configuration, which is done most easily by
-  $ svn co svn://scripts.mit.edu/server/fedora/config/etc
-  # \cp -a etc /
 
 * Reload the iptables config to take down the restrictive firewall 
   service iptables restart
