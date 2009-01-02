@@ -17,6 +17,6 @@ This document is a how-to for building new packaages for scripts.mit.edu.
   - krootscp root@build-server.mit.edu:/home/scripts-build/rpmbuild/RPMS/x86-64/* /mit/scripts/rpm/
   - cd /mit/scripts/rpm && createrepo .
   - If you don't have a trusted Fedora machine, you can use createrepo
-    -o /tmp/foo . and then manually install the generated file
+    -o ~/foo . and then manually install the generated file
 
 * Rebuild mit-zephyr on a 32-bit machine, like the one at Joe's home.
