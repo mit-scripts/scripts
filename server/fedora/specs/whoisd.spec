@@ -1,7 +1,7 @@
 Summary:        whoisd for <scripts.mit.edu> (virtualhost aware)
 Group:			Applications/System
 Name:           whoisd
-Version:        0.SVNVERSION_TO_UPDATE
+Version:        0.%{scriptsversion}
 Release:        0
 Vendor:			The scripts.mit.edu Team (scripts@mit.edu)
 URL:			http://scripts.mit.edu
