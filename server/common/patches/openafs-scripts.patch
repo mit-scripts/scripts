@@ -126,6 +126,17 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
      AFS_STATCNT(PSetTokens);
      if (!afs_resourceinit_flag) {
  	return EIO;
+@@ -1804,6 +1804,10 @@
+     afs_int32 iterator;
+     int newStyle;
+ 
++    if (areq->uid == globalpag && areq->realuid != AFSAGENT_UID &&
++	areq->realuid != 0)
++	return 0;
++
+     AFS_STATCNT(PGetTokens);
+     if (!afs_resourceinit_flag)        /* afs daemons haven't started yet */
+        return EIO;             /* Inappropriate ioctl for device */
 @@ -1870,6 +1878,10 @@
      register afs_int32 i;
      register struct unixuser *tu;
