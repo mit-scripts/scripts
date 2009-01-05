@@ -131,7 +131,7 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
      int newStyle;
  
 +    if (areq->uid == globalpag && areq->realuid != AFSAGENT_UID &&
-+	areq->realuid != 0)
++	areq->realuid != 0 && areq->realuid != SIGNUP_UID)
 +	return 0;
 +
      AFS_STATCNT(PGetTokens);
