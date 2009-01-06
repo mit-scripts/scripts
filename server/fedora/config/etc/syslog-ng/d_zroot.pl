@@ -56,6 +56,7 @@ sub parseKey($) {
     return ($fingerprint, $comment);
 }
 
+buildKeyMap("/root/.ssh/authorized_keys");
 buildKeyMap("/root/.ssh/authorized_keys2");
 
 while (1) {
