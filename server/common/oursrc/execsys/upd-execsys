@@ -63,6 +63,8 @@ my @static = qw(
  JPG
  xhtml
  svg
+ xaml
+ xap
 );
 
 my %map;

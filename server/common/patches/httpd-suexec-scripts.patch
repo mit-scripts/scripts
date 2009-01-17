@@ -72,7 +72,7 @@
      "SSL_",
  
      /* variable name is */
-@@ -245,9 +250,65 @@
+@@ -245,9 +250,67 @@
      environ = cleanenv;
  }
  
@@ -110,6 +110,8 @@
 +    "JPG",
 +    "xhtml",
 +    "svg",
++    "xaml",
++    "xap",
 +    NULL
 +};
 +
@@ -138,7 +140,7 @@
      uid_t uid;              /* user information          */
      gid_t gid;              /* target group placeholder  */
      char *target_uname;     /* target user name          */
-@@ -350,6 +404,20 @@
+@@ -350,6 +406,20 @@
  #endif /*_OSD_POSIX*/
  
      /*
@@ -159,7 +161,7 @@
       * Check for a leading '/' (absolute path) in the command to be executed,
       * or attempts to back up out of the current directory,
       * to protect against attacks.  If any are
-@@ -371,6 +439,7 @@
+@@ -371,6 +441,7 @@
          userdir = 1;
      }
  
@@ -167,7 +169,7 @@
      /*
       * Error out if the target username is invalid.
       */
-@@ -450,7 +519,7 @@
+@@ -450,7 +521,7 @@
       * Error out if attempt is made to execute as root or as
       * a UID less than AP_UID_MIN.  Tsk tsk.
       */
@@ -176,7 +178,7 @@
          log_err("cannot run as forbidden uid (%d/%s)\n", uid, cmd);
          exit(107);
      }
-@@ -482,6 +551,21 @@
+@@ -482,6 +553,21 @@
          log_err("failed to setuid (%ld: %s)\n", uid, cmd);
          exit(110);
      }
@@ -198,7 +200,7 @@
  
      /*
       * Get the current working directory, as well as the proper
-@@ -504,6 +586,21 @@
+@@ -504,6 +588,21 @@
              log_err("cannot get docroot information (%s)\n", target_homedir);
              exit(112);
          }
@@ -220,7 +222,7 @@
      }
      else {
          if (((chdir(AP_DOC_ROOT)) != 0) ||
-@@ -530,15 +627,17 @@
+@@ -530,15 +629,17 @@
      /*
       * Error out if cwd is writable by others.
       */
@@ -239,7 +241,7 @@
          log_err("cannot stat program: (%s)\n", cmd);
          exit(117);
      }
-@@ -546,10 +645,12 @@
+@@ -546,10 +647,12 @@
      /*
       * Error out if the program is writable by others.
       */
@@ -252,7 +254,7 @@
  
      /*
       * Error out if the file is setuid or setgid.
-@@ -563,6 +664,7 @@
+@@ -563,6 +666,7 @@
       * Error out if the target name/group is different from
       * the name/group of the cwd or the program.
       */
@@ -260,7 +262,7 @@
      if ((uid != dir_info.st_uid) ||
          (gid != dir_info.st_gid) ||
          (uid != prg_info.st_uid) ||
-@@ -574,12 +676,14 @@
+@@ -574,12 +678,14 @@
                  prg_info.st_uid, prg_info.st_gid);
          exit(120);
      }
@@ -276,7 +278,7 @@
          log_err("file has no execute permission: (%s/%s)\n", cwd, cmd);
          exit(121);
      }
-@@ -606,6 +709,21 @@
+@@ -606,6 +711,21 @@
        exit(122);
      }
  
