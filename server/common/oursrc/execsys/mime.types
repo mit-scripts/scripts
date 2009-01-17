@@ -505,3 +505,5 @@ video/x-msvideo			avi
 video/x-sgi-movie		movie
 video/x-ms-wmv			wmv
 x-conference/x-cooltalk		ice
+application/xaml+xml		xaml
+application/x-silverlight-app	xap
