@@ -13,3 +13,9 @@ X11Forwarding no
 Banner /etc/issue.net
 Subsystem sftp /usr/libexec/openssh/sftp-server
 LogLevel VERBOSE
+
+# See trac #23
+HostbasedAuthentication yes
+IgnoreRhosts yes
+IgnoreUserKnownHosts yes
+DenyUsers root@old-faithful.mit.edu root@better-mousetrap.mit.edu root@bees-knees.mit.edu
