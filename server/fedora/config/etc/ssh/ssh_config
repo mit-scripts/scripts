@@ -24,7 +24,7 @@
 #   RSAAuthentication yes
    EnableSSHKeysign yes
    PasswordAuthentication no
-#   HostbasedAuthentication no
+   HostbasedAuthentication yes
 #   GSSAPIAuthentication no
 #   GSSAPIDelegateCredentials no
 #   BatchMode no
