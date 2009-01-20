@@ -21,6 +21,7 @@ To set up a new LDAP server:
 - Uncomment and modify in /etc/syscnfig/dirsrv: KRB5_KTNAME=/etc/dirsrv/keytab ; export KRB5_KTNAME
 - mkdir -p /var/tmp/dirsrv
 - chown fedora-ds:fedora-ds /var/tmp/dirsrv
+- chmod 755 /var/run/dirsrv
 - /sbin/service dirsrv restart
 - Use ldapvi -b cn=config to add these indexes:
 
