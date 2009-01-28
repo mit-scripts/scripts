@@ -1,0 +1,1 @@
+import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.5/site-packages"))
