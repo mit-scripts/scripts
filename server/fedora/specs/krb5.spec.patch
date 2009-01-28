@@ -1,24 +1,24 @@
---- krb5.spec.orig	2009-01-01 21:06:35.000000000 -0500
-+++ krb5.spec	2009-01-01 22:53:25.000000000 -0500
+--- krb5.spec	2008-08-05 13:46:07.000000000 -0400
++++ krb5.spec.new	2009-01-27 21:30:00.000000000 -0500
 @@ -16,7 +16,7 @@
  Summary: The Kerberos network authentication system.
  Name: krb5
  Version: 1.6.3
--Release: 10%{?dist}
-+Release: 10%{?dist}.scripts.%{scriptsversion}
+-Release: 16%{?dist}
++Release: 16%{?dist}.scripts.%{scriptsversion}
  # Maybe we should explode from the now-available-to-everybody tarball instead?
  # http://web.mit.edu/kerberos/dist/krb5/1.6/krb5-1.6.2-signed.tar
  Source0: krb5-%{version}.tar.gz
-@@ -101,6 +101,8 @@
- Patch76: krb5-CVE-2007-5901.patch
- Patch77: krb5-CVE-2007-5971.patch
+@@ -102,6 +102,8 @@
+ Patch78: krb5-1.6.3-lucid-acceptor.patch
+ Patch79: krb5-trunk-ftp_mget_case.patch
  
 +Patch1000: krb5-kuserok-scripts.patch
 +
- License: MIT, freely distributable.
+ License: MIT
  URL: http://web.mit.edu/kerberos/www/
  Group: System Environment/Libraries
-@@ -142,6 +144,7 @@
+@@ -143,6 +145,7 @@
  Group: System Environment/Libraries
  Prereq: grep, /sbin/ldconfig, sh-utils
  Obsoletes: krb5-configs
@@ -26,10 +26,10 @@
  
  %description libs
  Kerberos is a network authentication system. The krb5-libs package
-@@ -1349,6 +1352,7 @@
- %patch75 -p0 -b .2008-0947
- %patch76 -p0 -b .2007-5901
+@@ -1383,6 +1386,7 @@
  %patch77 -p0 -b .2007-5971
+ %patch78 -p0 -b .lucid_acceptor
+ %patch79 -p0 -b .ftp_mget_case
 +%patch1000 -p1 -b .kuserok
  cp src/krb524/README README.krb524
  gzip doc/*.ps
