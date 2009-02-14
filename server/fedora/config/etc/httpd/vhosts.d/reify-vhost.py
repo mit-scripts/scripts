@@ -17,7 +17,7 @@ import ldap.filter
 import pwd
 import sys
 
-ll = ldap.initialize("ldapi://%2fvar%2frun%2fdirsrv%2fslapd-scripts.socket/")
+ll = ldap.initialize("ldap://scripts.mit.edu/")
 ll.simple_bind_s("", "")
 
 host = sys.argv[1]
