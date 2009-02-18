@@ -1,0 +1,2 @@
+#!/bin/bash
+exec /usr/lib64/nagios/plugins/check_file_age -f /afs/athena.mit.edu/contrib/scripts/cron_scripts/cron_status_flag/$(hostname -f)
