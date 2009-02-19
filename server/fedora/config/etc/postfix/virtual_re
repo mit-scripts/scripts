@@ -1,2 +1,2 @@
-/^([^@]*)@(.*)\.scripts\.mit\.edu$/ $2+$1@scripts.mit.edu
+/^(.*)@([^@]*)\.scripts\.mit\.edu$/ $2+$1@scripts.mit.edu
 /^([^@]*)\.scripts\.mit\.edu$/ true
