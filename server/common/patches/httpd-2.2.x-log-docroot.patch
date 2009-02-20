@@ -1,0 +1,13 @@
+--- httpd-2.2.8/server/log.c.orig	2009-02-20 01:48:06.000000000 -0500
++++ httpd-2.2.8/server/log.c	2009-02-20 01:55:40.000000000 -0500
+@@ -621,6 +621,10 @@
+         len += apr_snprintf(errstr + len, MAX_STRING_LEN - len,
+                             "[client %s] ", c->remote_ip);
+     }
++    if (r) { // Extract the document root and print it
++      len += apr_sprintf(errstr + len, MAX_STRING_LEN - len,
++			 "[docroot %s] ", ap_document_root(r));
++    }
+     if (status != 0) {
+         if (status < APR_OS_START_EAIERR) {
+             len += apr_snprintf(errstr + len, MAX_STRING_LEN - len,
