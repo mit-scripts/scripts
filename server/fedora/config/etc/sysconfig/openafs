@@ -8,7 +8,7 @@ postinit () {
 	  Moonshine)
 	    /usr/bin/fs sysname 'amd64_fedora7_scripts' 'scripts' 'amd64_fedora7' 'amd64_linux26' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux26' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux2' 'i386_linux1' ;;
 	  Sulphur)
-	    /usr/bin/fs sysname 'amd64_fedora9_scripts' 'amd64_fedora7_scripts' 'scripts' 'amd64_fedora9' 'amd64_fedora7' 'amd64_linux26' 'i386_deb40' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux26' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux3' 'i386_linux2' ;;
+	    /usr/bin/fs sysname 'amd64_fedora9_scripts' 'amd64_fedora7_scripts' 'scripts' 'amd64_fedora9' 'amd64_fedora7' 'amd64_linux26' 'i386_deb40' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux26' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux2' ;;
 	  *)
 	    echo "Warning: unknown platform. AFS sysname not set."
 	esac
