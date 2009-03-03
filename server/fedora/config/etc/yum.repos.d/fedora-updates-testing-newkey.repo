@@ -1,0 +1,27 @@
+[updates-testing-newkey]
+name=Fedora $releasever - $basearch - Test Updates Newkey
+failovermethod=priority
+#baseurl=http://download.fedoraproject.org/pub/fedora/linux/updates/testing/$releasever/$basearch.newkey/
+mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=updates-testing-f$releasever.newkey&arch=$basearch
+enabled=1
+gpgcheck=1
+includepkgs=subversion mod_dav_svn
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-test-8-and-9-$basearch
+
+[updates-testing-newkey-debuginfo]
+name=Fedora $releasever - $basearch - Test Updates Debug Newkey
+failovermethod=priority
+#baseurl=http://download.fedoraproject.org/pub/fedora/linux/updates/testing/$releasever/$basearch.newkey/debug/
+mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=updates-testing-debug-f$releasever.newkey&arch=$basearch
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-test-8-and-9-$basearch
+
+[updates-testing-newkey-source]
+name=Fedora $releasever - Test Updates Source Newkey
+failovermethod=priority
+#baseurl=http://download.fedoraproject.org/pub/fedora/linux/updates/testing/$releasever/SRPMS.newkey/
+mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=updates-testing-source-f$releasever.newkey&arch=$basearch
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-test-8-and-9-$basearch
