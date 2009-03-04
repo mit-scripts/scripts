@@ -5,7 +5,7 @@ failovermethod=priority
 mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=updates-testing-f$releasever.newkey&arch=$basearch
 enabled=1
 gpgcheck=1
-includepkgs=subversion mod_dav_svn
+includepkgs=subversion mod_dav_svn subversion-devel
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-test-8-and-9-$basearch
 
 [updates-testing-newkey-debuginfo]
