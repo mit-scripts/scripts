@@ -16,7 +16,6 @@ node        rack-backward
 ping	18.181.0.1
 crm on
 
-apiauth mgmtd uid=root
 apiauth default gid=haclient uid=hacluster
 respawn root /usr/lib/heartbeat/mgmtd -v
 
