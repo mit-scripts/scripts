@@ -4,6 +4,16 @@ autoreload=yes
 logfile="/var/log/ldirectord.log"
 quiescent=no
 
+virtual=18.181.0.46:25
+        real=18.181.0.53:25 gate 1024
+        real=18.181.0.57:25 gate 1024
+        real=18.181.0.167:25 gate 1024
+        fallback=18.187.1.128:25 gate
+        service=smtp
+        scheduler=sh
+        protocol=tcp
+        checktype=negotiate
+
 virtual=18.181.0.46:80
         real=18.181.0.53:80 gate 1024
         real=18.181.0.57:80 gate 1024
@@ -43,6 +53,16 @@ virtual=18.181.0.46:444
         protocol=tcp
         checktype=negotiate
 
+virtual=18.181.0.43:25
+        real=18.181.0.53:25 gate 1024
+        real=18.181.0.57:25 gate 1024
+        real=18.181.0.167:25 gate 1024
+        fallback=18.187.1.128:25 gate
+        service=smtp
+        scheduler=sh
+        protocol=tcp
+        checktype=negotiate
+
 virtual=18.181.0.43:80
         real=18.181.0.53:80 gate 1024
         real=18.181.0.57:80 gate 1024
@@ -77,6 +97,16 @@ virtual=18.181.0.43:444
         request="heartbeat/https"
 	virtualhost="scripts.mit.edu"
         receive="1"
+        scheduler=sh
+        protocol=tcp
+        checktype=negotiate
+
+virtual=18.181.0.50:25
+        real=18.181.0.53:25 gate 1024
+        real=18.181.0.57:25 gate 1024
+        real=18.181.0.167:25 gate 1024
+        fallback=18.187.1.128:25 gate
+        service=smtp
         scheduler=sh
         protocol=tcp
         checktype=negotiate
