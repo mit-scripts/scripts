@@ -1,4 +1,4 @@
-AFSD_ARGS="-afsdb -dynroot -fakestat-all -stat 10000 -daemons 6 -volumes 400 -files 40000 -chunksize 19"
+AFSD_ARGS="-afsdb -dynroot -fakestat-all -stat 25000 -daemons 100 -volumes 400 -files 400000 -chunksize 19"
 BOSSERVER_ARGS=
 
 postinit () {
