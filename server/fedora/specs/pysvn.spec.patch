@@ -1,0 +1,19 @@
+--- pysvn.spec	2009-03-23 10:49:59.000000000 -0400
++++ pysvn.spec.new	2009-03-23 10:53:10.000000000 -0400
+@@ -2,7 +2,7 @@
+ 
+ Name:           pysvn
+ Version:        1.6.2
+-Release:        1%{dist}
++Release:        1%{dist}.scripts.%{scriptsversion}
+ Summary:        Pythonic style bindings for Subversion
+ Group:          Development/Languages
+ License:        ASL 1.1
+@@ -17,6 +17,7 @@
+ BuildRequires:  neon-devel
+ BuildRequires:  apr-devel
+ BuildRequires:  openssl-devel
++Provides:       scripts-pysvn
+ 
+ %description
+ Pythonic style bindings for Subversion
