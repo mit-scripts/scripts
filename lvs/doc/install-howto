@@ -10,7 +10,7 @@
 - Synchronize /etc out of SVN by running
 svn co https://scripts.mit.edu:1111/lvs/config/etc /etc
 and moving files/directories out of the way as it checks out.
-- aptitude update; aptitude install heartbeat ldirectord; # should install version >= 2.1.2
+- aptitude update; aptitude install heartbeat ldirectord lighttpd-mod-magnet; # should install version >= 2.1.2
 - aptitude install munin-node
 - Copy /etc/ha.d/authkeys from an existing LVS node
 - svn up on each existing LVS node and then run /etc/init.d/heartbeat reload
@@ -27,4 +27,4 @@ cibadmin -M -X '
 '
 - TO REENABLE HEARTBEAT, run crm_attribute -n is_managed_default -v true
 - Watch /var/log/messages and /var/log/syslog to make sure heartbeat is working
-- Add machine to noc/munin/munin.conf (hodge-podge:/etc/munin/munin.conf)
+- Add machine to noc/munin/munin.conf (syn:/etc/munin/munin.conf)
