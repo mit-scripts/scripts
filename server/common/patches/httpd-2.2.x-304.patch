@@ -1,0 +1,14 @@
+--- httpd-2.2.10/server/util_script.c.orig	2006-09-15 09:19:25.000000000 -0400
++++ httpd-2.2.10/server/util_script.c	2009-03-28 14:33:17.000000000 -0400
+@@ -482,6 +482,11 @@
+             if ((cgi_status == HTTP_UNSET) && (r->method_number == M_GET)) {
+                 cond_status = ap_meets_conditions(r);
+             }
++            else if ((cgi_status == HTTP_NO_CONTENT) ||
++                     (cgi_status == HTTP_NOT_MODIFIED) ||
++                     ap_is_HTTP_INFO(cgi_status)) {
++                r->header_only = 1; /* discard any body */
++            }
+             apr_table_overlap(r->err_headers_out, merge,
+                 APR_OVERLAP_TABLES_MERGE);
+             if (!apr_is_empty_table(cookie_table)) {

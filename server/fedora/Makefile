@@ -18,7 +18,7 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 httpd openssh pysvn
+upstream_yum	= krb5 httpd openssh pysvn php
 upstream	= openafs $(upstream_yum)
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i386 whoisd mit-zephyr nss-ldapd scripts-base
 allsrc		= $(upstream) $(oursrc)
