@@ -181,7 +181,7 @@ diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_access.c openafs-1.4+scripts/src/afs
 +             !(arights == PRSFS_LOOKUP && areq->realuid == POSTFIX_UID) &&
 +             !(arights == PRSFS_READ && areq->realuid == HTTPD_UID && avc->m.Mode == 33279) &&
 +             !(areq->realuid == 0 && PRSFS_USR3 == afs_GetAccessBits(avc, PRSFS_USR3, areq)) &&
-+             !((areq->realuid == 0 || areq->realuid == SIGNUP_UID) PRSFS_USR4 == afs_GetAccessBits(avc, PRSFS_USR4, areq)) ) {
++             !((areq->realuid == 0 || areq->realuid == SIGNUP_UID) && PRSFS_USR4 == afs_GetAccessBits(avc, PRSFS_USR4, areq)) ) {
 +           return 0;
 +        }
 +
