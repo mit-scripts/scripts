@@ -1,49 +1,83 @@
 # This document is a how-to for installing a Fedora scripts.mit.edu server.
 
+set -e -x
+
+[ -e /scripts-boot-count ] || echo 0 > /scripts-boot-count
+
+source_server="old-faithful.mit.edu"
+
+boot=${1:$(cat /scripts-boot-count)}
+
+doreboot() {
+    echo $(( $boot + 1 )) > /scripts-boot-count;
+    shutdown -r now "Rebooting for step $(cat /scripts-boot-count)"
+}
+
+YUM() {
+    NSS_NONLOCAL_IGNORE=1 yum "$@"
+}
+
 # Helper files for the install are located in server/fedora/config.
 
 # Start with a normal install of Fedora.
 
+if [ $boot = 0 ]; then
 # When the initial configuration screen comes up, under "Firewall
 # configuration", disable the firewall, and under "System services", leave
 # enabled (as of Fedora 9) acpid, anacron, atd, cpuspeed, crond,
 # firstboot, fuse, haldaemon, ip6tables, iptables, irqbalance,
 # kerneloops, mdmonitor, messagebus, microcode_ctl, netfs, network, nscd, ntpd,
 # sshd, udev-post, and nothing else.
+    echo "--disabled" > /etc/sysconfig/system-config-firewall
+    for i in NetworkManager avahi-daemon bluetooth cups isdn nfslock pcscd restorecond rpcbind rpcgssd rpcidmapd sendmail; do
+	chkconfig "$i" off
+    done
 
 # Edit /etc/selinux/config so it has SELINUX=disabled and reboot.
+    sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+    doreboot
+fi
 
-# Check out the scripts.mit.edu svn repository. Configure svn not to cache
-# credentials.
-
-# cd to server/fedora in the svn repository.
-
-# Run "make install-deps" to install various prereqs.  Nonstandard
-# deps are in /mit/scripts/rpm.
-
-# Check out the scripts /etc configuration, which is done most easily by
-# $ svn co svn://scripts.mit.edu/server/fedora/config/etc
-# # \cp -a etc /
-
+if [ $boot = 1 ]; then
 # Create a scripts-build user account, and set up rpm to build in 
 # $HOME by doing a 
 # cp config/home/scripts-build/.rpmmacros /home/scripts-build/
 # (If you just use the default setup, it will generate packages 
 # in /usr/src/redhat.)
+    adduser scripts-build
 
-# su scripts-build -
+# Check out the scripts.mit.edu svn repository. Configure svn not to cache
+# credentials.
 
-# Make sure that server/fedora (where you currently are) is writable
-# by user scripts-build.
+    YUM install -y subversion
+
+    cd /srv
+    svn co svn://$source_server/ repository
+
+    sed -i 's/^(# *)*store-passwords.*/store-passwords = no/' /root/.subversion/config
+    sed -i 's/^(# *)*store-auth-creds.*/store-auth-creds = no/' /root/.subversion/config
+
+    chown -R scripts-build /srv/repository
+
+# cd to server/fedora in the svn repository.
+    cd /srv/repository/server/fedora
+
+# Run "make install-deps" to install various prereqs.  Nonstandard
+# deps are in /mit/scripts/rpm.
+    make install-deps
+
+# Install bind
+    YUM install -y bind
+
+# Check out the scripts /etc configuration
+    cd /root
+    svn co svn://scripts.mit.edu/server/fedora/config/etc etc
+    \cp -a etc /
 
 # env NSS_NONLOCAL_IGNORE=1 yum install scripts-base
+    YUM install -y scripts-base
 
 # Rebuild mit-zephyr on a 32-bit machine, like the one at Joe's home.
-
-# Run "make suexec" and "make install-suexec" to overwrite
-# /usr/sbin/suexec with one that works. The one installed by the
-# newly-built Apache RPM is misconfigured.
-# ... Except Anders claims he fixed this.
 
 # Remember to set NSS_NONLOCAL_IGNORE=1 anytime you're setting up
 # anything, e.g. using yum. Otherwise useradd will query LDAP in a stupid way
