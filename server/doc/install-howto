@@ -4,6 +4,13 @@ Helper files for the install are located in server/fedora/config.
 
 * Start with a normal install of Fedora.
 
+* When the initial configuration screen comes up, under "Firewall
+  configuration", disable the firewall, and under "System services", leave
+  enabled (as of Fedora 9) acpid, anacron, atd, auditd, cpuspeed, crond, cups,
+  firstboot, fuse, gpm, haldaemon, ip6tables, iptables, irqbalance, isdn,
+  kerneloops, mdmonitor, messagebus, microcode_ctl, netfs, network, nscd, ntpd,
+  rsyslogd, sshd, udev-post, and nothing else.
+
 * Edit /etc/selinux/config so it has SELINUX=disabled and reboot.
 
 * Check out the scripts.mit.edu svn repository. Configure svn not to cache
