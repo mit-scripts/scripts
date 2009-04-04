@@ -6,10 +6,10 @@ Helper files for the install are located in server/fedora/config.
 
 * When the initial configuration screen comes up, under "Firewall
   configuration", disable the firewall, and under "System services", leave
-  enabled (as of Fedora 9) acpid, anacron, atd, auditd, cpuspeed, crond, cups,
-  firstboot, fuse, gpm, haldaemon, ip6tables, iptables, irqbalance, isdn,
+  enabled (as of Fedora 9) acpid, anacron, atd, cpuspeed, crond,
+  firstboot, fuse, haldaemon, ip6tables, iptables, irqbalance,
   kerneloops, mdmonitor, messagebus, microcode_ctl, netfs, network, nscd, ntpd,
-  rsyslogd, sshd, udev-post, and nothing else.
+  sshd, udev-post, and nothing else.
 
 * Edit /etc/selinux/config so it has SELINUX=disabled and reboot.
 
