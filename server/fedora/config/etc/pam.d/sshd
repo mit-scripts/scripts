@@ -1,13 +1,11 @@
 #%PAM-1.0
 # Authentication modules
 
-# If they're not root, but their user exists (success),
-auth	[success=ignore ignore=ignore default=1]	pam_succeed_if.so uid > 0
+# If their user exists (success),
+auth	[success=ignore ignore=ignore default=1]	pam_succeed_if.so uid >= 0
 # print the "You don't have tickets" error:
 auth	[success=die ignore=reset default=die]	pam_echo.so file=/etc/issue.net.no_tkt
-# If !(they are root),
-auth	[success=1 ignore=ignore default=ignore]	pam_succeed_if.so uid eq 0
-# print the "your account doesn't exist" error:
+# else print the "your account doesn't exist" error:
 auth	[success=die ignore=reset default=die]	pam_echo.so file=/etc/issue.net.no_user
 
 # Set environment variables:
