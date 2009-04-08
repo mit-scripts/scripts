@@ -42,9 +42,9 @@
 # See /COPYRIGHT in this repository for more information.
 #
 diff -ur openafs-1.4/src/afs/afs_analyze.c openafs-1.4+scripts/src/afs/afs_analyze.c
---- openafs-1.4/src/afs/afs_analyze.c	2007-11-05 23:08:45.000000000 -0500
-+++ openafs-1.4+scripts/src/afs/afs_analyze.c	2007-12-18 19:22:59.000000000 -0500
-@@ -505,7 +505,7 @@
+--- openafs-1.4/src/afs/afs_analyze.c	2008-10-27 19:54:06.000000000 -0400
++++ openafs-1.4+scripts/src/afs/afs_analyze.c	2009-04-08 08:07:22.000000000 -0400
+@@ -585,7 +585,7 @@
  			 (afid ? afid->Fid.Volume : 0));
  	}
  
@@ -54,11 +54,11 @@ diff -ur openafs-1.4/src/afs/afs_analyze.c openafs-1.4+scripts/src/afs/afs_analy
  		(aerrP->err_Volume)++;
  	    areq->volumeError = VOLBUSY;
 diff -ur openafs-1.4/src/afs/afs.h openafs-1.4+scripts/src/afs/afs.h
---- openafs-1.4/src/afs/afs.h	2007-12-05 03:57:36.000000000 -0500
-+++ openafs-1.4+scripts/src/afs/afs.h	2007-12-18 20:12:31.000000000 -0500
-@@ -177,8 +177,16 @@
-     struct afs_q *prev;
- };
+--- openafs-1.4/src/afs/afs.h	2009-01-19 14:27:19.000000000 -0500
++++ openafs-1.4+scripts/src/afs/afs.h	2009-04-08 08:07:22.000000000 -0400
+@@ -208,8 +208,16 @@
+ #define QTOC(e)	    QEntry(e, struct cell, lruq)
+ #define QTOVH(e)    QEntry(e, struct vcache, vhashq)
  
 +#define AFSAGENT_UID (101)
 +#define SIGNUP_UID (102)
@@ -72,10 +72,10 @@ diff -ur openafs-1.4/src/afs/afs.h openafs-1.4+scripts/src/afs/afs.h
 +    afs_int32 realuid;
      afs_int32 busyCount;	/* how many busies we've seen so far */
      afs_int32 flags;		/* things like O_SYNC, O_NONBLOCK go here */
-     char initd;			/* if non-zero, non-uid fields meaningful */
+     char initd;			/* if non-zero, Error fields meaningful */
 diff -ur openafs-1.4/src/afs/afs_osi_pag.c openafs-1.4+scripts/src/afs/afs_osi_pag.c
---- openafs-1.4/src/afs/afs_osi_pag.c	2007-11-05 23:08:45.000000000 -0500
-+++ openafs-1.4+scripts/src/afs/afs_osi_pag.c	2007-12-18 20:26:57.000000000 -0500
+--- openafs-1.4/src/afs/afs_osi_pag.c	2008-10-20 15:29:46.000000000 -0400
++++ openafs-1.4+scripts/src/afs/afs_osi_pag.c	2009-04-08 08:07:22.000000000 -0400
 @@ -51,6 +51,8 @@
  #endif
  /* Local variables */
@@ -85,7 +85,7 @@ diff -ur openafs-1.4/src/afs/afs_osi_pag.c openafs-1.4+scripts/src/afs/afs_osi_p
  /*
   * Pags are implemented as follows: the set of groups whose long
   * representation is '41XXXXXX' hex are used to represent the pags.
-@@ -442,6 +444,15 @@
+@@ -458,6 +460,15 @@
  	av->uid = acred->cr_ruid;	/* default when no pag is set */
  #endif
      }
@@ -102,9 +102,9 @@ diff -ur openafs-1.4/src/afs/afs_osi_pag.c openafs-1.4+scripts/src/afs/afs_osi_p
      return 0;
  }
 diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl.c
---- openafs-1.4/src/afs/afs_pioctl.c	2007-12-05 03:57:37.000000000 -0500
-+++ openafs-1.4+scripts/src/afs/afs_pioctl.c	2007-12-18 21:05:10.000000000 -0500
-@@ -1208,6 +1208,10 @@
+--- openafs-1.4/src/afs/afs_pioctl.c	2009-01-19 13:09:34.000000000 -0500
++++ openafs-1.4+scripts/src/afs/afs_pioctl.c	2009-04-08 08:07:22.000000000 -0400
+@@ -1217,6 +1217,10 @@
      struct AFSFetchStatus OutStatus;
      XSTATS_DECLS;
  
@@ -115,7 +115,7 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
      AFS_STATCNT(PSetAcl);
      if (!avc)
  	return EINVAL;
-@@ -1428,6 +1432,10 @@
+@@ -1437,6 +1441,10 @@
      struct vrequest treq;
      afs_int32 flag, set_parent_pag = 0;
  
@@ -126,7 +126,7 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
      AFS_STATCNT(PSetTokens);
      if (!afs_resourceinit_flag) {
  	return EIO;
-@@ -1804,6 +1804,10 @@
+@@ -1796,6 +1804,10 @@
      afs_int32 iterator;
      int newStyle;
  
@@ -135,9 +135,9 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
 +	return 0;
 +
      AFS_STATCNT(PGetTokens);
-     if (!afs_resourceinit_flag)        /* afs daemons haven't started yet */
-        return EIO;             /* Inappropriate ioctl for device */
-@@ -1870,6 +1878,10 @@
+     if (!afs_resourceinit_flag)	/* afs daemons haven't started yet */
+ 	return EIO;		/* Inappropriate ioctl for device */
+@@ -1879,6 +1891,10 @@
      register afs_int32 i;
      register struct unixuser *tu;
  
@@ -149,8 +149,8 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
      if (!afs_resourceinit_flag)	/* afs daemons haven't started yet */
  	return EIO;		/* Inappropriate ioctl for device */
 diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_access.c openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_access.c
---- openafs-1.4/src/afs/VNOPS/afs_vnop_access.c	2007-11-05 23:08:46.000000000 -0500
-+++ openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_access.c	2007-12-18 21:06:20.000000000 -0500
+--- openafs-1.4/src/afs/VNOPS/afs_vnop_access.c	2008-03-07 12:34:08.000000000 -0500
++++ openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_access.c	2009-04-08 08:07:22.000000000 -0400
 @@ -118,6 +118,17 @@
  
      if ((vType(avc) == VDIR) || (avc->states & CForeign)) {
@@ -189,8 +189,8 @@ diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_access.c openafs-1.4+scripts/src/afs
      }
  }
 diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_attrs.c openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_attrs.c
---- openafs-1.4/src/afs/VNOPS/afs_vnop_attrs.c	2007-11-05 23:08:46.000000000 -0500
-+++ openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_attrs.c	2007-12-18 19:22:59.000000000 -0500
+--- openafs-1.4/src/afs/VNOPS/afs_vnop_attrs.c	2009-01-13 14:37:28.000000000 -0500
++++ openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_attrs.c	2009-04-08 08:07:22.000000000 -0400
 @@ -87,8 +87,8 @@
  	}
      }

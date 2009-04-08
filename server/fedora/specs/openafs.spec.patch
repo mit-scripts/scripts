@@ -1,5 +1,5 @@
---- openafs.spec.orig	2009-01-01 13:46:41.000000000 -0500
-+++ openafs.spec	2009-01-01 22:52:30.000000000 -0500
+--- openafs.spec.orig	2009-04-08 08:17:00.000000000 -0400
++++ openafs.spec	2009-04-08 08:17:21.000000000 -0400
 @@ -8,7 +8,7 @@
  # for beta/rc releases make pkgrel 0.X.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
@@ -68,7 +68,7 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{PACKAGE_VERSION}
  Group: Networking/Filesystems
-@@ -550,7 +550,7 @@
+@@ -540,7 +550,7 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
