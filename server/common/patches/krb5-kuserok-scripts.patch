@@ -17,8 +17,8 @@
 #
 # See /COPYRIGHT in this repository for more information.
 #
---- krb5-1.4.3/src/lib/krb5/os/kuserok.c.old    2006-09-09 19:03:33.000000000 -0400
-+++ krb5-1.4.3/src/lib/krb5/os/kuserok.c        2006-09-09 19:50:48.000000000 -0400
+--- krb5-1.6.3/src/lib/krb5/os/kuserok.c.old	2009-04-08 06:17:06.000000000 -0400
++++ krb5-1.6.3/src/lib/krb5/os/kuserok.c	2009-04-08 06:17:18.000000000 -0400
 @@ -31,6 +31,7 @@
  #if !defined(_WIN32)		/* Not yet for Windows */
  #include <stdio.h>
@@ -27,7 +27,7 @@
  
  #if defined(_AIX) && defined(_IBMR2)
  #include <sys/access.h>
-@@ -64,7 +65,6 @@
+@@ -71,7 +72,6 @@
  {
      struct stat sbuf;
      struct passwd *pwd;
@@ -35,7 +35,7 @@
      krb5_boolean isok = FALSE;
      FILE *fp;
      char kuser[MAX_USERNAME];
-@@ -72,70 +72,35 @@
+@@ -79,70 +79,35 @@
      char linebuf[BUFSIZ];
      char *newline;
      int gobble;
@@ -79,12 +79,24 @@
 -	fclose(fp);
 -	free(princname);
 -	return(FALSE);
--    }
++    if ((pid = fork()) == -1) {
++       free(princname);
++       return(FALSE);
+     }
 -    if (sbuf.st_uid != pwd->pw_uid && !FILE_OWNER_OK(sbuf.st_uid)) {
 -	fclose(fp);
 -	free(princname);
 -	return(FALSE);
--    }
++    if (pid == 0) {
++       char *args[4];
++#define ADMOF_PATH "/usr/local/sbin/ssh-admof"
++       args[0] = ADMOF_PATH;
++       args[1] = (char *) luser;
++       args[2] = princname;
++       args[3] = NULL;
++       execv(ADMOF_PATH, args);
++       exit(1);
+     }
 -
 -    /* check each line */
 -    while (!isok && (fgets(linebuf, BUFSIZ, fp) != NULL)) {
@@ -101,24 +113,9 @@
 -	/* clean up the rest of the line if necessary */
 -	if (!newline)
 -	    while (((gobble = getc(fp)) != EOF) && gobble != '\n');
--    }
-+    if ((pid = fork()) == -1) {
-+       free(princname);
-+       return(FALSE);
-+    }
-+    if (pid == 0) {
-+       char *args[4];
-+#define ADMOF_PATH "/usr/local/sbin/ssh-admof"
-+       args[0] = ADMOF_PATH;
-+       args[1] = (char *) luser;
-+       args[2] = princname;
-+       args[3] = NULL;
-+       execv(ADMOF_PATH, args);
-+       exit(1);
-+    }
 +    if (waitpid(pid, &status, 0) > 0 && WIFEXITED(status) && WEXITSTATUS(status) == 33) {
 +       isok=TRUE;
-+    }
+     }
 +    
      free(princname);
 -    fclose(fp);
