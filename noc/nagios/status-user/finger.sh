@@ -15,7 +15,7 @@ gethostgroups() {
 }
 
 gethgmembers() {
-    gethostgroups | grep "^$1	" | cut -f 2 -d "	" | sed 's/,/\n/g' | perl -pe 's/\n/|/g' | sed 's/|$//'
+    gethostgroups | grep "^$1	" | cut -f 2 -d "	" | sed 's/,/\n/g' | sort -u | perl -pe 's/\n/|/g' | sed 's/|$//'
 }
 
 read line
