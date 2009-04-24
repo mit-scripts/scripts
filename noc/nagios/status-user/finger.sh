@@ -1,12 +1,12 @@
 #!/bin/bash
 
 docnagios() {
-	echo q | env TERM=ansi LINES=1000 COLS=80 /usr/local/nagios/bin/cnagios -b "$@" | sed 's/\[B/\n/g; s//\n/g' | perl -pe '
+	echo q | env TERM=ansi LINES=1000 COLUMNS=80 /usr/local/nagios/bin/cnagios -b "$@" | sed 's/\[B/\n/g; s//\n/g' | perl -pe '
 s/^.*(?=sipb-nagios)//; # remove garbage at beginning
 s/(.)\\[(\d+)b/$1x($2+1)/ge; # (\d+)b means repeat previous character n times
 s/\\[(\d+)d//g; # absolute go to line; ignored
-s/\\[(\d+)G/" "x($1-$-[0]-1)/ge; # go to absolute horizontal position
-s/\\[\d+;(\d+)H/" "x($1-$-[0]-1)/ge; # go to absolute position; line ignored
+1 while s/\\[(\d+)G/" "x($1-$-[0]-1)/e; # go to absolute horizontal position
+1 while s/\\[\d+;(\d+)H/" "x($1-$-[0]-1)/e; # go to absolute position; line ignored
 '
 }
 
