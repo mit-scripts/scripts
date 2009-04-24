@@ -15,7 +15,7 @@ gethostgroups() {
 }
 
 gethgmembers() {
-    gethostgroups | grep "^$1\t" | cut -f 2 -d "	" | sed 's/,/\n/g' | perl -pe 's/\n/|/g' | sed 's/|$//'
+    gethostgroups | grep "^$1	" | cut -f 2 -d "	" | sed 's/,/\n/g' | perl -pe 's/\n/|/g' | sed 's/|$//'
 }
 
 read line
@@ -29,6 +29,9 @@ case "$line" in
     load*)
 	docnagios -g /LOAD/
 	;;
+    scripts-user*)
+	docnagios -g "/$(gethgmembers "scripts-user.*")/"
+	;;
     scripts*)
 	docnagios -g "/$(gethgmembers "scripts.*")/"
 	;;
@@ -41,6 +44,7 @@ Available information:
 finger status@sipb-noc -- all services
 finger broken@sipb-noc -- services that are not OKAY
 finger load@sipb-noc   -- all LOAD services
+finger scripts-user@sipb-noc-- all scripts user services
 finger scripts@sipb-noc-- all scripts services
 finger xvm@sipb-noc    -- only XVM servers
 EOF
