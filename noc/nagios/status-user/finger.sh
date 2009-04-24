@@ -30,7 +30,13 @@ case "$line" in
 	docnagios -g "/$(gethgmembers "xvm.*")/"
 	;;
     *)
-	echo "Unknown user"
+	cat <<EOF
+Available information:
+finger status@sipb-noc -- all services
+finger broken@sipb-noc -- services that are not OKAY
+finger xvm@sipb-noc    -- only XVM servers
+EOF
+      
 	;;
 esac
 #s/\\[\d*[a-zA-Z]//g'
