@@ -29,6 +29,9 @@ case "$line" in
     load*)
 	docnagios -g /LOAD/
 	;;
+    scripts*)
+	docnagios -g "/$(gethgmembers "scripts.*")/"
+	;;
     xvm*)
 	docnagios -g "/$(gethgmembers "xvm.*")/"
 	;;
@@ -38,6 +41,7 @@ Available information:
 finger status@sipb-noc -- all services
 finger broken@sipb-noc -- services that are not OKAY
 finger load@sipb-noc   -- all LOAD services
+finger scripts@sipb-noc-- all scripts services
 finger xvm@sipb-noc    -- only XVM servers
 EOF
       
