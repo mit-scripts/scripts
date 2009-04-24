@@ -10,6 +10,14 @@ s/\\[\d+;(\d+)H/" "x($1-$-[0]-1)/ge; # go to absolute position; line ignored
 '
 }
 
+gethostgroups() {
+    cat /etc/nagios3/*.cfg | perl -ne 'print if ( /^(\s*)define hostgroup [\{[]/ ... /[\}\]]/ )' | perl -ne 'm|hostgroup_name\s+(\S+)| and $name = $1; m|members\s+(.+)\s*$| and $members = $1; m|\}| and print "$name\t$members\n"'
+}
+
+gethgmembers() {
+    gethostgroups | grep "^$1\t" | cut -f 2 -d "	" | sed 's/,/\n/g' | perl -pe 's/\n/|/g' | sed 's/|$//'
+}
+
 read line
 case "$line" in
     status*)
@@ -17,6 +25,9 @@ case "$line" in
 	;;
     broken*)
 	docnagios -l w
+	;;
+    xvm*)
+	docnagios -g "/$(gethgmembers "xvm.*")/"
 	;;
     *)
 	echo "Unknown user"
