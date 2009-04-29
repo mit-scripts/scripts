@@ -126,7 +126,7 @@ if [ $boot = 1 ]; then
 #   server, and "notest install" them from the cpan prompt.
 # TO DO THIS:
 # On another server, run:
-# perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u | perl -ne 'chomp($pkg = $_); $pkg =~ s/::/-/g; print if system("rpm -q perl-$pkg >/dev/null 2>/dev/null")' > /mit/scripts/config/perl-packages.txt
+# perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u | perl -ne 'chomp; print "$_\n" if system("rpm -q --whatprovides \"perl($_)\" >/dev/null 2>/dev/null")' > /mit/scripts/config/perl-packages.txt
 # Then on the server you're installing,
     perl -MCPAN -e"$(echo notest install $(cat /mit/scripts/config/perl-packages.txt))"
 
