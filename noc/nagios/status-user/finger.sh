@@ -1,7 +1,9 @@
 #!/bin/bash
 
+export LINES=1000
+export COLUMNS=80
 docnagios() {
-	echo q | env TERM=ansi LINES=1000 COLUMNS=80 /usr/local/nagios/bin/cnagios -b "$@" | sed 's/\[B/\n/g; s//\n/g' | perl -pe '
+	echo q | env TERM=ansi /usr/local/nagios/bin/cnagios -b "$@" | sed 's/\[B/\n/g; s//\n/g' | perl -pe '
 s/^.*(?=sipb-nagios)//; # remove garbage at beginning
 s/(.)\\[(\d+)b/$1x($2+1)/ge; # (\d+)b means repeat previous character n times
 s/\\[(\d+)d//g; # absolute go to line; ignored
@@ -19,23 +21,31 @@ gethgmembers() {
 }
 
 read line
+line=${line%[:blank:]}
+line=${line%}
+
+cols=${line##*-}
+if [ "$cols" -eq "$cols" ] 2>/dev/null; then
+    export COLUMNS="$cols"
+    line=${line%-*}
+fi
 case "$line" in
-    status*)
+    status)
 	docnagios
 	;;
-    broken*)
+    broken)
 	docnagios -l w
 	;;
-    load*)
+    load)
 	docnagios -g /LOAD/
 	;;
-    scripts-user*)
+    scripts-user)
 	docnagios -g "/$(gethgmembers "scripts-user.*")/"
 	;;
-    scripts*)
+    scripts)
 	docnagios -g "/$(gethgmembers "scripts.*")/"
 	;;
-    xvm*)
+    xvm)
 	docnagios -g "/$(gethgmembers "xvm.*")/"
 	;;
     *)
@@ -48,7 +58,6 @@ finger scripts-user@sipb-noc-- all scripts user services
 finger scripts@sipb-noc-- all scripts services
 finger xvm@sipb-noc    -- only XVM servers
 EOF
-      
 	;;
 esac
 #s/\\[\d*[a-zA-Z]//g'
