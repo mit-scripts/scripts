@@ -1,4 +1,4 @@
-checktimeout=20
+checktimeout=5
 checkinterval=1
 autoreload=yes
 logfile="/var/log/ldirectord.log"
