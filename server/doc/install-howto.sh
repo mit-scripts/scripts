@@ -118,9 +118,7 @@ if [ $boot = 1 ]; then
 # all packages may in fact be in use.)
 
 # Install the full list of perl modules that users expect to be on the
-# scripts.mit.edu servers.  See server/doc/perl and
-# server/doc/perl_snapshot.
-
+# scripts.mit.edu servers.
 # - export PERL_MM_USE_DEFAULT=1
 # - Run 'cpan', accept the default configuration, and do 'o conf
 #   prerequisites_policy follow'.
