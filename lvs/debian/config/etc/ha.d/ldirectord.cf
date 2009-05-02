@@ -10,7 +10,8 @@ virtual=18.181.0.46:25
         real=18.181.0.167:25 gate 512
         fallback=18.187.1.128:25 gate
         service=smtp
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -23,7 +24,8 @@ virtual=18.181.0.46:80
         request="heartbeat/http"
 	virtualhost="scripts.mit.edu"
         receive="1"
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -36,7 +38,8 @@ virtual=18.181.0.46:443
         request="heartbeat/https"
 	virtualhost="scripts.mit.edu"
         receive="1"
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -49,7 +52,8 @@ virtual=18.181.0.46:444
         request="heartbeat/https"
 	virtualhost="scripts.mit.edu"
         receive="1"
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -59,7 +63,8 @@ virtual=18.181.0.43:25
         real=18.181.0.167:25 gate 512
         fallback=18.187.1.128:25 gate
         service=smtp
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -71,7 +76,8 @@ virtual=18.181.0.43:80
         service=http
         request="heartbeat/http"
         receive="1"
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -84,7 +90,8 @@ virtual=18.181.0.43:443
         request="heartbeat/https"
 	virtualhost="scripts.mit.edu"
         receive="1"
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -97,7 +104,8 @@ virtual=18.181.0.43:444
         request="heartbeat/https"
 	virtualhost="scripts.mit.edu"
         receive="1"
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -107,7 +115,8 @@ virtual=18.181.0.50:25
         real=18.181.0.167:25 gate 512
         fallback=18.187.1.128:25 gate
         service=smtp
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -119,7 +128,8 @@ virtual=18.181.0.50:80
         service=http
         request="heartbeat/http"
         receive="1"
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -132,7 +142,8 @@ virtual=18.181.0.50:443
         request="heartbeat/https"
 	virtualhost="scripts.mit.edu"
         receive="1"
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -145,7 +156,8 @@ virtual=18.181.0.50:444
         request="heartbeat/https"
 	virtualhost="scripts.mit.edu"
         receive="1"
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -158,7 +170,8 @@ virtual=18.181.0.49:80
         request="heartbeat/http"
 	virtualhost="scripts.mit.edu"
         receive="1"
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -171,7 +184,8 @@ virtual=18.181.0.49:443
         request="heartbeat/https"
 	virtualhost="scripts.mit.edu"
         receive="1"
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
@@ -184,7 +198,8 @@ virtual=18.181.0.49:444
         request="heartbeat/https"
 	virtualhost="scripts.mit.edu"
         receive="1"
-        scheduler=sh
+        scheduler=wlc
+        persistent=600
         protocol=tcp
         checktype=negotiate
 
