@@ -95,12 +95,22 @@ check_nonlocal_uid(const char *user, uid_t uid, int *errnop)
     nip = startp;
     fct.ptr = fct_start;
     do {
+    morebuf:
 	if (fct.l == _nss_nonlocal_getpwuid_r)
 	    status = NSS_STATUS_NOTFOUND;
 	else
 	    status = DL_CALL_FCT(fct.l, (uid, &pwbuf, buf, buflen, errnop));
-	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE)
-	    break;
+	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE) {
+	    free(buf);
+	    buflen *= 2;
+	    buf = malloc(buflen);
+	    if (buf == NULL) {
+		*errnop = ENOMEM;
+		errno = old_errno;
+		return NSS_STATUS_TRYAGAIN;
+	    }
+	    goto morebuf;
+	}
     } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
 
     if (status == NSS_STATUS_SUCCESS) {
@@ -146,12 +156,22 @@ check_nonlocal_user(const char *user, int *errnop)
     nip = startp;
     fct.ptr = fct_start;
     do {
+    morebuf:
 	if (fct.l == _nss_nonlocal_getpwnam_r)
 	    status = NSS_STATUS_NOTFOUND;
 	else
 	    status = DL_CALL_FCT(fct.l, (user, &pwbuf, buf, buflen, errnop));
-	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE)
-	    break;
+	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE) {
+	    free(buf);
+	    buflen *= 2;
+	    buf = malloc(buflen);
+	    if (buf == NULL) {
+		*errnop = ENOMEM;
+		errno = old_errno;
+		return NSS_STATUS_TRYAGAIN;
+	    }
+	    goto morebuf;
+	}
     } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
 
     if (status == NSS_STATUS_SUCCESS)
