@@ -1,24 +1,24 @@
---- krb5.spec.old	2009-04-08 06:26:23.000000000 -0400
-+++ krb5.spec	2009-04-08 06:29:20.000000000 -0400
+--- krb5.spec.orig	2009-04-07 15:17:07.000000000 -0400
++++ krb5.spec	2009-06-03 04:47:31.000000000 -0400
 @@ -16,7 +16,7 @@
  Summary: The Kerberos network authentication system.
  Name: krb5
  Version: 1.6.3
--Release: 16%{?dist}
-+Release: 16%{?dist}.scripts.%{scriptsversion}
+-Release: 20%{?dist}
++Release: 20%{?dist}.scripts.%{scriptsversion}
  # Maybe we should explode from the now-available-to-everybody tarball instead?
  # http://web.mit.edu/kerberos/dist/krb5/1.6/krb5-1.6.2-signed.tar
  Source0: krb5-%{version}.tar.gz
-@@ -105,6 +105,8 @@
- Patch82: krb5-CVE-2009-0846.patch
- Patch83: krb5-CVE-2009-0847.patch
+@@ -106,6 +106,8 @@
+ Patch83: krb5-CVE-2009-0846.patch
+ Patch84: krb5-CVE-2009-0847.patch
  
 +Patch1000: krb5-kuserok-scripts.patch
 +
- License: MIT, freely distributable.
+ License: MIT
  URL: http://web.mit.edu/kerberos/www/
  Group: System Environment/Libraries
-@@ -146,6 +148,7 @@
+@@ -147,6 +149,7 @@
  Group: System Environment/Libraries
  Prereq: grep, /sbin/ldconfig, sh-utils
  Obsoletes: krb5-configs
@@ -26,10 +26,10 @@
  
  %description libs
  Kerberos is a network authentication system. The krb5-libs package
-@@ -1389,6 +1392,7 @@
- %patch81 -p1 -b .CVE-2009-0844-0845-2
- %patch82 -p1 -b .CVE-2009-0846
- %patch83 -p1 -b .CVE-2009-0847
+@@ -1413,6 +1416,7 @@
+ %patch82 -p1 -b .CVE-2009-0844-0845-2
+ %patch83 -p1 -b .CVE-2009-0846
+ %patch84 -p1 -b .CVE-2009-0847
 +%patch1000 -p1 -b .kuserok
  cp src/krb524/README README.krb524
  gzip doc/*.ps
