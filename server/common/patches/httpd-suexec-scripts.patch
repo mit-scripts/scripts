@@ -72,14 +72,6 @@
      "SSL_",
  
      /* variable name is */
-@@ -108,6 +113,7 @@
-     "DOCUMENT_ROOT=",
-     "DOCUMENT_URI=",
-     "GATEWAY_INTERFACE=",
-+    "JAVA_TOOL_OPTIONS=",
-     "HTTPS=",
-     "LAST_MODIFIED=",
-     "PATH_INFO=",
 @@ -245,9 +250,67 @@
      environ = cleanenv;
  }
@@ -148,6 +140,14 @@
      uid_t uid;              /* user information          */
      gid_t gid;              /* target group placeholder  */
      char *target_uname;     /* target user name          */
+@@ -268,6 +331,7 @@
+      * Start with a "clean" environment
+      */
+     clean_env();
++    setenv("JAVA_TOOL_OPTIONS", "-Xmx128M", 1); /* scripts.mit.edu local hack */
+
+     prog = argv[0];
+     /*
 @@ -350,6 +406,20 @@
  #endif /*_OSD_POSIX*/
  
