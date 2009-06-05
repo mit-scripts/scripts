@@ -72,6 +72,14 @@
      "SSL_",
  
      /* variable name is */
+@@ -108,6 +113,7 @@
+     "DOCUMENT_ROOT=",
+     "DOCUMENT_URI=",
+     "GATEWAY_INTERFACE=",
++    "JAVA_TOOL_OPTIONS=",
+     "HTTPS=",
+     "LAST_MODIFIED=",
+     "PATH_INFO=",
 @@ -245,9 +250,67 @@
      environ = cleanenv;
  }
