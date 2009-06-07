@@ -16,6 +16,7 @@ To set up a new LDAP server:
 - wget http://web.mit.edu/geofft/Public/scripts-ca.pem
 - certutil -d /etc/dirsrv/slapd-scripts -A -n "scripts.mit.edu CA" -t CT,, -a -i scripts-ca.pem
 - Generate a pkcs12 cert for the server:
+- openssl pkcs12 -export -in c-w.pem -inkey c-w.key -name 'ldap/cats-whiskers' -out c-w.pkcs12
 - pk12util -i ldap-server-cert.p12 -d /etc/dirsrv/slapd-scripts
 - Put LDAP keytab in /etc/dirsrv/keytab
 - Uncomment and modify in /etc/syscnfig/dirsrv: KRB5_KTNAME=/etc/dirsrv/keytab ; export KRB5_KTNAME
