@@ -97,12 +97,22 @@ check_nonlocal_gid(const char *user, gid_t gid, int *errnop)
     nip = startp;
     fct.ptr = fct_start;
     do {
+    morebuf:
 	if (fct.l == _nss_nonlocal_getgrgid_r)
 	    status = NSS_STATUS_NOTFOUND;
 	else
 	    status = DL_CALL_FCT(fct.l, (gid, &gbuf, buf, buflen, errnop));
-	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE)
-	    break;
+	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE) {
+	    free(buf);
+	    buflen *= 2;
+	    buf = malloc(buflen);
+	    if (buf == NULL) {
+		*errnop = ENOMEM;
+		errno = old_errno;
+		return NSS_STATUS_TRYAGAIN;
+	    }
+	    goto morebuf;
+	}
     } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
 
     if (status == NSS_STATUS_SUCCESS) {
@@ -117,7 +127,7 @@ check_nonlocal_gid(const char *user, gid_t gid, int *errnop)
 }
 
 enum nss_status
-get_local_group(const char *name, struct group *grp, char *buffer, size_t buflen, int *errnop)
+get_local_group(const char *name, struct group *grp, char **buffer, int *errnop)
 {
     static const char *fct_name = "getgrnam_r";
     static service_user *startp = NULL;
@@ -129,13 +139,12 @@ get_local_group(const char *name, struct group *grp, char *buffer, size_t buflen
 			     char *buffer, size_t buflen, int *errnop);
 	void *ptr;
     } fct;
-    struct group gbuf;
-    int n;
+    size_t buflen;
     int old_errno = errno;
 
-    int len = sysconf(_SC_GETGR_R_SIZE_MAX);
-    char *buf = malloc(len);
-    if (buf == NULL) {
+    buflen = sysconf(_SC_GETGR_R_SIZE_MAX);
+    *buffer = malloc(buflen);
+    if (*buffer == NULL) {
 	*errnop = ENOMEM;
 	errno = old_errno;
 	return NSS_STATUS_TRYAGAIN;
@@ -143,56 +152,36 @@ get_local_group(const char *name, struct group *grp, char *buffer, size_t buflen
 
     if (fct_start == NULL &&
 	__nss_group_lookup(&startp, fct_name, &fct_start) != 0) {
-	free(buf);
+	free(*buffer);
+	*buffer = NULL;
 	return NSS_STATUS_UNAVAIL;
     }
     nip = startp;
     fct.ptr = fct_start;
     do {
+    morebuf:
 	if (fct.l == _nss_nonlocal_getgrnam_r)
 	    status = NSS_STATUS_NOTFOUND;
 	else
-	    status = DL_CALL_FCT(fct.l, (name, &gbuf, buf, buflen, errnop));
-	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE)
-	    break;
+	    status = DL_CALL_FCT(fct.l, (name, grp, *buffer, buflen, errnop));
+	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE) {
+	    free(*buffer);
+	    buflen *= 2;
+	    *buffer = malloc(buflen);
+	    if (*buffer == NULL) {
+		*errnop = ENOMEM;
+		errno = old_errno;
+		return NSS_STATUS_TRYAGAIN;
+	    }
+	    goto morebuf;
+	}
     } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
 
-    if (status != NSS_STATUS_SUCCESS)
-	goto get_local_group_done;
-
-    n = snprintf(buffer, buflen, "%s", gbuf.gr_name);
-    if (n < 0 || n >= buflen) {
-	*errnop = ERANGE;
-	status = NSS_STATUS_TRYAGAIN;
-	goto get_local_group_done;
+    if (status != NSS_STATUS_SUCCESS) {
+	free(*buffer);
+	*buffer = NULL;
     }
-    grp->gr_name = buffer;
-    buffer += n;
-    buflen -= n;
 
-    n = snprintf(buffer, buflen, "%s", gbuf.gr_passwd);
-    if (n < 0 || n >= buflen) {
-	*errnop = ERANGE;
-	status = NSS_STATUS_TRYAGAIN;
-	goto get_local_group_done;
-    }
-    grp->gr_passwd = buffer;
-    buffer += n;
-    buflen -= n;
-
-    grp->gr_gid = gbuf.gr_gid;
-
-    if (buflen < sizeof(void *)) {
-	*errnop = ERANGE;
-	status = NSS_STATUS_TRYAGAIN;
-	goto get_local_group_done;
-    }
-    *(void **)buffer = NULL;
-    buffer += sizeof(void *);
-    buflen -= sizeof(void *);
-
- get_local_group_done:
-    free(buf);
     return status;
 }
 
@@ -400,7 +389,6 @@ _nss_nonlocal_initgroups_dyn(const char *user, gid_t group, long int *start,
     struct group local_users_group, nonlocal_users_group;
     gid_t local_users_gid, gid;
     int is_local = 0;
-    int buflen;
     char *buffer;
 
     /* Check that the user is a nonlocal user before adding any groups. */
@@ -412,50 +400,34 @@ _nss_nonlocal_initgroups_dyn(const char *user, gid_t group, long int *start,
 
     int old_errno = errno;
 
-    buflen = sysconf(_SC_GETGR_R_SIZE_MAX);
-    buffer = malloc(buflen);
-    if (buffer == NULL) {
-	*errnop = ENOMEM;
-	errno = old_errno;
-	return NSS_STATUS_TRYAGAIN;
-    }
     status = get_local_group(MAGIC_LOCAL_GROUPNAME,
-			     &local_users_group, buffer, buflen, errnop);
+			     &local_users_group, &buffer, errnop);
     if (status == NSS_STATUS_SUCCESS) {
 	local_users_gid = local_users_group.gr_gid;
-    } else if (status == NSS_STATUS_TRYAGAIN) {
 	free(buffer);
+    } else if (status == NSS_STATUS_TRYAGAIN) {
 	return status;
     } else {
 	syslog(LOG_WARNING, "nss_nonlocal: Group %s does not exist locally!",
 	       MAGIC_LOCAL_GROUPNAME);
 	local_users_gid = -1;
     }
-    free(buffer);
 
     if (is_local) {
 	gid = local_users_gid;
     } else {
-	buflen = sysconf(_SC_GETGR_R_SIZE_MAX);
-	buffer = malloc(buflen);
-	if (buffer == NULL) {
-	    *errnop = ENOMEM;
-	    errno = old_errno;
-	    return NSS_STATUS_TRYAGAIN;
-	}
  	status = get_local_group(MAGIC_NONLOCAL_GROUPNAME,
-				 &nonlocal_users_group, buffer, buflen, errnop);
+				 &nonlocal_users_group, &buffer, errnop);
 	if (status == NSS_STATUS_SUCCESS) {
 	    gid = nonlocal_users_group.gr_gid;
-	} else if (status == NSS_STATUS_TRYAGAIN) {
 	    free(buffer);
+	} else if (status == NSS_STATUS_TRYAGAIN) {
 	    return status;
 	} else {
 	    syslog(LOG_WARNING, "nss_nonlocal: Group %s does not exist locally!",
 		   MAGIC_NONLOCAL_GROUPNAME);
 	    gid = -1;
 	}
-	free(buffer);
     }
 
     if (gid != -1) {

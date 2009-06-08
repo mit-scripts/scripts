@@ -45,7 +45,7 @@
  APACHE_HELP_STRING(--with-suexec-docroot,SuExec root directory),[
    AC_DEFINE_UNQUOTED(AP_DOC_ROOT, "$withval", [SuExec root directory] ) ] )
 --- httpd-2.2.11/support/suexec.c.old	2008-11-30 10:47:31.000000000 -0500
-+++ httpd-2.2.11/support/suexec.c	2009-06-03 05:16:45.000000000 -0400
++++ httpd-2.2.11/support/suexec.c	2009-06-08 09:02:17.000000000 -0400
 @@ -30,6 +30,9 @@
   *
   */
@@ -140,7 +140,15 @@
      uid_t uid;              /* user information          */
      gid_t gid;              /* target group placeholder  */
      char *target_uname;     /* target user name          */
-@@ -350,6 +413,20 @@
+@@ -268,6 +331,7 @@
+      * Start with a "clean" environment
+      */
+     clean_env();
++    setenv("JAVA_TOOL_OPTIONS", "-Xmx128M", 1); /* scripts.mit.edu local hack */
+ 
+     prog = argv[0];
+     /*
+@@ -350,6 +414,20 @@
  #endif /*_OSD_POSIX*/
  
      /*
@@ -161,7 +169,7 @@
       * Check for a leading '/' (absolute path) in the command to be executed,
       * or attempts to back up out of the current directory,
       * to protect against attacks.  If any are
-@@ -371,6 +448,7 @@
+@@ -371,6 +449,7 @@
          userdir = 1;
      }
  
@@ -169,7 +177,7 @@
      /*
       * Error out if the target username is invalid.
       */
-@@ -452,7 +530,7 @@
+@@ -452,7 +531,7 @@
       * Error out if attempt is made to execute as root or as
       * a UID less than AP_UID_MIN.  Tsk tsk.
       */
@@ -178,7 +186,7 @@
          log_err("cannot run as forbidden uid (%d/%s)\n", uid, cmd);
          exit(107);
      }
-@@ -484,6 +562,21 @@
+@@ -484,6 +563,21 @@
          log_err("failed to setuid (%ld: %s)\n", uid, cmd);
          exit(110);
      }
@@ -200,7 +208,7 @@
  
      /*
       * Get the current working directory, as well as the proper
-@@ -506,6 +599,21 @@
+@@ -506,6 +600,21 @@
              log_err("cannot get docroot information (%s)\n", target_homedir);
              exit(112);
          }
@@ -222,7 +230,7 @@
      }
      else {
          if (((chdir(AP_DOC_ROOT)) != 0) ||
-@@ -532,15 +640,17 @@
+@@ -532,15 +641,17 @@
      /*
       * Error out if cwd is writable by others.
       */
@@ -241,7 +249,7 @@
          log_err("cannot stat program: (%s)\n", cmd);
          exit(117);
      }
-@@ -548,10 +658,12 @@
+@@ -548,10 +659,12 @@
      /*
       * Error out if the program is writable by others.
       */
@@ -254,7 +262,7 @@
  
      /*
       * Error out if the file is setuid or setgid.
-@@ -565,6 +677,7 @@
+@@ -565,6 +678,7 @@
       * Error out if the target name/group is different from
       * the name/group of the cwd or the program.
       */
@@ -262,7 +270,7 @@
      if ((uid != dir_info.st_uid) ||
          (gid != dir_info.st_gid) ||
          (uid != prg_info.st_uid) ||
-@@ -576,16 +689,33 @@
+@@ -576,16 +690,33 @@
                  prg_info.st_uid, prg_info.st_gid);
          exit(120);
      }

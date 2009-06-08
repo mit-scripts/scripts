@@ -2,6 +2,7 @@
 # Copyright (C) 2006  Jeff Arnold <jbarnold@mit.edu>
 # with modifications by Joe Presbrey <presbrey@mit.edu>
 # and Anders Kaseorg <andersk@mit.edu>
+# and Edward Z. Yang <ezyang@mit.edu>
 #
 # This file is available under both the MIT license and the GPL.
 #
@@ -42,8 +43,8 @@
 # See /COPYRIGHT in this repository for more information.
 #
 diff -ur openafs-1.4/src/afs/afs_analyze.c openafs-1.4+scripts/src/afs/afs_analyze.c
---- openafs-1.4/src/afs/afs_analyze.c	2008-10-27 19:54:06.000000000 -0400
-+++ openafs-1.4+scripts/src/afs/afs_analyze.c	2009-04-08 08:07:22.000000000 -0400
+--- openafs-1.4/src/afs/afs_analyze.c
++++ openafs-1.4+scripts/src/afs/afs_analyze.c
 @@ -585,7 +585,7 @@
  			 (afid ? afid->Fid.Volume : 0));
  	}
@@ -53,9 +54,57 @@ diff -ur openafs-1.4/src/afs/afs_analyze.c openafs-1.4+scripts/src/afs/afs_analy
  	    if (aerrP)
  		(aerrP->err_Volume)++;
  	    areq->volumeError = VOLBUSY;
+diff -ur openafs-1.4/src/afs/LINUX/osi_vnodeops.c openafs-1.4+scripts/src/afs/LINUX/osi_vnodeops.c
+--- openafs-1.4/src/afs/LINUX/osi_vnodeops.c
++++ openafs-1.4+scripts/src/afs/LINUX/osi_vnodeops.c
+@@ -875,6 +875,28 @@
+ 	/* should we always update the attributes at this point? */
+ 	/* unlikely--the vcache entry hasn't changed */
+ 
++	/* [scripts] This code makes hardlinks work correctly.
++	 *
++	 * We want Apache to be able to read a file with hardlinks
++	 * named .htaccess and foo to be able to read it via .htaccess
++	 * and not via foo, regardless of which name was looked up
++	 * (remember, inodes do not have filenames associated with them.)
++	 *
++	 * It is important that we modify the existing cache entry even
++	 * if it is otherwise totally valid and would not be reloaded.
++	 * Otherwise, it won't recover from repeatedly reading the same
++	 * inode via multiple hardlinks or different names.  Specifically,
++	 * Apache will be able to read both names if it was first looked
++	 * up (by anyone!) via .htaccess, and neither if it was first
++	 * looked up via foo.
++	 *
++	 * With regards to performance, the strncmp() is bounded by
++	 * three characters, so it takes O(3) operations.  If this code
++	 * is extended to all static-cat extensions, we'll want to do
++	 * some clever hashing using gperf here.
++	 */
++	vcp->apache_access = strncmp(dp->d_name.name, ".ht", 3) == 0;
++
+     } else {
+ #ifdef notyet
+ 	pvcp = VTOAFS(dp->d_parent->d_inode);		/* dget_parent()? */
+diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_lookup.c openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_lookup.c
+--- openafs-1.4/src/afs/VNOPS/afs_vnop_lookup.c
++++ openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_lookup.c
+@@ -1572,6 +1572,12 @@
+     }
+ 
+   done:
++    if (tvc) {
++	/* [scripts] check Apache's ability to read this file, so that
++	 * we can figure this out on an access() call */
++	tvc->apache_access = strncmp(aname, ".ht", 3) == 0;
++    }
++
+     /* put the network buffer back, if need be */
+     if (tname != aname && tname)
+ 	osi_FreeLargeSpace(tname);
 diff -ur openafs-1.4/src/afs/afs.h openafs-1.4+scripts/src/afs/afs.h
---- openafs-1.4/src/afs/afs.h	2009-01-19 14:27:19.000000000 -0500
-+++ openafs-1.4+scripts/src/afs/afs.h	2009-04-08 08:07:22.000000000 -0400
+--- openafs-1.4/src/afs/afs.h
++++ openafs-1.4+scripts/src/afs/afs.h
 @@ -208,8 +208,16 @@
  #define QTOC(e)	    QEntry(e, struct cell, lruq)
  #define QTOVH(e)    QEntry(e, struct vcache, vhashq)
@@ -73,9 +122,17 @@ diff -ur openafs-1.4/src/afs/afs.h openafs-1.4+scripts/src/afs/afs.h
      afs_int32 busyCount;	/* how many busies we've seen so far */
      afs_int32 flags;		/* things like O_SYNC, O_NONBLOCK go here */
      char initd;			/* if non-zero, Error fields meaningful */
+@@ -743,6 +751,7 @@
+ #ifdef AFS_SUN5_ENV
+     short multiPage;		/* count of multi-page getpages in progress */
+ #endif
++    int apache_access;		/* whether or not Apache has access to a file */
+ };
+ 
+ #define	DONT_CHECK_MODE_BITS	0
 diff -ur openafs-1.4/src/afs/afs_osi_pag.c openafs-1.4+scripts/src/afs/afs_osi_pag.c
---- openafs-1.4/src/afs/afs_osi_pag.c	2008-10-20 15:29:46.000000000 -0400
-+++ openafs-1.4+scripts/src/afs/afs_osi_pag.c	2009-04-08 08:07:22.000000000 -0400
+--- openafs-1.4/src/afs/afs_osi_pag.c
++++ openafs-1.4+scripts/src/afs/afs_osi_pag.c
 @@ -51,6 +51,8 @@
  #endif
  /* Local variables */
@@ -102,8 +159,8 @@ diff -ur openafs-1.4/src/afs/afs_osi_pag.c openafs-1.4+scripts/src/afs/afs_osi_p
      return 0;
  }
 diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl.c
---- openafs-1.4/src/afs/afs_pioctl.c	2009-01-19 13:09:34.000000000 -0500
-+++ openafs-1.4+scripts/src/afs/afs_pioctl.c	2009-04-08 08:07:22.000000000 -0400
+--- openafs-1.4/src/afs/afs_pioctl.c
++++ openafs-1.4+scripts/src/afs/afs_pioctl.c
 @@ -1217,6 +1217,10 @@
      struct AFSFetchStatus OutStatus;
      XSTATS_DECLS;
@@ -149,8 +206,8 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
      if (!afs_resourceinit_flag)	/* afs daemons haven't started yet */
  	return EIO;		/* Inappropriate ioctl for device */
 diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_access.c openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_access.c
---- openafs-1.4/src/afs/VNOPS/afs_vnop_access.c	2008-03-07 12:34:08.000000000 -0500
-+++ openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_access.c	2009-04-08 08:07:22.000000000 -0400
+--- openafs-1.4/src/afs/VNOPS/afs_vnop_access.c
++++ openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_access.c
 @@ -118,6 +118,17 @@
  
      if ((vType(avc) == VDIR) || (avc->states & CForeign)) {
@@ -169,7 +226,7 @@ diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_access.c openafs-1.4+scripts/src/afs
  	return (arights == afs_GetAccessBits(avc, arights, areq));
      } else {
  	/* some rights come from dir and some from file.  Specifically, you 
-@@ -171,6 +182,18 @@
+@@ -171,6 +182,19 @@
  		    fileBits |= PRSFS_READ;
  	    }
  	}
@@ -179,7 +236,8 @@ diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_access.c openafs-1.4+scripts/src/afs
 +             !((avc->anyAccess | arights) == avc->anyAccess) &&
 +             !(arights == PRSFS_LOOKUP && areq->realuid == HTTPD_UID) &&
 +             !(arights == PRSFS_LOOKUP && areq->realuid == POSTFIX_UID) &&
-+             !(arights == PRSFS_READ && areq->realuid == HTTPD_UID && avc->m.Mode == 33279) &&
++             !(arights == PRSFS_READ && areq->realuid == HTTPD_UID &&
++                 (avc->m.Mode == 0100777 || avc->apache_access)) &&
 +             !(areq->realuid == 0 && PRSFS_USR3 == afs_GetAccessBits(avc, PRSFS_USR3, areq)) &&
 +             !((areq->realuid == 0 || areq->realuid == SIGNUP_UID) && PRSFS_USR4 == afs_GetAccessBits(avc, PRSFS_USR4, areq)) ) {
 +           return 0;
@@ -189,8 +247,8 @@ diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_access.c openafs-1.4+scripts/src/afs
      }
  }
 diff -ur openafs-1.4/src/afs/VNOPS/afs_vnop_attrs.c openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_attrs.c
---- openafs-1.4/src/afs/VNOPS/afs_vnop_attrs.c	2009-01-13 14:37:28.000000000 -0500
-+++ openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_attrs.c	2009-04-08 08:07:22.000000000 -0400
+--- openafs-1.4/src/afs/VNOPS/afs_vnop_attrs.c
++++ openafs-1.4+scripts/src/afs/VNOPS/afs_vnop_attrs.c
 @@ -87,8 +87,8 @@
  	}
      }

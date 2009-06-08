@@ -20,7 +20,7 @@
 
 upstream_yum	= krb5 httpd openssh php
 upstream	= openafs $(upstream_yum)
-oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i386 whoisd mit-zephyr nss-ldapd scripts-base
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i586 whoisd mit-zephyr nss-ldapd nss-ldapd.i586 scripts-base
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
@@ -126,11 +126,11 @@ all:
 
 $(oursrc): rpmbuild_args += --define 'scriptsversion $(shell svnversion ${oursrcdir}/$** | tr ':' '_')'
 
-$(filter %.i386,$(oursrc)): %.i386: setup
+$(filter %.i586,$(oursrc)): %.i586: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	setarch i386 rpmbuild $(rpmbuild_args) --target=i386 --define="_lib lib" -bb ${tmp_specs}/$**.spec
+	setarch i586 rpmbuild $(rpmbuild_args) --target=i586 --define="_lib lib" -bb ${tmp_specs}/$**.spec
 
-$(filter-out %.i386,$(oursrc)): %: setup
+$(filter-out %.i586,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/$**.spec
 
@@ -179,7 +179,7 @@ frob-openafs:
 
 # The following packages are needed for our packages
 basic-deps	= kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstation glibc-devel.i586 glibc-devel libtool libgcc.i586
-oursrc-deps	= hesinfo openldap-clients
+oursrc-deps	= hesinfo openldap-clients openldap-devel.i586
 httpdmods-deps	= httpd-devel
 httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel
 krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel texinfo-tex texlive-latex

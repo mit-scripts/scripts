@@ -9,7 +9,7 @@
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 myorigin = scripts.mit.edu
-mydestination = scripts.mit.edu, scripts, $myhostname, scripts-test.mit.edu, scripts-test, localhost
+mydestination = scripts.mit.edu, scripts, $myhostname, scripts-test.mit.edu, scripts-test, scripts-vhosts.mit.edu, scripts-vhosts, localhost
 relayhost =
 mynetworks = 127.0.0.0/8
 mailbox_command = /usr/bin/procmail -t -a "${EXTENSION}" ~/mail_scripts/procmailrc
