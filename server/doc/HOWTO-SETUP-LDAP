@@ -11,6 +11,8 @@ To set up a new LDAP server:
 - yum install ldapvi
 - /sbin/service dirsrv start
 - Apply ./fedora-ds-enable-ssl-and-kerberos.diff manually
+- Also set nsslapd-ldapifilepath: /var/run/dirsrv/slapd-scripts.socket
+  and nsslapd-ldapilisten: on, otherwise ldapi won't work.
 - /sbin/service dirsrv stop
 - Add the scripts schemas to /var/lib/dirsrv/slapd-scripts
 - wget http://web.mit.edu/geofft/Public/scripts-ca.pem
