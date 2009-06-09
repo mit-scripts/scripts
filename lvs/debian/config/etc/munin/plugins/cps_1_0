@@ -240,6 +240,11 @@ sub ipvs
 			$cvip  = $2;
 			$cport = $3;
 		}
+		elsif (/^FWM\s+([\d]+)\s/)
+		{
+		    $cvip = $1;
+		    $cport = 0;
+		}
 		elsif (/^\s+->\s+([^:]+):(\S+)\s+(\d+)G\s+/)
 		{
 			$ipvs->{$cvip}->{$cport}->{$1} += ($3*1000000000);
