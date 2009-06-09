@@ -202,6 +202,10 @@ if [ $boot = 1 ]; then
 # # mkdir /tmp/sessions
 # # chmod 01777 /tmp/sessions
 
+# Ensure that fcgid isn't broken:
+chmod 755 /var/run/httpd
+chmod 755 /var/run/httpd/mod_fcgid
+
 # Reboot the machine to restore a consistent state, in case you
 # changed anything.
 
