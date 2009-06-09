@@ -1,21 +1,27 @@
 #!/bin/sh
 ## Joe Presbrey <presbrey@mit.edu>
+## Quentin Smith <quentin@mit.edu>
 ## SIPB Scripts LVS Firewall marks
 
 iptables -F -t mangle
 
+# Create a table for regular scripts hosts
+iptables -t mangle -N scripts 2>/dev/null || :
+
+# scripts-vhosts.mit.edu
+iptables -A PREROUTING -t mangle -d 18.181.0.46 -j scripts
 # scripts.mit.edu
-iptables -A PREROUTING -t mangle -m tcp -m multiport -p tcp -d 18.181.0.46/31 --dports 25,80,443,444 -j MARK --set-mark 2
-iptables -A PREROUTING -t mangle -m mark --mark 0 -d 18.181.0.46/31 -j MARK --set-mark 1
-
-# scripts-new.mit.edu
-iptables -A PREROUTING -t mangle -m tcp -m multiport -p tcp -d 18.181.0.43 --dports 25,80,443,444 -j MARK --set-mark 2
-iptables -A PREROUTING -t mangle -m mark --mark 0 -d 18.181.0.43 -j MARK --set-mark 1
-
+iptables -A PREROUTING -t mangle -d 18.181.0.43 -j scripts
 # scripts-cert.mit.edu
-iptables -A PREROUTING -t mangle -m tcp -m multiport -p tcp -d 18.181.0.50/31 --dports 25,80,443,444 -j MARK --set-mark 2
-iptables -A PREROUTING -t mangle -m mark --mark 0 -d 18.181.0.50/31 -j MARK --set-mark 1
+iptables -A PREROUTING -t mangle -d 18.181.0.50 -j scripts
 
-# webzephyr.mit.edu
-iptables -A PREROUTING -t mangle -m tcp -m multiport -p tcp -d 18.181.0.49 --dports 80,443 -j MARK --set-mark 2
+# Send Apache-bound traffic to FWM 2 (load-balanced)
+iptables -A scripts -t mangle -m tcp -m multiport -p tcp --dports 80,443,444 -j MARK --set-mark 2
+# Send SMTP-bound traffic to FWM 3 (load-balanced)
+iptables -A scripts -t mangle -m tcp -p tcp --dport 25 -j MARK --set-mark 3
+# Send everything else to FWM 1 (primary)
+iptables -A scripts -t mangle -m mark --mark 0 -j MARK --set-mark 1
+
+# webzephyr.mit.edu is special because its SMTP needs to always go to the primary (FWM 1)
+iptables -A PREROUTING -t mangle -m tcp -m multiport -p tcp -d 18.181.0.49 --dports 80,443,444 -j MARK --set-mark 2
 iptables -A PREROUTING -t mangle -m mark --mark 0 -d 18.181.0.49 -j MARK --set-mark 1
