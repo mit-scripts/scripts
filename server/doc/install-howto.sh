@@ -137,6 +137,11 @@ if [ $boot = 1 ]; then
 # server/doc/rpm_snapshot.  (Note that this is only a snapshot, and not
 # all packages may in fact be in use.)
 
+# Check which packages are installed on your new server that are not
+# in the snapshot, and remove ones that aren't needed for some reason
+# on the new machine.  Otherwise, aside from bloat, you may end up
+# with undesirable things for security, like sendmail.
+
 # Install the full list of perl modules that users expect to be on the
 # scripts.mit.edu servers.
 # - export PERL_MM_USE_DEFAULT=1
@@ -148,7 +153,7 @@ if [ $boot = 1 ]; then
 # On another server, run:
 # perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u | perl -ne 'chomp; print "notest install $_\n" if system("rpm -q --whatprovides \"perl($_)\" >/dev/null 2>/dev/null")' > /mit/scripts/config/perl-packages.txt
 # Then on the server you're installing,
-    cat perl-packages.txt | perl -MCPAN -e shell
+#    cat perl-packages.txt | perl -MCPAN -e shell
 
 # Install the Python eggs and Ruby gems and PEAR/PECL doohickeys that are on
 # the other scripts.mit.edu servers and do not have RPMs.
@@ -161,8 +166,17 @@ if [ $boot = 1 ]; then
 # - Look at `pear list` for Pear fruits (or whatever they're called).
 #   Yet again, 'yum search' for RPMs before resorting to 'pear install'.  Note
 #   that for things in the beta repo, you'll need 'pear install package-beta'.
+# - Look at `pecl list` for PECL things.  'yum search', and if you must,
+#   'pecl install' needed items.
 
 # echo 'import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.6/site-packages"))' > /usr/lib/python2.6/site-packages/00scripts-home.pth
+
+# Build and install the scripts php module that enhances error logging info
+# XXX This thing really ought to be packaged
+# cp -r /srv/repository/server/common/oursrc/php_scripts /root
+# cd /root/php_scripts
+# ./build.sh
+# cp test/modules/scripts.so /usr/lib64/php/modules
 
 # Install the credentials.  There are a lot of things to remember here:
 #   o You probably installed the machine keytab long ago
