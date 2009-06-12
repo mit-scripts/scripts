@@ -1,5 +1,5 @@
---- openafs.spec.orig	2009-06-06 21:06:18.000000000 -0400
-+++ openafs.spec	2009-06-06 21:07:33.000000000 -0400
+--- openafs.spec.orig	2009-06-03 04:16:03.000000000 -0400
++++ openafs.spec	2009-06-12 02:05:57.000000000 -0400
 @@ -8,7 +8,7 @@
  # for beta/rc releases make pkgrel 0.X.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
@@ -9,7 +9,7 @@
  
  %if %{?osvers:0}%{!?osvers:1}
  %define osvers 1
-@@ -261,6 +261,13 @@
+@@ -261,6 +261,14 @@
  %endif
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
@@ -19,11 +19,12 @@
 +Patch1003: openafs-localcsdb.patch
 +Patch1004: openafs-delta-dprintf-rename-20090427.patch
 +Patch1005: openafs-numsysnames.patch
++Patch1006: openafs-delta-linux26-defer-cred-changing-20090511.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -343,6 +350,7 @@
+@@ -343,6 +351,7 @@
  %if %{build_userspace}
  
  %package client
@@ -31,7 +32,7 @@
  Requires: binutils, openafs = %{PACKAGE_VERSION}
  
  %if %{fedorakmod}
-@@ -403,6 +411,7 @@
+@@ -403,6 +412,7 @@
  
  %if %{build_authlibs}
  %package authlibs
@@ -39,7 +40,7 @@
  Summary: OpenAFS authentication shared libraries
  Group: Networking/Filesystems
  
-@@ -419,6 +428,7 @@
+@@ -419,6 +429,7 @@
  %endif
  
  %package authlibs-devel
@@ -47,7 +48,7 @@
  %if %{build_authlibs}
  Requires: openafs-authlibs = %{PACKAGE_VERSION}
  %endif
-@@ -437,6 +447,7 @@
+@@ -437,6 +448,7 @@
  libraries.
  
  %package devel
@@ -55,7 +56,7 @@
  Summary: OpenAFS Development Libraries and Headers
  Group: Development/Filesystems
  
-@@ -465,6 +476,7 @@
+@@ -465,6 +477,7 @@
  administrators.
  
  %package kernel-source
@@ -63,7 +64,7 @@
  Summary: OpenAFS Kernel Module source tree
  Group: Networking/Filesystems
  Provides: openafs-kernel = %{PACKAGE_VERSION}
-@@ -514,6 +526,7 @@
+@@ -514,6 +527,7 @@
  
  %if %{krb5support}
  %package krb5
@@ -71,7 +72,7 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{PACKAGE_VERSION}
  Group: Networking/Filesystems
-@@ -540,7 +553,7 @@
+@@ -540,7 +554,7 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
@@ -80,7 +81,7 @@
  
  %else
  
-@@ -699,6 +712,12 @@
+@@ -699,6 +713,13 @@
  
  # Patch openafs to build a kernel module named "openafs" instead of "libafs"
  %patch0 -p1 -b .kmod26
@@ -90,6 +91,7 @@
 +%patch1003 -p1 -b .localcsdb
 +%patch1004 -p1 -b .dprintf
 +%patch1005 -p1 -b .numsysnames
++%patch1006 -p1 -b .defercredchanging
  
  ##############################################################################
  #
