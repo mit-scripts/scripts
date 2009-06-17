@@ -19,6 +19,8 @@ iptables -A PREROUTING -t mangle -d 18.181.0.50 -j scripts
 iptables -A scripts -t mangle -m tcp -m multiport -p tcp --dports 80,443,444 -j MARK --set-mark 2
 # Send SMTP-bound traffic to FWM 3 (load-balanced)
 iptables -A scripts -t mangle -m tcp -p tcp --dport 25 -j MARK --set-mark 3
+# Send finger-bound traffic to FWM 255 (the LVS director itself)
+iptables -A scripts -t mangle -m tcp -p tcp --dport 79 -j MARK --set-mark 255
 # Send everything else to FWM 1 (primary)
 iptables -A scripts -t mangle -m mark --mark 0 -j MARK --set-mark 1
 
