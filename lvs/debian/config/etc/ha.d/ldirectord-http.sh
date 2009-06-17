@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ulimit -v 1024
+
 # Read and ignore the request
 line=foo
 while [ -n "$line" ]; do
