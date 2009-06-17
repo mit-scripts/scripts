@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ulimit -v 10240
+
 export LINES=1000
 export COLUMNS=80
 docnagios() {
