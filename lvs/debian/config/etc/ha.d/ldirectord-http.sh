@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ulimit -v 1024
+ulimit -v 10240
 
 # Read and ignore the request
 line=foo
