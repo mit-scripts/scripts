@@ -8,6 +8,8 @@ source_server="old-faithful.mit.edu"
 
 boot=${1:$(cat /scripts-boot-count)}
 
+branch=branches/fc11-dev
+
 doreboot() {
     echo $(( $boot + 1 )) > /scripts-boot-count;
     shutdown -r now "Rebooting for step $(cat /scripts-boot-count)"
@@ -52,7 +54,7 @@ if [ $boot = 1 ]; then
     YUM install -y subversion
 
     cd /srv
-    svn co svn://$source_server/ repository
+    svn co svn://$source_server/$branch repository
 
     sed -i 's/^(# *)*store-passwords.*/store-passwords = no/' /root/.subversion/config
     sed -i 's/^(# *)*store-auth-creds.*/store-auth-creds = no/' /root/.subversion/config
@@ -64,6 +66,7 @@ if [ $boot = 1 ]; then
 
 # Run "make install-deps" to install various prereqs.  Nonstandard
 # deps are in /mit/scripts/rpm.
+    YUM install -y make
     make install-deps
 
 # Install bind
@@ -71,49 +74,89 @@ if [ $boot = 1 ]; then
 
 # Check out the scripts /etc configuration
     cd /root
-    svn co svn://scripts.mit.edu/server/fedora/config/etc etc
+    svn co svn://scripts.mit.edu/$branch/server/fedora/config/etc etc
+    # backslash to make us not use the alias
     \cp -a etc /
 
+# NOTE: You will have just lost DNS resolution and the abilit
+# to do password SSH in
+
+    service named start
+    chkconfig named on
+
+# XXX: This sometimes doesn't exist, but it really sucks if it
+# does exist. So check for it.
 # yum remove nss_ldap, because nss-ldapd conflicts with it
+
+# In the case of the Kerberos libraries, you'll be told that
+# there are conflicting files with the 64-bit versions of the packages,
+# which we scriptsify.  You'll have to use --force to install those
+# rpms despite the conflicts.  After doing that, you may want to
+# install the corresponding 64-bit scriptsified versions again, just
+# to be safe in case the 32-bit versions overwrite files that differ.
+# When you try this, it will complain that you already have the same
+# version installed; again, you'll need to use --force to do it anyway.
+
+# We need yumdownloader to force some RPMs
+    # XXX: This might be wrong. Sanity check what packages ou
+    # have when done
+    YUM install -y yum-utils
+    yumdownloader krb5-libs
+    # XXX: These version numbers are hardcoded, need some cli-fu to generalize
+    rpm -i krb5-libs-1.6.3-20.fc11.i586.rpm
+    rpm -U --force krb5-libs-1.6.3-20.fc11.scripts.1138.x86_64.rpm
 
 # env NSS_NONLOCAL_IGNORE=1 yum install scripts-base
     YUM install -y scripts-base
 
-# Rebuild mit-zephyr on a 32-bit machine, like the one at Joe's home.
+# Install mit-zephyr
+    YUM install -y mit-zephyr
 
 # Remember to set NSS_NONLOCAL_IGNORE=1 anytime you're setting up
 # anything, e.g. using yum. Otherwise useradd will query LDAP in a stupid way
-# that makes it hang forever.
-
-# Install and configure bind
-# - env NSS_NONLOCAL_IGNORE=1 yum install bind
-# - chkconfig named on
-# - service named start
+# that makes it hang forever. (This is why we're using YUM, not yum)
 
 # Reload the iptables config to take down the restrictive firewall 
-# service iptables restart
+    service iptables restart
 
 # Copy over root's dotfiles from one of the other machines.
+# Perhaps a useful change is to remove the default aliases
 
 # Replace rsyslog with syslog-ng by doing:
-# # rpm -e --nodeps rsyslog
-# # yum install syslog-ng
+    rpm -e --nodeps rsyslog
+    YUM install -y syslog-ng
 
-# Install various dependencies of the scripts system, including syslog-ng,
-# glibc-devel.i586, python-twisted-core, mod_fcgid, nrpe, nagios-plugins-all.
+# Install various dependencies of the scripts system, including
+# glibc-devel.i586 (ezyang: already installed for me),
+# python-twisted-core (ditto), mod_fcgid, nrpe, nagios-plugins-all.
+    YUM install -y mod_fcgid
+    YUM install -y nrpe
+    YUM install -y nagios-plugins-all
 
 # Disable NetworkManager with chkconfig NetworkManager off. Configure
 # networking on the front end and back end, and the routing table to send
 # traffic over the back end. Make sure that chkconfig reports "network" on, so
 # that the network will still be configured at next boot.
+# ezyang: For me, NetworkManager was not installed at this point, and
+# we had already done the basic config for networking front end and
+# back end (because I wanted ssh access, and not just conserver access)
 
 # Fix the openafs /usr/vice/etc <-> /etc/openafs mapping by changing
 #  /usr/vice/etc/cacheinfo to contain:
 #       /afs:/usr/vice/cache:10000000
 # Also fix ThisCell to contain athena.mit.edu in both directories
+    echo "/afs:/usr/vice/cache:10000000" > /usr/vice/etc/cacheinfo
+    # ezyang: ThisCell on b-k and c-w don't have anything special
+    # written here
 
 # Figure out why Zephyr isn't working. Most recently, it was because there
 # was a 64-bit RPM installed; remove it and install Joe's 32-bit one
+    YUM erase -y mit-zephyr
+    # mit-zephyr has a spurious dependency on mit-krb-config
+    yumdownloader mit-zephyr.i386
+    # if deps change, this breaks
+    YUM install -y libXaw.i586 libXext.i586 libXmu.i586 ncurses-libs.i586 readline.i58
+    rpm -i --nodeps mit-zephyr-2.1-6-linux.i386.rpm
 
 # Install the athena-base, athena-lprng, and athena-lprng-misc RPMs
 # from the Athena 9 build (these are present in our yum repo).  Note
@@ -122,25 +165,45 @@ if [ $boot = 1 ]; then
 # really.  Before doing this, run it without --nodeps and arrange to
 # install the rest of the things it really does depend on.  This will
 # include a bunch of 32-bit rpms; go ahead and install the .i586 versions
-# of them.  In the case of the Kerberos libraries, you'll be told that
-# there are conflicting files with the 64-bit versions of the packages,
-# which we scriptsify.  You'll have to use --force to install those
-# rpms despite the conflicts.  After doing that, you may want to
-# install the corresponding 64-bit scriptsified versions again, just
-# to be safe in case the 32-bit versions overwrite files that differ.
-# When you try this, it will complain that you already have the same
-# version installed; again, you'll need to use --force to do it anyway.
-# Yuck.
+# of them.
+    YUM install -y athena-base
+    YUM install -y athena-lprng
+    yumdownloader athena-lprng-misc
+    # ezyang: I couldn't find any deps for this that existed in the repos
+    # You might get a "find: `/usr/athena/info': No such file or directory"
+    # error; this is fine
+    rpm -i --nodeps athena-lprng-misc-9.4-0.i386.rpm
 
 # Install the full list of RPMs that users expect to be on the
-# scripts.mit.edu servers.  See server/doc/rpm and
-# server/doc/rpm_snapshot.  (Note that this is only a snapshot, and not
-# all packages may in fact be in use.)
+# scripts.mit.edu servers.
+
+# ezyang: Running the below I got file conflicts. To fix (since I had
+# botched steps above), I manually compared package lists and installed
+# them.  If you've done the krb5 setup originally correctly, then
+# write down what you had to do here.
+    yumdownloader krb5-devel
+    rpm -i --force krb5-devel-1.6.3-20.fc11.i586.rpm
+    rpm -U --force krb5-devel-1.6.3-20.fc11.scripts.1138.x86_64.rpm
+    yumdownloader krb5-server
+    rpm -i --force krb5-server-1.6.3-20.fc11.scripts.1138.x86_64.rpm
+
+
+# on another server, run:
+rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
+# arrange for packages.txt to be passed to the server, then run:
+    # notice that yum is not capitalized
+    # Also notice skip-broken
+    NSS_NONLOCAL_IGNORE=1 cat packages.txt | xargs yum install -y --skip-broken
 
 # Check which packages are installed on your new server that are not
 # in the snapshot, and remove ones that aren't needed for some reason
 # on the new machine.  Otherwise, aside from bloat, you may end up
 # with undesirable things for security, like sendmail.
+    rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > newpackages.txt
+    diff -u packages.txt newpackages.txt  | less
+    # if all went well, you'll probably see multiple kernel versions
+    # as the only diff
+    # ezyang: I got exim installed as another package
 
 # Install the full list of perl modules that users expect to be on the
 # scripts.mit.edu servers.
