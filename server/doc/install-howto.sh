@@ -217,29 +217,50 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 # perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u | perl -ne 'chomp; print "notest install $_\n" if system("rpm -q --whatprovides \"perl($_)\" >/dev/null 2>/dev/null")' > /mit/scripts/config/perl-packages.txt
 # Then on the server you're installing,
 #    cat perl-packages.txt | perl -MCPAN -e shell
+    export PERL_MM_USE_DEFAULT=1
+    # XXX: Some interactive gobbeldygook
+    cpan
+        o conf prerequisites_policy follow
+        o conf commit
+# on a reference server
+perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u | perl -ne 'chomp; print "notest install $_\n" if system("rpm -q --whatprovides \"perl($_)\" >/dev/null 2>/dev/null")' > perl-packages.txt
+# arrange for perl-packages.txt to be transferred to server
+    cat perl-packages.txt | perl -MCPAN -e shell
 
 # Install the Python eggs and Ruby gems and PEAR/PECL doohickeys that are on
 # the other scripts.mit.edu servers and do not have RPMs.
+# The general mode of operation will be to run the "list" command
+# on both servers, see what the differences are, check if those diffs
+# are packaged up as rpms, and install them (rpm if possible, native otherwise)
 # - Look at /usr/lib/python2.6/site-packages and
 #           /usr/lib64/python2.6/site-packages for Python eggs and modules.
+#   There will be a lot of gunk that was installed from packages;
+#   easy-install.pth will tell you what was easy_installed.
 #   First use 'yum search' to see if the relevant package is now available
 #   as an RPM, and install that if it is.  If not, then use easy_install.
 # - Look at `gem list` for Ruby gems.
 #   Again, use 'yum search' and prefer RPMs, but failing that, 'gem install'.
+#       ezyang: rspec-rails depends on rspec, and will override the Yum
+#       package, so... don't use that RPM yet
 # - Look at `pear list` for Pear fruits (or whatever they're called).
 #   Yet again, 'yum search' for RPMs before resorting to 'pear install'.  Note
 #   that for things in the beta repo, you'll need 'pear install package-beta'.
+#   (you might get complaints about the php_scripts module; ignore them)
 # - Look at `pecl list` for PECL things.  'yum search', and if you must,
 #   'pecl install' needed items.
+    # Automating this... will require a lot of batonning between
+    # the servers. Probably best way to do it is to write an actual
+    # script.
 
-# echo 'import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.6/site-packages"))' > /usr/lib/python2.6/site-packages/00scripts-home.pth
+# Setup some Python config
+    echo 'import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.6/site-packages"))' > /usr/lib/python2.6/site-packages/00scripts-home.pth
 
 # Build and install the scripts php module that enhances error logging info
 # XXX This thing really ought to be packaged
-# cp -r /srv/repository/server/common/oursrc/php_scripts /root
-# cd /root/php_scripts
-# ./build.sh
-# cp test/modules/scripts.so /usr/lib64/php/modules
+    cp -r /srv/repository/server/common/oursrc/php_scripts /root
+    cd /root/php_scripts
+    ./build.sh
+    cp test/modules/scripts.so /usr/lib64/php/modules
 
 # Install the credentials.  There are a lot of things to remember here:
 #   o You probably installed the machine keytab long ago
@@ -270,18 +291,19 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 # boot. Run chkconfig to make sure the set of services to be run is
 # correct.
 
-# cd /etc/postfix; postmap virtual
-# Otherwise postfix will appear to work, but actually not deliver mail
+# Postfix doesn't actually deliver mail; fix this
+    cd /etc/postfix
+    postmap virtual
 
 # Run fmtutil-sys --all, which does something that makes TeX work.
 
 # Ensure that PHP isn't broken:
-# # mkdir /tmp/sessions
-# # chmod 01777 /tmp/sessions
+    mkdir /tmp/sessions
+    chmod 01777 /tmp/sessions
 
 # Ensure that fcgid isn't broken:
-chmod 755 /var/run/httpd
-chmod 755 /var/run/httpd/mod_fcgid
+    chmod 755 /var/run/httpd
+    chmod 755 /var/run/httpd/mod_fcgid
 
 # Reboot the machine to restore a consistent state, in case you
 # changed anything.
