@@ -8,7 +8,7 @@ source_server="old-faithful.mit.edu"
 
 boot=${1:$(cat /scripts-boot-count)}
 
-branch=branches/fc11-dev
+# XXX: let 'branch' be the current svn branch you are on
 
 doreboot() {
     echo $(( $boot + 1 )) > /scripts-boot-count;
@@ -103,8 +103,8 @@ if [ $boot = 1 ]; then
     YUM install -y yum-utils
     yumdownloader krb5-libs
     # XXX: These version numbers are hardcoded, need some cli-fu to generalize
-    rpm -i krb5-libs-1.6.3-20.fc11.i586.rpm
-    rpm -U --force krb5-libs-1.6.3-20.fc11.scripts.1138.x86_64.rpm
+    rpm -i krb5-libs-*.i586.rpm
+    rpm -U --force krb5-libs-*.scripts.1138.x86_64.rpm
 
 # env NSS_NONLOCAL_IGNORE=1 yum install scripts-base
     YUM install -y scripts-base
@@ -183,10 +183,10 @@ if [ $boot = 1 ]; then
 # them.  If you've done the krb5 setup originally correctly, then
 # write down what you had to do here.
     yumdownloader krb5-devel
-    rpm -i --force krb5-devel-1.6.3-20.fc11.i586.rpm
-    rpm -U --force krb5-devel-1.6.3-20.fc11.scripts.1138.x86_64.rpm
+    rpm -i --force krb5-devel-*.i586.rpm
+    rpm -U --force krb5-devel-*.scripts.1138.x86_64.rpm
     yumdownloader krb5-server
-    rpm -i --force krb5-server-1.6.3-20.fc11.scripts.1138.x86_64.rpm
+    rpm -i --force krb5-server-*.scripts.1138.x86_64.rpm
 
 
 # on another server, run:
@@ -296,7 +296,7 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #            BASE dc=scripts,dc=mit,dc=edu
 #   o /etc/httpd/conf.d/vhost_ldap.conf
 #       replace: VhostLDAPUrl ****
-#       with: VhostLDAPUrl "ldap://18.181.0.46/ou=VirtualHosts,dc=scripts,dc=mit,dc=edu"
+#       with: VhostLDAPUrl "ldap://scripts.mit.edu/ou=VirtualHosts,dc=scripts,dc=mit,dc=edu"
 # to use scripts.mit.edu instead of localhost.
 # XXX: someone should write sed scripts to do this
 
@@ -330,8 +330,9 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 
 # Ensure that fcgid isn't broken:
     chmod 755 /var/run/httpd
+    # ezyang: The below didn't exist for me
     chmod 755 /var/run/httpd/mod_fcgid
-    # ezyang: The latter didn't exist for me
+    chmod 755 /var/run/mod_fcgid
 
 # Fix etc by making sure none of our config files got overwritten
     cd /etc
