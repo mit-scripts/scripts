@@ -125,6 +125,7 @@ if [ $boot = 1 ]; then
 # Replace rsyslog with syslog-ng by doing:
     rpm -e --nodeps rsyslog
     YUM install -y syslog-ng
+    chkconfig syslog-ng on
 
 # Install various dependencies of the scripts system, including
 # glibc-devel.i586 (ezyang: already installed for me),
@@ -263,26 +264,45 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
     cp test/modules/scripts.so /usr/lib64/php/modules
 
 # Install the credentials.  There are a lot of things to remember here:
+#   o This will be different if you're setting up our build/update server.
 #   o You probably installed the machine keytab long ago
+    ls -l /etc/krb5.keytab
 #   o Use ktutil to combine the host/scripts.mit.edu and
 #     host/scripts-vhosts.mit.edu keys with host/this-server.mit.edu in
 #     the keytab.  Do not use 'k5srvutil change' on the combined keytab
-#     or you'll break the other servers.
+#     or you'll break the other servers. (real servers only)
 #   o The daemon.scripts keytab
-#   o The SSL cert private key
-#   o The LDAP password for the signup process
-#   o The SQL password for the signup process
-#   o The LDAP keytab for this server, which will be used later
-#   o Replace the ssh host keys with the ones common to all scripts servers
-#   o You'll install an LDAP certificate signed by the scripts CA later
+    ls -l /etc/daemon.keytab
+#   o The SSL cert private key (real servers only)
+#   o The LDAP password for the signup process (real servers only)
+#   o The SQL password for the signup process (real servers only)
+#   o The LDAP keytab for this server, which will be used later (real servers only)
+#   o Replace the ssh host keys with the ones common to all scripts servers (real servers only)
+#   o You'll install an LDAP certificate signed by the scripts CA later (real servers only)
 #   o Make sure root's .k5login is correct
-#   o Make sure logview's .k5login is correct
+    cat /root/.k5login
+#   o Make sure logview's .k5login is correct (real servers only)
 
 # If you are setting up a test server, pay attention to
 # /etc/sysconfig/network-scripts and do not bind scripts' IP address.
-# You will also need to modify /etc/ldap.conf, /etc/nss-ldapd.conf,
-# /etc/openldap/ldap.conf, and /etc/httpd/conf.d/vhost_ldap.conf to
-# use scripts.mit.edu instead of localhost.
+# You will also need to modify:
+#   o /etc/ldap.conf
+#       add: host scripts.mit.edu
+#   o /etc/nss-ldapd.conf
+#       replace: uri *****
+#       with: uri ldap://scripts.mit.edu/
+#   o /etc/openldap/ldap.conf
+#       add: URI ldap://scripts.mit.edu/
+#            BASE dc=scripts,dc=mit,dc=edu
+#   o /etc/httpd/conf.d/vhost_ldap.conf
+#       replace: VhostLDAPUrl ****
+#       with: VhostLDAPUrl "ldap://18.181.0.46/ou=VirtualHosts,dc=scripts,dc=mit,dc=edu"
+# to use scripts.mit.edu instead of localhost.
+# XXX: someone should write sed scripts to do this
+
+# If you are setting up a test server, afsagent's cronjob will attempt
+# to be renewing with the wrong credentials (daemon.scripts). Change this:
+    vim /home/afsagent/renew # replace all mentions of daemon.scripts.mit.edu
 
 # Install fedora-ds-base and set up replication (see ./HOWTO-SETUP-LDAP
 #   and ./fedora-ds-enable-ssl-and-kerberos.diff).
@@ -290,12 +310,19 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 # Make the services dirsrv, nslcd, nscd, postfix, and httpd start at
 # boot. Run chkconfig to make sure the set of services to be run is
 # correct.
+    chkconfig dirsrv on
+    chkconfig nslcd on
+    chkconfig nscd on
+    chkconfig postfix on
+    chkconfig httpd on
 
 # Postfix doesn't actually deliver mail; fix this
     cd /etc/postfix
     postmap virtual
 
 # Run fmtutil-sys --all, which does something that makes TeX work.
+    fmtutil-sys --all
+    # ezyang: I got errors on xetex
 
 # Ensure that PHP isn't broken:
     mkdir /tmp/sessions
@@ -304,11 +331,31 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 # Ensure that fcgid isn't broken:
     chmod 755 /var/run/httpd
     chmod 755 /var/run/httpd/mod_fcgid
+    # ezyang: The latter didn't exist for me
+
+# Fix etc by making sure none of our config files got overwritten
+    cd /etc
+    svn status | grep M
+    # ezyang: I had to revert krb5.conf, nsswitch.conf and sysconfig/openafs
 
 # Reboot the machine to restore a consistent state, in case you
 # changed anything.
+    # ezyang: When I rebooted, the following things happened:
+    #   o Starting kdump failed (this is ok)
+    #   o postfix mailbombed us
+    #   o firstboot configuration screen popped up (ignored; manually will do
+    #     chkconfig after the fact)
 
 # (Optional) Beat your head against a wall.
 
 # Possibly perform other steps that I've neglected to put in this
 # document.
+#   o In the first install of not-backward, ThisCell got clobbered, resulting
+#     in trying to get tickets from openafs.org. Not sure when it got
+#     clobbered -- ezyang
+#   o For some reason, syslog-ng wasn't turning on automatically, so we weren't
+#     getting spew
+
+# Some info about changing hostnames: it appears to be in:
+#   o /etc/sysconfig/network
+#   o your lvm thingies; probably don't need to edit
