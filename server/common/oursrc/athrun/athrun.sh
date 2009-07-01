@@ -12,12 +12,12 @@ case $# in
   exit 1
   ;;
 1)
-  exec "/mit/$1/bin/$1"
+  exec "/mit/$1/arch/@sys/bin/$1"
   ;;
 *)
   locker=$1
   program=$2
   shift 2;
-  exec "/mit/$locker/bin/$program" "$@"
+  exec "/mit/$locker/arch/@sys/bin/$program" "$@"
   ;;
 esac
