@@ -1,0 +1,14 @@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+
+all-local:
+
+install:
+	install -p -m755 -D athrun.sh $(DESTDIR)$(bindir)/athrun
+
+clean:
+
+distclean: clean
+	rm -f configure config.* Makefile
+	rm -rf auto*.cache
