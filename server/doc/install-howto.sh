@@ -121,6 +121,12 @@ if [ $boot = 1 ]; then
 
 # Copy over root's dotfiles from one of the other machines.
 # Perhaps a useful change is to remove the default aliases
+    # On 2009-07-01, the dotfiles to transfer where:
+    #   .bashrc .ldapvirc .screenrc .ssh (<- directory) .vimrc
+    # Trying to scp from server to server won't work, as scp
+    # will attempt to negotiate a server-to-server connection.
+    # Instead, scp to your trusted machine as a temporary file,
+    # and then push to the other server
 
 # Replace rsyslog with syslog-ng by doing:
     rpm -e --nodeps rsyslog
