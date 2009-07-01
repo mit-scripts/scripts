@@ -30,4 +30,4 @@ queue_directory = /var/spool/postfix
 mail_owner = postfix
 virtual_alias_maps = hash:/etc/postfix/virtual, regexp:/etc/postfix/virtual_re
 data_directory = /var/lib/postfix
-authorized_submit_users = !reuter, static:all
+authorized_submit_users = !/etc/postfix/blocked_users, static:all
