@@ -52,10 +52,12 @@ if [ $boot = 1 ]; then
     YUM install -y subversion
 
     cd /srv
-    svn co svn://$source_server/ repository
+    svn co svn://$source_server/trunk repository
 
     sed -i 's/^(# *)*store-passwords.*/store-passwords = no/' /root/.subversion/config
     sed -i 's/^(# *)*store-auth-creds.*/store-auth-creds = no/' /root/.subversion/config
+# The same tweaks should be made on /home/scripts-build/.subversion/config
+# once it exists (do something with svn as scripts-build)
 
     chown -R scripts-build /srv/repository
 
@@ -71,7 +73,7 @@ if [ $boot = 1 ]; then
 
 # Check out the scripts /etc configuration
     cd /root
-    svn co svn://scripts.mit.edu/server/fedora/config/etc etc
+    svn co svn://scripts.mit.edu/trunk/server/fedora/config/etc etc
     \cp -a etc /
 
 # yum remove nss_ldap, because nss-ldapd conflicts with it
@@ -141,6 +143,13 @@ if [ $boot = 1 ]; then
 # in the snapshot, and remove ones that aren't needed for some reason
 # on the new machine.  Otherwise, aside from bloat, you may end up
 # with undesirable things for security, like sendmail.
+
+# Check out the scripts /usr/vice/etc configuration
+    cd /root
+    mkdir vice
+    cd vice
+    svn co svn://scripts.mit.edu/trunk/server/fedora/config/usr/vice/etc etc
+    \cp -a etc /usr/vice
 
 # Install the full list of perl modules that users expect to be on the
 # scripts.mit.edu servers.
