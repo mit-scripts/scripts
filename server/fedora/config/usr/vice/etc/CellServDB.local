@@ -16,7 +16,7 @@
 >lees.mit.edu		  #MIT/private Lab for Electromagnetic and Electronic Systems
 18.90.0.123			#sangeet.mit.edu.
 >grand.central.org      #GCO Public CellServDB 07 Nov 2008
-18.92.0.108                     #grand-opening.mit.edu
+18.9.48.14			#grand.mit.edu.
 128.2.203.61                    #penn.central.org
 130.237.48.87                   #andrew.e.kth.se
 >wu-wien.ac.at          #University of Economics, Vienna, Austria
@@ -254,10 +254,6 @@
 129.186.1.243                   #afsdb-1.iastate.edu
 129.186.6.243                   #afsdb-2.iastate.edu
 129.186.142.243                 #afsdb-3.iastate.edu
->soap.mit.edu           #MIT School Of Architecture & Planning
-18.89.1.204                     #crypt.mit.edu
-18.89.1.209                     #grotto.mit.edu
-18.89.2.156                     #ac.mit.edu
 >msu.edu                #Michigan State University Main Cell
 35.9.7.10                       #afsdb0.cl.msu.edu
 >nd.edu                 #University of Notre Dame

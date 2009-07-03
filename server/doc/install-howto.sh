@@ -58,6 +58,8 @@ if [ $boot = 1 ]; then
 
     sed -i 's/^(# *)*store-passwords.*/store-passwords = no/' /root/.subversion/config
     sed -i 's/^(# *)*store-auth-creds.*/store-auth-creds = no/' /root/.subversion/config
+# The same tweaks should be made on /home/scripts-build/.subversion/config
+# once it exists (do something with svn as scripts-build)
 
     chown -R scripts-build /srv/repository
 
@@ -212,6 +214,13 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
     # as the only diff
     # ezyang: I got exim installed as another package
 
+# Check out the scripts /usr/vice/etc configuration
+    cd /root
+    mkdir vice
+    cd vice
+    svn co svn://scripts.mit.edu/trunk/server/fedora/config/usr/vice/etc etc
+    \cp -a etc /usr/vice
+
 # Install the full list of perl modules that users expect to be on the
 # scripts.mit.edu servers.
 # - export PERL_MM_USE_DEFAULT=1
@@ -261,13 +270,6 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 
 # Setup some Python config
     echo 'import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.6/site-packages"))' > /usr/lib/python2.6/site-packages/00scripts-home.pth
-
-# Build and install the scripts php module that enhances error logging info
-# XXX This thing really ought to be packaged
-    cp -r /srv/repository/server/common/oursrc/php_scripts /root
-    cd /root/php_scripts
-    ./build.sh
-    cp test/modules/scripts.so /usr/lib64/php/modules
 
 # Install the credentials.  There are a lot of things to remember here:
 #   o This will be different if you're setting up our build/update server.
