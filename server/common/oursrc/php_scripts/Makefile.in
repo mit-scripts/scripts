@@ -1,0 +1,22 @@
+CC = @CC@
+CFLAGS = @CFLAGS@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+MODS = scripts
+
+all-local: $(patsubst %,.libs/%.so,$(MODS))
+
+.libs/%.so: %.c
+	$(CC) $(CFLAGS) -c $<
+
+install:
+	install -p -m755 -D .libs/scripts.so $(DESTDIR)/usr/lib64/php/modules/scripts.so
+
+clean:
+	rm -f $(MODS:=.so) $(MODS:=.o) $(MODS:=.la) $(MODS:=.lo) $(MODS:=.slo) $(MODS:=.lai)
+	rm -rf .libs modules
+
+distclean: clean
+	rm -f configure config.* Makefile
+	rm -rf auto*.cache

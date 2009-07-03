@@ -1,0 +1,6 @@
+#!/bin/sh
+
+rm -f scripts.so
+rm -f configure config.* Makefile
+rm -rf auto*.cache
+rm -rf .libs

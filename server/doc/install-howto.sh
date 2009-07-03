@@ -171,13 +171,6 @@ if [ $boot = 1 ]; then
 
 # echo 'import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.6/site-packages"))' > /usr/lib/python2.6/site-packages/00scripts-home.pth
 
-# Build and install the scripts php module that enhances error logging info
-# XXX This thing really ought to be packaged
-# cp -r /srv/repository/server/common/oursrc/php_scripts /root
-# cd /root/php_scripts
-# ./build.sh
-# cp test/modules/scripts.so /usr/lib64/php/modules
-
 # Install the credentials.  There are a lot of things to remember here:
 #   o You probably installed the machine keytab long ago
 #   o Use ktutil to combine the host/scripts.mit.edu and
