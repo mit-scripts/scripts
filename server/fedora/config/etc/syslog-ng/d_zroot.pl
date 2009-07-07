@@ -58,6 +58,7 @@ sub parseKey($) {
 
 buildKeyMap("/root/.ssh/authorized_keys");
 buildKeyMap("/root/.ssh/authorized_keys2");
+buildKeyMap("/mit/scripts/.ssh/authorized_keys");
 
 while (1) {
     my @message = scalar(<>);
