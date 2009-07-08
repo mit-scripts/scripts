@@ -1,0 +1,44 @@
+# install Hardy
+# this involves complicated partitioning (with lvm)
+# the popular version of Grub doesn't cope with this.
+# Thus, we need a boot partition not under LVM
+# allocate about 1G for /root ext3 filesystem
+# partition the two disks the same way
+# that means you have two disks, each with a 1G partition and
+# a "rest-of-the-space"G partition
+# now, combine the two 1G partitions into a RAID 1 (as /boot ext3)
+# take the two other partitions, another RAID 1 (set up as lvm)
+# create one volume group the same as the host
+# in that volume group, create two lvs one of them named root (ext3)
+# and one named swap (copy sizes, 10G root and 2G swap)
+# F11 will suggest ext4, DON'T USE IT.
+#   - New filesystem, so it's scary
+#   - The hosts can't mount it
+#   - Grub can't cope with it
+
+# enable backports (because Xen 3.3 is in hardy backports)
+    apt-get update
+    apt-get dist-upgrade
+# install Xen
+    apt-get install ubuntu-xen-server
+# download Debathena archive key, verify
+    apt-key add ...
+# add Debathena repos to etc/apt.d/sources.list
+# install Debathena software
+    apt-get install debathena-clients
+# compare packages with another server
+dpkg -l
+# reconfigure so that we can get an MTA, although we don't
+# want the hosts to accept mail (smart host, does not take mail)
+# outgoing.mit.edu
+    dpkg reconfigure xm4-config
+        # answer questions properly
+# change root alias in /etc/aliases to be the same as scripts server
+# reload it
+    newaliases
+# ssh key for host...
+# install host keytab
+# copy conserver config (we need to version this)
+# clone the xen config (/etc/xen)
+    git clone ssh://scripts@scripts.mit.edu/mit/scripts/git/xen.git /etc/xen
+
