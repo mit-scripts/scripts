@@ -356,7 +356,6 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
     #     chkconfig after the fact)
 
 # (Optional) Beat your head against a wall.
-    chmod 755 /etc/httpd/run/mod_fcgid
 
 # Possibly perform other steps that I've neglected to put in this
 # document.
