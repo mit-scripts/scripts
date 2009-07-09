@@ -1,5 +1,5 @@
 --- nss-ldapd.spec.orig	2009-03-30 04:33:50.000000000 -0400
-+++ nss-ldapd.spec	2009-05-24 18:39:15.000000000 -0400
++++ nss-ldapd.spec	2009-06-03 03:18:49.000000000 -0400
 @@ -19,18 +19,19 @@
  
  
@@ -54,7 +54,7 @@
  
  %files
  %defattr(-,root,root)
-@@ -104,11 +99,12 @@
+@@ -104,7 +99,6 @@
  %doc %{_mandir}/man8/*
  %config(noreplace) %attr(640,root,root) /etc/nss-ldapd.conf
  %config /etc/init.d/nslcd
@@ -62,13 +62,7 @@
  %dir /var/run/nslcd
  /usr/sbin/nslcd
  
- %changelog
-+* Sun May 24 2009 Anders Kaseorg <andersk@mit.edu> - 0.6.8-2.1
-+- Update for Fedora again.
- * Wed Mar 25 2009 rhafer@suse.de
- - Updated to 0.6.8:
-   * the nss-ldapd.conf was created world-readable which could cause
-@@ -129,6 +125,10 @@
+@@ -129,6 +123,10 @@
  - Adjust config file permissions upon update, to fix world-readable
    /etc/nss-ldapd.conf as created by older versions
    (bnc#487737, CVE-2009-1073)

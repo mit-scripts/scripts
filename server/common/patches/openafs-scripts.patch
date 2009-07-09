@@ -126,7 +126,7 @@ diff -ur openafs-1.4/src/afs/afs.h openafs-1.4+scripts/src/afs/afs.h
  #ifdef AFS_SUN5_ENV
      short multiPage;		/* count of multi-page getpages in progress */
  #endif
-+    bool apache_access;		/* whether or not Apache has access to a file */
++    int apache_access;		/* whether or not Apache has access to a file */
  };
  
  #define	DONT_CHECK_MODE_BITS	0

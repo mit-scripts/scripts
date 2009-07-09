@@ -18,9 +18,9 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 httpd openssh pysvn php
+upstream_yum	= krb5 httpd openssh php
 upstream	= openafs $(upstream_yum)
-oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i386 whoisd mit-zephyr nss-ldapd nss-ldapd.i386 athrun php_scripts scripts-base
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i586 whoisd mit-zephyr nss-ldapd nss-ldapd.i586 athrun php_scripts scripts-base
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
@@ -126,11 +126,11 @@ all:
 
 $(oursrc): rpmbuild_args += --define 'scriptsversion $(shell svnversion ${oursrcdir}/$** | tr ':' '_')'
 
-$(filter %.i386,$(oursrc)): %.i386: setup
+$(filter %.i586,$(oursrc)): %.i586: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	setarch i386 rpmbuild $(rpmbuild_args) --target=i386 --define="_lib lib" -bb ${tmp_specs}/$**.spec
+	setarch i586 rpmbuild $(rpmbuild_args) --target=i586 --define="_lib lib" -bb ${tmp_specs}/$**.spec
 
-$(filter-out %.i386,$(oursrc)): %: setup
+$(filter-out %.i586,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/$**.spec
 
@@ -178,16 +178,17 @@ frob-openafs:
 	fi
 
 # The following packages are needed for our packages
-basic-deps	= kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstation glibc-devel.i386 glibc-devel libtool libgcc.i386
-oursrc-deps	= hesinfo openldap-clients php-devel
+basic-deps	= kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstation glibc-devel.i586 glibc-devel libtool libgcc.i586
+oursrc-deps	= hesinfo openldap-clients openldap-devel.i586 php-devel
 httpdmods-deps	= httpd-devel
 httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel
-krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel texinfo-tex
+krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel texinfo-tex texlive-latex
 openafs-deps	= pam-devel automake
-mit-zephyr-deps	= readline-devel hesiod-devel hesiod-devel.i386 hesiod.i386 libXt.i386 #compat-readline43
-openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth gobject-devel pango-devel cairo-devel libedit-devel nss-devel
+mit-zephyr-deps	= readline-devel hesiod-devel hesiod-devel.i586 hesiod.i586 libXt.i586 #compat-readline43
+openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth pango-devel cairo-devel libedit-devel nss-devel fipscheck-devel
+php-deps	= bzip2-devel curl-devel gmp-devel libstdc++-devel sqlite-devel gcc-c++ libc-client-devel mysql-devel postgresql-devel unixODBC-devel libxml2-devel net-snmp-devel libxslt-devel libxml2-devel libXpm-devel libjpeg-devel t1lib-devel libmcrypt-devel mhash-devel libtidy-devel freetds-devel aspell-devel recode-devel
 install-deps:
-	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(mit-zephyr-deps) $(openssh-deps)
+	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(mit-zephyr-deps) $(openssh-deps) $(php-deps)
 	rpm -ivh ftp://ftp.muug.mb.ca/mirror/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
 #	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
 
