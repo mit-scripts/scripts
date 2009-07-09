@@ -19,7 +19,7 @@ See http://scripts.mit.edu/wiki for more information.
 
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
-install -D 00scripts-home.pth $RPM_BUILD_ROOT/usr/lib/python2.6/site-packages
+install -d 00scripts-home.pth $RPM_BUILD_ROOT/usr/lib/python2.6/site-packages
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
