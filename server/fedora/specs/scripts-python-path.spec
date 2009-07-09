@@ -28,7 +28,6 @@ install -m 644 00scripts-home.pth $RPM_BUILD_ROOT%{python_sitelib}
 
 %files
 %defattr(0644, root, root)
-%dir %{python_sitelib}
 %{python_sitelib}/00scripts-home.pth
 
 %changelog
