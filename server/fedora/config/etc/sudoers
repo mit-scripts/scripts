@@ -70,6 +70,7 @@ root	ALL=(ALL) 	ALL
 
 scripts	ALL=(signup)	NOPASSWD: /usr/local/bin/ldap-backup
 rebecca	ALL=(root)	NOPASSWD: /sbin/service nscd restart
+nrpe	ALL=(signup)	NOPASSWD: /etc/nagios/check_ldap_mmr.real
 
 Defaults:munin !syslog
 

@@ -118,6 +118,7 @@ while (1) {
 	} elsif ($message =~ m|^User child is on pid \d+$|) {
 	} elsif ($message =~ m|^Transferred: sent \d+, received \d+ bytes$|) {
 	} elsif ($message =~ m|^Setting tty modes failed: Invalid argument$|) {
+	} elsif ($message =~ m|^ *nrpe .* COMMAND=/etc/nagios/check_ldap_mmr.real$|) {
 	} else {
 	    sendmsg($message, "scripts-spew");
 	}
