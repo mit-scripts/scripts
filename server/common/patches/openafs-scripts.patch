@@ -57,7 +57,7 @@ diff -ur openafs-1.4/src/afs/afs_analyze.c openafs-1.4+scripts/src/afs/afs_analy
 diff -ur openafs-1.4/src/afs/LINUX/osi_vnodeops.c openafs-1.4+scripts/src/afs/LINUX/osi_vnodeops.c
 --- openafs-1.4/src/afs/LINUX/osi_vnodeops.c
 +++ openafs-1.4+scripts/src/afs/LINUX/osi_vnodeops.c
-@@ -875,6 +875,28 @@
+@@ -896,6 +896,28 @@
  	/* should we always update the attributes at this point? */
  	/* unlikely--the vcache entry hasn't changed */
  
@@ -161,7 +161,7 @@ diff -ur openafs-1.4/src/afs/afs_osi_pag.c openafs-1.4+scripts/src/afs/afs_osi_p
 diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl.c
 --- openafs-1.4/src/afs/afs_pioctl.c
 +++ openafs-1.4+scripts/src/afs/afs_pioctl.c
-@@ -1217,6 +1217,10 @@
+@@ -1221,6 +1221,10 @@
      struct AFSFetchStatus OutStatus;
      XSTATS_DECLS;
  
@@ -172,7 +172,7 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
      AFS_STATCNT(PSetAcl);
      if (!avc)
  	return EINVAL;
-@@ -1437,6 +1441,10 @@
+@@ -1441,6 +1445,10 @@
      struct vrequest treq;
      afs_int32 flag, set_parent_pag = 0;
  
@@ -183,7 +183,7 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
      AFS_STATCNT(PSetTokens);
      if (!afs_resourceinit_flag) {
  	return EIO;
-@@ -1796,6 +1804,10 @@
+@@ -1800,6 +1808,10 @@
      afs_int32 iterator;
      int newStyle;
  
@@ -194,7 +194,7 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
      AFS_STATCNT(PGetTokens);
      if (!afs_resourceinit_flag)	/* afs daemons haven't started yet */
  	return EIO;		/* Inappropriate ioctl for device */
-@@ -1879,6 +1891,10 @@
+@@ -1883,6 +1895,10 @@
      register afs_int32 i;
      register struct unixuser *tu;
  
