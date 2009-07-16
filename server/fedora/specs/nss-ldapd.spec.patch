@@ -1,38 +1,41 @@
---- nss-ldapd.spec.orig	2009-03-30 04:33:50.000000000 -0400
-+++ nss-ldapd.spec	2009-06-03 03:18:49.000000000 -0400
-@@ -19,18 +19,19 @@
+--- nss-ldapd.spec.orig
++++ nss-ldapd.spec
+@@ -19,20 +19,20 @@
  
  
  Name:           nss-ldapd
 -BuildRequires:  db-devel krb5-devel openldap2-devel
 +BuildRequires:  db4-devel krb5-devel openldap-devel autoconf automake libtool
-+Conflicts:      nss_ldap
  License:        LGPL v2.1 or later
  Group:          Productivity/Networking/LDAP/Clients
  AutoReqProv:    on
  PreReq:         /bin/chmod
  Conflicts:      nss_ldap
- Version:        0.6.8
--Release:        2.1
-+Release:        2.1.scripts.%{scriptsversion}
+ Version:        0.6.10
+-Release:        6.2
++Release:        6.2.scripts.%{scriptsversion}
  Summary:        NSS module and daemon for using LDAP as a naming service
- Url:            http://ch.tudelft.nl/~arthur/nss-ldapd/
+ Url:            http://arthurdejong.org/nss-ldapd/
  Source:         nss-ldapd-%{version}.tar.bz2
 -Source1:        rc.nslcd
-+Patch1000:      rc.nslcd.patch
  Source100:      nss-ldapd-0.6.8-rpmlintrc
+ Patch0:         nslcd-passwd-offbyone.dif
++Patch1000:      rc.nslcd.patch
  BuildRoot:      %{_tmppath}/%{name}-%{version}-build
  
-@@ -52,7 +53,7 @@
+ %description
+@@ -53,8 +53,8 @@
  
  %prep
  %setup -q
 -cp -v %{S:1} .
+-%patch -p1
++%patch0 -p1
 +%patch1000 -p0 -b .rc
  
  %build
  %{?suse_update_config:%{suse_update_config -f}}
-@@ -72,7 +73,6 @@
+@@ -71,7 +71,6 @@
  mkdir -p $RPM_BUILD_ROOT/etc/init.d/
  mkdir -p $RPM_BUILD_ROOT/usr/sbin/
  install -m 755 rc.nslcd $RPM_BUILD_ROOT/etc/init.d/nslcd
@@ -40,7 +43,7 @@
  make DESTDIR=$RPM_BUILD_ROOT install
  mkdir -p $RPM_BUILD_ROOT/var/run/nslcd
  install -m 644 man/nss-ldapd.conf.5 $RPM_BUILD_ROOT/usr/share/man/man5
-@@ -88,13 +88,8 @@
+@@ -87,13 +86,8 @@
      /bin/chmod 640 /etc/nss-ldapd.conf
  fi
  
@@ -54,7 +57,7 @@
  
  %files
  %defattr(-,root,root)
-@@ -104,7 +99,6 @@
+@@ -103,7 +97,6 @@
  %doc %{_mandir}/man8/*
  %config(noreplace) %attr(640,root,root) /etc/nss-ldapd.conf
  %config /etc/init.d/nslcd
@@ -62,7 +65,7 @@
  %dir /var/run/nslcd
  /usr/sbin/nslcd
  
-@@ -129,6 +123,10 @@
+@@ -151,6 +144,10 @@
  - Adjust config file permissions upon update, to fix world-readable
    /etc/nss-ldapd.conf as created by older versions
    (bnc#487737, CVE-2009-1073)
