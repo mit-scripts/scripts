@@ -18,7 +18,7 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 httpd openssh php
+upstream_yum	= krb5 httpd openssh php rubygem-rails
 upstream	= openafs $(upstream_yum)
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i586 whoisd mit-zephyr nss-ldapd nss-ldapd.i586 athrun php_scripts scripts-base
 allsrc		= $(upstream) $(oursrc)
