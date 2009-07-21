@@ -8,6 +8,7 @@ URL: http://scripts.mit.edu
 License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
+BuildRequires: httpd-devel
 %define debug_package %{nil}
 
 %description 
