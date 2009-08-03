@@ -47,7 +47,7 @@
  	--enable-suexec --with-suexec \
  	--with-suexec-caller=%{suexec_caller} \
 -	--with-suexec-docroot=%{contentdir} \
-+	--with-suexec-docroot=/ \
++	--with-suexec-docroot=/afs \
 +	--with-suexec-userdir=web_scripts \
 +	--with-suexec-trusteddir=/usr/libexec/scripts-trusted \
  	--with-suexec-logfile=%{_localstatedir}/log/httpd/suexec.log \
