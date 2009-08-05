@@ -38,7 +38,7 @@ dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
 openafs_url	= "http://dl.openafs.org/dl/openafs/1.4.11/openafs-1.4.11-1.1.1.src.rpm"
-nss_ldapd_url	= "http://download.opensuse.org/repositories/network:/ldap/openSUSE_Factory/src/nss-ldapd-0.6.10-6.4.src.rpm"
+nss_ldapd_url	= "http://download.opensuse.org/repositories/network:/ldap/openSUSE_Factory/src/nss-ldapd-0.6.10-6.5.src.rpm"
 
 .PHONY: minimal-clean
 
