@@ -86,10 +86,6 @@ if [ $boot = 1 ]; then
     service named start
     chkconfig named on
 
-# XXX: This sometimes doesn't exist, but it really sucks if it
-# does exist. So check for it.
-# yum remove nss_ldap, because nss-ldapd conflicts with it
-
 # In the case of the Kerberos libraries, you'll be told that
 # there are conflicting files with the 64-bit versions of the packages,
 # which we scriptsify.  You'll have to use --force to install those

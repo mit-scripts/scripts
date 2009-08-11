@@ -20,7 +20,7 @@
 
 upstream_yum	= krb5 httpd openssh php
 upstream	= openafs $(upstream_yum)
-oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i586 whoisd mit-zephyr nss-ldapd nss-ldapd.i586 athrun php_scripts scripts-base
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i586 whoisd mit-zephyr athrun php_scripts scripts-base
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
@@ -38,7 +38,6 @@ dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
 openafs_url	= "http://dl.openafs.org/dl/openafs/1.4.11/openafs-1.4.11-1.1.1.src.rpm"
-nss_ldapd_url	= "http://download.opensuse.org/repositories/network:/ldap/openSUSE_Factory/src/nss-ldapd-0.6.10-6.5.src.rpm"
 
 .PHONY: minimal-clean
 
@@ -63,7 +62,6 @@ download_stamp: | SRPMS/mit-zephyr-2.1-6.src.rpm
 	@mkdir -p $(dload); \
 	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
 	cd $(dload) && yumdownloader --source $(upstream_yum)
-	wget -P $(dload) $(nss_ldapd_url)
 	wget -P $(dload) $(openafs_url)
 	touch download_stamp
 
