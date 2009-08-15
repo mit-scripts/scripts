@@ -1,6 +1,6 @@
 To set up a new LDAP server:
 
-- Install the RPM fedora-ds-base with yum
+- Install the RPM 389-ds-base with yum
 - root# env NSS_NONLOCAL_IGNORE=1 useradd -r -d /var/lib/dirsrv fedora-ds
 - root# /usr/sbin/setup-ds.pl
     - Choose a typical install

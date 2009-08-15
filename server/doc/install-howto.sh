@@ -308,8 +308,8 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 # to be renewing with the wrong credentials (daemon.scripts). Change this:
     vim /home/afsagent/renew # replace all mentions of daemon.scripts.mit.edu
 
-# Install fedora-ds-base and set up replication (see ./HOWTO-SETUP-LDAP
-#   and ./fedora-ds-enable-ssl-and-kerberos.diff).
+# Install 389-ds-base and set up replication (see ./HOWTO-SETUP-LDAP
+#   and ./389-ds-enable-ssl-and-kerberos.diff).
 
 # Make the services dirsrv, nslcd, nscd, postfix, and httpd start at
 # boot. Run chkconfig to make sure the set of services to be run is
