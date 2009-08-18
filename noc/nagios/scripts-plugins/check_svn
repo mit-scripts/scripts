@@ -53,7 +53,7 @@ def end(status, message):
 
     for process in processes:
 	try:
-		process.kill()
+		os.kill(process.pid, signal.SIGKILL)
 	except:
 		pass
     
