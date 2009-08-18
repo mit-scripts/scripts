@@ -3,8 +3,8 @@
 use File::Basename;
 use Date::Parse;
 
-my $dir = basename($0);
-chdir $dir;
+my $dir = dirname($0);
+chdir $dir or die "Failed to chdir('$dir'): $!";
 
 my $now = time();
 
