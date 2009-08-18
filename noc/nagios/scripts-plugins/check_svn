@@ -45,10 +45,17 @@ __version__     = 0.4
 
 DEFAULT_TIMEOUT = 10
 
+processes = []
 
 def end(status, message):
     """Prints a message and exits. First arg is the status code
     Second Arg is the string message"""
+
+    for process in processes:
+	try:
+		process.kill()
+	except:
+		pass
     
     check_name = "SVN "
     if status == OK:
@@ -202,6 +209,7 @@ class SvnTester:
                              stdin=PIPE, 
                              stdout=PIPE, 
                              stderr=STDOUT )
+	    processes.append(process)
         except OSError, error:
             error = str(error)
             if error == "No such file or directory":
