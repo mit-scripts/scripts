@@ -8,3 +8,6 @@
 	/bin/kill -HUP `cat /var/run/httpd/httpd.pid 2>/dev/null` 2> /dev/null || true
     endscript
 }
+/var/log/httpd/statistics_log {
+    rotate 14
+}
