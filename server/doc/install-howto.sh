@@ -280,6 +280,7 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #   o The SSL cert private key (real servers only)
 #   o The LDAP password for the signup process (real servers only)
 #   o The SQL password for the signup process (real servers only)
+#   o The whoisd password (real servers only)
 #   o The LDAP keytab for this server, which will be used later (real servers only)
 #   o Replace the ssh host keys with the ones common to all scripts servers (real servers only)
 #   o You'll install an LDAP certificate signed by the scripts CA later (real servers only)
