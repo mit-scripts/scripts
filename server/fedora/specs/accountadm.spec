@@ -9,6 +9,13 @@ License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 BuildRequires: scripts-openafs-devel
+BuildRequires: hesinfo
+BuildRequires: openldap-clients
+BuildRequires: krb5-devel
+BuildRequires: sudo
+Requires: hesinfo
+Requires: openldap-clients
+Requires: sudo
 %define debug_package %{nil}
 Prereq: /usr/bin/fs, /usr/bin/pts
 
