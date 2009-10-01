@@ -1,0 +1,50 @@
+--- rubygem-activesupport.spec.orig	2009-10-01 04:39:58.000000000 -0400
++++ rubygem-activesupport.spec	2009-10-01 05:47:21.000000000 -0400
+@@ -8,16 +8,18 @@
+ Name: rubygem-%{gemname}
+ 
+ Version: 2.3.2
+-Release: 1%{?dist}
++Release: 1.scripts.%{scriptsversion}%{?dist}
+ Group: Development/Languages
+ License: MIT
+ URL: http://www.rubyonrails.org
+ Source0: http://gems.rubyforge.org/gems/%{gemname}-%{version}.gem
++Patch0: rubygem-activesupport-2.3.x-CVE-2009-3009.patch
+ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+ Requires: rubygems
+ BuildRequires: rubygems
+ BuildArch: noarch
+ Provides: rubygem(%{gemname}) = %{version}
++Provides: scripts-rubygem-activesupport
+ 
+ %description
+ Utility library which carries commonly used classes and
+@@ -32,6 +34,9 @@
+ mkdir -p %{buildroot}%{gemdir}
+ gem install --local --install-dir %{buildroot}%{gemdir} \
+             --force --rdoc %{SOURCE0}
++pushd %{buildroot}%{geminstdir}
++cat %{PATCH0} | patch -s -p2
++popd
+ 
+ # Remove bad shebangs
+ for file in %{buildroot}%{geminstdir}/lib/active_support/vendor/builder-2.1.2/builder.rb \
+@@ -58,6 +63,7 @@
+ %dir %{geminstdir}
+ %doc %{geminstdir}/CHANGELOG
+ %{geminstdir}/lib
++%{geminstdir}/test/
+ %doc %{geminstdir}/README
+ %doc %{gemdir}/doc/%{gemname}-%{version}
+ %{gemdir}/cache/%{gemname}-%{version}.gem
+@@ -65,6 +71,9 @@
+ 
+ 
+ %changelog
++* Thu Oct 01 2009 Mitchell Berger <mitchb@mit.edu> - 2.3.2-1.scripts
++- Patch for CVE-2009-3009
++
+ * Mon Mar 16 2009 Jeroen van Meeuwen <kanarip@fedoraproject.org> - 2.3.2-1
+ - New upstream version
+ 

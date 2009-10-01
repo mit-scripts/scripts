@@ -18,7 +18,7 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 httpd openssh php
+upstream_yum	= krb5 httpd openssh php rubygem-activesupport-2.3.2-1.fc11 rubygem-actionpack-2.3.2-1.fc11
 upstream	= openafs $(upstream_yum)
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i586 whoisd mit-zephyr athrun php_scripts scripts-base
 allsrc		= $(upstream) $(oursrc)
@@ -132,9 +132,9 @@ $(filter-out %.i586,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/$**.spec
 
-$(upstream) openafs-kernel: rpmbuild_args += --define 'scriptsversion $(shell svnversion ${patches} | tr ':' '_')'
+$(upstream) rubygem-activesupport rubygem-actionpack openafs-kernel: rpmbuild_args += --define 'scriptsversion $(shell svnversion ${patches} | tr ':' '_')'
 
-$(upstream): setup patch-specs
+$(upstream) rubygem-activesupport rubygem-actionpack: setup patch-specs
 	rpmbuild $(rpmbuild_args) -ba ${tmp_specs}/$@.spec
 
 openafs-kernel: setup
