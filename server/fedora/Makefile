@@ -18,7 +18,7 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 httpd openssh php rubygem-activesupport-2.3.2-1.fc11 rubygem-actionpack-2.3.2-1.fc11
+upstream_yum	= krb5 krb5.i586 httpd openssh php rubygem-activesupport-2.3.2-1.fc11 rubygem-actionpack-2.3.2-1.fc11
 upstream	= openafs $(upstream_yum)
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i586 whoisd mit-zephyr athrun php_scripts scripts-base
 allsrc		= $(upstream) $(oursrc)
@@ -38,6 +38,8 @@ dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
 openafs_url	= "http://dl.openafs.org/dl/openafs/1.4.11/openafs-1.4.11-1.1.1.src.rpm"
+
+PKG		= $(patsubst %.i586,%,$@)
 
 .PHONY: minimal-clean
 
@@ -126,26 +128,34 @@ $(oursrc): rpmbuild_args += --define 'scriptsversion $(shell svnversion ${oursrc
 
 $(filter %.i586,$(oursrc)): %.i586: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	setarch i586 rpmbuild $(rpmbuild_args) --target=i586 --define="_lib lib" -bb ${tmp_specs}/$**.spec
+	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
+	/usr/bin/mock -r scripts-fc11-i386 --arch=i586 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(filter-out %.i586,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/$**.spec
+	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
+	/usr/bin/mock -r scripts-fc11-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(upstream) rubygem-activesupport rubygem-actionpack openafs-kernel: rpmbuild_args += --define 'scriptsversion $(shell svnversion ${patches} | tr ':' '_')'
 
-$(upstream) rubygem-activesupport rubygem-actionpack: setup patch-specs
-	rpmbuild $(rpmbuild_args) -ba ${tmp_specs}/$@.spec
+$(filter %.i586,$(upstream)): %.i586: setup patch-specs
+	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
+	/usr/bin/mock -r scripts-fc11-i386 --arch=i586 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+
+$(filter-out %.i586,$(upstream)) rubygem-activesupport rubygem-actionpack: %: setup patch-specs
+	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
+	/usr/bin/mock -r scripts-fc11-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild $(rpmbuild_args) -bb ${tmp_specs}/openafs*.spec
+	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/openafs*.spec
+	/usr/bin/mock -r scripts-fc11-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
 
 #sort -n sorts "2.6.25-1" later than "2.6.25.1-1", so it's Wrong
 #kernvers = $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)
 kernvers = $(shell uname -r | sed "s/\(.*\)[.].*/\1/")
 kvariants = ''
-openafs_rpmbuild_args = --define "fedorakmod 1" --define "kvariants $(kvariants)" --define "kernvers $(kernvers)" --nodeps
+openafs_rpmbuild_args = --define "fedorakmod 1" --define "kvariants $(kvariants)" --define "kernvers $(kernvers)"
 openafs: rpmbuild_args += $(openafs_rpmbuild_args)
 openafs-kernel: rpmbuild_args += $(openafs_rpmbuild_args) --define "build_userspace 0" --define "build_modules 1"
 
@@ -176,7 +186,7 @@ frob-openafs:
 	fi
 
 # The following packages are needed for our packages
-basic-deps	= kernel-devel rpm-build rpmdevtools gcc autoconf patch krb5-workstation glibc-devel.i586 glibc-devel libtool libgcc.i586
+basic-deps	= kernel-devel rpm-build rpmdevtools mock gcc autoconf patch krb5-workstation glibc-devel.i586 glibc-devel libtool libgcc.i586
 oursrc-deps	= hesinfo openldap-clients openldap-devel.i586 php-devel
 httpdmods-deps	= httpd-devel
 httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel
