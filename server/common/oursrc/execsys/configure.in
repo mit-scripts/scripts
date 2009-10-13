@@ -2,29 +2,4 @@ AC_INIT(static-cat.c.pre)
 
 AC_PROG_CC
 
-AC_ARG_WITH(afsagent,
-[  --with-afsagent[=UID]        afsagent will have user id UID],[
-  if test "$withval" != "no" -a "$withval" != "yes"; then
-    CFLAGS="-DAFSAGENT_UID=$withval $CCFLAGS"
-  fi
-])
-
-AC_DEFUN(SUPPORT,[AC_ARG_WITH($1,
-[  --with-$1[=PATH]$2       associate .$1 with PATH],[
-  if test "$withval" != "no" -a "$withval" != "yes"; then
-    UPD_VARS="$1_path=$withval $UPD_VARS"
-  fi
-])])
-
-# the second argument should contain no spaces ("[]") if the corresponding
-# extension is three characters long (eg, "php"), and it should contain
-# one space ("[ ]") if the corresponding extension is two characters long
-# (eg, "pl")
-
-SUPPORT([pl], [ ])
-SUPPORT([php], [])
-SUPPORT([py], [ ])
-SUPPORT([exe], [])
-
-AC_SUBST(UPD_VARS)
 AC_OUTPUT(Makefile)

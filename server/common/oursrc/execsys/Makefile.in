@@ -9,10 +9,10 @@ APACHEDIR = /etc/httpd
 SYSCATPATH = /usr/local/bin
 trusteddir = /usr/libexec/scripts-trusted
 
-all-local: static-cat execsys-binfmt
+all-local: static-cat
 
-static-cat.c execsys-binfmt: static-cat.c.pre execsys-binfmt.pre
-	@UPD_VARS@ syscat_path=$(SYSCATPATH)/static-cat perl upd-execsys
+static-cat.c: static-cat.c.pre execsys-binfmt.pre
+	syscat_path=$(SYSCATPATH)/static-cat perl upd-execsys
 
 install: all-local
 	install -D -p -m644 execsys.conf $(DESTDIR)$(APACHEDIR)/conf.d/execsys.conf
