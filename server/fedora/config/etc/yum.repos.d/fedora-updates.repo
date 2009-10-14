@@ -7,7 +7,6 @@ baseurl=http://download3.fedora.redhat.com/pub/fedora/linux/updates/$releasever/
 enabled=1
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$basearch
-exclude=rubygem-activesupport rubygem-activeresource rubygem-actionpack rubygem-activerecord rubygem-actionmailer rubygem-rails
 
 [updates-debuginfo]
 name=Fedora $releasever - $basearch - Updates - Debug
