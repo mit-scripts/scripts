@@ -21,6 +21,8 @@ my $lastend="nsds5replicaLastUpdateEnd";
 my $ldap=ConnectLdap();
 my $result=LDAPSearch($ldap,"objectClass=nsDS5ReplicationAgreement","",$base);
 my @entries = $result->entries;
+my $errors = 0;
+my $errorstring = "Replication error(s): ";
 foreach my $entr ( @entries ) {
     my $servername=$entr->get_value($server);
     my $serverstatus=$entr->get_value($status);
@@ -31,12 +33,17 @@ foreach my $entr ( @entries ) {
     $serverlaststart =~ s/(....)(..)(..)(..)(..)(..)./$1-$2-$3\ $4:$5:$6/;
     $serverlastend =~ s/(....)(..)(..)(..)(..)(..)./$1-$2-$3\ $4:$5:$6/;
     print "Replication to $servername last operation $serverlaststart ";
-    print "Status: $serverstatus.\n";
+    print "Status: $serverstatus.     ";
     if ($statuscode) {
-        &nagios_return("ERROR", "Replication error: " . $serverstatus);
+        $errors++;
+        $errorstring = $errorstring . $serverstatus . ", ";
     }
 }
-&nagios_return("OK", "All replicas are OK");
+if ($errors > 0) {
+    &nagios_return("WARNING", $errorstring);
+} else {
+    &nagios_return("OK", "All replicas are OK");
+}
 
 sub ConnectLdap {
     my $ldap = Net::LDAP->new ( $ldapserver ) or die "$@";
