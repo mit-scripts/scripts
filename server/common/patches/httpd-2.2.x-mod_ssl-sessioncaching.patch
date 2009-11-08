@@ -1,0 +1,176 @@
+Index: httpd-2.2.x/modules/ssl/ssl_private.h
+===================================================================
+--- httpd-2.2.x/modules/ssl/ssl_private.h	(revision 833672)
++++ httpd-2.2.x/modules/ssl/ssl_private.h	(working copy)
+@@ -395,6 +395,9 @@ typedef struct {
+ #if defined(HAVE_OPENSSL_ENGINE_H) && defined(HAVE_ENGINE_INIT)
+     const char     *szCryptoDevice;
+ #endif
++#ifndef OPENSSL_NO_TLSEXT
++    ssl_enabled_t  session_tickets_enabled;
++#endif
+     struct {
+         void *pV1, *pV2, *pV3, *pV4, *pV5, *pV6, *pV7, *pV8, *pV9, *pV10;
+     } rCtx;
+@@ -545,6 +548,7 @@ const char  *ssl_cmd_SSLRequire(cmd_parm
+ const char  *ssl_cmd_SSLUserName(cmd_parms *, void *, const char *);
+ const char  *ssl_cmd_SSLRenegBufferSize(cmd_parms *cmd, void *dcfg, const char *arg);
+ const char  *ssl_cmd_SSLStrictSNIVHostCheck(cmd_parms *cmd, void *dcfg, int flag);
++const char  *ssl_cmd_SSLSessionTicketExtension(cmd_parms *cmd, void *cdfg, int flag);
+ 
+ const char  *ssl_cmd_SSLProxyEngine(cmd_parms *cmd, void *dcfg, int flag);
+ const char  *ssl_cmd_SSLProxyProtocol(cmd_parms *, void *, const char *);
+Index: httpd-2.2.x/modules/ssl/ssl_engine_init.c
+===================================================================
+--- httpd-2.2.x/modules/ssl/ssl_engine_init.c	(revision 833672)
++++ httpd-2.2.x/modules/ssl/ssl_engine_init.c	(working copy)
+@@ -382,6 +382,15 @@ static void ssl_init_ctx_tls_extensions(
+         ssl_log_ssl_error(APLOG_MARK, APLOG_ERR, s);
+         ssl_die();
+     }
++
++    /*
++     * Session tickets (stateless resumption)
++     */
++    if ((myModConfig(s))->session_tickets_enabled == SSL_ENABLED_FALSE) {
++        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
++                     "Disabling TLS session ticket support");
++        SSL_CTX_set_options(mctx->ssl_ctx, SSL_OP_NO_TICKET);
++    }
+ }
+ #endif
+ 
+@@ -1018,6 +1027,11 @@ void ssl_init_CheckServers(server_rec *b
+ 
+     BOOL conflict = FALSE;
+ 
++#if !defined(OPENSSL_NO_TLSEXT) && OPENSSL_VERSION_NUMBER < 0x009080d0
++    unsigned char *tlsext_tick_keys = NULL;
++    long tick_keys_len;
++#endif
++
+     /*
+      * Give out warnings when a server has HTTPS configured
+      * for the HTTP port or vice versa
+@@ -1042,6 +1056,25 @@ void ssl_init_CheckServers(server_rec *b
+                          ssl_util_vhostid(p, s),
+                          DEFAULT_HTTP_PORT, DEFAULT_HTTPS_PORT);
+         }
++
++#if !defined(OPENSSL_NO_TLSEXT) && OPENSSL_VERSION_NUMBER < 0x009080d0
++        /*
++         * When using OpenSSL versions 0.9.8f through 0.9.8l, configure
++         * the same ticket encryption parameters for every SSL_CTX (workaround
++         * for SNI+SessionTicket extension interoperability issue in these versions)
++         */
++        if ((sc->enabled == SSL_ENABLED_TRUE) ||
++            (sc->enabled == SSL_ENABLED_OPTIONAL)) {
++            if (!tlsext_tick_keys) {
++                tick_keys_len = SSL_CTX_ctrl((sc->server->ssl_ctx),SSL_CTRL_SET_TLSEXT_TICKET_KEYS,
++                                                               (-1),(NULL));
++                tlsext_tick_keys = (unsigned char *)apr_palloc(p, tick_keys_len);
++                RAND_bytes(tlsext_tick_keys, tick_keys_len);
++            }
++            SSL_CTX_ctrl((sc->server->ssl_ctx),SSL_CTRL_SET_TLSEXT_TICKET_KEYS,
++                                           (tick_keys_len),(tlsext_tick_keys));
++        }
++#endif
+     }
+ 
+     /*
+Index: httpd-2.2.x/modules/ssl/ssl_engine_config.c
+===================================================================
+--- httpd-2.2.x/modules/ssl/ssl_engine_config.c	(revision 833672)
++++ httpd-2.2.x/modules/ssl/ssl_engine_config.c	(working copy)
+@@ -75,6 +75,9 @@ SSLModConfigRec *ssl_config_global_creat
+ #if defined(HAVE_OPENSSL_ENGINE_H) && defined(HAVE_ENGINE_INIT)
+     mc->szCryptoDevice         = NULL;
+ #endif
++#ifndef OPENSSL_NO_TLSEXT
++    mc->session_tickets_enabled = SSL_ENABLED_UNSET;
++#endif
+ 
+     memset(mc->pTmpKeys, 0, sizeof(mc->pTmpKeys));
+ 
+@@ -1471,6 +1474,26 @@ const char  *ssl_cmd_SSLStrictSNIVHostCh
+ #endif
+ }
+ 
++const char *ssl_cmd_SSLSessionTicketExtension(cmd_parms *cmd, void *dcfg, int flag)
++{
++#ifndef OPENSSL_NO_TLSEXT
++    const char *err;
++    SSLModConfigRec *mc = myModConfig(cmd->server);
++
++    if ((err = ap_check_cmd_context(cmd, GLOBAL_ONLY))) {
++        return err;
++    }
++
++    mc->session_tickets_enabled = flag ? SSL_ENABLED_TRUE : SSL_ENABLED_FALSE;
++
++    return NULL;
++#else
++    return "SSLSessionTicketExtension failed; OpenSSL is not built with support "
++           "for TLS extensions. Refer to the documentation, and build "
++           "a compatible version of OpenSSL.";
++#endif
++}
++
+ void ssl_hook_ConfigTest(apr_pool_t *pconf, server_rec *s)
+ {
+     if (!ap_exists_config_define("DUMP_CERTS")) {
+Index: httpd-2.2.x/modules/ssl/ssl_engine_kernel.c
+===================================================================
+--- httpd-2.2.x/modules/ssl/ssl_engine_kernel.c	(revision 833672)
++++ httpd-2.2.x/modules/ssl/ssl_engine_kernel.c	(working copy)
+@@ -29,6 +29,7 @@
+                                   time I was too famous.''
+                                             -- Unknown                */
+ #include "ssl_private.h"
++#include "util_md5.h"
+ 
+ static void ssl_configure_env(request_rec *r, SSLConnRec *sslconn);
+ #ifndef OPENSSL_NO_TLSEXT
+@@ -2010,6 +2011,7 @@ static int ssl_find_vhost(void *serverna
+     apr_array_header_t *names;
+     int i;
+     SSLConnRec *sslcon;
++    char *sid_ctx;
+ 
+     /* check ServerName */
+     if (!strcasecmp(servername, s->server_hostname)) {
+@@ -2074,6 +2076,21 @@ static int ssl_find_vhost(void *serverna
+             SSL_set_verify(ssl, SSL_CTX_get_verify_mode(ssl->ctx),
+                            SSL_CTX_get_verify_callback(ssl->ctx));
+         }
++        /*
++         * Adjust the session id context. ssl_init_ssl_connection()
++         * always picks the configuration of the first vhost when
++         * calling SSL_new(), but we want to tie the session to the
++         * vhost we have just switched to. Again, we have to make sure
++         * that we're not overwriting a session id context which was
++         * possibly set in ssl_hook_Access(), before triggering
++         * a renegotation.
++         */
++        if (!SSL_num_renegotiations(ssl)) {
++            sid_ctx = ap_md5_binary(c->pool, (unsigned char*)sc->vhost_id,
++                                    sc->vhost_id_len);
++            SSL_set_session_id_context(ssl, (unsigned char *)sid_ctx,
++                                       APR_MD5_DIGESTSIZE*2);
++        }
+ 
+         /*
+          * Save the found server into our SSLConnRec for later
+Index: httpd-2.2.x/modules/ssl/mod_ssl.c
+===================================================================
+--- httpd-2.2.x/modules/ssl/mod_ssl.c	(revision 833672)
++++ httpd-2.2.x/modules/ssl/mod_ssl.c	(working copy)
+@@ -92,6 +92,8 @@ static const command_rec ssl_config_cmds
+     SSL_CMD_SRV(RandomSeed, TAKE23,
+                 "SSL Pseudo Random Number Generator (PRNG) seeding source "
+                 "(`startup|connect builtin|file:/path|exec:/path [bytes]')")
++    SSL_CMD_SRV(SessionTicketExtension, FLAG,
++                "TLS Session Ticket extension support")
+ 
+     /*
+      * Per-server context configuration directives
