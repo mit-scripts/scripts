@@ -143,7 +143,7 @@ localityName_default		= Cambridge
 #1.organizationName_default	= World Wide Web Pty Ltd
 
 organizationalUnitName		= OU
-organizationalUnitName_default	= Student Information Processing Board
+organizationalUnitName_default	= scripts.mit.edu web hosting service
 
 commonName			= Common Name (eg, your name or your server\'s hostname)
 commonName_max			= 64
