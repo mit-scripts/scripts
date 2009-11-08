@@ -7,6 +7,9 @@
  *   admof scripts andersk/root@ATHENA.MIT.EDU
  * Outputs "yes" and exits with status 33 if the given principal is an
  * administrator of the locker.
+ *
+ * Requires tokens (to authenticate/encrypt the connection to the
+ * ptserver) unless -noauth is given.
  */
 
 #include <stdio.h>
@@ -77,9 +80,20 @@ int
 main(int argc, const char *argv[])
 {
     /* Get arguments. */
-    if (argc != 3)
-	die("Usage: %s LOCKER PRINCIPAL\n", argv[0]);
-    const char *locker = argv[1], *name = argv[2];
+    const char *locker, *name;
+    afs_int32 secLevel;
+
+    if (argc == 3) {
+	locker = argv[1];
+	name = argv[2];
+	secLevel = 3;
+    } else if (argc == 4 && strcmp("-noauth", argv[1]) == 0) {
+	locker = argv[2];
+	name = argv[3];
+	secLevel = 0;
+    } else {
+	die("Usage: %s [-noauth] LOCKER PRINCIPAL\n", argv[0]);
+    }
 
     /* Convert the locker into a directory. */
     char dir[PATH_MAX];
@@ -140,7 +154,7 @@ main(int argc, const char *argv[])
     if (pioctl(dir, VIOC_FILE_CELL_NAME, &vi, 1) != 0)
 	die("internal error: pioctl: %m\n");
 
-    if (pr_Initialize(3, (char *)AFSDIR_CLIENT_ETC_DIRPATH, cell) != 0)
+    if (pr_Initialize(secLevel, (char *)AFSDIR_CLIENT_ETC_DIRPATH, cell) != 0)
 	die("internal error: pr_Initialize failed\n");
 
     /* Get the cell configuration. */
