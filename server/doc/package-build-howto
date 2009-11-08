@@ -14,8 +14,8 @@ This document is a how-to for building new packaages for scripts.mit.edu.
     install the openafs-devel package you just built by hand when that fails.
 
 * Add the packages to the repository by using a trusted machine to
-  - krootscp root@build-server.mit.edu:/home/scripts-build/rpmbuild/RPMS/x86-64/* /mit/scripts/rpm/
-  - cd /mit/scripts/rpm && createrepo .
+  - krootscp root@build-server.mit.edu:/home/scripts-build/rpmbuild/RPMS/x86-64/* /mit/scripts/rpm-fc11/
+  - cd /mit/scripts/rpm-fc11 && createrepo .
   - If you don't have a trusted Fedora machine, you can use createrepo
     -o ~/foo . and then manually install the generated file
 
