@@ -1,22 +1,144 @@
 This document is a how-to for building new packaages for scripts.mit.edu.
 
-* Ensure you have a scripts-build user account, as documented in install-howto.
+Prerequisites
+=============
 
-* su scripts-build -
+  * A trusted scripts.mit.edu server
+  * A scripts-build account on that server (but that was created when it
+    was installed, or something's wrong)
+  * A set of personal credentials for the scripts svn repo
 
-* Use the Makefile to build the scripts.mit.edu-specific Fedora
-  packages.
-  - export PATH=$PATH:/usr/sbin
-  - make download
-  - make setup
-  - make all
-  - openafs-devel is a build-dependency of accountadm, so you'll need to
-    install the openafs-devel package you just built by hand when that fails.
+Directions
+==========
 
-* Add the packages to the repository by using a trusted machine to
-  - krootscp root@build-server.mit.edu:/home/scripts-build/rpmbuild/RPMS/x86-64/* /mit/scripts/rpm-fc11/
-  - cd /mit/scripts/rpm-fc11 && createrepo .
-  - If you don't have a trusted Fedora machine, you can use createrepo
-    -o ~/foo . and then manually install the generated file
+  * Log into the server as root
 
-* Rebuild mit-zephyr on a 32-bit machine, like the one at Joe's home.
+  * /bin/su scripts-build # It's a bad idea to build as root.  This is
+                          # less urgent than it used to be, because you'll
+			  # be building using mock in a chroot, but it's
+			  # still good habit.  Also, if you work in
+			  # /srv/repository as root, scripts-build won't
+			  # be able to change some of the resulting files
+
+  * cd /srv/repository
+
+  * svn up  # Important both to build with current code, and because the
+            # svn revision becomes part of the package release number,
+	    # and you can infer whether changes in the code were made
+	    # before or after a particular build by looking at the package
+	    # and svn release/revision.
+
+  * cd server/fedora
+
+  * # Look in the .dload directory.  If you want to build with a newer
+    # version of any upstream packages that are there, then
+    * rm .dload/[OLD-PACKAGES].src.rpm # It's fine to delete all SRPMs here
+    * rm download_stamp
+
+  * make [PACKAGE-YOU-WANT] # e.g. 'make httpd' builds Apache with our patches
+    # Note that openafs-devel is a build-dependency of accountadm, so if
+    # this is a new Fedora release being bootstrapped, you'll have to
+    # build openafs and install its -devel package before building accountadm
+
+  * # If the build succeeds, the mock logs, build log, binary and SRPMs
+    # will be in /var/lib/mock/fedora-[RELEASE]-{x86_64|i386}/result (note that
+    # this will be cleared out each time you start a new build, so if
+    # you're building several packages in succession, copy the results
+    # somewhere safe after each build to preserve them)
+    # Add the packages to the repository by using a trusted machine and
+    krootscp root@[BUILD-SERVER]:/var/lib/mock/fedora-[RELEASE]-{x86_64|i386}/result /mit/scripts/rpm-fc[RELEASE]
+
+  * # Rebuild the repo metadata to include the new packages.
+    cd /mit/scripts/rpm-fc[RELEASE]
+    # If you have a trusted machine:
+    createrepo .
+    # Otherwise, on a scripts server, as root:
+    mkdir /root/repodata-YYYYMMDD # Or any suitable temp directory
+    createrepo -o /root/repodata-YYYYMMDD .
+    # Then from your trusted machine
+    krootscp -r root@[BUILD-SERVER]:/root/repodata-YYYYMMDD /mit/scripts/rpm-fc[RELEASE]
+    # Sanity check the files, and then replace the current repodata directory
+    # with the one in repodata-YYYYMMDD.
+
+Patching packages
+=================
+
+  * To make changes to the packages that we are the upstream maintainers
+    of (that is, the packages that the Scripts Team wrote):
+    * The authoritative source lives in server/common/oursrc/[PACKAGE]
+    * The RPM spec file is server/fedora/specs/[PACAKGE].spec
+    * You directly make the relevant changes to those files, commit to
+      svn, and then rebuild the package as above to include the new changes.
+
+  * To make changes to the upstream packages that we "scriptsify":
+
+    * The authoritative upstream source comes from the SRPM in the upstream
+      yum repo, or in odd cases like openafs, from some other URL.  When
+      you 'make [PACKAGE]' in SVN/server/fedora, if download_stamp has
+      been removed, the SRPMs are all refetched into
+      SVN/server/fedora/.dload, and then installed with 'rpm -i'.  This
+      results in the source patches, and tarballs landing in ~/rpmbuild/SOURCES
+      and the spec files landing in ~/rpmbuild/SPECS.  You can also
+      manually get individual SRPMs for a package by doing this (these
+      steps work fine as a mortal user, including the 'rpm -i'):
+      * yumdownloader --source [PACKAGE]
+        # That deposits [PACKAGE]-[VER]-[RELEASE].src.rpm in the current dir
+      * rpm -i [PACAKGE]-[VER]-[RELEASE].src.rpm
+        # That unpacks the SRPM, placing the source tarball and patches in
+	# ~/rpmbuild/SOURCES and the spec file in ~/rpmbuild/SPECS; it
+	# does *not* globally install anything, and doesn't require root
+      If you prefer to not install the file, you can simply extract it
+      into a directory by running:
+      * /mit/ghudson/scripts/rpmx [PACKAGE]-[VER]-[RELEASE].src.rpm
+
+    * If you develop a patch to the upstream source, you should save a
+      diff with your changes and add it to the repo as
+      SVN/server/common/patches/[PACKAGE]-[SHORT_DESCRIPTIVE_STRING].patch
+
+    * To cause your patch to be applied when the package is built, you
+      will need to save a copy of the original spec file for the upstream
+      package, then modify it to add a line like:
+        Patch[NUM]: [PACKAGE]-[SHORT_DESCRIPTOVE_STRING].patch
+	# This should generally go after the last existing Patch line
+	# in the file, and [NUM] should be significantly larger than
+	# the upstream Fedora patches, to avoid conflicts later.  This
+	# line tells rpmbuild where the contents of the patch live.
+      You also add a line like:
+        %patch[NUM] -p1 -b .[SHORT_DESCRIPTIVE_STRING]
+	# This should generally go after the last existing %patch line
+	# in the file, [NUM] should be the same as in the Patch line, and
+	# tells rpmbuild that this is the point at which to actually apply
+	# the patch
+
+    * The Release tag in the spec file should have ".scripts.%{scriptsversion}
+      inserted into it just before %{?dist}, or at the end of the release
+      if %{?dist} is unused.
+      # e.g.          Release: 1%{?dist}
+      # changes to    Release: 1.scripts.%{scriptsversion}%{?dist}
+      This causes the package version to include the string "scripts"
+      and our SVN revision number (which is set by the Makefile) for
+      easy identification (this version will also be greater than the
+      upstream version, so the system will prefer to update to it).
+
+    * If the scriptsified version of the package needs to be installed
+      on the servers, and a new upstream version would break scripts
+      without our changes, add a line like this:
+        Provides: scripts-[PACKAGE]
+      and correspondingly, add "scripts-[PACKAGE]" to the Requires line
+      in SVN/server/fedora/specs/scripts-base.spec (and remember to
+      build, upload, and deploy a new scripts-base package)
+
+    * Though we're not always good about it, do feel encouraged to add
+      an entry at the top of the %changelog section near the bottom of
+      the spec file explaining your modifications
+
+    * When you're finished with the updates to the upstream spec file,
+      create a diff from the upstream spec file to your new version,
+      and add it to the SVN repo as
+        SVN/server/fedora/specs/[PACKAGE].spec.patch
+
+    * If we haven't previously scriptsified this package, you'll need
+      to add it to the upstream_yum line in SVN/server/fedora/Makefile,
+      and remove the download_stamp file so that it gets fetched next
+      time you run 'make [PACKAGE]'.
+
