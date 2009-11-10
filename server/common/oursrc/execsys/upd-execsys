@@ -98,8 +98,8 @@ END
 close(CONF);
 
 open(CAT, "./static-cat.c.pre");
-$file = <CAT>;
-($fstart, $fend) = ($file =~ /$regexp/s);
+my $file = <CAT>;
+my ($fstart, $fend) = ($file =~ /$regexp/s);
 close(CAT);
 
 open(CAT, ">./static-cat.c");

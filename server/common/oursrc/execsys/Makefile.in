@@ -11,7 +11,7 @@ trusteddir = /usr/libexec/scripts-trusted
 
 all-local: static-cat
 
-static-cat.c: static-cat.c.pre execsys-binfmt.pre
+static-cat.c: static-cat.c.pre
 	syscat_path=$(SYSCATPATH)/static-cat perl upd-execsys
 
 install: all-local
