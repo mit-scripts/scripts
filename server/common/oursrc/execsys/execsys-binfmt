@@ -26,12 +26,7 @@ stop ()
 start ()
 {
     mount -t binfmt_misc none /proc/sys/fs/binfmt_misc
-    cat > /proc/sys/fs/binfmt_misc/register <<REGISTER
-:pl:E::pl::/usr/bin/perl:
-:php:M::<?php::/usr/bin/php-cgi:
-:py:E::py::/usr/bin/python:
-:exe:E::exe::/usr/bin/mono:
-REGISTER
+    echo ':CLR:M::MZ::/usr/bin/mono:' > /proc/sys/fs/binfmt_misc/register
 }
 
 case "$1" in
