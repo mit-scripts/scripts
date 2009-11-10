@@ -298,7 +298,7 @@
 +        argv[1] = PHP_PATH;
 +        argv[2] = "-f";
 +        execv(PHP_PATH, &argv[1]);
-+        log_err("(%d)%s: php exec failed (%s)\n", errno, strerror(errno), argv[2]);
++        log_err("(%d)%s: php exec failed (%s)\n", errno, strerror(errno), argv[1]);
 +        exit(255);
 +    }
 +
