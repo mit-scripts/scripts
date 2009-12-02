@@ -14,6 +14,7 @@ and moving files/directories out of the way as it checks out.
 - aptitude install munin-node
 - Copy /etc/ha.d/authkeys from an existing LVS node
 - svn up on each existing LVS node and then run /etc/init.d/heartbeat reload
+- If the node will run LVS, run "dpkg-reconfigure ipvsadm" and configure it to run "both" daemons on the correct network interface
 - Run /etc/init.d/heartbeat start on the new node
 - No services will be allocated to this node. To allocate scripts_LVS to it, run
 cibadmin -M -X '
