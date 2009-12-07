@@ -2,7 +2,7 @@ checktimeout=5
 checkinterval=1
 autoreload=yes
 logfile="/var/log/ldirectord.log"
-quiescent=no
+quiescent=yes
 
 # iptables rules caused SMTP to use FWM 3
 virtual=3
