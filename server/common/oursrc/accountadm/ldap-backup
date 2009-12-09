@@ -1,0 +1,172 @@
+#!/usr/bin/perl
+#
+# BEGIN COPYRIGHT BLOCK
+# This Program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation; version 2 of the License.
+# 
+# This Program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along with
+# this Program; if not, write to the Free Software Foundation, Inc., 59 Temple
+# Place, Suite 330, Boston, MA 02111-1307 USA.
+# 
+# Copyright (C) 2001 Sun Microsystems, Inc. Used by permission.
+# Copyright (C) 2005 Red Hat, Inc.
+# All rights reserved.
+# END COPYRIGHT BLOCK
+#
+
+@instances = qw(userRoot);
+@included = qw();
+@excluded = qw();
+
+our $nowrap = 1; # output LDIF is not folded
+our $nobase64 = 0; # avoid base64 encoding
+our $noversion = 0; # don't print version line
+our $nouniqueid = 0; # don't export unique id
+our $useid2entry = 0; # use main db file only
+our $onefile = 1; # one file (MUST BE 1)
+our $printkey = 1; # print key
+our $ldiffile; # override LDIF output file location
+
+$doreplica = 0;
+$ldifdir = "/var/lib/dirsrv/slapd-scripts/ldif";
+$servid = "scripts";
+$verbose = 0;
+$rootdn = "cn=Directory Manager";
+our $passwd;
+our $passwdfile = "/etc/signup-ldap-pw";
+$i = 0;
+$insti = 0;
+$incli = 0;
+$excli = 0;
+$decrypt_on_export = 0;
+
+foreach (@ARGV) {
+    $verbose++ if ($_ eq "-v");
+}
+
+if ((!@instances && !@included) || !$rootdn || !($passwd || $passwdfile)) { &usage; exit(1); }
+
+($s, $m, $h, $dy, $mn, $yr, $wdy, $ydy, $r) = localtime(time);
+$mn++; $yr += 1900;
+$taskname = "export_${yr}_${mn}_${dy}_${h}_${m}_${s}";
+$dn = "dn: cn=$taskname, cn=export, cn=tasks, cn=config\n";
+$misc = "changetype: add\nobjectclass: top\nobjectclass: extensibleObject\n";
+$cn =  "cn: $taskname\n";
+$i = 0;
+$be = "";
+$nsinstance = "";
+foreach my $instance (@instances) {
+	$nsinstance .= "nsInstance: $instance\n";
+	if ( !$be ) {
+		$be = "$instance";
+	} else {
+		$be = "${be}-$instance";
+	}
+	$i++;
+}
+$i = 0;
+$nsincluded = "";
+foreach my $include (@included) {
+	$nsincluded .= "nsIncludeSuffix: $include\n";
+	my ($rdn, $rest) = split(/,/, $include);
+	my ($rest, $tmpbe) = split(/=/, $rdn);
+	if ( !$be ) {
+		$be = "$tmpbe";
+	} else {
+		$be = "${be}-$tmpbe";
+	}
+	$i++;
+}
+$i = 0;
+$nsexcluded = "";
+foreach my $exclude (@excluded) {
+	$nsexcluded .= "nsExcludeSuffix: $exclude\n";
+	$i++;
+}
+if ($ldiffile eq "") {
+	if ($onefile == 0) {
+		$ldiffile = "${ldifdir}/${servid}-${yr}_${mn}_${dy}_${h}_${m}_${s}.ldif";
+	} else {
+		$ldiffile = "${ldifdir}/${servid}-${be}-${yr}_${mn}_${dy}_${h}_${m}_${s}.ldif";
+	}
+}
+
+$nsreplica = "";
+if ($doreplica != 0) { $nsreplica = "nsExportReplica: true\n"; }
+$nsnobase64 = "";
+if ($nobase64 != 0) { $nsnobase64 = "nsMinimalEncoding: true\n"; }
+$nsnowrap = "";
+if ($nowrap != 0) { $nsnowrap = "nsNoWrap: true\n"; }
+$nsnoversion = "";
+if ($noversion != 0) { $nsnoversion = "nsNoVersionLine: true\n"; }
+$nsnouniqueid = "";
+if ($nouniqueid != 0) { $nsnouniqueid = "nsDumpUniqId: false\n"; }
+$nsuseid2entry = "";
+if ($useid2entry != 0) { $nsuseid2entry = "nsUseId2Entry: true\n"; }
+$nsonefile = "";
+if ($onefile != 0) { $nsonefile = "nsUseOneFile: true\n"; }
+if ($onefile == 0) { $nsonefile = "nsUseOneFile: false\n"; }
+$nsexportdecrypt = "";
+if ($decrypt_on_export != 0) { $nsexportdecrypt = "nsExportDecrypt: true\n"; }
+$nsprintkey = "";
+if ($printkey == 0) { $nsprintkey = "nsPrintKey: false\n"; }
+$nsldiffile = "nsFilename: ${ldiffile}\n";
+$entry = "${dn}${misc}${cn}${nsinstance}${nsincluded}${nsexcluded}${nsreplica}${nsnobase64}${nsnowrap}${nsnoversion}${nsnouniqueid}${nsuseid2entry}${nsonefile}${nsexportdecrypt}${nsprintkey}${nsldiffile}";
+my @vstr = ();
+if ($verbose != 0) { @vstr = ("-v"); }
+my @qstr = ("-q");
+if ($verbose) { @qstr = (); }
+$ENV{'PATH'} = "/usr/lib64/mozldap:/usr/bin:";
+print STDERR ("Exporting to ldif file: ${ldiffile}\n") if ($verbose);
+
+my @pass;
+if ($passwdfile) {
+    @pass = ("-j", $passwdfile);
+} elsif ($passwd) {
+    @pass = ("-w", $passwd);
+}
+
+my @cmd = ("ldapmodify", @vstr, @qstr, qw(-h localhost -p 389), "-D", $rootdn, @pass, "-a");
+
+print STDERR "@cmd\n" if ($verbose);
+print STDERR "$entry\n" if ($verbose);
+
+open(FOO, "|-", @cmd) or die "Couldn't start ldapmodify: $!";
+print(FOO "$entry");
+close(FOO);
+
+die "Couldn't successfully execute ldapmodify: $!" if $?;
+
+my @statuscmd = ("ldapsearch", @vstr, qw(-h localhost -p 389), "-D", $rootdn, @pass, qw(-T -b cn=export,cn=tasks,cn=config), "cn=$taskname", qw(nstaskstatus nstaskexitcode));
+
+print STDERR "Status command: @statuscmd\n" if ($verbose);
+
+my $exitstatus=255;
+
+STATUS: while (1) {
+    sleep(1);
+    open(FOO, "-|", @statuscmd) or die "Couldn't start ldapsearch: $!";
+    while (<FOO>) {
+	chomp;
+	my ($key, $value) = split(": ", $_, 2);
+	if ($key eq "nstaskstatus" && $verbose) {
+	    print STDERR "Status: $value\n";
+	}
+	if ($key eq "nstaskexitcode") {
+	    $exitstatus = $value;
+	    last STATUS;
+	}
+    }
+    close(FOO);
+}
+
+open(OUTPUT, "<", $ldiffile) or die "Couldn't open output file: $!";
+print while (<OUTPUT>);
+close(OUTPUT);
+
+exit $exitstatus;

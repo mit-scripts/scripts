@@ -22,6 +22,7 @@ install:
 	install -p -m755 -D cronload $(DESTDIR)$(bindir)/cronload
 	install -p -m755 -D vhostadd $(DESTDIR)$(sbindir)/vhostadd
 	install -p -m755 -D vhostedit $(DESTDIR)$(sbindir)/vhostedit
+	install -p -m755 -D ldap-backup $(DESTDIR)$(sbindir)/ldap-backup
 
 clean:
 	rm -f admof signup-scripts-frontend
