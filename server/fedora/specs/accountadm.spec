@@ -55,6 +55,7 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 /usr/local/sbin/signup-scripts-backend
 /usr/local/sbin/vhostadd
 /usr/local/sbin/vhostedit
+/usr/local/sbin/ldap-backup
 %defattr(4755, signup, signup)
 /usr/local/sbin/signup-scripts-frontend
 
