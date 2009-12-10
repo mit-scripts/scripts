@@ -68,7 +68,7 @@ Defaults    env_keep += "LC_TIME LC_ALL LANGUAGE LINGUAS _XKB_CHARSET XAUTHORITY
 ## Allow root to run any commands anywhere 
 root	ALL=(ALL) 	ALL
 
-scripts	ALL=(signup)	NOPASSWD: /usr/local/bin/ldap-backup
+scripts	ALL=(signup)	NOPASSWD: /usr/local/sbin/ldap-backup
 rebecca	ALL=(root)	NOPASSWD: /sbin/service nscd restart
 nrpe	ALL=(signup)	NOPASSWD: /etc/nagios/check_ldap_mmr.real
 
