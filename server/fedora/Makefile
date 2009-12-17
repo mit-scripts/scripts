@@ -197,7 +197,7 @@ openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib
 php-deps	= bzip2-devel curl-devel gmp-devel libstdc++-devel sqlite-devel gcc-c++ libc-client-devel mysql-devel postgresql-devel unixODBC-devel libxml2-devel net-snmp-devel libxslt-devel libxml2-devel libXpm-devel libjpeg-devel t1lib-devel libmcrypt-devel mhash-devel libtidy-devel freetds-devel aspell-devel recode-devel
 install-deps:
 	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(mit-zephyr-deps) $(openssh-deps) $(php-deps)
-	rpm -ivh ftp://ftp.muug.mb.ca/mirror/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
+	rpm -ivh http://kojipkgs.fedoraproject.org/packages/compat-readline43/4.3/3/i386/compat-readline43-4.3-3.i386.rpm
 #	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
 
 fedora:
