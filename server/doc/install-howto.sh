@@ -35,6 +35,9 @@ if [ $boot = 0 ]; then
 	chkconfig "$i" off
     done
 
+# Turn on network, so we can connect at boot
+chkconfig network on
+
 # Edit /etc/selinux/config so it has SELINUX=disabled and reboot.
     sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
     doreboot
@@ -80,8 +83,11 @@ if [ $boot = 1 ]; then
     # backslash to make us not use the alias
     \cp -a etc /
 
-# NOTE: You will have just lost DNS resolution and the abilit
-# to do password SSH in
+# NOTE: You will have just lost DNS resolution and the ability
+# to do password SSH in.  If you managed to botch this step without
+# having named setup, you can do a quick fix by frobbing /etc/resolv.conf
+# with a non 127.0.0.1 address for the DNS server.  Be sure to revert it once
+# you have named.
 
     service named start
     chkconfig named on
@@ -107,9 +113,6 @@ if [ $boot = 1 ]; then
 # env NSS_NONLOCAL_IGNORE=1 yum install scripts-base
     YUM install -y scripts-base
 
-# Install mit-zephyr
-    YUM install -y mit-zephyr
-
 # Remember to set NSS_NONLOCAL_IGNORE=1 anytime you're setting up
 # anything, e.g. using yum. Otherwise useradd will query LDAP in a stupid way
 # that makes it hang forever. (This is why we're using YUM, not yum)
@@ -120,11 +123,17 @@ if [ $boot = 1 ]; then
 # Copy over root's dotfiles from one of the other machines.
 # Perhaps a useful change is to remove the default aliases
     # On 2009-07-01, the dotfiles to transfer where:
-    #   .bashrc .ldapvirc .screenrc .ssh (<- directory) .vimrc
+    #   .bashrc .ldapvirc (<- HAS PRIVILEDGED DATA)
+    #   .screenrc .ssh (<- directory) .vimrc
     # Trying to scp from server to server won't work, as scp
     # will attempt to negotiate a server-to-server connection.
     # Instead, scp to your trusted machine as a temporary file,
     # and then push to the other server
+    # You'll need some way to authenticate to the server, and since
+    # password logins are disabled, you'll need some way of
+    # temporarily giving yourself credentials.  On a test server,
+    # reenabling password authentication is ok: frob /etc/pam.d/sshd
+    # and reverse apply r1068.
 
 # Replace rsyslog with syslog-ng by doing:
     rpm -e --nodeps rsyslog
@@ -160,8 +169,10 @@ if [ $boot = 1 ]; then
     # mit-zephyr has a spurious dependency on mit-krb-config
     yumdownloader mit-zephyr.i386
     # if deps change, this breaks
-    YUM install -y libXaw.i586 libXext.i586 libXmu.i586 ncurses-libs.i586 readline.i58
+    YUM install -y libXaw.i586 libXext.i586 libXmu.i586 ncurses-libs.i586 readline.i586
     rpm -i --nodeps mit-zephyr-2.1-6-linux.i386.rpm
+    # test if it worked by sending an un-authed message
+    zwrite -d -c scripts -i test
 
 # Install the athena-base, athena-lprng, and athena-lprng-misc RPMs
 # from the Athena 9 build (these are present in our yum repo).  Note
