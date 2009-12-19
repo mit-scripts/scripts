@@ -31,7 +31,7 @@ if [ $boot = 0 ]; then
 # kerneloops, mdmonitor, messagebus, microcode_ctl, netfs, network, nscd, ntpd,
 # sshd, udev-post, and nothing else.
     echo "--disabled" > /etc/sysconfig/system-config-firewall
-    for i in NetworkManager avahi-daemon bluetooth cups isdn nfslock pcscd restorecond rpcbind rpcgssd rpcidmapd sendmail; do
+    for i in NetworkManager avahi-daemon bluetooth cups isdn nfslock nfs pcscd restorecond rpcbind rpcgssd rpcidmapd sendmail; do
 	chkconfig "$i" off
     done
 
@@ -159,9 +159,16 @@ if [ $boot = 1 ]; then
 #  /usr/vice/etc/cacheinfo to contain:
 #       /afs:/usr/vice/cache:10000000
 # Also fix ThisCell to contain athena.mit.edu in both directories
+# WARNING: if you're installing a test server, this needs to be much
+# smaller; the max filesize on XVM is 10GB.  Pick something like
+# 500000
     echo "/afs:/usr/vice/cache:10000000" > /usr/vice/etc/cacheinfo
     # ezyang: ThisCell on b-k and c-w don't have anything special
     # written here
+# If you're making a test server, some of the AFS parameters are
+# kind of retarded (and if you're low on disk space, will actually
+# exhaust our inodes).
+# Edit the parameters in /etc/sysconfig/openafs
 
 # Figure out why Zephyr isn't working. Most recently, it was because there
 # was a 64-bit RPM installed; remove it and install Joe's 32-bit one
@@ -193,17 +200,6 @@ if [ $boot = 1 ]; then
 # Install the full list of RPMs that users expect to be on the
 # scripts.mit.edu servers.
 
-# ezyang: Running the below I got file conflicts. To fix (since I had
-# botched steps above), I manually compared package lists and installed
-# them.  If you've done the krb5 setup originally correctly, then
-# write down what you had to do here.
-    yumdownloader krb5-devel
-    rpm -i --force krb5-devel-*.i586.rpm
-    rpm -U --force krb5-devel-*.scripts.1138.x86_64.rpm
-    yumdownloader krb5-server
-    rpm -i --force krb5-server-*.scripts.1138.x86_64.rpm
-
-
 # on another server, run:
 rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 # arrange for packages.txt to be passed to the server, then run:
@@ -220,6 +216,8 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
     # if all went well, you'll probably see multiple kernel versions
     # as the only diff
     # ezyang: I got exim installed as another package
+    # here's a cute script that removes all extra packages
+    diff -u packages.txt newpackages.txt  | grep '+' | cut -c2- | grep -v "@" | grep -v "++" | xargs yum erase -y
 
 # Check out the scripts /usr/vice/etc configuration
     cd /root
@@ -270,7 +268,7 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #   that for things in the beta repo, you'll need 'pear install package-beta'.
 #   (you might get complaints about the php_scripts module; ignore them)
 # - Look at `pecl list` for PECL things.  'yum search', and if you must,
-#   'pecl install' needed items.
+#   'pecl install' needed items. (as of 2009-12-18 there are no extra pecl things)
     # Automating this... will require a lot of batonning between
     # the servers. Probably best way to do it is to write an actual
     # script.
@@ -353,7 +351,10 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 # Fix etc by making sure none of our config files got overwritten
     cd /etc
     svn status | grep M
-    # ezyang: I had to revert krb5.conf, nsswitch.conf and sysconfig/openafs
+    # ezyang: I had to revert krb5.conf (not with latest), nsswitch.conf and sysconfig/openafs
+
+# ThisCell got clobbered, replace it with athena.mit.edu
+    echo "athena.mit.edu" > /usr/vice/etc/ThisCell
 
 # Reboot the machine to restore a consistent state, in case you
 # changed anything.
@@ -367,12 +368,18 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 
 # Possibly perform other steps that I've neglected to put in this
 # document.
-#   o In the first install of not-backward, ThisCell got clobbered, resulting
-#     in trying to get tickets from openafs.org. Not sure when it got
-#     clobbered -- ezyang
 #   o For some reason, syslog-ng wasn't turning on automatically, so we weren't
 #     getting spew
 
 # Some info about changing hostnames: it appears to be in:
 #   o /etc/sysconfig/network
 #   o your lvm thingies; probably don't need to edit
+
+# More stuff for test servers
+#   - You need a self-signed SSL cert.  Generate with:
+    openssl req -new -x509 -keyout /etc/pki/tls/private/scripts.key -out /etc/pki/tls/certs/scripts.cert -nodes
+#     Also make /etc/pki/tls/certs/ca.pem match up
+#   - Make (/etc/aliases) root mail go to /dev/null, so we don't spam people
+#   - Edit /etc/httpd/conf.d/scripts-vhost-names.conf to have scripts-fX-test.xvm.mit.edu
+#     be an accepted vhost name
+#   - Look at the old test server and see what config changes are floating around
