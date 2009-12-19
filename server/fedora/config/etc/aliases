@@ -93,7 +93,7 @@ support:	postmaster
 decode:		root
 
 # Person who should get root's mail
-root:		rootjoe@gmail.com, andersk@mit.edu, quentin@mit.edu, geofft+root@mit.edu, mitchb@mit.edu
+root:		rootjoe@gmail.com, andersk@mit.edu, quentin@mit.edu, geofft+root@mit.edu, mitchb@mit.edu, ezyang@mit.edu
 
 scripts:	root
 signup:		root
