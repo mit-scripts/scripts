@@ -9,6 +9,3 @@ selinux:
 
 server:
   files needed to run a scripts.mit.edu server
-
-vhosts:
-  virtual host configuration files
