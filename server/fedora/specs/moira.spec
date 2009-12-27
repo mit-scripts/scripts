@@ -2,7 +2,7 @@
 # release from http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 %define upstreamversion 4.0.0
 %define snapshotversion cvs20091116
-Summary: rpm of moira libraries, clients, and friends
+Summary: rpm packaging moira libraries, clients, and friends
 Group: Applications/System
 Name: moira
 Version: %{upstreamversion}
@@ -18,7 +18,7 @@ Patch0: moira-install-headers.patch
 Patch1: moira-update-server.rc.patch
 
 %description
-rpm of moira libraries, clients, and friends
+rpm packaging moira libraries, clients, and friends
 
 Source package for the moira library and clients.  Clone of debathena-moira.
 See http://scripts.mit.edu/wiki for more information.
