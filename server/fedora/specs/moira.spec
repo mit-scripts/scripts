@@ -2,7 +2,7 @@
 # release from http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 %define upstreamversion 4.0.0
 %define snapshotversion cvs20091116
-Summary: rpm packaging moira libraries, clients, and friends
+Summary: moira libraries, clients, and friends
 Group: Applications/System
 Name: moira
 Version: %{upstreamversion}
@@ -18,9 +18,7 @@ Patch0: moira-install-headers.patch
 Patch1: moira-update-server.rc.patch
 
 %description
-rpm packaging moira libraries, clients, and friends
-
-Source package for the moira library and clients.  Clone of debathena-moira.
+The moira library and clients.  Clone of debathena-moira.
 See http://scripts.mit.edu/wiki for more information.
 
 %prep
@@ -66,8 +64,6 @@ Group: Applications/System
 # Might need mit-zephyr-devel
 # Requires: mit-zephyr
 %description clients
-Clients for the Moira database
-
 Moira is the Athena Service Management system.  It serves as the 
 central repository for information about users, groups hosts, print 
 queues, and several other aspects of the Athena environment.
@@ -107,8 +103,6 @@ Group: Applications/System
 Requires(post): chkconfig
 Requires(preun): chkconfig
 %description update-server
-Athena update_server
-
 Moira is the Athena Service Management system.  It serves as the 
 central repository for information about users, groups hosts, print 
 queues, and several other aspects of the Athena environment.
@@ -139,8 +133,6 @@ fi
 Summary: The Moira library
 Group: System Environment/Libraries
 %description -n libmoira0
-The Moira library
-
 Moira is the Athena Service Management system.  It serves as the 
 central repository for information about users, groups hosts, print 
 queues, and several other aspects of the Athena environment.
@@ -162,8 +154,6 @@ Group: Development/Libraries
 # Requires: mit-zephyr
 Requires: libmoira0 = %{version}-%{release}, e2fsprogs-devel, krb5-devel, hesiod-devel
 %description -n libmoira-devel
-Development files for Moira library
-
 Moira is the Athena Service Management system.  It serves as the 
 central repository for information about users, groups hosts, print 
 queues, and several other aspects of the Athena environment.
