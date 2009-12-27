@@ -1,0 +1,131 @@
+--- /dev/null	2009-12-25 01:17:35.868011025 -0500
++++ moira-update-server.init	2009-12-26 22:31:51.000000000 -0500
+@@ -0,0 +1,128 @@
++#! /bin/sh
++# Stolen from Debathena
++
++### BEGIN INIT INFO
++# Provides:          moira-update-server
++# Required-Start:    $local_fs $remote_fs
++# Required-Stop:     $local_fs $remote_fs
++# Default-Start:     2 3 4 5
++# Default-Stop:      0 1 6
++# Short-Description: Moira update_server
++# Description:       The moira update_server program for taking updates from
++#                    moira
++### END INIT INFO
++
++# Original Author: Evan Broder <broder@mit.edu>
++# Modified for Fedora by Greg Brockman <gdb@mit.edu>
++
++# Do NOT "set -e"
++
++# PATH should only include /usr/* if it runs after the mountnfs.sh script
++
++prog=update_server
++exec=/usr/sbin/update_server
++config=/etc/athena/moira.conf
++
++# From Debathena
++PATH=/usr/sbin:/usr/bin:/sbin:/bin
++DESC="Moira update_server"
++DAEMON_ARGS=""
++SCRIPTNAME=/etc/rc.d/init.d/$NAME
++
++# Exit if the package is not installed
++[ -x "$exec" ] || exit 0
++
++# Read configuration variable file if it is present
++[ -r /etc/default/$prog ] && . /etc/default/$prog
++
++# Load the VERBOSE setting and other rcS variables
++[ -f /etc/default/rcS ] && . /etc/default/rcS
++
++# Define LSB log_* functions.
++# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
++. /lib/lsb/init-functions
++# End from Debathena
++
++# Source function library.
++. /etc/rc.d/init.d/functions
++
++[ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
++
++lockfile=/var/lock/subsys/$prog
++
++start() {
++    [ -x $exec ] || exit 5
++    [ -f $config ] || exit 6
++    echo -n $"Starting $prog: "
++    # if not running, start it up here, usually something like "daemon $exec"
++    daemon $exec
++    retval=$?
++    echo
++    [ $retval -eq 0 ] && touch $lockfile
++    return $retval
++}
++
++stop() {
++    echo -n $"Stopping $prog: "
++    # stop it here, often "killproc $prog"
++    killproc $prog
++    retval=$?
++    echo
++    [ $retval -eq 0 ] && rm -f $lockfile
++    return $retval
++}
++
++restart() {
++    stop
++    start
++}
++
++reload() {
++    restart
++}
++
++force_reload() {
++    restart
++}
++
++rh_status() {
++    # run checks to determine if the service is running or use generic status
++    status $prog
++}
++
++rh_status_q() {
++    rh_status >/dev/null 2>&1
++}
++
++
++case "$1" in
++    start)
++        rh_status_q && exit 0
++        $1
++        ;;
++    stop)
++        rh_status_q || exit 0
++        $1
++        ;;
++    restart)
++        $1
++        ;;
++    reload)
++        rh_status_q || exit 7
++        $1
++        ;;
++    force-reload)
++        force_reload
++        ;;
++    status)
++        rh_status
++        ;;
++    condrestart|try-restart)
++        rh_status_q || exit 0
++        restart
++        ;;
++    *)
++        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
++        exit 2
++esac
++exit $?

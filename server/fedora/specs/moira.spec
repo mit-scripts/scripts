@@ -1,28 +1,32 @@
-Summary: rpm packaging of libmoira
+# Make sure to update these to coincide with the most recent debathena-moira
+# release from http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
+%define debversion 4.0.0
+%define upstreamversion cvs20091116
+Summary: rpm packaging of moira libraries, clients, and friends.
 Group: Applications/System
 Name: moira
-Version: 0.%{scriptsversion}
-Release: 0
+Version: %{debversion}
+Release: 2.%{scriptsversion}.%{upstreamversion}
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
-License: GPL
-Source: %{name}.tar.gz
-Source1: debian/debathena-moira-update-server.init
+License: MIT
+Source: debathena-%{name}_%{debversion}+%{upstreamversion}.orig.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 #TODO: might really need mit-zephyr-devel, something for autotools-dev
-BuildRequires: readline-devel, patch, e2fsprogs-devel, mit-zephyr, ncurses-devel, krb5-devel, hesiod-devel
-patch0: debian/patches/install-headers
+BuildRequires: readline-devel, e2fsprogs-devel, mit-zephyr, ncurses-devel, krb5-devel, hesiod-devel
+Patch0: moira-install-headers.patch
+Patch1: moira-update-server.rc.patch
 
 %description
-rpm packaging of libmoira
+rpm packaging of moira libraries, clients, and friends.
 
 Source package for the moira library and clients.  Clone of debathena-moira.
 See http://scripts.mit.edu/wiki for more information.
 
 %prep
-%setup -q -n %{name}
-cp -p /home/scripts-build/test/trunk/server/fedora/specs/mybuild/moira-update-server.init %{SOURCE1}
+%setup -q -n debathena-%{name}-%{debversion}+%{upstreamversion}
 %patch0 -p1
+%patch1
 
 %build
 # Hack: Add /usr/include/et to put com_err.h on the C include path.
@@ -42,7 +46,7 @@ mv %{buildroot}/%{_mandir}/man1/chsh.1 \
 mv %{buildroot}/%{_mandir}/man1/chfn.1 \
    %{buildroot}/%{_mandir}/man1/chfn.moira.1
 install -m 755 -d %{buildroot}/%{_initddir}
-install -m 755 %{SOURCE1} %{buildroot}/%{_initddir}/moira-update-server
+install -m 755 moira-update-server.init %{buildroot}/%{_initddir}/moira-update-server
 # Hack: These man files are installed but no package uses them
 rm %{buildroot}/%{_mandir}/man8/dcm.8
 rm %{buildroot}/%{_mandir}/man8/moirad.8
@@ -55,15 +59,11 @@ rm %{buildroot}/%{_mandir}/man8/startreg.8
 %clean
 rm -rf %{buildroot}
 
-%changelog
-* Fri Dec 26 2009  Greg Brockman <gdb@mit.edu>
-- prerelease
-
-# moira-clients
-%package moira-clients
+# clients
+%package clients
 Summary: Clients for the Moira database
 Group: Applications/System
-%description moira-clients
+%description clients
 Clients for the Moira database
 
 Moira is the Athena Service Management system.  It serves as the 
@@ -72,7 +72,8 @@ queues, and several other aspects of the Athena environment.
 
 This package contains clients such as moira, stella, blanche, etc.
 
-%files moira-clients
+%files clients
+%defattr(755,root,root)
 %{_bindir}/addusr
 %{_bindir}/blanche
 %{_bindir}/chfn.moira
@@ -90,17 +91,18 @@ This package contains clients such as moira, stella, blanche, etc.
 %{_bindir}/dcmmaint
 %{_bindir}/usermaint
 %{_bindir}/update_test
+%defattr(-,root,root)
 %doc %{_mandir}/man1/*
 %doc %{_mandir}/man8/mrtest.8.gz
 
 
-# moira-update-server
-%package moira-update-server
+# update-server
+%package update-server
 Summary: Athena update_server
 Group: Applications/System
 Requires(post): chkconfig
 Requires(preun): chkconfig
-%description moira-update-server
+%description update-server
 Athena update_server
 
 Moira is the Athena Service Management system.  It serves as the 
@@ -110,7 +112,7 @@ queues, and several other aspects of the Athena environment.
 This package contains the update_server daemon, which is used for
 servers that automatically receive information dumps from moira.
 
-%files moira-update-server
+%files update-server
 %defattr(-,root,root)
 %doc %{_mandir}/man8/update_server.8.gz
 %config(noreplace) %{_sysconfdir}/athena/moira.conf
@@ -118,20 +120,21 @@ servers that automatically receive information dumps from moira.
 %{_sbindir}/update_server
 %{_initddir}/moira-update-server
 
-%post moira-update-server
+%post update-server
 /sbin/chkconfig --add moira-update-server
+%{_initddir}/moira-update-server condrestart
 
-%preun moira-update-server
+%preun update-server
 if [ $1 = 0 ] ; then
     /sbin/service moira-update-server stop >/dev/null 2>&1
     /sbin/chkconfig --del moira-update-server
 fi
 
 # libmoira0
-%package libmoira0
+%package -n libmoira0
 Summary: The Moira library
 Group: System Environment/Libraries
-%description libmoira0
+%description -n libmoira0
 The Moira library
 
 Moira is the Athena Service Management system.  It serves as the 
@@ -140,16 +143,20 @@ queues, and several other aspects of the Athena environment.
 
 This package contains the shared Moira library.
 
-%files libmoira0
+%post -n libmoira0 -p /sbin/ldconfig
+%postun -n libmoira0 -p /sbin/ldconfig
+
+%files -n libmoira0
+%defattr(-,root,root)
 %{_libdir}/libmoira.so.*
 
-# libmoira-dev
-%package libmoira-dev
+# libmoira-devel
+%package -n libmoira-devel
 Summary: Development files for Moira library
 Group: Development/Libraries
-Provides: libmoira-dev
+Provides: libmoira-devel
 Requires: libmoira0
-%description libmoira-dev
+%description -n libmoira-devel
 Development files for Moira library
 
 Moira is the Athena Service Management system.  It serves as the 
@@ -158,10 +165,17 @@ queues, and several other aspects of the Athena environment.
 
 This package contains headers and static libraries for development.
 
-%files libmoira-dev
+%post -n libmoira-devel -p /sbin/ldconfig
+%postun -n libmoira-devel -p /sbin/ldconfig
+
+%files -n libmoira-devel
 %defattr(-,root,root)
 %{_includedir}/*
 %doc %{_mandir}/man3/*
 %{_libdir}/libmoira.so
 %{_libdir}/libmoira.la
 %{_libdir}/libmoira.a
+
+%changelog
+* Sat Dec 26 2009 Greg Brockman <gdb@mit.edu> - 4.0.0-2.1380.cvs20091116
+- Initial packaging of Moira on Fedora

@@ -19,7 +19,7 @@
 # See /COPYRIGHT in this repository for more information.
 
 upstream_yum	= krb5 krb5.i586 httpd openssh
-upstream	= openafs $(upstream_yum)
+upstream	= openafs $(upstream_yum) moira
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i586 whoisd mit-zephyr athrun php_scripts scripts-base
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
@@ -65,6 +65,7 @@ download_stamp: | SRPMS/mit-zephyr-2.1-6.src.rpm
 	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
 	cd $(dload) && yumdownloader --source $(upstream_yum)
 	wget -P $(dload) $(openafs_url)
+	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 	touch download_stamp
 
 %.src.rpm:
