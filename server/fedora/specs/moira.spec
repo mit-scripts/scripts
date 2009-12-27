@@ -1,16 +1,16 @@
 # Make sure to update these to coincide with the most recent debathena-moira
 # release from http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
-%define debversion 4.0.0
-%define upstreamversion cvs20091116
-Summary: rpm packaging of moira libraries, clients, and friends.
+%define upstreamversion 4.0.0
+%define snapshotversion cvs20091116
+Summary: rpm of moira libraries, clients, and friends
 Group: Applications/System
 Name: moira
-Version: %{debversion}
-Release: 2.%{scriptsversion}.%{upstreamversion}
+Version: %{upstreamversion}
+Release: 1.%{scriptsversion}.%{snapshotversion}
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
 License: MIT
-Source: debathena-%{name}_%{debversion}+%{upstreamversion}.orig.tar.gz
+Source: debathena-%{name}_%{upstreamversion}+%{snapshotversion}.orig.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 #TODO: might really need mit-zephyr-devel, something for autotools-dev
 BuildRequires: readline-devel, e2fsprogs-devel, mit-zephyr, ncurses-devel, krb5-devel, hesiod-devel
@@ -18,13 +18,13 @@ Patch0: moira-install-headers.patch
 Patch1: moira-update-server.rc.patch
 
 %description
-rpm packaging of moira libraries, clients, and friends.
+rpm of moira libraries, clients, and friends
 
 Source package for the moira library and clients.  Clone of debathena-moira.
 See http://scripts.mit.edu/wiki for more information.
 
 %prep
-%setup -q -n debathena-%{name}-%{debversion}+%{upstreamversion}
+%setup -q -n debathena-%{name}-%{upstreamversion}+%{snapshotversion}
 %patch0 -p1
 %patch1
 
@@ -63,6 +63,8 @@ rm -rf %{buildroot}
 %package clients
 Summary: Clients for the Moira database
 Group: Applications/System
+# Might need mit-zephyr-devel
+# Requires: mit-zephyr
 %description clients
 Clients for the Moira database
 
@@ -100,6 +102,8 @@ This package contains clients such as moira, stella, blanche, etc.
 %package update-server
 Summary: Athena update_server
 Group: Applications/System
+# Might need mit-zephyr-devel
+# Requires: mit-zephyr
 Requires(post): chkconfig
 Requires(preun): chkconfig
 %description update-server
@@ -154,8 +158,9 @@ This package contains the shared Moira library.
 %package -n libmoira-devel
 Summary: Development files for Moira library
 Group: Development/Libraries
-Provides: libmoira-devel
-Requires: libmoira0
+# Might need mit-zephyr-devel
+# Requires: mit-zephyr
+Requires: libmoira0 = %{version}-%{release}, e2fsprogs-devel, krb5-devel, hesiod-devel
 %description -n libmoira-devel
 Development files for Moira library
 
