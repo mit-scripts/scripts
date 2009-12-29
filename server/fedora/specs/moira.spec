@@ -1,12 +1,12 @@
 # Make sure to update these to coincide with the most recent debathena-moira
 # release from http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 %define upstreamversion 4.0.0
-%define snapshotversion cvs20091116
+%define snapshotversion cvs20091228
 Summary: moira libraries, clients, and friends
 Group: Applications/System
 Name: moira
 Version: %{upstreamversion}
-Release: 1.%{scriptsversion}.%{snapshotversion}
+Release: 2.%{scriptsversion}.%{snapshotversion}
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
 License: MIT
@@ -77,6 +77,7 @@ This package contains clients such as moira, stella, blanche, etc.
 %{_bindir}/chfn.moira
 %{_bindir}/chpobox
 %{_bindir}/chsh.moira
+%{_bindir}/eunice
 %{_bindir}/mitch
 %{_bindir}/namespace
 %{_bindir}/moira
@@ -172,5 +173,8 @@ This package contains headers and static libraries for development.
 %{_libdir}/libmoira.a
 
 %changelog
+* Mon Dec 28 2009 Mitchell Berger <mitchb@mit.edu> - 4.0.0-2.1402.cvs20091228
+- Update to new upstream version, including eunice printer client
+
 * Sat Dec 26 2009 Greg Brockman <gdb@mit.edu> - 4.0.0-2.1380.cvs20091116
 - Initial packaging of Moira on Fedora
