@@ -1,0 +1,40 @@
+Index: moira/man/update_server.8
+===================================================================
+--- moira.orig/man/update_server.8     2010-01-04 21:12:54.000000000 -0500
++++ moira/man/update_server.8  2010-01-04 22:03:58.000000000 -0500
+@@ -14,7 +14,7 @@
+ it is needed.
+ .SH OPTIONS
+ While there are no command line options, a configuration file
+-.I /etc/athena/moira.conf
++.I /etc/moira.conf
+ may specify a number of options.  This file may contain blank lines,
+ comments preceeded by hash marks, boolean options, or string options.
+ A boolean option is set by just putting the name of the option on a
+@@ -48,7 +48,7 @@
+ .B sms
+ in the local realm is assumed.
+ .SH FILES
+-/etc/athena/moira.conf \- For configuration variables.
+-/etc/athena/srvtab \- It must be able to get rcmd Kerberos tickets.
++/etc/moira.conf \- For configuration variables.
++/etc/srvtab \- It must be able to get rcmd Kerberos tickets.
+ .SH "SEE ALSO"
+ The Project Athena Technical Plan section on Moira.
+Index: moira/man/moira.3
+===================================================================
+--- moira.orig/man/moira.3     2010-01-04 22:04:05.000000000 -0500
++++ moira/man/moira.3  2010-01-04 22:04:20.000000000 -0500
+@@ -239,9 +239,9 @@
+ except that it uses strcmp on the elements rather than comparing the
+ addresses directly.
+ .SH FILES
+-/usr/athena/include/moira.h
++/usr/include/moira/moira.h
+ .br
+-/usr/athena/include/mr_et.h
++/usr/include/moira/mr_et.h
+ .br
+ /tmp/tkt###
+ .SH "SEE ALSO"
+

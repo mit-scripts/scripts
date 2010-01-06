@@ -18,7 +18,7 @@ Index: moira/include/Makefile.in
  
  install:
 +	$(SRCTOP)/mkinstalldirs $(DESTDIR)$(includedir)/moira
-+	$(INSTALL) moira.h $(DESTDIR)$(includedir)/moira
++	$(INSTALL) moira.h mrclient.h $(DESTDIR)$(includedir)/moira
 Index: moira/lib/Makefile.in
 ===================================================================
 --- moira.orig/lib/Makefile.in	2009-06-01 17:05:01.000000000 -0400
