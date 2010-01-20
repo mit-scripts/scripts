@@ -259,6 +259,9 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #   easy-install.pth will tell you what was easy_installed.
 #   First use 'yum search' to see if the relevant package is now available
 #   as an RPM, and install that if it is.  If not, then use easy_install.
+#   Pass -Z to easy_install to install them unzipped, as some zipped eggs
+#   want to be able to write to ~/.python-eggs.  (Also makes sourcediving
+#   easier.)
 # - Look at `gem list` for Ruby gems.
 #   Again, use 'yum search' and prefer RPMs, but failing that, 'gem install'.
 #       ezyang: rspec-rails depends on rspec, and will override the Yum
