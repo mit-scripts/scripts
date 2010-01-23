@@ -83,11 +83,6 @@ webmaster:	root
 noc:		root
 security:	root
 hostmaster:	root
-info:		postmaster
-marketing:	postmaster
-sales:		postmaster
-support:	postmaster
-
 
 # trap decode to catch security attacks
 decode:		root
