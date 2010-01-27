@@ -32,6 +32,9 @@ r = ll.search_s(
            [host, host]))
 if len(r) != 0:
     user = pwd.getpwuid(int(r[0][1]['apacheSuexecUid'][0]))
+    serveralias = ""
+    if 'apacheServerAlias' in r[0][1]:
+        serveralias = "ServerAlias "+r[0][1]['apacheServerAlias'][0]
     print """# do not trailing-slash DocumentRoot
 
 <VirtualHost *:80>
@@ -46,7 +49,7 @@ if len(r) != 0:
 <IfModule ssl_module>
 	<VirtualHost *:443>
 		ServerName %(servername)s
-		ServerAlias %(serveralias)s
+		%(serveralias)s
 		DocumentRoot %(docroot)s
 		Alias /~%(uname)s %(homedir)s/web_scripts
 		SuExecUserGroup %(uname)s %(uname)s
@@ -55,7 +58,7 @@ if len(r) != 0:
 	</VirtualHost>
 	<VirtualHost *:444>
 		ServerName %(servername)s
-		ServerAlias %(serveralias)s
+		%(serveralias)s
 		DocumentRoot %(docroot)s
 		Alias /~%(uname)s %(homedir)s/web_scripts
 		SuExecUserGroup %(uname)s %(uname)s
@@ -65,7 +68,7 @@ if len(r) != 0:
 	</VirtualHost>
 </IfModule>""" % {
     'servername': r[0][1]['apacheServerName'][0],
-    'serveralias': r[0][1]['apacheServerAlias'][0],
+    'serveralias': serveralias,
     'docroot': r[0][1]['apacheDocumentRoot'][0],
     'uname': user[0],
     'homedir': user[5],
