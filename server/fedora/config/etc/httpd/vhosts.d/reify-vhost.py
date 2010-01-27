@@ -39,7 +39,7 @@ if len(r) != 0:
 
 <VirtualHost *:80>
 	ServerName %(servername)s
-	ServerAlias %(serveralias)s
+	%(serveralias)s
 	DocumentRoot %(docroot)s
 	Alias /~%(uname)s %(homedir)s/web_scripts
 	SuExecUserGroup %(uname)s %(uname)s
