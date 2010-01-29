@@ -314,6 +314,9 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #   o /etc/httpd/conf.d/vhost_ldap.conf
 #       replace: VhostLDAPUrl ****
 #       with: VhostLDAPUrl "ldap://scripts.mit.edu/ou=VirtualHosts,dc=scripts,dc=mit,dc=edu"
+#   o /etc/postfix/virtual-alias-{domains,maps}-ldap.cf
+#       replace: server_host *****
+#       with: server_host = ldap://scripts.mit.edu
 # to use scripts.mit.edu instead of localhost.
 # XXX: someone should write sed scripts to do this
 
