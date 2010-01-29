@@ -34,7 +34,7 @@ if len(r) != 0:
     user = pwd.getpwuid(int(r[0][1]['apacheSuexecUid'][0]))
     serveralias = ""
     if 'apacheServerAlias' in r[0][1]:
-        serveralias = "ServerAlias "+r[0][1]['apacheServerAlias'][0]
+        serveralias = "ServerAlias "+" ".join(r[0][1]['apacheServerAlias'])
     print """# do not trailing-slash DocumentRoot
 
 <VirtualHost *:80>
