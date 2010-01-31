@@ -340,6 +340,9 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
     cd /etc/postfix
     postmap virtual
 
+# Munin might not be monitoring packages that were installed after it
+    munin-node-configure --suggest --shell | sh
+
 # Run fmtutil-sys --all, which does something that makes TeX work.
     fmtutil-sys --all
     # ezyang: I got errors on xetex
