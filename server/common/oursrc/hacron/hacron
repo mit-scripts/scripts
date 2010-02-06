@@ -1,0 +1,329 @@
+#!/usr/bin/env python
+from __future__ import with_statement
+
+import glob
+import logging.handlers
+import optparse
+import os
+import socket
+import shutil
+import subprocess
+import sys
+import time
+from os import path
+
+OCF_SUCCESS=0
+OCF_ERR_GENERIC=1
+OCF_ERR_ARGS=2
+OCF_ERR_UNIMPLEMENTED=3
+OCF_ERR_PERM=4
+OCF_ERR_INSTALLED=5
+OCF_ERR_CONFIGURED=6
+OCF_NOT_RUNNING=7
+
+logger = logging.getLogger('cron')
+
+import os
+import subprocess
+
+HA_LOGD = os.environ.get('HA_LOGD') == 'xyes'
+
+class HaLogHandler(logging.Handler):
+    """
+    A handler class which writes to ha_logger.
+    """
+    def __init__(self, ha_tag):
+        """
+        Initialize the handler.  ha_tag is the name of this resource.
+        """
+        logging.Handler.__init__(self)
+        self.ha_tag = ha_tag
+
+    def emit(self, record):
+        """
+        Emit a record.
+        """
+        print 'Passed', record
+        try:
+            levelname = record.levelname
+            msg = self.format(record)
+            subprocess.call(['/usr/sbin/ha_logger', '-t', self.ha_tag, msg])
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except:
+            self.handleError(record)
+
+class lock(object):
+    def __init__(self, name):
+        self.name = name
+
+    def __enter__(self):
+        while True:
+            try:
+                self.lock = os.open(self.name, os.O_RDWR | os.O_CREAT | os.O_EXCL)
+            except OSError:
+                logger.error('Could not acquire lock %s.  Sleeping...' % self.name)
+                time.sleep(0.5)
+            else:
+                break
+            
+    def __exit__(self, type, value, traceback):
+        os.close(self.lock)
+        _remove(self.name)
+
+def _touch(path):
+    """Effectively touches a file.  Returns true if successful, false
+    otherwise"""
+    try:
+        open(path, 'a').close()
+    except IOError:
+        return False
+    else:
+        return True
+
+def _remove(dest):
+    try:
+        if path.isdir(dest):
+            os.rmdir(dest)
+        else:
+            os.remove(dest)
+    except OSError, e:
+        logging.error('Could not remove %s: %s' % (dest, e))
+        return False
+    else:
+        return True
+
+def _mkdir(dir):
+    try:
+        os.mkdir(dir)
+    except OSError, e:
+        logging.error('Could not mkdir %s: %s' % (dir, e))
+        return False
+    else:
+        return True
+    
+def _strip(name):
+    """Strip off the file extension, and leading /'s, if they exist"""
+    return path.splitext(path.basename(name))[0]
+
+def _suffix(name, suffix):
+    return '%s.%s' % (name, suffix)
+
+def _crondir(server):
+    return path.join(CRONSPOOL_DIR, _suffix(server, 'cronspool'))
+
+def _server_exists(server):
+    return path.exists(path.join(SERVER_DIR, server))
+
+def _serverfile(server):
+    return path.join(SERVER_DIR, server)
+
+def _servers():
+    """Get a list of the servers."""
+    return [_strip(f) for f in glob.glob(path.join(SERVER_DIR, '*'))]
+
+def _is_master(server):
+    crondir = path.join(CRONSPOOL_DIR, _suffix(server, 'cronspool'))
+    return path.islink(crondir)
+
+def start_cron(args, options):
+    if not _touch(_serverfile(HOSTNAME)):
+        return OCF_ERR_CONFIGURED
+
+    logger.info('Starting %s' % HOSTNAME)
+    if _is_master(HOSTNAME):
+        logger.error('%s is already the master!' % HOSTNAME)
+    for server in _servers():
+        crondir = _crondir(server)
+        if server == HOSTNAME:
+            _remove(crondir)
+            os.symlink('../cronspool', crondir)
+            logger.info('Created master symlink %s' % crondir)
+        else:
+            if path.islink(crondir):
+                _remove(crondir)
+                logger.info('Removed old master symlink: %s' % crondir)
+            if not path.exists(crondir):
+                _mkdir(crondir)
+                logger.info('Created slave dummy directory %s' % crondir)
+
+    if CRON_RESTART_COMMAND:
+        ret = subprocess.call(CRON_RESTART_COMMAND)
+        if ret:
+            logger.error('Cron restart exited with return code %d' % ret)
+            return OCF_ERR_GENERIC
+        else:
+            logger.info('Restarted crond')
+    return OCF_SUCCESS
+
+def stop_cron(args, options):
+    if not _is_master(HOSTNAME):
+        logger.error('I am not the master!')
+    else:
+        crondir = _crondir(HOSTNAME)
+        logger.info('Removing symlink %s' % crondir)
+        _remove(crondir)
+        _mkdir(crondir)
+    return OCF_SUCCESS
+
+def monitor_cron(args, options):
+    if _is_master(HOSTNAME):
+        return OCF_SUCCESS
+    else:
+        return OCF_NOT_RUNNING
+
+def validate_all_cron(args, options):
+    if not _touch(_serverfile(HOSTNAME)):
+        logger.error('Could not touch %s' % _serverfile(HOSTNAME))
+        return OCF_GENERIC_ERR
+    if not path.exists(CRONSPOOL_DIR):
+        return OCF_GENERIC_ERR
+
+def setup(args, options):
+    for d in [CRONSPOOL_DIR, SERVER_DIR]:
+        if not path.exists(d):
+            os.makedirs(d)
+            logger.info('Created %s' % d)
+        else:
+            logger.info('Already exists: %s' % d)
+
+def add_servers(servers, options):
+    for server in servers:
+        _touch(_serverfile(server))
+
+def remove_servers(servers, options):
+    for server in servers:
+        os.unlink(_serverfile(server))
+
+def meta_data_cron(args, options):
+    print """<?xml version="1.0"?>
+<!DOCTYPE resource-agent SYSTEM "ra-api-1.dtd">
+<resource-agent name="hacron" version="0.1">
+<version>1.0</version>
+
+<longdesc lang="en">
+This is the high-availability cron manager.  It uses an extremely overpowered
+clustering solution to make it so that people can have their crontabs.  Yay.
+</longdesc>
+<shortdesc lang="en">HA Cron</shortdesc>
+
+<parameters>
+<parameter name="cron_root" required="1">
+<longdesc lang="en">
+Base directory for storage of crontabs and server information.
+</longdesc>
+<shortdesc lang="en">Cron base directory</shortdesc>
+<content type="string" />
+</parameter>
+
+<parameter name="cron_restart_cmd">
+<longdesc lang="en">
+Command to restart cron.
+</longdesc>
+<shortdesc lang="en">Restart cron cmd</shortdesc>
+<content type="string" />
+</parameter>
+</parameters>
+
+<actions>
+<action name="start"        timeout="90" />
+<action name="stop"         timeout="100" />
+<action name="monitor"      timeout="20" interval="10" depth="0" start-delay="0" />
+<action name="reload"       timeout="90" />
+<action name="meta-data"    timeout="5" />
+<action name="validate-all"   timeout="30" />
+</actions>
+</resource-agent>
+"""
+    return OCF_SUCCESS
+
+def usage(parser):
+    parser.print_help()
+    return 1
+
+def _set_globals(args, options):
+    global HOSTNAME, CRONROOT, CRONSPOOL_DIR, SERVER_DIR, CRON_RESTART_COMMAND, \
+        HA_RSCTMP, OCF_RESOURCE_INSTANCE
+    if options.development:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        if HA_LOGD:
+            handler = HaLogHandler('hacron')
+        else:
+            handler = logging.handlers.SysLogHandler('/dev/log')
+        formatter = logging.Formatter("%(module)s: %(levelname)s %(message)s")
+        handler.setLevel(logging.INFO)
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+    HOSTNAME = options.server or os.environ.get('HA_CURHOST') or socket.gethostname()
+    CRONROOT = options.cronroot or os.environ.get('OCF_RESKEY_cron_root')
+    if not CRONROOT:
+        logging.error('No cron_root specified.')
+        return OCF_ERR_CONFIGURED
+    CRONSPOOL_DIR = path.join(CRONROOT, 'server-cronspools')
+    SERVER_DIR = path.join(CRONROOT, 'servers')
+    CRON_RESTART_COMMAND = options.cron_restart or os.environ.get('OCF_RESKEY_cron_restart_cmd')
+
+    HA_RSCTMP = os.environ.get('HA_RSCTMP', '/tmp')
+    OCF_RESOURCE_INSTANCE = os.environ.get('OCF_RESOURCE_INSTANCE', 'default')
+    return OCF_SUCCESS
+
+def main():
+    cmds = ['start', 'reload', 'stop', 'monitor', 'validate-all', 'setup',
+            'remove-servers', 'meta-data']
+    usage_str = "usage: %%prog [%s]" % '|'.join(cmds)
+    parser = optparse.OptionParser(usage=usage_str)
+    parser.add_option("-s", "--server",
+                      action="store", dest="server",
+                      default=None,
+                      help="choose which server to run script as")
+    parser.add_option("-c", "--cronroot",
+                      action="store", dest="cronroot",
+                      default=None,
+                      help="pick root of cron dir")
+    parser.add_option("-d", "--development",
+                      action="store_true", dest="development",
+                      default=False,
+                      help="run in production")
+    parser.add_option("-r", "--cron-restart",
+                      action="store", dest="cron_restart",
+                      default=None,
+                      help="run in production")
+    (options, args) = parser.parse_args()
+    if len(args) < 1:
+        return usage(parser)
+    command = args[0]
+    args = args[1:]
+
+    if command == 'meta-data':
+        return meta_data_cron(args, options)
+    globals_status = _set_globals(args, options)
+    with lock('%s/hacron-%s.lock' % (HA_RSCTMP, OCF_RESOURCE_INSTANCE)):
+        if globals_status:
+            return globals_status
+        if command == 'start':
+            return start_cron(args, options)
+        elif command == 'reload':
+            return start_cron(args, options)
+        elif command == 'stop':
+            return stop_cron(args, options)
+        elif command == 'monitor':
+            return monitor_cron(args, options)
+        elif command == 'validate-all':
+            return validate_all_cron(args, options)
+        elif command == 'setup':
+            return setup(args, options)
+        elif command == 'add-servers':
+            return remove_servers(args, options)
+        else:
+            usage(parser)
+            return OCF_ERR_UNIMPLEMENTED
+
+if __name__ == '__main__':
+    try:
+        ret = main()
+    except Exception, e:
+        logger.error('exception from main: %s' % e)
+        ret = OCF_ERR_GENERIC
+        raise
+    sys.exit(ret)
