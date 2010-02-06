@@ -58,19 +58,24 @@ class lock(object):
         self.name = name
 
     def __enter__(self):
+        tries = 0
         while True:
             try:
                 self.lock = os.open(self.name, os.O_RDWR | os.O_CREAT | os.O_EXCL)
             except OSError:
                 logger.error('Could not acquire lock %s.  Sleeping...' % self.name)
                 time.sleep(0.5)
+                tries += 1
+                if not tries % 60:
+                    logger.error("Waited too long; got bored.  Clearing lock %s." % self.name)
+                    _remove(self.name)
             else:
                 break
             
     def __exit__(self, type, value, traceback):
         os.close(self.lock)
         _remove(self.name)
-
+        
 def _touch(path):
     """Effectively touches a file.  Returns true if successful, false
     otherwise"""
