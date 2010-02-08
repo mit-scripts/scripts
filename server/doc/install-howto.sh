@@ -271,7 +271,7 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #   that for things in the beta repo, you'll need 'pear install package-beta'.
 #   (you might get complaints about the php_scripts module; ignore them)
 # - Look at `pecl list` for PECL things.  'yum search', and if you must,
-#   'pecl install' needed items. (as of 2009-12-18 there are no extra pecl things)
+#   'pecl install' needed items.
     # Automating this... will require a lot of batonning between
     # the servers. Probably best way to do it is to write an actual
     # script.
