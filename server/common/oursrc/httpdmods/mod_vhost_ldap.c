@@ -95,6 +95,8 @@ typedef struct mod_vhost_ldap_request_t {
 char *attributes[] =
   { "apacheServerName", "apacheDocumentRoot", "apacheScriptAlias", "apacheSuexecUid", "apacheSuexecGid", "apacheServerAdmin", 0 };
 
+static int total_modules;
+
 #if (APR_MAJOR_VERSION >= 1)
 static APR_OPTIONAL_FN_TYPE(uldap_connection_close) *util_ldap_connection_close;
 static APR_OPTIONAL_FN_TYPE(uldap_connection_find) *util_ldap_connection_find;
@@ -118,6 +120,13 @@ static void ImportULDAPOptFn(void)
 
 static int mod_vhost_ldap_post_config(apr_pool_t *p, apr_pool_t *plog, apr_pool_t *ptemp, server_rec *s)
 {
+    module **m;
+
+    /* Stolen from modules/generators/mod_cgid.c */
+    total_modules = 0;
+    for (m = ap_preloaded_modules; *m != NULL; m++)
+	total_modules++;
+
     /* make sure that mod_ldap (util_ldap) is loaded */
     if (ap_find_linked_module("util_ldap.c") == NULL) {
         ap_log_error(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, s,
@@ -422,7 +431,6 @@ command_rec mod_vhost_ldap_cmds[] = {
 #define FILTER_LENGTH MAX_STRING_LEN
 static int mod_vhost_ldap_translate_name(request_rec *r)
 {
-    request_rec *top = (r->main)?r->main:r;
     mod_vhost_ldap_request_t *reqc;
     apr_table_t *e;
     int failures = 0;
@@ -620,17 +628,31 @@ fallback:
 	return DECLINED;
     }
 
-    top->server->server_hostname = apr_pstrdup (top->pool, reqc->name);
+    if ((r->server = apr_pmemdup(r->pool, r->server,
+				 sizeof(*r->server))) == NULL)
+	return HTTP_INTERNAL_SERVER_ERROR;
+
+    r->server->server_hostname = reqc->name;
 
     if (reqc->admin) {
-	top->server->server_admin = apr_pstrdup (top->pool, reqc->admin);
+	r->server->server_admin = reqc->admin;
     }
 
     // set environment variables
-    e = top->subprocess_env;
+    e = r->subprocess_env;
     apr_table_addn (e, "SERVER_ROOT", reqc->docroot);
 
-    core->ap_document_root = apr_pstrdup(top->pool, reqc->docroot);
+    if ((r->server->module_config =
+	 apr_pmemdup(r->pool, r->server->module_config,
+		     sizeof(void *) *
+		     (total_modules + DYNAMIC_MODULE_LIMIT))) == NULL)
+	return HTTP_INTERNAL_SERVER_ERROR;
+
+    if ((core = apr_pmemdup(r->pool, core, sizeof(*core))) == NULL)
+	return HTTP_INTERNAL_SERVER_ERROR;
+    ap_set_module_config(r->server->module_config, &core_module, core);
+
+    core->ap_document_root = reqc->docroot;
 
     ap_log_rerror(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, 0, r,
 		  "[mod_vhost_ldap.c]: translated to %s", r->filename);
