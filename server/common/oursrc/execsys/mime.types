@@ -398,6 +398,7 @@ image/naplps
 image/png			png
 image/prs.btif
 image/prs.pti
+image/svg+xml			svg
 image/tiff			tiff tif
 image/vnd.cns.inf2
 image/vnd.djvu			djvu djv
