@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import with_statement
 import glob
 import logging.handlers
 import fcntl
@@ -28,6 +29,7 @@ class HacronError(Exception):
     def __init__(self, errno, msg='Something went wrong'):
         self.errno = errno
         self.msg = msg
+        logger.error(msg)
     
 class HaLogHandler(logging.Handler):
     """
@@ -79,6 +81,10 @@ def _touch(path):
         return True
 
 def _remove(dest):
+    if not path.exists(dest) and not path.islink(dest):
+        logger.info('Tried to remove nonexistant path %s' % dest)
+        return True
+
     try:
         if path.isdir(dest):
             os.rmdir(dest)
@@ -127,7 +133,12 @@ def _restart_crond(args, options):
         cmd = ['echo', 'called crond reset']
     else:
         cmd = ['service', 'crond', 'reload']
-    subprocess.check_call(cmd)
+    try:
+        subprocess.check_call(cmd)
+    except OSError, e:
+        raise HacronError(OCF_ERR_GENERIC, 'Cron restart exited with return code %d' % e.errno)
+    else:
+        logger.info('Restarted crond')
 
 def start_cron(args, options):
     if not _touch(_serverfile(HOSTNAME)):
@@ -154,12 +165,9 @@ def start_cron(args, options):
                 _mkdir(crondir)
                 logger.info('Created slave dummy directory %s' % crondir)
     try:
-        _restart_crond()
+        _restart_crond(args, options)
     except OSError, e:
-        logger.error('Cron restart exited with return code %d' % e.errno)
-        return OCF_ERR_GENERIC
-    else:
-        logger.info('Restarted crond')
+        return e.errno
     return OCF_SUCCESS
 
 def stop_cron(args, options):
@@ -174,12 +182,9 @@ def stop_cron(args, options):
         _mkdir(crondir)
         # TODO: should we do something else here?
         try:
-            _restart_crond()
+            _restart_crond(args, options)
         except OSError, e:
-            logger.error('Cron restart exited with return code %d' % e.errno)
-            return OCF_ERR_GENERIC
-        else:
-            logger.info('Restarted crond')
+            return e.errno
         return OCF_SUCCESS
 
 def monitor_cron(args, options):
@@ -275,7 +280,7 @@ def _set_globals(args, options):
     return OCF_SUCCESS
 
 def main():
-    usage_str = """usage: %%prog [-s server] [-c cronroot] [-d] cmd
+    usage_str = """usage: %prog [-s server] [-c cronroot] [-d] cmd
 
 Script for starting and stopping cron in a multiserver environment.
 One server is designated the master.
@@ -319,7 +324,6 @@ remove-servers server1 server2 ...: Take a list of servers out of the
     try:
         _set_globals(args, options)
     except HacronError, e:
-        logger.error(e.msg)
         return e.errno
 
     with lock('%s/hacron-%s.lock' % (HA_RSCTMP, OCF_RESOURCE_INSTANCE)):
