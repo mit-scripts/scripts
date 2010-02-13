@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-from __future__ import with_statement
-
 import glob
 import logging.handlers
+import fcntl
 import optparse
 import os
 import socket
@@ -23,11 +22,13 @@ OCF_NOT_RUNNING=7
 
 logger = logging.getLogger('cron')
 
-import os
-import subprocess
+HA_LOGD = os.environ.get('HA_LOGD') == 'yes'
 
-HA_LOGD = os.environ.get('HA_LOGD') == 'xyes'
-
+class HacronError(Exception):
+    def __init__(self, errno, msg='Something went wrong'):
+        self.errno = errno
+        self.msg = msg
+    
 class HaLogHandler(logging.Handler):
     """
     A handler class which writes to ha_logger.
@@ -54,27 +55,18 @@ class HaLogHandler(logging.Handler):
             self.handleError(record)
 
 class lock(object):
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, filename):
+        self.filename = filename
+        if not _touch(filename):
+            raise
 
     def __enter__(self):
-        tries = 0
-        while True:
-            try:
-                self.lock = os.open(self.name, os.O_RDWR | os.O_CREAT | os.O_EXCL)
-            except OSError:
-                logger.error('Could not acquire lock %s.  Sleeping...' % self.name)
-                time.sleep(0.5)
-                tries += 1
-                if not tries % 60:
-                    logger.error("Waited too long; got bored.  Clearing lock %s." % self.name)
-                    _remove(self.name)
-            else:
-                break
+        f = open(self.filename)
+        fcntl.flock(f, fcntl.LOCK_EX)
             
     def __exit__(self, type, value, traceback):
-        os.close(self.lock)
-        _remove(self.name)
+        f = open(self.filename)
+        fcntl.flock(f, fcntl.LOCK_UN)
         
 def _touch(path):
     """Effectively touches a file.  Returns true if successful, false
@@ -117,9 +109,6 @@ def _suffix(name, suffix):
 def _crondir(server):
     return path.join(CRONSPOOL_DIR, _suffix(server, 'cronspool'))
 
-def _server_exists(server):
-    return path.exists(path.join(SERVER_DIR, server))
-
 def _serverfile(server):
     return path.join(SERVER_DIR, server)
 
@@ -131,17 +120,30 @@ def _is_master(server):
     crondir = path.join(CRONSPOOL_DIR, _suffix(server, 'cronspool'))
     return path.islink(crondir)
 
+def _restart_crond(args, options):
+    # TODO: insert correct cmd here.  Also, should we capture and log
+    # stdout?
+    if options.development:
+        cmd = ['echo', 'called crond reset']
+    else:
+        cmd = ['service', 'crond', 'reload']
+    subprocess.check_call(cmd)
+
 def start_cron(args, options):
     if not _touch(_serverfile(HOSTNAME)):
         return OCF_ERR_CONFIGURED
+    elif _is_master(HOSTNAME):
+        logger.error('%s is already the master!' % HOSTNAME)
+        return OCF_SUCCESS
 
     logger.info('Starting %s' % HOSTNAME)
-    if _is_master(HOSTNAME):
-        logger.error('%s is already the master!' % HOSTNAME)
     for server in _servers():
         crondir = _crondir(server)
         if server == HOSTNAME:
-            _remove(crondir)
+            # Get rid of current crondir, and leave if that fails.
+            if not _remove(crondir):
+                logger.error("Could not remove dummy cronspool dir %s" % crondir)
+                return OCF_ERR_GENERIC
             os.symlink('../cronspool', crondir)
             logger.info('Created master symlink %s' % crondir)
         else:
@@ -151,27 +153,38 @@ def start_cron(args, options):
             if not path.exists(crondir):
                 _mkdir(crondir)
                 logger.info('Created slave dummy directory %s' % crondir)
-
-    if CRON_RESTART_COMMAND:
-        ret = subprocess.call(CRON_RESTART_COMMAND)
-        if ret:
-            logger.error('Cron restart exited with return code %d' % ret)
-            return OCF_ERR_GENERIC
-        else:
-            logger.info('Restarted crond')
+    try:
+        _restart_crond()
+    except OSError, e:
+        logger.error('Cron restart exited with return code %d' % e.errno)
+        return OCF_ERR_GENERIC
+    else:
+        logger.info('Restarted crond')
     return OCF_SUCCESS
 
 def stop_cron(args, options):
+    """Stop cron."""
     if not _is_master(HOSTNAME):
         logger.error('I am not the master!')
+        return OCF_NOT_RUNNING
     else:
         crondir = _crondir(HOSTNAME)
         logger.info('Removing symlink %s' % crondir)
         _remove(crondir)
         _mkdir(crondir)
-    return OCF_SUCCESS
+        # TODO: should we do something else here?
+        try:
+            _restart_crond()
+        except OSError, e:
+            logger.error('Cron restart exited with return code %d' % e.errno)
+            return OCF_ERR_GENERIC
+        else:
+            logger.info('Restarted crond')
+        return OCF_SUCCESS
 
 def monitor_cron(args, options):
+    """Check whether cron is running.  For now just makes sure that the
+    current machine is the master, although this should likely be fixed."""
     if _is_master(HOSTNAME):
         return OCF_SUCCESS
     else:
@@ -181,8 +194,10 @@ def validate_all_cron(args, options):
     if not _touch(_serverfile(HOSTNAME)):
         logger.error('Could not touch %s' % _serverfile(HOSTNAME))
         return OCF_GENERIC_ERR
-    if not path.exists(CRONSPOOL_DIR):
+    elif not path.exists(CRONSPOOL_DIR):
         return OCF_GENERIC_ERR
+    else:
+        return OCF_SUCCESS
 
 def setup(args, options):
     for d in [CRONSPOOL_DIR, SERVER_DIR]:
@@ -192,11 +207,8 @@ def setup(args, options):
         else:
             logger.info('Already exists: %s' % d)
 
-def add_servers(servers, options):
-    for server in servers:
-        _touch(_serverfile(server))
-
 def remove_servers(servers, options):
+    """Remove servers from the list of available ones."""
     for server in servers:
         os.unlink(_serverfile(server))
 
@@ -220,14 +232,6 @@ Base directory for storage of crontabs and server information.
 <shortdesc lang="en">Cron base directory</shortdesc>
 <content type="string" />
 </parameter>
-
-<parameter name="cron_restart_cmd">
-<longdesc lang="en">
-Command to restart cron.
-</longdesc>
-<shortdesc lang="en">Restart cron cmd</shortdesc>
-<content type="string" />
-</parameter>
 </parameters>
 
 <actions>
@@ -247,7 +251,7 @@ def usage(parser):
     return 1
 
 def _set_globals(args, options):
-    global HOSTNAME, CRONROOT, CRONSPOOL_DIR, SERVER_DIR, CRON_RESTART_COMMAND, \
+    global HOSTNAME, CRONROOT, CRONSPOOL_DIR, SERVER_DIR, \
         HA_RSCTMP, OCF_RESOURCE_INSTANCE
     if options.development:
         logging.basicConfig(level=logging.DEBUG)
@@ -263,20 +267,33 @@ def _set_globals(args, options):
     HOSTNAME = options.server or os.environ.get('HA_CURHOST') or socket.gethostname()
     CRONROOT = options.cronroot or os.environ.get('OCF_RESKEY_cron_root')
     if not CRONROOT:
-        logging.error('No cron_root specified.')
-        return OCF_ERR_CONFIGURED
+        raise HacronError(OCF_ERR_CONFIGURED, 'No cron_root specified.')
     CRONSPOOL_DIR = path.join(CRONROOT, 'server-cronspools')
     SERVER_DIR = path.join(CRONROOT, 'servers')
-    CRON_RESTART_COMMAND = options.cron_restart or os.environ.get('OCF_RESKEY_cron_restart_cmd')
-
     HA_RSCTMP = os.environ.get('HA_RSCTMP', '/tmp')
     OCF_RESOURCE_INSTANCE = os.environ.get('OCF_RESOURCE_INSTANCE', 'default')
     return OCF_SUCCESS
 
 def main():
-    cmds = ['start', 'reload', 'stop', 'monitor', 'validate-all', 'setup',
-            'remove-servers', 'meta-data']
-    usage_str = "usage: %%prog [%s]" % '|'.join(cmds)
+    usage_str = """usage: %%prog [-s server] [-c cronroot] [-d] cmd
+
+Script for starting and stopping cron in a multiserver environment.
+One server is designated the master.
+
+== HA available commands: ==
+start: Make this server into the master and reload crond.
+reload: Same as start.
+stop: Demote this server to a spare and reload crond.
+monitor: Indicate whether this server is successfully the master.
+validate-all: Make sure that things look right and this server is
+  ready to be promoted to master.
+meta-data: Print out the XML meta data for this service
+
+== User-only commands: ==
+setup: Create the folders, etc. necessary for running hacron.
+remove-servers server1 server2 ...: Take a list of servers out of the
+  list of available ones.
+    """
     parser = optparse.OptionParser(usage=usage_str)
     parser.add_option("-s", "--server",
                       action="store", dest="server",
@@ -289,11 +306,7 @@ def main():
     parser.add_option("-d", "--development",
                       action="store_true", dest="development",
                       default=False,
-                      help="run in production")
-    parser.add_option("-r", "--cron-restart",
-                      action="store", dest="cron_restart",
-                      default=None,
-                      help="run in production")
+                      help="run in development mode")
     (options, args) = parser.parse_args()
     if len(args) < 1:
         return usage(parser)
@@ -302,10 +315,14 @@ def main():
 
     if command == 'meta-data':
         return meta_data_cron(args, options)
-    globals_status = _set_globals(args, options)
+
+    try:
+        _set_globals(args, options)
+    except HacronError, e:
+        logger.error(e.msg)
+        return e.errno
+
     with lock('%s/hacron-%s.lock' % (HA_RSCTMP, OCF_RESOURCE_INSTANCE)):
-        if globals_status:
-            return globals_status
         if command == 'start':
             return start_cron(args, options)
         elif command == 'reload':
@@ -318,7 +335,7 @@ def main():
             return validate_all_cron(args, options)
         elif command == 'setup':
             return setup(args, options)
-        elif command == 'add-servers':
+        elif command == 'remove-servers':
             return remove_servers(args, options)
         else:
             usage(parser)
