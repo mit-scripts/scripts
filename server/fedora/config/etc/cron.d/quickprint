@@ -1,0 +1,2 @@
+MAILTO=quickprint@mit.edu
+13 */6 * * * quickprint /mit/quickprint/libexec/cleanup_tmp >/dev/null
