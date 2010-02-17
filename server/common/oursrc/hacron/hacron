@@ -26,8 +26,8 @@ logger = logging.getLogger('cron')
 HA_LOGD = os.environ.get('HA_LOGD') == 'yes'
 
 class HacronError(Exception):
-    def __init__(self, errno, msg='Something went wrong'):
-        self.errno = errno
+    def __init__(self, ocf_errno, msg='Something went wrong'):
+        self.ocf_errno = ocf_errno
         self.msg = msg
         logger.error(msg)
     
@@ -82,7 +82,7 @@ def _touch(path):
 
 def _remove(dest):
     if not path.exists(dest) and not path.islink(dest):
-        logger.info('Tried to remove nonexistant path %s' % dest)
+        logger.error('Tried to remove nonexistant path %s' % dest)
         return True
 
     try:
@@ -141,7 +141,9 @@ def _restart_crond(args, options):
         logger.info('Restarted crond')
 
 def start_cron(args, options):
-    if not _touch(_serverfile(HOSTNAME)):
+    serverfile = _serverfile(HOSTNAME)
+    if not _touch(serverfile):
+        logger.error('Could not touch %s' % serverfile)
         return OCF_ERR_CONFIGURED
     elif _is_master(HOSTNAME):
         logger.error('%s is already the master!' % HOSTNAME)
@@ -166,8 +168,8 @@ def start_cron(args, options):
                 logger.info('Created slave dummy directory %s' % crondir)
     try:
         _restart_crond(args, options)
-    except OSError, e:
-        return e.errno
+    except HacronException, e:
+        return e.ocf_errno
     return OCF_SUCCESS
 
 def stop_cron(args, options):
@@ -183,8 +185,8 @@ def stop_cron(args, options):
         # TODO: should we do something else here?
         try:
             _restart_crond(args, options)
-        except OSError, e:
-            return e.errno
+        except HacronException, e:
+            return e.ocf_errno
         return OCF_SUCCESS
 
 def monitor_cron(args, options):
@@ -198,9 +200,9 @@ def monitor_cron(args, options):
 def validate_all_cron(args, options):
     if not _touch(_serverfile(HOSTNAME)):
         logger.error('Could not touch %s' % _serverfile(HOSTNAME))
-        return OCF_GENERIC_ERR
+        return OCF_ERR_GENERIC
     elif not path.exists(CRONSPOOL_DIR):
-        return OCF_GENERIC_ERR
+        return OCF_ERR_GENERIC
     else:
         return OCF_SUCCESS
 
@@ -215,7 +217,10 @@ def setup(args, options):
 def remove_servers(servers, options):
     """Remove servers from the list of available ones."""
     for server in servers:
-        os.unlink(_serverfile(server))
+        _remove(_serverfile(server))
+        _remove(_crondir(server))
+        logger.info('Removed %s from list of available ones' % server)
+
 
 def meta_data_cron(args, options):
     print """<?xml version="1.0"?>
@@ -324,7 +329,7 @@ remove-servers server1 server2 ...: Take a list of servers out of the
     try:
         _set_globals(args, options)
     except HacronError, e:
-        return e.errno
+        return e.ocf_errno
 
     with lock('%s/hacron-%s.lock' % (HA_RSCTMP, OCF_RESOURCE_INSTANCE)):
         if command == 'start':
