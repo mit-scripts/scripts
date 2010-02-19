@@ -184,28 +184,14 @@
       * a UID less than AP_UID_MIN.  Tsk tsk.
       */
 -    if ((uid == 0) || (uid < AP_UID_MIN)) {
-+    if ((uid == 0) || (uid < AP_UID_MIN && uid != 102)) {
++    if ((uid == 0) || (uid < AP_UID_MIN && uid != 102)) { /* uid 102 = signup  */
          log_err("cannot run as forbidden uid (%d/%s)\n", uid, cmd);
          exit(107);
      }
-@@ -484,6 +563,21 @@
+@@ -484,6 +563,7 @@
          log_err("failed to setuid (%ld: %s)\n", uid, cmd);
          exit(110);
      }
-+    if (is_selinux_enabled()) {
-+        if (uid == 102) {
-+            if (setexeccon("system_u:system_r:signup_t:s0") == -1) {
-+                log_err("failed to setexeccon (%ld: %s) to signup_t\n", uid, cmd);
-+                exit(201);
-+            }
-+        } else {
-+            if (setexeccon("user_u:user_r:user_t:s0") == -1) {
-+                log_err("failed to setexeccon (%ld: %s) to user_t\n", uid, cmd);
-+                exit(202);
-+            }
-+        }
-+    }
-+
 +    setenv("HOME", target_homedir, 1);
  
      /*
