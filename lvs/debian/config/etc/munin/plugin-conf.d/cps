@@ -1,0 +1,6 @@
+[cps_1_0]
+env.graph_title Load balanced SMTP connections
+[cps_2_0]
+env.graph_title Load balanced Apache connections
+[cps_3_0]
+env.graph_title Load balanced miscellaneous connections
