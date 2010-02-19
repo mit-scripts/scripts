@@ -166,7 +166,7 @@ sub config
 	my $port = shift;
 	my $ipvs = shift;
 
-	print "graph_title Loadbalanced ",($vip?$vip:"*"),"->",$port," connections\n";
+	print "graph_title ", ($ENV{"graph_title"} || "Loadbalanced ".($vip?$vip:"*")."->".$port." connections"),"\n";
 	print "graph_args -l 0\n";
 	print "graph_total total\n";
 	print "graph_vlabel connections / \${graph_period}\n";
