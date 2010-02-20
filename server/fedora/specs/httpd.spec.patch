@@ -59,3 +59,12 @@
          --enable-pie \
          --with-pcre \
  	$*
+@@ -442,7 +458,7 @@
+ %config %{contentdir}/error/*.var
+ %config %{contentdir}/error/include/*.html
+
+-%attr(0700,root,root) %dir %{_localstatedir}/run/httpd
++%attr(0755,root,root) %dir %{_localstatedir}/run/httpd
+ %attr(0700,root,root) %dir %{_localstatedir}/log/httpd
+ %attr(0700,apache,apache) %dir %{_localstatedir}/lib/dav
+ %attr(0700,apache,apache) %dir %{_localstatedir}/cache/mod_proxy

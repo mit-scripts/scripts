@@ -352,9 +352,7 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
     mkdir /tmp/sessions
     chmod 01777 /tmp/sessions
 
-# Ensure that fcgid isn't broken:
-    chmod 755 /var/run/httpd
-    # ezyang: The below didn't exist for me
+# Ensure fcgid isn't broken
     chmod 755 /var/run/httpd/mod_fcgid
     chmod 755 /var/run/mod_fcgid
 
