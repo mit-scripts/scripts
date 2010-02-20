@@ -353,8 +353,7 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
     chmod 01777 /tmp/sessions
 
 # Ensure fcgid isn't broken
-    chmod 755 /var/run/httpd/mod_fcgid
-    chmod 755 /var/run/mod_fcgid
+    chmod 755 /var/run/mod_fcgid # ezyang: I suspect this is no longer necessary
 
 # Fix etc by making sure none of our config files got overwritten
     cd /etc
