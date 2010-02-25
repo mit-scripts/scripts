@@ -1,12 +1,12 @@
 # Make sure to update these to coincide with the most recent debathena-moira
 # release from http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 %define upstreamversion 4.0.0
-%define snapshotversion svn20100104
+%define snapshotversion svn20100223
 Summary: moira libraries, clients, and friends
 Group: Applications/System
 Name: moira
 Version: %{upstreamversion}
-Release: 3.%{scriptsversion}.%{snapshotversion}
+Release: 4.%{scriptsversion}.%{snapshotversion}
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
 License: MIT
@@ -14,7 +14,6 @@ Source: debathena-%{name}_%{upstreamversion}+%{snapshotversion}.orig.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 #TODO: might really need mit-zephyr-devel, something for autotools-dev
 BuildRequires: readline-devel, e2fsprogs-devel, ncurses-devel, krb5-devel, hesiod-devel
-Patch0: moira-install-headers.patch
 Patch1: moira-update-server.rc.patch
 Patch2: moira-fix-manpage-paths.patch
 
@@ -24,7 +23,6 @@ See http://scripts.mit.edu/wiki for more information.
 
 %prep
 %setup -q -n debathena-%{name}-%{upstreamversion}+%{snapshotversion}
-%patch0 -p1
 %patch1
 %patch2 -p1
 
@@ -217,6 +215,10 @@ This package contains headers and static libraries for development.
 %{_libdir}/libmrclient.a
 
 %changelog
+* Thu Feb 25 2010 Mitchell Berger <mitchb@mit.edu> - 4.0.0-4.1489M.svn20100223
+- Update to new original upstream version (svn snapshot)
+- Drop install-headers patch which was incorporated upstream (from Debathena)
+
 * Tue Jan 05 2010 Mitchell Berger <mitchb@mit.edu> - 4.0.0-3.1405M.svn20100104
 - Update to new original upstream version (svn snapshot)
 - Build and install libmrclient as a shared library (from Debathena)
