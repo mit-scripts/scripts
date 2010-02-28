@@ -66,7 +66,7 @@ download: download_stamp
 download_stamp: | SRPMS/mit-zephyr-2.1-6.src.rpm
 	@mkdir -p $(dload); \
 	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
-	cd $(dload) && yumdownloader --source $(upstream_yum)
+	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
 	wget -P $(dload) $(openafs_url)
 	wget -P $(dload) $(clusterglue_url)
 	wget -P $(dload) $(heartbeat_url)
