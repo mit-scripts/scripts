@@ -1,15 +1,15 @@
---- httpd.spec.orig	2009-11-08 08:58:40.000000000 -0500
-+++ httpd.spec	2009-11-08 09:00:43.000000000 -0500
+--- httpd.spec.orig	2010-02-28 05:01:55.000000000 -0500
++++ httpd.spec	2010-02-28 05:03:44.000000000 -0500
 @@ -7,7 +7,7 @@
  Summary: Apache HTTP Server
  Name: httpd
- Version: 2.2.13
+ Version: 2.2.14
 -Release: 1%{?dist}
 +Release: 1.scripts.%{scriptsversion}%{?dist}
  URL: http://httpd.apache.org/
  Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.gz
  Source1: index.html
-@@ -55,6 +55,13 @@
+@@ -57,6 +57,13 @@
  Conflicts: pcre < 4.0
  Requires: httpd-tools = %{version}-%{release}, apr-util-ldap
  
@@ -23,15 +23,15 @@
  %description
  The Apache HTTP Server is a powerful, efficient, and extensible
  web server.
-@@ -101,6 +107,7 @@
- BuildRequires: openssl-devel, distcache-devel
+@@ -104,6 +111,7 @@
  Requires(post): openssl >= 0.9.7f-4, /bin/cat
+ Requires(pre): httpd
  Requires: httpd = 0:%{version}-%{release}, httpd-mmn = %{mmn}
 +Provides: scripts-mod_ssl
  Obsoletes: stronghold-mod_ssl
  
  %description -n mod_ssl
-@@ -128,6 +135,12 @@
+@@ -133,6 +141,12 @@
  # Patch in vendor/release string
  sed "s/@RELEASE@/%{vstring}/" < %{PATCH20} | patch -p1
  
@@ -44,7 +44,7 @@
  # Safety check: prevent build if defined MMN does not equal upstream MMN.
  vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
  if test "x${vmmn}" != "x%{mmn}"; then
-@@ -176,10 +188,12 @@
+@@ -181,10 +195,12 @@
          --with-apr=%{_prefix} --with-apr-util=%{_prefix} \
  	--enable-suexec --with-suexec \
  	--with-suexec-caller=%{suexec_caller} \
