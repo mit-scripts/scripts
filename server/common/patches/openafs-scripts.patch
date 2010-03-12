@@ -177,7 +177,7 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
      afs_int32 flag, set_parent_pag = 0;
  
 +    if (areq->uid == globalpag && areq->realuid != AFSAGENT_UID) {
-+	return 0;
++	return EACCES;
 +    }
 +
      AFS_STATCNT(PSetTokens);
@@ -189,7 +189,7 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
  
 +    if (areq->uid == globalpag && areq->realuid != AFSAGENT_UID &&
 +	areq->realuid != 0 && areq->realuid != SIGNUP_UID)
-+	return 0;
++	return EDOM;
 +
      AFS_STATCNT(PGetTokens);
      if (!afs_resourceinit_flag)	/* afs daemons haven't started yet */
@@ -199,7 +199,7 @@ diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl
      register struct unixuser *tu;
  
 +    if (areq->uid == globalpag && areq->realuid != AFSAGENT_UID) {
-+	return 0;
++	return EACCES;
 +    }
 +
      AFS_STATCNT(PUnlog);
