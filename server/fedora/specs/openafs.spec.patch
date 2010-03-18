@@ -87,20 +87,3 @@
  
  ##############################################################################
  #
-@@ -1209,7 +1222,7 @@
- rm -rf $RPM_BUILD_ROOT%{_sbindir}/kdump*
- 
- # remove man pages from programs deleted above
--for f in 1/dlog 1/dpass 1/livesys 1/xstat_cm_test 1/xstat_fs_test 8/kdb 8/kpwvalid 8/xfs_size_check 1/package_test 5/package 8/package ; do
-+for f in 1/compile_et 1/dlog 1/dpass 1/livesys 1/xstat_cm_test 1/xstat_fs_test 8/kdb 8/kpwvalid 8/xfs_size_check 1/package_test 5/package 8/package ; do
-   rm -f $RPM_BUILD_ROOT%{_mandir}/man$f.*
- done
- 
-@@ -1569,7 +1582,6 @@
- %{_libdir}/librxstat.a
- %{_libdir}/libubik.a
- %{_mandir}/man1/rxgen.*
--%{_mandir}/man1/compile_et.*
- 
- %if %{build_dkmspkg}
- %files -n dkms-%{name}
