@@ -131,7 +131,7 @@ upstream: mkdir-tree download
 all:
 	make $(allsrc)
 
-$(oursrc): rpmbuild_args += --define 'scriptsversion $(shell svnversion ${oursrcdir}/$** | tr ':' '_')'
+$(oursrc): rpmbuild_args += --define 'scriptsversion $(shell svnversion ${oursrcdir}/$** | tr ':' '_' | sed -e 's/-.*/0.uncommitted/')'
 
 $(filter %.i586,$(oursrc)): %.i586: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
