@@ -60,6 +60,14 @@ nsSystemIndex: false
 nsIndexType: eq
 nsIndexType: pres
 
+add cn=scriptsVhostAccount, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
+objectClass: top
+objectClass: nsIndex
+cn: scriptsVhostAccount
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+
 add cn=memberuid, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
 objectClass: top
 objectClass: nsIndex
