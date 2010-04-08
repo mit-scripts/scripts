@@ -1,12 +1,12 @@
 # Make sure to update these to coincide with the most recent debathena-moira
 # release from http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 %define upstreamversion 4.0.0
-%define snapshotversion svn20100225
+%define snapshotversion svn20100405
 Summary: moira libraries, clients, and friends
 Group: Applications/System
 Name: moira
 Version: %{upstreamversion}
-Release: 5.%{scriptsversion}.%{snapshotversion}
+Release: 6.%{scriptsversion}.%{snapshotversion}
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
 License: MIT
@@ -215,6 +215,9 @@ This package contains headers and static libraries for development.
 %{_libdir}/libmrclient.a
 
 %changelog
+* Thu Apr 08 2010 Mitchell Berger <mitchb@mit.edu> - 4.0.0-6.1534.svn20100405
+- Update to new original upstream version (svn snapshot)
+
 * Thu Feb 25 2010 Mitchell Berger <mitchb@mit.edu> - 4.0.0-5.1490.svn20100225
 - Update to new original upstream version (svn snapshot)
 
