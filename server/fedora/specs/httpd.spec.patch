@@ -1,15 +1,15 @@
---- httpd.spec.orig	2010-02-28 05:01:55.000000000 -0500
-+++ httpd.spec	2010-03-11 05:30:54.000000000 -0500
+--- httpd.spec.orig	2010-04-06 18:26:08.000000000 -0400
++++ httpd.spec	2010-04-14 04:14:13.000000000 -0400
 @@ -7,7 +7,7 @@
  Summary: Apache HTTP Server
  Name: httpd
- Version: 2.2.14
--Release: 1%{?dist}
-+Release: 1.scripts.%{scriptsversion}%{?dist}
+ Version: 2.2.15
+-Release: 1%{?dist}.1
++Release: 1%{?dist}.1.scripts.%{scriptsversion}
  URL: http://httpd.apache.org/
  Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.gz
  Source1: index.html
-@@ -57,6 +57,14 @@
+@@ -55,6 +55,13 @@
  Conflicts: pcre < 4.0
  Requires: httpd-tools = %{version}-%{release}, apr-util-ldap
  
@@ -19,12 +19,11 @@
 +Patch1004: httpd-2.2.x-304.patch
 +Patch1005: httpd-2.2.x-mod_ssl-sessioncaching.patch
 +Patch1006: httpd-suexec-cloexec.patch
-+Patch1007: httpd-2.2.x-CVE-2010-0434.patch
 +
  %description
  The Apache HTTP Server is a powerful, efficient, and extensible
  web server.
-@@ -104,6 +112,7 @@
+@@ -102,6 +109,7 @@
  Requires(post): openssl >= 0.9.7f-4, /bin/cat
  Requires(pre): httpd
  Requires: httpd = 0:%{version}-%{release}, httpd-mmn = %{mmn}
@@ -32,7 +31,7 @@
  Obsoletes: stronghold-mod_ssl
  
  %description -n mod_ssl
-@@ -133,6 +142,13 @@
+@@ -129,6 +137,12 @@
  # Patch in vendor/release string
  sed "s/@RELEASE@/%{vstring}/" < %{PATCH20} | patch -p1
  
@@ -41,12 +40,11 @@
 +%patch1004 -p1 -b .scripts-304
 +%patch1005 -p1 -b .ssl-sessioncache
 +%patch1006 -p1 -b .cloexec
-+%patch1007 -p1 -b .cve-2010-0434
 +
  # Safety check: prevent build if defined MMN does not equal upstream MMN.
  vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
  if test "x${vmmn}" != "x%{mmn}"; then
-@@ -181,10 +197,12 @@
+@@ -177,10 +191,12 @@
          --with-apr=%{_prefix} --with-apr-util=%{_prefix} \
  	--enable-suexec --with-suexec \
  	--with-suexec-caller=%{suexec_caller} \
