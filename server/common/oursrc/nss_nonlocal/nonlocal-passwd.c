@@ -2,28 +2,25 @@
  * nonlocal-passwd.c
  * passwd database for nss_nonlocal proxy.
  *
- * Copyright © 2007 Anders Kaseorg <andersk@mit.edu> and Tim Abbott
- * <tabbott@mit.edu>
+ * Copyright © 2007–2010 Anders Kaseorg <andersk@mit.edu> and Tim
+ * Abbott <tabbott@mit.edu>
  *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies
- * of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This file is part of nss_nonlocal.
  *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
+ * nss_nonlocal is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * nss_nonlocal is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with nss_nonlocal; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301  USA
  */
 
 
@@ -79,7 +76,7 @@ check_nonlocal_uid(const char *user, uid_t uid, int *errnop)
     struct passwd pwbuf;
     int old_errno = errno;
 
-    int buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+    size_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
     char *buf = malloc(buflen);
     if (buf == NULL) {
 	*errnop = ENOMEM;
@@ -125,6 +122,25 @@ check_nonlocal_uid(const char *user, uid_t uid, int *errnop)
 }
 
 enum nss_status
+check_nonlocal_passwd(const char *user, struct passwd *pwd, int *errnop)
+{
+    enum nss_status status = NSS_STATUS_SUCCESS;
+    int old_errno = errno;
+    char *end;
+    unsigned long uid;
+
+    errno = 0;
+    uid = strtoul(pwd->pw_name, &end, 10);
+    if (errno == 0 && *end == '\0' && (uid_t)uid == uid)
+	status = check_nonlocal_uid(user, uid, errnop);
+    errno = old_errno;
+    if (status != NSS_STATUS_SUCCESS)
+	return status;
+
+    return check_nonlocal_uid(user, pwd->pw_uid, errnop);
+}
+
+enum nss_status
 check_nonlocal_user(const char *user, int *errnop)
 {
     static const char *fct_name = "getpwnam_r";
@@ -140,7 +156,7 @@ check_nonlocal_user(const char *user, int *errnop)
     struct passwd pwbuf;
     int old_errno = errno;
 
-    int buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+    size_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
     char *buf = malloc(buflen);
     if (buf == NULL) {
 	*errnop = ENOMEM;
@@ -279,7 +295,7 @@ _nss_nonlocal_getpwent_r(struct passwd *pwd, char *buffer, size_t buflen,
 	    do
 		status = DL_CALL_FCT(pwent_fct.l, (pwd, buffer, buflen, errnop));
 	    while (status == NSS_STATUS_SUCCESS &&
-		   check_nonlocal_uid(pwd->pw_name, pwd->pw_uid, &nonlocal_errno) != NSS_STATUS_SUCCESS);
+		   check_nonlocal_passwd(pwd->pw_name, pwd, &nonlocal_errno) != NSS_STATUS_SUCCESS);
 	}
 	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE)
 	    return status;
@@ -329,7 +345,12 @@ _nss_nonlocal_getpwnam_r(const char *name, struct passwd *pwd,
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    status = check_nonlocal_uid(name, pwd->pw_uid, errnop);
+    if (strcmp(name, pwd->pw_name) != 0) {
+	syslog(LOG_ERR, "nss_nonlocal: discarding user %s from lookup for user %s\n", pwd->pw_name, name);
+	return NSS_STATUS_NOTFOUND;
+    }
+
+    status = check_nonlocal_passwd(name, pwd, errnop);
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
@@ -375,7 +396,12 @@ _nss_nonlocal_getpwuid_r(uid_t uid, struct passwd *pwd,
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    status = check_nonlocal_uid(pwd->pw_name, pwd->pw_uid, errnop);
+    if (uid != pwd->pw_uid) {
+	syslog(LOG_ERR, "nss_nonlocal: discarding uid %d from lookup for uid %d\n", pwd->pw_uid, uid);
+	return NSS_STATUS_NOTFOUND;
+    }
+
+    status = check_nonlocal_passwd(pwd->pw_name, pwd, errnop);
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 

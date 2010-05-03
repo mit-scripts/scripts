@@ -2,28 +2,25 @@
  * nonlocal-group.c
  * group database for nss_nonlocal proxy
  *
- * Copyright © 2007 Anders Kaseorg <andersk@mit.edu> and Tim Abbott
- * <tabbott@mit.edu>
+ * Copyright © 2007–2010 Anders Kaseorg <andersk@mit.edu> and Tim
+ * Abbott <tabbott@mit.edu>
  *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies
- * of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This file is part of nss_nonlocal.
  *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
+ * nss_nonlocal is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * nss_nonlocal is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with nss_nonlocal; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301  USA
  */
 
 #define _GNU_SOURCE
@@ -81,7 +78,7 @@ check_nonlocal_gid(const char *user, gid_t gid, int *errnop)
     struct group gbuf;
     int old_errno = errno;
 
-    int buflen = sysconf(_SC_GETGR_R_SIZE_MAX);
+    size_t buflen = sysconf(_SC_GETGR_R_SIZE_MAX);
     char *buf = malloc(buflen);
     if (buf == NULL) {
 	*errnop = ENOMEM;
@@ -116,7 +113,7 @@ check_nonlocal_gid(const char *user, gid_t gid, int *errnop)
     } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
 
     if (status == NSS_STATUS_SUCCESS) {
-	syslog(LOG_WARNING, "nss_nonlocal: removing local group %u (%s) from non-local user %s\n", gbuf.gr_gid, gbuf.gr_name, user);
+	syslog(LOG_DEBUG, "nss_nonlocal: removing local group %u (%s) from non-local user %s\n", gbuf.gr_gid, gbuf.gr_name, user);
 	status = NSS_STATUS_NOTFOUND;
     } else if (status != NSS_STATUS_TRYAGAIN) {
 	status = NSS_STATUS_SUCCESS;
@@ -124,6 +121,25 @@ check_nonlocal_gid(const char *user, gid_t gid, int *errnop)
 
     free(buf);
     return status;
+}
+
+enum nss_status
+check_nonlocal_group(const char *user, struct group *grp, int *errnop)
+{
+    enum nss_status status = NSS_STATUS_SUCCESS;
+    int old_errno = errno;
+    char *end;
+    unsigned long gid;
+
+    errno = 0;
+    gid = strtoul(grp->gr_name, &end, 10);
+    if (errno == 0 && *end == '\0' && (gid_t)gid == gid)
+	status = check_nonlocal_gid(user, gid, errnop);
+    errno = old_errno;
+    if (status != NSS_STATUS_SUCCESS)
+	return status;
+
+    return check_nonlocal_gid(user, grp->gr_gid, errnop);
 }
 
 enum nss_status
@@ -280,7 +296,7 @@ _nss_nonlocal_getgrent_r(struct group *grp, char *buffer, size_t buflen,
 	    do
 		status = DL_CALL_FCT(grent_fct.l, (grp, buffer, buflen, errnop));
 	    while (status == NSS_STATUS_SUCCESS &&
-		   check_nonlocal_gid("(unknown)", grp->gr_gid, &nonlocal_errno) != NSS_STATUS_SUCCESS);
+		   check_nonlocal_group("(unknown)", grp, &nonlocal_errno) != NSS_STATUS_SUCCESS);
 	}
 	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE)
 	    return status;
@@ -329,7 +345,12 @@ _nss_nonlocal_getgrnam_r(const char *name, struct group *grp,
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    return check_nonlocal_gid(name, grp->gr_gid, errnop);
+    if (strcmp(name, grp->gr_name) != 0) {
+	syslog(LOG_ERR, "nss_nonlocal: discarding group %s from lookup for group %s\n", grp->gr_name, name);
+	return NSS_STATUS_NOTFOUND;
+    }
+
+    return check_nonlocal_group(name, grp, errnop);
 }
 
 enum nss_status
@@ -367,7 +388,12 @@ _nss_nonlocal_getgrgid_r(gid_t gid, struct group *grp,
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    return check_nonlocal_gid(grp->gr_name, grp->gr_gid, errnop);
+    if (gid != grp->gr_gid) {
+	syslog(LOG_ERR, "nss_nonlocal: discarding gid %d from lookup for gid %d\n", grp->gr_gid, gid);
+	return NSS_STATUS_NOTFOUND;
+    }
+
+    return check_nonlocal_group(grp->gr_name, grp, errnop);
 }
 
 enum nss_status
@@ -390,6 +416,8 @@ _nss_nonlocal_initgroups_dyn(const char *user, gid_t group, long int *start,
     gid_t local_users_gid, gid;
     int is_local = 0;
     char *buffer;
+    int old_errno;
+    int in, out, i;
 
     /* Check that the user is a nonlocal user before adding any groups. */
     status = check_nonlocal_user(user, errnop);
@@ -398,7 +426,7 @@ _nss_nonlocal_initgroups_dyn(const char *user, gid_t group, long int *start,
     else if (status != NSS_STATUS_SUCCESS)
 	is_local = 1;
 
-    int old_errno = errno;
+    old_errno = errno;
 
     status = get_local_group(MAGIC_LOCAL_GROUPNAME,
 			     &local_users_group, &buffer, errnop);
@@ -461,7 +489,7 @@ _nss_nonlocal_initgroups_dyn(const char *user, gid_t group, long int *start,
     if (is_local)
 	return NSS_STATUS_SUCCESS;
 
-    int in = *start, out = *start, i;
+    in = out = *start;
 
     nip = nss_group_nonlocal_database();
     if (nip == NULL)

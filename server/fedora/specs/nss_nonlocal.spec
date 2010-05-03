@@ -1,7 +1,7 @@
 Summary: nsswitch proxy module to prevent local account spoofing
 Group: System Environment/Libraries
 Name: nss_nonlocal
-Version: 1.9
+Version: 1.11
 Release: 1
 URL: http://debathena.mit.edu/nss_nonlocal/
 BuildRequires: autoconf
@@ -56,6 +56,9 @@ groupadd -r nss-nonlocal-users || :
 /sbin/ldconfig
 
 %changelog
+
+* Sun May  2 2010 Anders Kaseorg <andersk@mit.edu> 1.11-1
+- New upstream version.
 
 * Fri Mar 12 2010 Mitchell Berger <mitchb@mit.edu> 1.9-1
 - Per Fedora packaging guidelines, don't ever remove groups.
