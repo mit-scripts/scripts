@@ -7,7 +7,7 @@ URL: http://debathena.mit.edu/nss_nonlocal/
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: libtool
-License: GPL
+License: LGPLv2+
 Source: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
