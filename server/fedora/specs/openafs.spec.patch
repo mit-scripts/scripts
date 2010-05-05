@@ -9,18 +9,19 @@
  
  %if %{?osvers:0}%{!?osvers:1}
  %define osvers 1
-@@ -261,6 +261,10 @@
+@@ -261,6 +261,11 @@
  %endif
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
 +Patch1000: openafs-scripts.patch
 +Patch1003: openafs-localcsdb.patch
 +Patch1005: openafs-numsysnames.patch
++Patch1006: openafs-release-glock.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -343,6 +347,7 @@
+@@ -343,6 +348,7 @@
  %if %{build_userspace}
  
  %package client
@@ -28,7 +29,7 @@
  Requires: binutils, openafs = %{PACKAGE_VERSION}
  
  %if %{fedorakmod}
-@@ -403,6 +408,7 @@
+@@ -403,6 +409,7 @@
  
  %if %{build_authlibs}
  %package authlibs
@@ -36,7 +37,7 @@
  Summary: OpenAFS authentication shared libraries
  Group: Networking/Filesystems
  
-@@ -419,6 +425,7 @@
+@@ -419,6 +426,7 @@
  %endif
  
  %package authlibs-devel
@@ -44,7 +45,7 @@
  %if %{build_authlibs}
  Requires: openafs-authlibs = %{PACKAGE_VERSION}
  %endif
-@@ -437,6 +444,7 @@
+@@ -437,6 +445,7 @@
  libraries.
  
  %package devel
@@ -52,7 +53,7 @@
  Summary: OpenAFS Development Libraries and Headers
  Group: Development/Filesystems
  
-@@ -465,6 +473,7 @@
+@@ -465,6 +474,7 @@
  administrators.
  
  %package kernel-source
@@ -60,7 +61,7 @@
  Summary: OpenAFS Kernel Module source tree
  Group: Networking/Filesystems
  Provides: openafs-kernel = %{PACKAGE_VERSION}
-@@ -514,6 +523,7 @@
+@@ -514,6 +524,7 @@
  
  %if %{krb5support}
  %package krb5
@@ -68,7 +69,7 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{PACKAGE_VERSION}
  Group: Networking/Filesystems
-@@ -540,7 +550,7 @@
+@@ -540,7 +551,7 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
@@ -77,17 +78,18 @@
  
  %else
  
-@@ -699,6 +709,9 @@
+@@ -699,6 +710,10 @@
  
  # Patch openafs to build a kernel module named "openafs" instead of "libafs"
  %patch0 -p1 -b .kmod26
 +%patch1000 -p1 -b .scripts
 +%patch1003 -p1 -b .localcsdb
 +%patch1005 -p1 -b .numsysnames
++%patch1006 -p1 -b .release-glock
  
  ##############################################################################
  #
-@@ -1209,7 +1222,7 @@
+@@ -1209,7 +1224,7 @@
  rm -rf $RPM_BUILD_ROOT%{_sbindir}/kdump*
  
  # remove man pages from programs deleted above
@@ -96,7 +98,7 @@
    rm -f $RPM_BUILD_ROOT%{_mandir}/man$f.*
  done
  
-@@ -1569,7 +1582,6 @@
+@@ -1569,7 +1584,6 @@
  %{_libdir}/librxstat.a
  %{_libdir}/libubik.a
  %{_mandir}/man1/rxgen.*
