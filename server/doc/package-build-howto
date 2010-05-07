@@ -72,6 +72,11 @@ Patching packages
 
   * To make changes to the upstream packages that we "scriptsify":
 
+    * If we haven't previously scriptsified this package, you'll need
+      to add it to the upstream_yum line in SVN/server/fedora/Makefile,
+      and remove the download_stamp file so that it gets fetched next
+      time you run 'make [PACKAGE]'.
+
     * The authoritative upstream source comes from the SRPM in the upstream
       yum repo, or in odd cases like openafs, from some other URL.  When
       you 'make [PACKAGE]' in SVN/server/fedora, if download_stamp has
@@ -136,9 +141,7 @@ Patching packages
       create a diff from the upstream spec file to your new version,
       and add it to the SVN repo as
         SVN/server/fedora/specs/[PACKAGE].spec.patch
-
-    * If we haven't previously scriptsified this package, you'll need
-      to add it to the upstream_yum line in SVN/server/fedora/Makefile,
-      and remove the download_stamp file so that it gets fetched next
-      time you run 'make [PACKAGE]'.
+      Make sure to copy it there before you try to build the package,
+      since if you don't mock will use the original specfile (and
+      overwrite any changes you made in place).
 
