@@ -1,0 +1,28 @@
+--- dvipng.spec.orig	2010-05-07 02:36:45.000000000 -0400
++++ dvipng.spec	2010-05-07 02:47:57.000000000 -0400
+@@ -1,6 +1,6 @@
+ Name:           dvipng
+ Version:        1.11
+-Release:        2%{?dist}
++Release:        2.scripts.%{scriptsversion}%{?dist}
+ Summary:        Converts DVI files to PNG/GIF format
+ 
+ Group:          Applications/Publishing 
+@@ -8,6 +8,8 @@
+ URL:            http://savannah.nongnu.org/projects/dvipng/
+ Source0:        http://download.savannah.gnu.org/releases/dvipng/%{name}-%{version}.tar.gz
+ 
++Patch1000:      dvipng-CVE-2010-0829.patch
++
+ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+ BuildRequires:  kpathsea-devel gd-devel zlib-devel libpng-devel texinfo-tex
+ BuildRequires:  t1lib-devel freetype-devel
+@@ -26,6 +28,8 @@
+ %prep
+ %setup -q
+ 
++%patch1000 -p2 -b .cve-2010-0829
++
+ %build
+ %configure
+ make %{?_smp_mflags}
