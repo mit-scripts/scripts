@@ -18,7 +18,7 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 krb5.i586 httpd openssh shadow-utils texlive dvipng
+upstream_yum	= krb5 krb5.i586 httpd openssh shadow-utils texlive
 upstream	= openafs $(upstream_yum) moira cluster-glue heartbeat pacemaker
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i586 whoisd mit-zephyr athrun php_scripts scripts-wizard scripts-base
 allsrc		= $(upstream) $(oursrc)
