@@ -14,7 +14,57 @@ shopt -s checkwinsize
 export PS1='[\u@\h]:\w\$ '
 umask 022
 
-alias su='echo "Instead of running su USERNAME, ssh USERNAME@scripts.mit.edu from Athena" #'
+__scripts_print_root_message ()
+{
+    echo "ERROR: scripts.mit.edu is a shared server, and as such" >&2
+    echo "you do not have root access." >&2
+    echo " * If you want a package installed or a setting configured," >&2
+    echo "   contact us at scripts@mit.edu." >&2
+    echo " * If you're having trouble editing a file without 'sudo'," >&2
+    echo "   try logging out and making your change from Athena." >&2
+}
+
+__scripts_print_install_message ()
+{
+    echo "ERROR: scripts.mit.edu is a shared server, and as such" >&2
+    echo "you do not have root access. We are happy to install most" >&2
+    echo "packages upon request -- please contact us at scripts@mit.edu." >&2
+}
+
+__scripts_print_edit_message ()
+{
+    echo "ERROR: scripts.mit.edu is a shared server, and as such you" >&2
+    echo "do not have root access. You can make most changes to your" >&2
+    echo "account without root access; you may need to log out of scripts," >&2
+    echo "and use your Athena account to get full permissions in your locker." >&2
+    echo "If you're having trouble, contact us at scripts@mit.edu for help." >&2
+}
+
+
+su ()
+{
+    while [[ "$1" == -* ]]; do shift; done
+    if [ $# -eq 0 ] || [ "$1" = "root" ]; then
+        __scripts_print_root_message
+    else
+        echo "su is no longer supported on scripts.mit.edu. To access your" >&2
+        echo "group locker, run ssh $1@scripts.mit.edu from Athena." >&2
+    fi
+    return 1
+}
+
+sudo ()
+{
+    case "$1" in
+        apt-get|aptitude|yum|easy_install|gem|make|./setup.py)
+            __scripts_print_install_message ;;
+        emacs|vi|vim|nano|chown|rm|fs)
+            __scripts_print_edit_message ;;
+        *)
+            __scripts_print_root_message
+    esac
+    return 1
+}
 
 # You may uncomment the following lines if you want `ls' to be colorized:
 # export LS_OPTIONS='--color=auto'
