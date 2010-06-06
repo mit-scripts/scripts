@@ -1,0 +1,1 @@
+13 4 * * * scripts [ -x /mit/scripts/sbin/check-ldap-cert.pl ] && /mit/scripts/sbin/check-ldap-cert.pl
