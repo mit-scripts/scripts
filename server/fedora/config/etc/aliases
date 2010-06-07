@@ -96,5 +96,6 @@ afsagent:	root
 logview:	root
 scripts-build:	root
 
-# People who are abusing the mail system
+# People who are abusing or otherwise causing problems with the mail system
 aston:          /dev/null
+ahoy:           /dev/null
