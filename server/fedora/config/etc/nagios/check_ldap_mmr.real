@@ -12,16 +12,18 @@ my %ERRORS=('OK'=>0, 'WARNING'=>1, 'CRITICAL'=>2, 'UNKNOWN'=>3, 'DEPENDENT'=>4);
 my $ldapserver = 'localhost';
 my $user = 'cn=Directory Manager';
 my $passwdfile = '/etc/signup-ldap-pw';
-my $base = "cn=config";
+my $configBase = "cn=config";
+my $replicatedBase = "dc=scripts,dc=mit,dc=edu";
 my $server="nsDS5ReplicaHost";
 my $status="nsds5replicaLastUpdateStatus";
 my $laststart="nsds5replicaLastUpdateStart";
 my $lastend="nsds5replicaLastUpdateEnd";
  
 my $ldap=ConnectLdap();
-my $result=LDAPSearch($ldap,"objectClass=nsDS5ReplicationAgreement","",$base);
+my $result=LDAPSearch($ldap,"objectClass=nsDS5ReplicationAgreement","",$configBase);
 my @entries = $result->entries;
-my $errors = 0;
+my $replicaErrors = 0;
+my $conflictErrors = 0;
 my $errorstring = "Replication error(s): ";
 foreach my $entr ( @entries ) {
     my $servername=$entr->get_value($server);
@@ -35,14 +37,28 @@ foreach my $entr ( @entries ) {
     print "Replication to $servername last operation $serverlaststart ";
     print "Status: $serverstatus.     ";
     if ($statuscode) {
-        $errors++;
+        $replicaErrors++;
         $errorstring = $errorstring . $serverstatus . ", ";
     }
 }
-if ($errors > 0) {
+
+$result=LDAPSearch($ldap,"nsds5ReplConflict=*",["nsds5ReplConflict"],$replicatedBase);
+@entries = $result->entries;
+foreach my $entr ( @entries ) {
+    my $conflictingDN=$entr->dn();
+    my $conflictDesc=$entr->get_value("nsds5ReplConflict");
+    print "Conflict found for DN $conflictingDN ";
+    print "Reason: $conflictDesc.     ";
+    $conflictErrors++;
+    $errorstring = $errorstring . $conflictDesc . ", ";
+}
+
+if ($conflictErrors > 0) {
+    &nagios_return("CRITICAL", $errorstring);
+} elsif ($replicaErrors > 0) {
     &nagios_return("WARNING", $errorstring);
 } else {
-    &nagios_return("OK", "All replicas are OK");
+    &nagios_return("OK", "All replicas are OK and no conflicts are present");
 }
 
 sub ConnectLdap {
