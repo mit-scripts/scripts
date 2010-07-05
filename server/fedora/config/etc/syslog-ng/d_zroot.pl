@@ -29,8 +29,6 @@ my %toclass;
 
 my %sshkeys;
 
-my %ips;
-
 sub buildKeyMap($) {
     my ($file) = @_;
     open (KEYS, $file) or warn "Couldn't open $file: $!";
@@ -89,11 +87,6 @@ while (1) {
 	    } else {
 		sendmsg($message." (UNKNOWN KEY)");
 	    }
-	} elsif ($message =~ m|^Failed keyboard-interactive/pam for root from ([^ ]*)|) {
-	    my $count = ++$ips{$1};
-	    if ($count % 10 == 0 or $1 =~ /^18\./) {
-	    	sendmsg($message." (repeated $count times)", "scripts-spew");
-	    }
 	} elsif ($message =~ m|^Out of memory:|) {
 	    sendmsg($message);
 	} elsif ($message =~ m|^giving \S+ admin rights|) {
@@ -106,7 +99,7 @@ while (1) {
 	} elsif ($message =~ m|^input_userauth_request: invalid user|) {
 	} elsif ($message =~ m|^Received disconnect from|) {
 	} elsif ($message =~ m|^Postponed keyboard-interactive|) {
-	} elsif ($message =~ m|^Failed keyboard-interactive|) {
+	} elsif ($message =~ m|^Failed keyboard-interactive/pam|) {
 	} elsif ($message =~ m|^fatal: Read from socket failed: Connection reset by peer$|) {
 	} elsif ($message =~ m|^reverse mapping checking getaddrinfo|) {
 	} elsif ($message =~ m|^pam_succeed_if\(sshd\:auth\)\:|) {
