@@ -453,6 +453,7 @@ static int mod_vhost_ldap_translate_name(request_rec *r)
     int sleep1 = 1;
     int sleep;
     struct berval hostnamebv, shostnamebv;
+    int ret = DECLINED;
 
     reqc =
 	(mod_vhost_ldap_request_t *)apr_pcalloc(r->pool, sizeof(mod_vhost_ldap_request_t));
@@ -607,7 +608,6 @@ null:
 
     cgi = NULL;
 
-#if 0
     if (reqc->cgiroot) {
 	cgi = strstr(r->uri, "cgi-bin/");
 	if (cgi && (cgi != r->uri + strspn(r->uri, "/"))) {
@@ -624,12 +624,11 @@ null:
 	  r->filename = cgi;
 	  r->handler = "cgi-script";
 	  apr_table_setn(r->notes, "alias-forced-type", r->handler);
+	  ret = OK;
 	}
-#endif
-    /* This is a quick, dirty hack. I should be shot for taking 6.170
-     * this term and being willing to write a quick, dirty hack. */
-    
-    if (strncmp(r->uri, "/~", 2) == 0) {
+    } else if (strncmp(r->uri, "/~", 2) == 0) {
+        /* This is a quick, dirty hack. I should be shot for taking 6.170
+         * this term and being willing to write a quick, dirty hack. */    
 	char *username;
 	uid_t uid = (uid_t)atoll(reqc->uid);
 	if (apr_uid_name_get(&username, uid, r->pool) != APR_SUCCESS) {
@@ -647,6 +646,7 @@ null:
 		return DECLINED;
 	    }
 	    r->filename = apr_pstrcat(r->pool, homedir, "/", USERDIR, r->uri + 2 + strlen(username), NULL);
+	    ret = OK;
 	}
     } else if (r->uri[0] == '/') {
         /* we don't set r->filename here, and let other modules do it
@@ -712,7 +712,7 @@ null:
     }
 
     /* Hack to allow post-processing by other modules (mod_rewrite, mod_alias) */
-    return DECLINED;
+    return ret;
 }
 
 #ifdef HAVE_UNIX_SUEXEC
