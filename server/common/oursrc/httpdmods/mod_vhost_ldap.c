@@ -31,9 +31,11 @@
 #include "http_request.h"
 #include "apr_version.h"
 #include "apr_ldap.h"
-#include "apr_strings.h"
 #include "apr_reslist.h"
+#include "apr_strings.h"
+#include "apr_tables.h"
 #include "util_ldap.h"
+#include "util_script.h"
 
 #if !defined(APU_HAS_LDAP) && !defined(APR_HAS_LDAP)
 #error mod_vhost_ldap requires APR-util to have LDAP support built in
@@ -50,6 +52,8 @@
 #define MIN_UID 100
 #define MIN_GID 100
 const char USERDIR[] = "web_scripts";
+
+#define MAX_FAILURES 5
 
 module AP_MODULE_DECLARE_DATA vhost_ldap_module;
 
@@ -121,11 +125,11 @@ static void ImportULDAPOptFn(void)
 static int mod_vhost_ldap_post_config(apr_pool_t *p, apr_pool_t *plog, apr_pool_t *ptemp, server_rec *s)
 {
     module **m;
-
+    
     /* Stolen from modules/generators/mod_cgid.c */
     total_modules = 0;
     for (m = ap_preloaded_modules; *m != NULL; m++)
-	total_modules++;
+      total_modules++;
 
     /* make sure that mod_ldap (util_ldap) is loaded */
     if (ap_find_linked_module("util_ldap.c") == NULL) {
@@ -432,20 +436,23 @@ command_rec mod_vhost_ldap_cmds[] = {
 static int mod_vhost_ldap_translate_name(request_rec *r)
 {
     mod_vhost_ldap_request_t *reqc;
-    apr_table_t *e;
     int failures = 0;
     const char **vals = NULL;
     char filtbuf[FILTER_LENGTH];
     mod_vhost_ldap_config_t *conf =
 	(mod_vhost_ldap_config_t *)ap_get_module_config(r->server->module_config, &vhost_ldap_module);
-    core_server_config * core =
-	(core_server_config *) ap_get_module_config(r->server->module_config, &core_module);
+    core_server_config *core =
+        (core_server_config *)ap_get_module_config(r->server->module_config, &core_module);
     util_ldap_connection_t *ldc = NULL;
     int result = 0;
     const char *dn = NULL;
     char *cgi;
     const char *hostname = NULL;
     int is_fallback = 0;
+    int sleep0 = 0;
+    int sleep1 = 1;
+    int sleep;
+    struct berval hostnamebv, shostnamebv;
 
     reqc =
 	(mod_vhost_ldap_request_t *)apr_pcalloc(r->pool, sizeof(mod_vhost_ldap_request_t));
@@ -468,19 +475,19 @@ start_over:
     else {
         ap_log_rerror(APLOG_MARK, APLOG_WARNING|APLOG_NOERRNO, 0, r, 
                       "[mod_vhost_ldap.c] translate: no conf->host - weird...?");
-        return DECLINED;
+        return HTTP_INTERNAL_SERVER_ERROR;
     }
 
     hostname = r->hostname;
     if (hostname == NULL || hostname[0] == '\0')
-	goto null;
+        goto null;
 
 fallback:
 
     ap_log_rerror(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, 0, r,
-		   "[mod_vhost_ldap.c]: translating %s", r->uri);
+		  "[mod_vhost_ldap.c]: translating hostname [%s], uri [%s]",
+		  hostname, r->uri);
 
-    struct berval hostnamebv, shostnamebv;
     ber_str2bv(hostname, 0, 0, &hostnamebv);
     if (ldap_bv2escaped_filter_value(&hostnamebv, &shostnamebv) != 0)
 	goto null;
@@ -493,13 +500,25 @@ fallback:
     util_ldap_connection_close(ldc);
 
     /* sanity check - if server is down, retry it up to 5 times */
-    if (result == LDAP_SERVER_DOWN) {
-        if (failures++ <= 5) {
+    if (AP_LDAP_IS_SERVER_DOWN(result) ||
+	(result == LDAP_TIMEOUT) ||
+	(result == LDAP_CONNECT_ERROR)) {
+        sleep = sleep0 + sleep1;
+        ap_log_rerror(APLOG_MARK, APLOG_WARNING|APLOG_NOERRNO, 0, r,
+		      "[mod_vhost_ldap.c]: lookup failure, retry number #[%d], sleeping for [%d] seconds",
+		      failures, sleep);
+        if (failures++ < MAX_FAILURES) {
+	    /* Back-off exponentially */
+	    apr_sleep(apr_time_from_sec(sleep));
+	    sleep0 = sleep1;
+	    sleep1 = sleep;
             goto start_over;
-        }
+        } else {
+	    return HTTP_GATEWAY_TIME_OUT;
+	}
     }
 
-    if ((result == LDAP_NO_SUCH_OBJECT)) {
+    if (result == LDAP_NO_SUCH_OBJECT) {
 	if (strcmp(hostname, "*") != 0) {
 	    if (strncmp(hostname, "*.", 2) == 0)
 		hostname += 2;
@@ -512,7 +531,7 @@ fallback:
 	    goto fallback;
 	}
 
-    null:
+null:
 	if (conf->fallback && (is_fallback++ <= 0)) {
 	    ap_log_rerror(APLOG_MARK, APLOG_NOTICE|APLOG_NOERRNO, 0, r,
 			  "[mod_vhost_ldap.c] translate: "
@@ -527,7 +546,7 @@ fallback:
 		      "virtual host %s not found",
 		      hostname);
 
-	return DECLINED;
+	return HTTP_BAD_REQUEST;
     }
 
     /* handle bind failure */
@@ -536,7 +555,7 @@ fallback:
                       "[mod_vhost_ldap.c] translate: "
                       "translate failed; virtual host %s; URI %s [%s]",
 		      hostname, r->uri, ldap_err2string(result));
-	return DECLINED;
+	return HTTP_INTERNAL_SERVER_ERROR;
     }
 
     /* mark the user and DN */
@@ -583,11 +602,11 @@ fallback:
         ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
                       "[mod_vhost_ldap.c] translate: "
                       "translate failed; ServerName or DocumentRoot not defined");
-	return DECLINED;
+	return HTTP_INTERNAL_SERVER_ERROR;
     }
 
     cgi = NULL;
-  
+
 #if 0
     if (reqc->cgiroot) {
 	cgi = strstr(r->uri, "cgi-bin/");
@@ -596,9 +615,16 @@ fallback:
 	}
     }
     if (cgi) {
-	r->filename = apr_pstrcat (r->pool, reqc->cgiroot, cgi + strlen("cgi-bin"), NULL);
-	r->handler = "cgi-script";
-	apr_table_setn(r->notes, "alias-forced-type", r->handler);
+        /* Set exact filename for CGI script */
+        cgi = apr_pstrcat(r->pool, reqc->cgiroot, cgi + strlen("cgi-bin"), NULL);
+        if ((cgi = ap_server_root_relative(r->pool, cgi))) {
+	  ap_log_rerror(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, 0, r,
+			"[mod_vhost_ldap.c]: ap_document_root is: %s",
+			ap_document_root(r));
+	  r->filename = cgi;
+	  r->handler = "cgi-script";
+	  apr_table_setn(r->notes, "alias-forced-type", r->handler);
+	}
 #endif
     /* This is a quick, dirty hack. I should be shot for taking 6.170
      * this term and being willing to write a quick, dirty hack. */
@@ -623,14 +649,21 @@ fallback:
 	    r->filename = apr_pstrcat(r->pool, homedir, "/", USERDIR, r->uri + 2 + strlen(username), NULL);
 	}
     } else if (r->uri[0] == '/') {
-	r->filename = apr_pstrcat (r->pool, reqc->docroot, r->uri, NULL);
+        /* we don't set r->filename here, and let other modules do it
+         * this allows other modules (mod_rewrite.c) to work as usual
+	 */
+        /* r->filename = apr_pstrcat (r->pool, reqc->docroot, r->uri, NULL); */
     } else {
+        /* We don't handle non-file requests here */
 	return DECLINED;
     }
 
-    if ((r->server = apr_pmemdup(r->pool, r->server,
-				 sizeof(*r->server))) == NULL)
+    if ((r->server = apr_pmemdup(r->pool, r->server, sizeof(*r->server))) == NULL) {
+        ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
+                      "[mod_vhost_ldap.c] translate: "
+                      "translate failed; Unable to copy r->server structure");
 	return HTTP_INTERNAL_SERVER_ERROR;
+    }
 
     r->server->server_hostname = reqc->name;
 
@@ -638,26 +671,48 @@ fallback:
 	r->server->server_admin = reqc->admin;
     }
 
-    // set environment variables
-    e = r->subprocess_env;
-    apr_table_addn (e, "SERVER_ROOT", reqc->docroot);
+    if ((r->server->module_config = apr_pmemdup(r->pool, r->server->module_config,
+						sizeof(void *) *
+						(total_modules + DYNAMIC_MODULE_LIMIT))) == NULL) {
+        ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
+                      "[mod_vhost_ldap.c] translate: "
+                      "translate failed; Unable to copy r->server->module_config structure");
+        return HTTP_INTERNAL_SERVER_ERROR;
+    }
 
-    if ((r->server->module_config =
-	 apr_pmemdup(r->pool, r->server->module_config,
-		     sizeof(void *) *
-		     (total_modules + DYNAMIC_MODULE_LIMIT))) == NULL)
-	return HTTP_INTERNAL_SERVER_ERROR;
-
-    if ((core = apr_pmemdup(r->pool, core, sizeof(*core))) == NULL)
-	return HTTP_INTERNAL_SERVER_ERROR;
+    if ((core = apr_pmemdup(r->pool, core, sizeof(*core))) == NULL) {
+        ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
+                      "[mod_vhost_ldap.c] translate: "
+                      "translate failed; Unable to copy r->core structure");
+        return HTTP_INTERNAL_SERVER_ERROR;
+    }
     ap_set_module_config(r->server->module_config, &core_module, core);
 
-    core->ap_document_root = reqc->docroot;
+    /* Stolen from server/core.c */
 
-    ap_log_rerror(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, 0, r,
-		  "[mod_vhost_ldap.c]: translated to %s", r->filename);
+    /* Make it absolute, relative to ServerRoot */
+    reqc->docroot = ap_server_root_relative(r->pool, reqc->docroot);
 
-    return OK;
+    if (reqc->docroot == NULL) {
+        ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r, 
+                      "[mod_vhost_ldap.c] set_document_root: DocumentRoot must be a directory");
+
+        return HTTP_INTERNAL_SERVER_ERROR;
+    }
+
+    /* TODO: ap_configtestonly && ap_docrootcheck && */
+    if (apr_filepath_merge((char**)&core->ap_document_root, NULL, reqc->docroot,
+                           APR_FILEPATH_TRUENAME, r->pool) != APR_SUCCESS
+        || !ap_is_directory(r->pool, reqc->docroot)) {
+
+        ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r,
+		      "[mod_vhost_ldap.c] set_document_root: Warning: DocumentRoot [%s] does not exist",
+		      reqc->docroot);
+        core->ap_document_root = reqc->docroot;
+    }
+
+    /* Hack to allow post-processing by other modules (mod_rewrite, mod_alias) */
+    return DECLINED;
 }
 
 #ifdef HAVE_UNIX_SUEXEC
@@ -705,8 +760,14 @@ static ap_unix_identity_t *mod_vhost_ldap_get_suexec_id_doer(const request_rec *
 static void
 mod_vhost_ldap_register_hooks (apr_pool_t * p)
 {
+
+    /*
+     * Run before mod_rewrite
+     */
+    static const char * const aszRewrite[]={ "mod_rewrite.c", NULL };
+
     ap_hook_post_config(mod_vhost_ldap_post_config, NULL, NULL, APR_HOOK_MIDDLE);
-    ap_hook_translate_name(mod_vhost_ldap_translate_name, NULL, NULL, APR_HOOK_MIDDLE);
+    ap_hook_translate_name(mod_vhost_ldap_translate_name, NULL, aszRewrite, APR_HOOK_FIRST);
 #ifdef HAVE_UNIX_SUEXEC
     ap_hook_get_suexec_identity(mod_vhost_ldap_get_suexec_id_doer, NULL, NULL, APR_HOOK_MIDDLE);
 #endif
