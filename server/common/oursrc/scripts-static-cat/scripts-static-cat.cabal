@@ -1,0 +1,23 @@
+Name:		scripts-static-cat
+Version:	0.0
+Cabal-Version:	>= 1.2
+Build-Type:	Simple
+License:	GPL
+Copyright:	© 2010, Anders Kaseorg
+Author:		Anders Kaseorg <andersk@mit.edu>
+Maintainer:	scripts@mit.edu
+
+Executable		static-cat
+  Main-Is:		StaticCat.hs
+  GHC-Options:		-Wall -O2
+  Build-Depends:
+    base >= 4,
+    bytestring,
+    cgi >= 3001.1.8,
+    containers,
+    filepath,
+    MonadCatchIO-mtl,
+    old-locale,
+    time,
+    unix,
+    unix-handle

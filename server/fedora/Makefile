@@ -19,8 +19,10 @@
 # See /COPYRIGHT in this repository for more information.
 
 upstream_yum	= krb5 krb5.i586 httpd openssh shadow-utils libpng ghostscript
-upstream	= openafs $(upstream_yum) moira cluster-glue heartbeat pacemaker
-oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i586 whoisd mit-zephyr athrun php_scripts scripts-wizard scripts-base
+hackage		= MonadCatchIO-mtl-0.3.0.1 cgi-3001.1.8.1 unix-handle-0.0.0
+upstream_hackage = ghc-MonadCatchIO-mtl ghc-cgi ghc-unix-handle
+upstream	= openafs $(upstream_yum) $(upstream_hackage) moira cluster-glue heartbeat pacemaker
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i586 whoisd mit-zephyr athrun php_scripts scripts-wizard scripts-base scripts-static-cat
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
@@ -72,6 +74,9 @@ download_stamp: | SRPMS/mit-zephyr-2.1-6.src.rpm
 	wget -P $(dload) $(heartbeat_url)
 	wget -P $(dload) $(pacemaker_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
+	cabal update
+	cabal fetch $(hackage)
+	cp -a $(hackage:%=~/.cabal/packages/*/*/*/%.tar.gz) $(tmp_src)
 	touch download_stamp
 
 %.src.rpm:
@@ -202,8 +207,9 @@ openafs-deps	= pam-devel automake
 mit-zephyr-deps	= readline-devel hesiod-devel hesiod-devel.i586 hesiod.i586 libXt.i586 #compat-readline43
 openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth pango-devel cairo-devel libedit-devel nss-devel fipscheck-devel
 php-deps	= bzip2-devel curl-devel gmp-devel libstdc++-devel sqlite-devel gcc-c++ libc-client-devel mysql-devel postgresql-devel unixODBC-devel libxml2-devel net-snmp-devel libxslt-devel libxml2-devel libXpm-devel libjpeg-devel t1lib-devel libmcrypt-devel mhash-devel libtidy-devel freetds-devel aspell-devel recode-devel
+haskell-deps	= cabal-install
 install-deps:
-	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(mit-zephyr-deps) $(openssh-deps) $(php-deps)
+	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(mit-zephyr-deps) $(openssh-deps) $(php-deps) $(haskell-deps)
 	rpm -ivh http://kojipkgs.fedoraproject.org/packages/compat-readline43/4.3/3/i386/compat-readline43-4.3-3.i386.rpm
 #	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
 
