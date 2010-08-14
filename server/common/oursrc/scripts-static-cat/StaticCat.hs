@@ -140,7 +140,8 @@ checkRange mTime size = do
   (checkIfRange mTime >>=) $ maybe (return Nothing) $ \() -> do
     case parseRange range size of
       Just (a, b) | a <= b -> return $ Just (a, b)
-      _ -> throw BadRange
+      Just _ -> throw BadRange
+      Nothing -> return Nothing
 
 outputAll :: Handle -> FileOffset -> CGI CGIResult
 outputAll h size = do
