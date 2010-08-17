@@ -15,3 +15,4 @@ export KRBTKFILE=/home/afsagent/tkt
 # Obtain AFS tokens
 @aklog_path@
 @aklog_path@ -c sipb
+@aklog_path@ -c csail

@@ -49,6 +49,9 @@ if [ "$1" = "0" ] ; then
 fi
 
 %changelog
+* Tue Aug 17 2010  Geoffrey Thomas <geofft@mit.edu>
+- aklog csail as well
+
 * Wed Dec 31 2008  Quentin Smith <quentin@mit.edu>
 - only remove afsagent user on erase
 - ignore preexisting user
