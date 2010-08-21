@@ -39,7 +39,8 @@ extern int pioctl(char *, afs_int32, struct ViceIoctl *, afs_int32);
 #define _STR(x) #x
 #define STR(x) _STR(x)
 
-#define OVERLORDS "system:scripts-root"
+#define SYSADMINS "system:scripts-root"
+#define SYSADMIN_CELL "athena.mit.edu"
 
 static bool
 ismember(const char *user, const char *group)
@@ -242,16 +243,23 @@ main(int argc, const char *argv[])
 
     int rights = parse_rights(nplus, &p, user);
     rights &= ~parse_rights(nminus, &p, user);
-#ifdef OVERLORDS
-    if (~rights & PRSFS_ADMINISTER && ismember(user, OVERLORDS)) {
-	openlog("admof", 0, LOG_AUTHPRIV);
-	syslog(LOG_NOTICE, "giving %s admin rights on %s", user, locker);
-	closelog();
-	rights |= PRSFS_ADMINISTER;
+    pr_End();
+
+#ifdef SYSADMINS
+    if (~rights & PRSFS_ADMINISTER) {
+	strncpy(cell, SYSADMIN_CELL, MAXCELLCHARS - 1);
+	if (pr_Initialize(secLevel, (char *)AFSDIR_CLIENT_ETC_DIRPATH, cell) == 0) {
+	    if (ismember(user, SYSADMINS)) {
+		openlog("admof", 0, LOG_AUTHPRIV);
+		syslog(LOG_NOTICE, "giving %s admin rights on %s", user, locker);
+		closelog();
+		rights |= PRSFS_ADMINISTER;
+	    }
+	    pr_End();
+	}
+	/* If not, that's okay -- the normal codepath ran fine, so don't error */
     }
 #endif
-
-    pr_End();
 
     /* Output whether the user is an administrator. */
     if (rights & PRSFS_ADMINISTER) {
