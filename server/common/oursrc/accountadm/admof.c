@@ -55,23 +55,38 @@ ismember(const char *user, const char *group)
 static int
 parse_rights(int n, const char **p, const char *user)
 {
-    int rights = 0;
+    int rights = 0, *trights = malloc(n * sizeof(int)), i;
+    namelist tnames = {.namelist_len = n,
+		       .namelist_val = malloc(n * PR_MAXNAMELEN)};
+    idlist tids = {.idlist_len = 0,
+		   .idlist_val = NULL};
 
-    int i;
     for (i = 0; i < n; ++i) {
-	char tname[PR_MAXNAMELEN];
-	int trights;
-
 	int off;
-	if (sscanf(*p, "%" STR(PR_MAXNAMELEN) "s %d\n%n", tname, &trights, &off) < 2)
+	if (sscanf(*p, "%" STR(PR_MAXNAMELEN) "s %d\n%n",
+		   tnames.namelist_val[i], &trights[i], &off) < 2)
 	    die("internal error: can't parse output from pioctl\n");
 	*p += off;
-
-	if (~rights & trights &&
-	    (strcasecmp(tname, user) == 0 ||
-	     (strchr(tname, ':') != 0 && ismember(user, tname))))
-	    rights |= trights;
     }
+
+    if (pr_NameToId(&tnames, &tids) != 0)
+	die("internal error: pr_NameToId failed");
+    if (tids.idlist_len != n)
+	die("internal error: pr_NameToId did not return as many ids as names");
+
+    for (i = 0; i < n; ++i) {
+	if (~rights & trights[i] &&
+	    (strcasecmp(tnames.namelist_val[i], user) == 0 ||
+	     (tids.idlist_val[i] < 0 && ismember(user, tnames.namelist_val[i]))))
+	    rights |= trights[i];
+    }
+
+    /* Note: this first free probably should be xdr_free in OpenAFS 1.5.
+     * See commits b40b606 and f02f2e8 */
+    free(tids.idlist_val);
+    tids.idlist_val = NULL;
+    free(tnames.namelist_val);
+    free(trights);
 
     return rights;
 }
