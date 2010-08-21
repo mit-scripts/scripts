@@ -61,6 +61,9 @@ parse_rights(int n, const char **p, const char *user)
     idlist tids = {.idlist_len = 0,
 		   .idlist_val = NULL};
 
+    if (trights == NULL || tnames.namelist_val == NULL)
+	die("internal error: malloc failed: %m");
+
     for (i = 0; i < n; ++i) {
 	int off;
 	if (sscanf(*p, "%" STR(PR_MAXNAMELEN) "s %d\n%n",
@@ -71,8 +74,8 @@ parse_rights(int n, const char **p, const char *user)
 
     if (pr_NameToId(&tnames, &tids) != 0)
 	die("internal error: pr_NameToId failed");
-    if (tids.idlist_len != n)
-	die("internal error: pr_NameToId did not return as many ids as names");
+    if (tids.idlist_len < n)
+	die("internal error: pr_NameToId did not return enough ids");
 
     for (i = 0; i < n; ++i) {
 	if (~rights & trights[i] &&
