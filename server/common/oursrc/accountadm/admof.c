@@ -247,9 +247,9 @@ main(int argc, const char *argv[])
 
 #ifdef SYSADMINS
     if (~rights & PRSFS_ADMINISTER) {
-	snprintf(cell, MAXCELLCHARS, "%s", SYSADMIN_CELL);
-	if (pr_Initialize(secLevel, (char *)AFSDIR_CLIENT_ETC_DIRPATH, cell) == 0) {
-	    if (ismember(user, SYSADMINS)) {
+	char sysadmins[] = SYSADMINS, sysadmin_cell[] = SYSADMIN_CELL;
+	if (pr_Initialize(secLevel, (char *)AFSDIR_CLIENT_ETC_DIRPATH, sysadmin_cell) == 0) {
+	    if (ismember(user, sysadmins)) {
 		openlog("admof", 0, LOG_AUTHPRIV);
 		syslog(LOG_NOTICE, "giving %s admin rights on %s", user, locker);
 		closelog();
