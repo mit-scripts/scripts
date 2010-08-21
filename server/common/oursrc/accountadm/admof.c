@@ -95,6 +95,48 @@ parse_rights(int n, const char **p, char *user)
     return rights;
 }
 
+/* Resolve a Kerberos principal to a name usable by the AFS PTS. */
+void
+resolve_principal(const char *name, const char *cell, char *user)
+{
+    /* Figure out the cell's realm. */
+    krb5_context context;
+    krb5_init_context(&context);
+
+    char **realm_list;
+    if (krb5_get_host_realm(context, cell, &realm_list) != 0 ||
+	realm_list[0] == NULL)
+	die("internal error: krb5_get_host_realm failed");
+
+    /* Convert the Kerberos 5 principal into a (Kerberos IV-style) AFS
+       name, omitting the realm if it equals the cell's realm. */
+    krb5_principal principal;
+    if (krb5_parse_name(context, name, &principal) != 0)
+	die("internal error: krb5_parse_name failed");
+    char pname[ANAME_SZ], pinst[INST_SZ], prealm[REALM_SZ];
+    if (krb5_524_conv_principal(context, principal, pname, pinst, prealm) != 0)
+	die("internal error: krb5_524_conv_principal failed\n");
+    if (kname_unparse(user, pname, pinst,
+		      strcmp(prealm, realm_list[0]) == 0 ? NULL : prealm) != 0)
+	die("internal error: kname_unparse failed\n");
+
+    krb5_free_principal(context, principal);
+    krb5_free_host_realm(context, realm_list);
+    krb5_free_context(context);
+
+    /* Instead of canonicalizing the name as below, we just use
+       strcasecmp above. */
+#if 0
+    afs_int32 id;
+    if (pr_SNameToId((char *)user, &id) != 0)
+	die("bad principal\n");
+    if (id == ANONYMOUSID)
+	die("anonymous\n");
+    if (pr_SIdToName(id, user) != 0)
+	die("internal error: pr_SIdToName failed\n");
+#endif
+}
+
 int
 main(int argc, const char *argv[])
 {
@@ -185,43 +227,8 @@ main(int argc, const char *argv[])
 	die("internal error: afsconf_GetCellInfo failed\n");
     afsconf_Close(configdir);
 
-    /* Figure out the cell's realm. */
-    krb5_context context;
-    krb5_init_context(&context);
-
-    char **realm_list;
-    if (krb5_get_host_realm(context, cellconfig.hostName[0], &realm_list) != 0 ||
-	realm_list[0] == NULL)
-	die("internal error: krb5_get_host_realm failed");
-
-    /* Convert the Kerberos 5 principal into a (Kerberos IV-style) AFS
-       name, omitting the realm if it equals the cell's realm. */
-    krb5_principal principal;
-    if (krb5_parse_name(context, name, &principal) != 0)
-	die("internal error: krb5_parse_name failed");
-    char pname[ANAME_SZ], pinst[INST_SZ], prealm[REALM_SZ];
-    if (krb5_524_conv_principal(context, principal, pname, pinst, prealm) != 0)
-	die("internal error: krb5_524_conv_principal failed\n");
     char user[MAX(PR_MAXNAMELEN, MAX_K_NAME_SZ)];
-    if (kname_unparse(user, pname, pinst,
-		      strcmp(prealm, realm_list[0]) == 0 ? NULL : prealm) != 0)
-	die("internal error: kname_unparse failed\n");
-
-    krb5_free_principal(context, principal);
-    krb5_free_host_realm(context, realm_list);
-    krb5_free_context(context);
-
-    /* Instead of canonicalizing the name as below, we just use
-       strcasecmp above. */
-#if 0
-    afs_int32 id;
-    if (pr_SNameToId((char *)user, &id) != 0)
-	die("bad principal\n");
-    if (id == ANONYMOUSID)
-	die("anonymous\n");
-    if (pr_SIdToName(id, user) != 0)
-	die("internal error: pr_SIdToName failed\n");
-#endif
+    resolve_principal(name, cellconfig.hostName[0], user);
 
     /* Read the locker ACL. */
     char acl[2048];
@@ -249,6 +256,7 @@ main(int argc, const char *argv[])
     if (~rights & PRSFS_ADMINISTER) {
 	char sysadmins[] = SYSADMINS, sysadmin_cell[] = SYSADMIN_CELL;
 	if (pr_Initialize(secLevel, (char *)AFSDIR_CLIENT_ETC_DIRPATH, sysadmin_cell) == 0) {
+	    resolve_principal(name, sysadmin_cell, user);
 	    if (ismember(user, sysadmins)) {
 		openlog("admof", 0, LOG_AUTHPRIV);
 		syslog(LOG_NOTICE, "giving %s admin rights on %s", user, locker);
