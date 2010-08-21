@@ -43,10 +43,10 @@ extern int pioctl(char *, afs_int32, struct ViceIoctl *, afs_int32);
 #define SYSADMIN_CELL "athena.mit.edu"
 
 static bool
-ismember(const char *user, const char *group)
+ismember(char *user, char *group)
 {
     int flag;
-    if (pr_IsAMemberOf((char *)user, (char *)group, &flag) == 0)
+    if (pr_IsAMemberOf(user, group, &flag) == 0)
 	return flag;
     else
 	return 0;
@@ -54,7 +54,7 @@ ismember(const char *user, const char *group)
 
 /* Parse an ACL of n entries, returning the rights for user. */
 static int
-parse_rights(int n, const char **p, const char *user)
+parse_rights(int n, const char **p, char *user)
 {
     int rights = 0, *trights = malloc(n * sizeof(int)), i;
     namelist tnames = {.namelist_len = n,
@@ -247,7 +247,7 @@ main(int argc, const char *argv[])
 
 #ifdef SYSADMINS
     if (~rights & PRSFS_ADMINISTER) {
-	strncpy(cell, SYSADMIN_CELL, MAXCELLCHARS - 1);
+	snprintf(cell, MAXCELLCHARS, "%s", SYSADMIN_CELL);
 	if (pr_Initialize(secLevel, (char *)AFSDIR_CLIENT_ETC_DIRPATH, cell) == 0) {
 	    if (ismember(user, SYSADMINS)) {
 		openlog("admof", 0, LOG_AUTHPRIV);
