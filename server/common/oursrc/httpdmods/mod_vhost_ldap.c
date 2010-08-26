@@ -575,28 +575,28 @@ null:
 
     /* Optimize */
     if (vals) {
-	int i = 0;
-	while (attributes[i]) {
+	int i;
+	for (i = 0; attributes[i]; i++) {
 
+	    char *val = apr_pstrdup (r->pool, vals[i]);
 	    if (strcasecmp (attributes[i], "apacheServerName") == 0) {
-		reqc->name = apr_pstrdup (r->pool, vals[i]);
+		reqc->name = val;
 	    }
 	    else if (strcasecmp (attributes[i], "apacheServerAdmin") == 0) {
-		reqc->admin = apr_pstrdup (r->pool, vals[i]);
+		reqc->admin = val;
 	    }
 	    else if (strcasecmp (attributes[i], "apacheDocumentRoot") == 0) {
-		reqc->docroot = apr_pstrdup (r->pool, vals[i]);
+		reqc->docroot = val;
 	    }
 	    else if (strcasecmp (attributes[i], "apacheScriptAlias") == 0) {
-		reqc->cgiroot = apr_pstrdup (r->pool, vals[i]);
+		reqc->cgiroot = val;
 	    }
 	    else if (strcasecmp (attributes[i], "apacheSuexecUid") == 0) {
-		reqc->uid = apr_pstrdup(r->pool, vals[i]);
+		reqc->uid = val;
 	    }
 	    else if (strcasecmp (attributes[i], "apacheSuexecGid") == 0) {
-		reqc->gid = apr_pstrdup(r->pool, vals[i]);
+		reqc->gid = val;
 	    }
-	    i++;
 	}
     }
 
