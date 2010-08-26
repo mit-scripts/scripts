@@ -463,7 +463,6 @@ static int mod_vhost_ldap_translate_name(request_rec *r)
     int sleep1 = 1;
     int sleep;
     struct berval hostnamebv, shostnamebv;
-    int ret = DECLINED;
 
     if ((error = ap_init_virtual_host(r->pool, "", r->server, &server)) != NULL) {
         ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r,
@@ -673,7 +672,7 @@ null:
     r->server = server;
 
     /* Hack to allow post-processing by other modules (mod_rewrite, mod_alias) */
-    return ret;
+    return DECLINED;
 }
 
 #ifdef HAVE_UNIX_SUEXEC
