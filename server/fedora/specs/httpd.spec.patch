@@ -9,7 +9,7 @@
  URL: http://httpd.apache.org/
  Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.gz
  Source1: index.html
-@@ -55,6 +55,13 @@
+@@ -55,6 +55,14 @@
  Conflicts: pcre < 4.0
  Requires: httpd-tools = %{version}-%{release}, apr-util-ldap
  
@@ -19,6 +19,7 @@
 +Patch1004: httpd-2.2.x-304.patch
 +Patch1005: httpd-2.2.x-mod_ssl-sessioncaching.patch
 +Patch1006: httpd-suexec-cloexec.patch
++Patch1007: httpd-fixup-vhost.patch
 +
  %description
  The Apache HTTP Server is a powerful, efficient, and extensible
@@ -31,7 +32,7 @@
  Obsoletes: stronghold-mod_ssl
  
  %description -n mod_ssl
-@@ -129,6 +137,12 @@
+@@ -129,6 +137,13 @@
  # Patch in vendor/release string
  sed "s/@RELEASE@/%{vstring}/" < %{PATCH20} | patch -p1
  
@@ -40,6 +41,7 @@
 +%patch1004 -p1 -b .scripts-304
 +%patch1005 -p1 -b .ssl-sessioncache
 +%patch1006 -p1 -b .cloexec
++%patch1007 -p1 -b .fixup-vhost
 +
  # Safety check: prevent build if defined MMN does not equal upstream MMN.
  vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
