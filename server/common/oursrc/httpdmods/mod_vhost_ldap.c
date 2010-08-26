@@ -399,6 +399,16 @@ static const char *mod_vhost_ldap_set_fallback(cmd_parms *cmd, void *dummy, cons
     return NULL;
 }
 
+static int reconfigure_directive(apr_pool_t *p,
+				 server_rec *s,
+				 const char *dir,
+				 const char *args)
+{
+    ap_directive_t dir_s = { .directive = dir, .args = args, .next = NULL,
+                             .line_num = 0, .filename = "VhostLDAPConf" };
+    return ap_process_config_tree(s, &dir_s, p, p);
+}
+
 command_rec mod_vhost_ldap_cmds[] = {
     AP_INIT_TAKE1("VhostLDAPURL", mod_vhost_ldap_parse_url, NULL, RSRC_CONF,
                   "URL to define LDAP connection. This should be an RFC 2255 compliant\n"
@@ -437,17 +447,16 @@ static int mod_vhost_ldap_translate_name(request_rec *r)
 {
     server_rec *server;
     const char *error;
+    int code;
     mod_vhost_ldap_request_t *reqc;
     int failures = 0;
     const char **vals = NULL;
     char filtbuf[FILTER_LENGTH];
     mod_vhost_ldap_config_t *conf =
 	(mod_vhost_ldap_config_t *)ap_get_module_config(r->server->module_config, &vhost_ldap_module);
-    core_server_config *core;
     util_ldap_connection_t *ldc = NULL;
     int result = 0;
     const char *dn = NULL;
-    char *cgi;
     const char *hostname = NULL;
     int is_fallback = 0;
     int sleep0 = 0;
@@ -462,9 +471,6 @@ static int mod_vhost_ldap_translate_name(request_rec *r)
 		      error);
 	return HTTP_INTERNAL_SERVER_ERROR;
     }
-
-    core = core_module.create_server_config(r->pool, server);
-    ap_set_module_config(server->module_config, &core_module, core);
 
     reqc =
 	(mod_vhost_ldap_request_t *)apr_pcalloc(r->pool, sizeof(mod_vhost_ldap_request_t));
@@ -535,7 +541,7 @@ fallback:
 	    if (strncmp(hostname, "*.", 2) == 0)
 		hostname += 2;
 	    hostname += strcspn(hostname, ".");
-	    hostname = apr_pstrcat(r->pool, "*", hostname, NULL);
+	    hostname = apr_pstrcat(r->pool, "*", hostname, (const char *)NULL);
 	    ap_log_rerror(APLOG_MARK, APLOG_NOTICE|APLOG_NOERRNO, 0, r,
 		          "[mod_vhost_ldap.c] translate: "
 			  "virtual host not found, trying wildcard %s",
@@ -578,25 +584,47 @@ null:
 	int i;
 	for (i = 0; attributes[i]; i++) {
 
+	    const char *directive;
 	    char *val = apr_pstrdup (r->pool, vals[i]);
-	    if (strcasecmp (attributes[i], "apacheServerName") == 0) {
-		reqc->name = val;
-	    }
-	    else if (strcasecmp (attributes[i], "apacheServerAdmin") == 0) {
-		reqc->admin = val;
-	    }
-	    else if (strcasecmp (attributes[i], "apacheDocumentRoot") == 0) {
-		reqc->docroot = val;
-	    }
-	    else if (strcasecmp (attributes[i], "apacheScriptAlias") == 0) {
-		reqc->cgiroot = val;
-	    }
-	    else if (strcasecmp (attributes[i], "apacheSuexecUid") == 0) {
+	    /* These do not correspond to any real directives */
+	    if (strcasecmp (attributes[i], "apacheSuexecUid") == 0) {
 		reqc->uid = val;
+		continue;
 	    }
 	    else if (strcasecmp (attributes[i], "apacheSuexecGid") == 0) {
 		reqc->gid = val;
+		continue;
 	    }
+
+	    if (strcasecmp (attributes[i], "apacheServerName") == 0) {
+		reqc->name = val;
+		directive = "ServerName";
+	    }
+	    else if (strcasecmp (attributes[i], "apacheServerAdmin") == 0) {
+		reqc->admin = val;
+		directive = "ServerAdmin";
+	    }
+	    else if (strcasecmp (attributes[i], "apacheDocumentRoot") == 0) {
+		reqc->docroot = val;
+		directive = "DocumentRoot";
+	    }
+	    else if (strcasecmp (attributes[i], "apacheScriptAlias") == 0) {
+		if (val != NULL) {
+		    /* Hack to deal with current apacheScriptAlias lagout */
+		    if (strlen(val) > 0 && val[strlen(val) - 1] == '/')
+			val = apr_pstrcat(r->pool, "/cgi-bin/ ", val, (const char *)NULL);
+		    else
+			val = apr_pstrcat(r->pool, "/cgi-bin/ ", val, "/", (const char *)NULL);
+		    directive = "ScriptAlias";
+		}
+		reqc->cgiroot = val;
+	    }
+
+	    if (val == NULL)
+                continue;
+
+	    if ((code = reconfigure_directive(r->pool, server, directive, val)) != 0)
+		return code;
 	}
     }
 
@@ -617,85 +645,28 @@ null:
 	return HTTP_INTERNAL_SERVER_ERROR;
     }
 
-    cgi = NULL;
-
-    if (reqc->cgiroot) {
-	cgi = strstr(r->uri, "cgi-bin/");
-	if (cgi && (cgi != r->uri + strspn(r->uri, "/"))) {
-	    cgi = NULL;
-	}
-    }
-    if (cgi) {
-        /* Set exact filename for CGI script */
-        cgi = apr_pstrcat(r->pool, reqc->cgiroot, cgi + strlen("cgi-bin"), NULL);
-        if ((cgi = ap_server_root_relative(r->pool, cgi))) {
-	  ap_log_rerror(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, 0, r,
-			"[mod_vhost_ldap.c]: ap_document_root is: %s",
-			ap_document_root(r));
-	  r->filename = cgi;
-	  r->handler = "cgi-script";
-	  apr_table_setn(r->notes, "alias-forced-type", r->handler);
-	  ret = OK;
-	}
-    } else if (strncmp(r->uri, "/~", 2) == 0) {
-        /* This is a quick, dirty hack. I should be shot for taking 6.170
-         * this term and being willing to write a quick, dirty hack. */    
+    if (reqc->uid != NULL) {
 	char *username;
-	uid_t uid = (uid_t)atoll(reqc->uid);
+	char *userdir_val;
+	uid_t uid = (uid_t) atoll(reqc->uid);
+
+	if ((code = reconfigure_directive(r->pool, server, "UserDir", USERDIR)) != 0)
+	    return code;
+
+        /* Deal with ~ expansion */
+        if ((code = reconfigure_directive(r->pool, server, "UserDir", "disabled")) != 0)
+            return code;
+
 	if (apr_uid_name_get(&username, uid, r->pool) != APR_SUCCESS) {
 	    ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
 		          "could not get username for uid %d", uid);
-	    return DECLINED;
+	    return HTTP_INTERNAL_SERVER_ERROR;
 	}
-	if (strncmp(r->uri + 2, username, strlen(username)) == 0 &&
-	    (r->uri[2 + strlen(username)] == '/' ||
-	     r->uri[2 + strlen(username)] == '\0')) {
-	    char *homedir;
-	    if (apr_uid_homepath_get(&homedir, username, r->pool) != APR_SUCCESS) {
-		ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
-			      "could not get home directory for user %s", username);
-		return DECLINED;
-	    }
-	    r->filename = apr_pstrcat(r->pool, homedir, "/", USERDIR, r->uri + 2 + strlen(username), NULL);
-	    ret = OK;
-	}
-    } else if (r->uri[0] == '/') {
-        /* we don't set r->filename here, and let other modules do it
-         * this allows other modules (mod_rewrite.c) to work as usual
-	 */
-        /* r->filename = apr_pstrcat (r->pool, reqc->docroot, r->uri, NULL); */
-    } else {
-        /* We don't handle non-file requests here */
-	return DECLINED;
-    }
 
-    server->server_hostname = reqc->name;
+        userdir_val = apr_pstrcat(r->pool, "enabled ", username, (const char *)NULL);
 
-    if (reqc->admin) {
-	server->server_admin = reqc->admin;
-    }
-
-    /* Stolen from server/core.c */
-
-    /* Make it absolute, relative to ServerRoot */
-    reqc->docroot = ap_server_root_relative(r->pool, reqc->docroot);
-
-    if (reqc->docroot == NULL) {
-        ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r, 
-                      "[mod_vhost_ldap.c] set_document_root: DocumentRoot must be a directory");
-
-        return HTTP_INTERNAL_SERVER_ERROR;
-    }
-
-    /* TODO: ap_configtestonly && ap_docrootcheck && */
-    if (apr_filepath_merge((char**)&core->ap_document_root, NULL, reqc->docroot,
-                           APR_FILEPATH_TRUENAME, r->pool) != APR_SUCCESS
-        || !ap_is_directory(r->pool, reqc->docroot)) {
-
-        ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r,
-		      "[mod_vhost_ldap.c] set_document_root: Warning: DocumentRoot [%s] does not exist",
-		      reqc->docroot);
-        core->ap_document_root = reqc->docroot;
+	if ((code = reconfigure_directive(r->pool, server, "UserDir", userdir_val)) != 0)
+	    return code;
     }
 
     ap_fixup_virtual_host(r->pool, r->server, server);
