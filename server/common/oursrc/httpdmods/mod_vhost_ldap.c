@@ -435,14 +435,15 @@ command_rec mod_vhost_ldap_cmds[] = {
 #define FILTER_LENGTH MAX_STRING_LEN
 static int mod_vhost_ldap_translate_name(request_rec *r)
 {
+    server_rec *server;
+    const char *error;
     mod_vhost_ldap_request_t *reqc;
     int failures = 0;
     const char **vals = NULL;
     char filtbuf[FILTER_LENGTH];
     mod_vhost_ldap_config_t *conf =
 	(mod_vhost_ldap_config_t *)ap_get_module_config(r->server->module_config, &vhost_ldap_module);
-    core_server_config *core =
-        (core_server_config *)ap_get_module_config(r->server->module_config, &core_module);
+    core_server_config *core;
     util_ldap_connection_t *ldc = NULL;
     int result = 0;
     const char *dn = NULL;
@@ -454,6 +455,16 @@ static int mod_vhost_ldap_translate_name(request_rec *r)
     int sleep;
     struct berval hostnamebv, shostnamebv;
     int ret = DECLINED;
+
+    if ((error = ap_init_virtual_host(r->pool, "", r->server, &server)) != NULL) {
+        ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r,
+		      "[mod_vhost_ldap.c]: Could not initialize a new VirtualHost: %s",
+		      error);
+	return HTTP_INTERNAL_SERVER_ERROR;
+    }
+
+    core = core_module.create_server_config(r->pool, server);
+    ap_set_module_config(server->module_config, &core_module, core);
 
     reqc =
 	(mod_vhost_ldap_request_t *)apr_pcalloc(r->pool, sizeof(mod_vhost_ldap_request_t));
@@ -658,35 +669,11 @@ null:
 	return DECLINED;
     }
 
-    if ((r->server = apr_pmemdup(r->pool, r->server, sizeof(*r->server))) == NULL) {
-        ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
-                      "[mod_vhost_ldap.c] translate: "
-                      "translate failed; Unable to copy r->server structure");
-	return HTTP_INTERNAL_SERVER_ERROR;
-    }
-
-    r->server->server_hostname = reqc->name;
+    server->server_hostname = reqc->name;
 
     if (reqc->admin) {
-	r->server->server_admin = reqc->admin;
+	server->server_admin = reqc->admin;
     }
-
-    if ((r->server->module_config = apr_pmemdup(r->pool, r->server->module_config,
-						sizeof(void *) *
-						(total_modules + DYNAMIC_MODULE_LIMIT))) == NULL) {
-        ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
-                      "[mod_vhost_ldap.c] translate: "
-                      "translate failed; Unable to copy r->server->module_config structure");
-        return HTTP_INTERNAL_SERVER_ERROR;
-    }
-
-    if ((core = apr_pmemdup(r->pool, core, sizeof(*core))) == NULL) {
-        ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
-                      "[mod_vhost_ldap.c] translate: "
-                      "translate failed; Unable to copy r->core structure");
-        return HTTP_INTERNAL_SERVER_ERROR;
-    }
-    ap_set_module_config(r->server->module_config, &core_module, core);
 
     /* Stolen from server/core.c */
 
@@ -710,6 +697,9 @@ null:
 		      reqc->docroot);
         core->ap_document_root = reqc->docroot;
     }
+
+    ap_fixup_virtual_host(r->pool, r->server, server);
+    r->server = server;
 
     /* Hack to allow post-processing by other modules (mod_rewrite, mod_alias) */
     return ret;
