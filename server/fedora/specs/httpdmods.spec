@@ -8,7 +8,8 @@ URL: http://scripts.mit.edu
 License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
-BuildRequires: httpd-devel
+BuildRequires: scripts-httpd-devel >= 2.2.15-1.fc11.1.scripts.1606
+Requires: scripts-httpd >= 2.2.15-1.fc11.1.scripts.1606
 %define debug_package %{nil}
 
 %description 
