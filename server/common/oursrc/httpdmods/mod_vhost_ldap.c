@@ -618,6 +618,13 @@ null:
 		}
 		reqc->cgiroot = val;
 	    }
+	    else {
+		/* This should not actually be reachable, but it's
+		   good to cover all all possible cases */
+                ap_log_rerror(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, 0, r,
+                              "Unexpected attribute %s encountered", attributes[i]);
+                continue;
+            }
 
 	    if (val == NULL)
                 continue;
