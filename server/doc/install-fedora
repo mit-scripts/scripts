@@ -1,0 +1,144 @@
+Installing a Scripts guest on a Xen host
+----------------------------------------
+
+1. Create the LVS partitions that the Scripts guest will use.
+
+Our classic setup is 50GB for the main, root partition (/) and
+10GB for our swap.  You can consult what things look like
+by using `lvdisplay`.  Our naming convention is server-name-root
+and server-name-swap.
+
+Creating new LVS partitions is done with `lvcreate`:
+
+    # Example values:
+    # SERVERNAME=whole-enchilada
+    # HOSTNAME=jay-leno
+    lvcreate -n $SERVERNAME-root $HOSTNAME --size 50.00G
+    lvcreate -n $SERVERNAME-swap $HOSTNAME --size 10.00G
+
+2. Acquire the network installation media for Fedora.
+
+Normally, you would download an ISO and kick off an installation
+by burning it to a CD and booting off of that.  Since we would like
+to make as minimal a Fedora install as possible, we use a different
+method. [XXX: Why do we actually do it this way?  It seems kind
+of convoluted]
+
+First, we need to create an appropriate installation directory,
+which contains the necessary kernel images and bootstrapping code.
+Navigate to a Fedora mirrors website, and find the correct release
+from the linux/releases directory, then grab the contents of
+Fedora/x86_64/os/isolinux.  For example, getting the Fedora 13 installer
+from mirrors.mit.edu would be:
+
+    mkdir ~/f13-install
+    cd ~/f13-install
+    wget -r -nd ftp://mirrors.mit.edu/fedora/linux/releases/13/Fedora/x86_64/os/isolinux/
+
+You can then spin up a Xen image for installation with:
+
+    xm create scripts-server machine_name=$HOSTNAME install=f13
+
+Note that the -install suffix was dropped.  Get a console with `xm
+console`.
+
+3. Tell Fedora where to get the real installer.
+
+You will now be in a curses installer interface.  Since you are doing
+a network install, you will need to configure your network and specify
+the URL to install.  Find the static hostname that you are planning
+to install to and get its information with:
+
+    stella $HOSTNAME
+
+Manually configure its IP, disabling IPv6 for now [XXX I don't know how
+to configure that].  The network mask is 16, and you can check
+'/etc/resolv.conf' if you don't remember what MIT's DNS servers are.
+
+It will then ask you for an installation image.  Continuing with our
+F13 mirrors.mit.edu, the URL will look something like:
+
+    ftp://mirrors.mit.edu/fedora/linux/releases/13/Fedora/x86_64/os
+
+4. Use VNC
+
+At this point, Fedora will ask you whether or not you want to use VNC
+to continue the installation.  Because Scripts has an unusual disk
+image setup, you will want to answer yes. [XXX: Unfortunately, this puts
+the VNC session on MITnet, so make sure you use a good password, and
+we should figure out to make it not do that].  Grab your favorite
+VNC client and login to $HOSTNAME:1
+
+5. Installation in VNC
+
+5.1. Disks to use
+
+We don't have any exotic devices (we did that at the host level,
+recall), so you can use normal configuration.  The scripts-server Xen
+configuration will have automatically selected the LVS partitions you
+created in Step 1, and you want both of them.
+
+5.2. Host
+
+The default hostname is all caps: we use lower-case, so lower-case the
+name before proceeding.
+
+5.3. Timezone
+
+Self explanatory
+
+5.4. Root password
+
+Use Scripts root password for a real install, and fake password
+otherwise. [XXX: Insecure over VNC? Argh!]
+
+5.5 Formatting the disks
+
+You can find out what our existing setup looks like by consulting
+'/etc/fstab'.
+
+Select Custom, and select both disks for formatting.  Setup the larger
+disk as the boot partition.  Configure the partitions as follows:
+
+    50GB
+        Standard Partition
+        Mount Point: /
+        File System Type: ext3 (the default as of F13 is ext4, which
+            cannot be mounted by the hosts and thus should not be used!)
+        Additional Size Options: Fill to maximum allowable size (the
+            Size parameter will not do anything in that case)
+        Force to be primary partition
+    10GB
+        Standard Partition
+        File System Type: swap
+        Additional Size Options: Fill to maximum allowable size
+
+5.6 Bootloader
+
+Defaults are fine.
+
+5.7 Installation
+
+Do a minimal install (we will proceed to install the packages we care
+about), and add the normal F13 repository (testing and updates will be
+added when we bring in our /etc configuration).  Similarly, we will
+install the software we want later, so there is no need to do that now.
+
+5.8 Reboot
+
+When the install finishes, it will ask you to reboot.  This is fine, but
+since we created the VM image with install, upon reboot it will ask us
+to install again.  Let it reboot, then destroy the virtual machine.
+
+    xm destroy $SERVERNAME
+
+6. New World Order
+
+Start up the VM without the install flag:
+
+    xm create scripts-server machine_name=$SERVERNAME
+
+Use xm console to get a terminal, and proceed with the official install
+instructions.
+
+    xm console $SERVERNAME
