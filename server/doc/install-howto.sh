@@ -8,7 +8,9 @@ source_server="old-faithful.mit.edu"
 
 boot=${1:$(cat /scripts-boot-count)}
 
-# XXX: let 'branch' be the current svn branch you are on
+# XXX: let 'branch' be the current svn branch you are on.  You want to
+# use trunk if your just installing a new server, and branches/fcXX-dev
+# if your preparing a server on a new Fedora release.
 
 doreboot() {
     echo $(( $boot + 1 )) > /scripts-boot-count;
@@ -30,6 +32,9 @@ if [ $boot = 0 ]; then
 # firstboot, fuse, haldaemon, ip6tables, iptables, irqbalance,
 # kerneloops, mdmonitor, messagebus, microcode_ctl, netfs, network, nscd, ntpd,
 # sshd, udev-post, and nothing else.
+
+# If you did a minimal install, these won't be installed, so you'll
+# need to do this step later in the process.
     echo "--disabled" > /etc/sysconfig/system-config-firewall
     for i in NetworkManager avahi-daemon bluetooth cups isdn nfslock nfs pcscd restorecond rpcbind rpcgssd rpcidmapd sendmail; do
 	chkconfig "$i" off
@@ -57,7 +62,7 @@ if [ $boot = 1 ]; then
     YUM install -y subversion
 
     cd /srv
-    svn co svn://$source_server/$branch repository
+    svn co svn://scripts.mit.edu/$branch repository
 
     sed -i 's/^(# *)*store-passwords.*/store-passwords = no/' /root/.subversion/config
     sed -i 's/^(# *)*store-auth-creds.*/store-auth-creds = no/' /root/.subversion/config
@@ -73,6 +78,13 @@ if [ $boot = 1 ]; then
 # deps are in /mit/scripts/rpm.
     YUM install -y make
     make install-deps
+    # You should pay close attention to the output of this command, and
+    # note if packages you think should exist don't exist anymore.  In
+    # particular, if Fedora changes an architecture designation those
+    # won't work.
+
+# Add scripts-build to the group 'mock'
+    usermod -a -G mock scripts-build
 
 # Install bind
     YUM install -y bind
@@ -89,8 +101,16 @@ if [ $boot = 1 ]; then
 # with a non 127.0.0.1 address for the DNS server.  Be sure to revert it once
 # you have named.
 
+# You can get password SSH back by editing /etc/ssh/sshd_config (allow
+# password auth) and /etc/pam.d/sshd (comment out the first three auth
+# lines)
+
     service named start
     chkconfig named on
+
+# This is the point at which you should start updating scriptsified
+# packages for a new Fedora release.  Consult 'upgrade-tips' for more
+# information.
 
 # In the case of the Kerberos libraries, you'll be told that
 # there are conflicting files with the 64-bit versions of the packages,
@@ -107,6 +127,7 @@ if [ $boot = 1 ]; then
     YUM install -y yum-utils
     yumdownloader krb5-libs
     # XXX: These version numbers are hardcoded, need some cli-fu to generalize
+    # FC13: Check if they are necessary
     rpm -i krb5-libs-*.i586.rpm
     rpm -U --force krb5-libs-*.scripts.1138.x86_64.rpm
 
