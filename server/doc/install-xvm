@@ -1,0 +1,48 @@
+Installing a test scripts server on XVM
+=======================================
+
+It's useful to have a less secure scripts server for testing
+purposes.  Here's what you have to do:
+
+1. Creating the VM
+------------------
+
+To authenticate to xvm.mit.edu with root tickets, you need
+a browser that suppors SPNEGO;  Firefox is one such browser and
+the following instructions will assume it.  Browse to about:config
+and modify the key 'network.negotiate-auth.trusted-uris' to be
+
+    https://xvm.mit.edu:442/*
+
+Then, with active root tickets on your system, navigate to
+
+    https://xvm.mit.edu:442/
+
+You should be logged in as root, and if you are on scripts-root
+you should be able to assign ownership to scripts.
+
+[XXX: there should be a way to do this with remctl too]
+
+2. Spin up
+----------
+
+These instructions are mostly the same as the latter part of
+install-fedora, with the following changes:
+
+VNC
+---
+
+You will not need to sketchily forward VNC, because XVM has a built
+in VNC console.
+
+Password
+--------
+
+Do NOT use the scripts-root password.  Pick something else.
+
+Disks
+-----
+
+The standard Scripts setup has separate LVM partitions for root and
+swap, as well as a non-LVM partition for boot.  You will not have this
+for XVM, so the Fedora defaults mostly work.  Don't use ext4 though.
