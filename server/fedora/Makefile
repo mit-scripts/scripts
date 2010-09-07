@@ -18,11 +18,11 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 krb5.i586 httpd openssh shadow-utils libpng ghostscript
+upstream_yum	= krb5 krb5.i686 httpd openssh
 hackage		= MonadCatchIO-mtl-0.3.0.1 cgi-3001.1.8.1 unix-handle-0.0.0
 upstream_hackage = ghc-MonadCatchIO-mtl ghc-cgi ghc-unix-handle
 upstream	= openafs $(upstream_yum) $(upstream_hackage) moira cluster-glue heartbeat pacemaker
-oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i586 whoisd mit-zephyr athrun php_scripts scripts-wizard scripts-base scripts-static-cat
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd mit-zephyr athrun php_scripts scripts-wizard scripts-base scripts-static-cat
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
@@ -44,7 +44,7 @@ clusterglue_url	= "http://kojipkgs.fedoraproject.org/packages/cluster-glue/1.0/0
 heartbeat_url	= "http://kojipkgs.fedoraproject.org/packages/heartbeat/3.0.0/0.5.0daab7da36a8.hg.fc12/src/heartbeat-3.0.0-0.5.0daab7da36a8.hg.fc12.src.rpm"
 pacemaker_url	= "http://kojipkgs.fedoraproject.org/packages/pacemaker/1.0.5/5.fc12/src/pacemaker-1.0.5-5.fc12.src.rpm"
 
-PKG		= $(patsubst %.i586,%,$@)
+PKG		= $(patsubst %.i686,%,$@)
 
 .PHONY: minimal-clean
 
@@ -139,30 +139,30 @@ all:
 
 $(oursrc): rpmbuild_args += --define 'scriptsversion $(shell svnversion ${oursrcdir}/$** | tr ':' '_' | sed -e 's/-.*/0.uncommitted/')'
 
-$(filter %.i586,$(oursrc)): %.i586: setup
+$(filter %.i686,$(oursrc)): %.i686: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc11-i386 --arch=i586 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc13-i386 --arch=i686 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
-$(filter-out %.i586,$(oursrc)): %: setup
+$(filter-out %.i686,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc11-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc13-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(upstream) openafs-kernel: rpmbuild_args += --define 'scriptsversion $(shell svnversion ${patches} | tr ':' '_')'
 
-$(filter %.i586,$(upstream)): %.i586: setup patch-specs
+$(filter %.i686,$(upstream)): %.i686: setup patch-specs
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc11-i386 --arch=i586 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc13-i386 --arch=i686 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
-$(filter-out %.i586,$(upstream)): %: setup patch-specs
+$(filter-out %.i686,$(upstream)): %: setup patch-specs
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc11-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc13-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/openafs*.spec
-	/usr/bin/mock -r scripts-fc11-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc13-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
 
 #sort -n sorts "2.6.25-1" later than "2.6.25.1-1", so it's Wrong
 #kernvers = $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)
@@ -199,19 +199,20 @@ frob-openafs:
 	fi
 
 # The following packages are needed for our packages
-basic-deps	= kernel-devel rpm-build rpmdevtools mock gcc autoconf patch krb5-workstation glibc-devel.i586 glibc-devel libtool libgcc.i586
-oursrc-deps	= hesinfo openldap-clients openldap-devel.i586 php-devel
+basic-deps	= kernel-devel rpm-build rpmdevtools mock gcc autoconf patch krb5-workstation glibc-devel.i686 glibc-devel libtool libgcc.i686
+oursrc-deps	= hesinfo openldap-clients openldap-devel.i686 php-devel
 httpdmods-deps	= httpd-devel
 httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel
 krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel texinfo-tex texlive-latex
 openafs-deps	= pam-devel automake
-mit-zephyr-deps	= readline-devel hesiod-devel hesiod-devel.i586 hesiod.i586 libXt.i586 #compat-readline43
+mit-zephyr-deps	= readline-devel hesiod-devel hesiod-devel.i686 hesiod.i686 libXt.i686 #compat-readline43
 openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth pango-devel cairo-devel libedit-devel nss-devel fipscheck-devel
 php-deps	= bzip2-devel curl-devel gmp-devel libstdc++-devel sqlite-devel gcc-c++ libc-client-devel mysql-devel postgresql-devel unixODBC-devel libxml2-devel net-snmp-devel libxslt-devel libxml2-devel libXpm-devel libjpeg-devel t1lib-devel libmcrypt-devel mhash-devel libtidy-devel freetds-devel aspell-devel recode-devel
 haskell-deps	= cabal-install
 install-deps:
 	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(mit-zephyr-deps) $(openssh-deps) $(php-deps) $(haskell-deps)
-	rpm -ivh http://kojipkgs.fedoraproject.org/packages/compat-readline43/4.3/3/i386/compat-readline43-4.3-3.i386.rpm
+# XXX: We need to figure out what's going on with compat-readline43
+#	rpm -ivh http://kojipkgs.fedoraproject.org/packages/compat-readline43/4.3/3/i386/compat-readline43-4.3-3.i386.rpm
 #	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
 
 fedora:
