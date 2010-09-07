@@ -1,15 +1,15 @@
---- shadow-utils.spec.orig	2010-03-12 00:48:00.000000000 -0500
-+++ shadow-utils.spec	2010-03-12 00:55:36.000000000 -0500
+--- shadow-utils.spec.orig	2010-07-20 05:29:54.000000000 -0400
++++ shadow-utils.spec	2010-09-06 21:53:21.000000000 -0400
 @@ -1,7 +1,7 @@
  Summary: Utilities for managing accounts and shadow password files
  Name: shadow-utils
- Version: 4.1.4.1
--Release: 5%{?dist}
-+Release: 5.scripts.%{scriptsversion}%{?dist}
+ Version: 4.1.4.2
+-Release: 8%{?dist}
++Release: 8.scripts.%{scriptsversion}%{?dist}
  Epoch: 2
  URL: http://pkg-shadow.alioth.debian.org/
  Source0: ftp://pkg-shadow.alioth.debian.org/pub/pkg-shadow/shadow-%{version}.tar.bz2
-@@ -21,6 +21,7 @@
+@@ -26,6 +26,7 @@
  Requires: audit-libs >= 1.6.5
  Requires: setup
  Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -17,23 +17,3 @@
  
  %description
  The shadow-utils package includes the necessary programs for
-@@ -60,7 +61,8 @@
-         --with-selinux \
-         --without-libcrack \
-         --without-libpam \
--        --disable-shared
-+        --disable-shared \
-+        --with-group-name-max-length=32
- make
- 
- %install
-@@ -182,6 +184,9 @@
- %{_mandir}/man8/vigr.8*
- 
- %changelog
-+* Fri Mar 12 2010 Mitchell Berger <mitchb@mit.edu> 2:4.1.4.1-5.scripts
-+- change max group name length back to 32
-+
- * Wed Aug 05 2009 Peter Vrabec <pvrabec@redhat.com> 2:4.1.4.1-5
- - increase threshold for uid/gid reservations to 200 (#515667)
- 
