@@ -35,7 +35,7 @@
      krb5_boolean isok = FALSE;
      FILE *fp;
      char kuser[MAX_USERNAME];
-@@ -79,70 +79,35 @@
+@@ -79,71 +79,35 @@
      char linebuf[BUFSIZ];
      char *newline;
      int gobble;
@@ -71,6 +71,7 @@
 -	free(princname);
 -	return(FALSE);
 -    }
+-    set_cloexec_file(fp);
 -    /*
 -     * For security reasons, the .k5login file must be owned either by
 -     * the user himself, or by root.  Otherwise, don't grant access.
