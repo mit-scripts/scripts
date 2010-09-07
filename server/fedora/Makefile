@@ -58,6 +58,7 @@ minimal-clean:
 
 clean: minimal-clean
 	rm -rf $(out_rpms) $(out_srpms) $(out_sbin)
+	rm -f download_stamp
 
 mkdir-tree:
 	@rpmdev-setuptree
