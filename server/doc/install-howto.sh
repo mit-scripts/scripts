@@ -4,7 +4,8 @@ set -e -x
 
 [ -e /scripts-boot-count ] || echo 0 > /scripts-boot-count
 
-source_server="old-faithful.mit.edu"
+# This is actually just "pick an active scripts server"
+source_server="cats-whiskers.mit.edu"
 
 boot=${1:$(cat /scripts-boot-count)}
 
@@ -62,7 +63,12 @@ if [ $boot = 1 ]; then
     YUM install -y subversion
 
     cd /srv
-    svn co svn://scripts.mit.edu/$branch repository
+    # We must use an explicit source_server while setting up the Scripts
+    # server, because once we load the Scripts /etc configuration,
+    # scripts.mit.edu will start resolving to localhost and
+    # updates/commits will stop working.  This will be switched to
+    # scripts.mit.edu at the end of the install process.
+    svn co svn://$source_server/$branch repository
 
     sed -i 's/^(# *)*store-passwords.*/store-passwords = no/' /root/.subversion/config
     sed -i 's/^(# *)*store-auth-creds.*/store-auth-creds = no/' /root/.subversion/config
@@ -411,3 +417,6 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #   - Edit /etc/httpd/conf.d/scripts-vhost-names.conf to have scripts-fX-test.xvm.mit.edu
 #     be an accepted vhost name
 #   - Look at the old test server and see what config changes are floating around
+
+# XXX: our SVN checkout should be updated to use scripts.mit.edu
+# (repository and etc)
