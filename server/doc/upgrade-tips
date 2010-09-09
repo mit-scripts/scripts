@@ -64,6 +64,12 @@ we need to upgrade the scriptsification.  Some of the following topics
 are covered in 'package-build-howto', but a new Fedora release tends
 to also result in somewhat rarer situations.
 
+As you finish building packages, you'll want to place them somewhere
+so they don't get blown away on a successive mock build.  ~/mock-local
+is a good choice.  The Mock RPMs will be created in:
+
+    /var/lib/mock/$MOCK_ENV/result/
+
 Here are some of the common troubles you'll have to deal with:
 
 3.1 Spec patches are no longer necessary
@@ -130,13 +136,21 @@ Fix:
 
     The error message will be from within a schroot that Mock is using.
     As a result, it's not immediately obvious where the files live.
-    There are two approaches you can take:
 
-    Find the schroot: XXX to write
+    The easiest approach is to use rpmbuild to manually reapply the
+    patches.
 
-    Manually patch the source dist: Tarballs for the original source can
-    be found in ~/rpmbuild/SOURCES, and then you can manually apply the
-    failing patches and debug from there.
+        rpmbuild -bp path/to/foo.spec
+
+    If this fails complaining about a dependency, you should install
+    the dependency and add it to the Makefile.
+
+    Once you've fixed the patch, you can rerun rpmbuild after running
+
+        make setup
+
+    (This is useful if you can't do a full make due to another mock
+    process running.)
 
 4. "Officializing" everything
 -----------------------------
