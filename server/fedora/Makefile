@@ -203,14 +203,15 @@ basic-deps	= kernel-devel rpm-build rpmdevtools mock gcc autoconf patch krb5-wor
 oursrc-deps	= hesinfo openldap-clients openldap-devel.i686 php-devel
 httpdmods-deps	= httpd-devel
 httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel
-krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel texinfo-tex texlive-latex
+krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel texinfo-tex texlive-latex libss-devel rsh
 openafs-deps	= pam-devel automake
+moira-deps      = e2fsprogs-devel
 mit-zephyr-deps	= readline-devel hesiod-devel hesiod-devel.i686 hesiod.i686 libXt.i686 #compat-readline43
 openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth pango-devel cairo-devel libedit-devel nss-devel fipscheck-devel
 php-deps	= bzip2-devel curl-devel gmp-devel libstdc++-devel sqlite-devel gcc-c++ libc-client-devel mysql-devel postgresql-devel unixODBC-devel libxml2-devel net-snmp-devel libxslt-devel libxml2-devel libXpm-devel libjpeg-devel t1lib-devel libmcrypt-devel mhash-devel libtidy-devel freetds-devel aspell-devel recode-devel
 haskell-deps	= cabal-install
 install-deps:
-	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(mit-zephyr-deps) $(openssh-deps) $(php-deps) $(haskell-deps)
+	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(moira-deps) $(mit-zephyr-deps) $(openssh-deps) $(php-deps) $(haskell-deps)
 # XXX: We need to figure out what's going on with compat-readline43
 #	rpm -ivh http://kojipkgs.fedoraproject.org/packages/compat-readline43/4.3/3/i386/compat-readline43-4.3-3.i386.rpm
 #	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
