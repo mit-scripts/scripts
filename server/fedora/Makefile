@@ -21,8 +21,8 @@
 upstream_yum	= krb5 krb5.i686 httpd openssh
 hackage		= MonadCatchIO-mtl-0.3.0.1 cgi-3001.1.8.1 unix-handle-0.0.0
 upstream_hackage = ghc-MonadCatchIO-mtl ghc-cgi ghc-unix-handle
-upstream	= openafs $(upstream_yum) $(upstream_hackage) moira cluster-glue heartbeat pacemaker
-oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd mit-zephyr athrun php_scripts scripts-wizard scripts-base scripts-static-cat
+upstream	= openafs $(upstream_yum) $(upstream_hackage) moira cluster-glue heartbeat pacemaker zephyr
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
@@ -43,6 +43,7 @@ openafs_url	= "http://dl.openafs.org/dl/openafs/1.4.12/openafs-1.4.12-1.1.2.src.
 clusterglue_url	= "http://kojipkgs.fedoraproject.org/packages/cluster-glue/1.0/0.11.b79635605337.hg.fc12/src/cluster-glue-1.0-0.11.b79635605337.hg.fc12.src.rpm"
 heartbeat_url	= "http://kojipkgs.fedoraproject.org/packages/heartbeat/3.0.0/0.5.0daab7da36a8.hg.fc12/src/heartbeat-3.0.0-0.5.0daab7da36a8.hg.fc12.src.rpm"
 pacemaker_url	= "http://kojipkgs.fedoraproject.org/packages/pacemaker/1.0.5/5.fc12/src/pacemaker-1.0.5-5.fc12.src.rpm"
+zephyr_url	= "http://zephyr.1ts.org/export/HEAD/distribution/zephyr-3.0.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
 
@@ -66,7 +67,7 @@ mkdir-tree:
 	ln -sTf $(topdir) rpmbuild
 
 download: download_stamp
-download_stamp: | SRPMS/mit-zephyr-2.1-6.src.rpm
+download_stamp:
 	@mkdir -p $(dload); \
 	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
 	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
@@ -74,6 +75,7 @@ download_stamp: | SRPMS/mit-zephyr-2.1-6.src.rpm
 	wget -P $(dload) $(clusterglue_url)
 	wget -P $(dload) $(heartbeat_url)
 	wget -P $(dload) $(pacemaker_url)
+	wget -P $(dload) $(zephyr_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 	cabal update
 	cabal fetch $(hackage)
@@ -188,12 +190,12 @@ httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel a
 krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel texinfo-tex texlive-latex libss-devel rsh
 openafs-deps	= pam-devel automake
 moira-deps      = e2fsprogs-devel
-mit-zephyr-deps	= readline-devel hesiod-devel hesiod-devel.i686 hesiod.i686 libXt.i686 #compat-readline43
+zephyr-deps	= hesiod-devel libss-devel krb5-devel readline-devel
 openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth pango-devel cairo-devel libedit-devel nss-devel fipscheck-devel
 php-deps	= bzip2-devel curl-devel gmp-devel libstdc++-devel sqlite-devel gcc-c++ libc-client-devel mysql-devel postgresql-devel unixODBC-devel libxml2-devel net-snmp-devel libxslt-devel libxml2-devel libXpm-devel libjpeg-devel t1lib-devel libmcrypt-devel mhash-devel libtidy-devel freetds-devel aspell-devel recode-devel
 haskell-deps	= cabal-install
 install-deps:
-	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(moira-deps) $(mit-zephyr-deps) $(openssh-deps) $(php-deps) $(haskell-deps)
+	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(moira-deps) $(zephyr-deps) $(openssh-deps) $(php-deps) $(haskell-deps)
 # XXX: We need to figure out what's going on with compat-readline43
 #	rpm -ivh http://kojipkgs.fedoraproject.org/packages/compat-readline43/4.3/3/i386/compat-readline43-4.3-3.i386.rpm
 #	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
