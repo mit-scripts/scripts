@@ -172,24 +172,6 @@ openafs_rpmbuild_args = --define "fedorakmod 1" --define "kvariants $(kvariants)
 openafs: rpmbuild_args += $(openafs_rpmbuild_args)
 openafs-kernel: rpmbuild_args += $(openafs_rpmbuild_args) --define "build_userspace 0" --define "build_modules 1"
 
-suexec: #install-srpms
-	@rm -rf ${tmp_src}/httpd-2*/; \
-	tar zxvf ${tmp_src}/httpd-2*.tar.gz; \
-	cd httpd-2*; \
-	patch -p1 < ${patches}/httpd-suexec-scripts.patch; \
-	autoreconf; \
-	./configure --prefix=/etc/httpd --with-suexec-userdir=web_scripts --with-suexec-caller=apache --with-suexec-uidmin=50 --with-suexec-gidmin=50 --with-suexec-docroot=/ --with-suexec-trusteddir=/usr/libexec/scripts-trusted; \
-	pushd support; \
-	mkdir -p ${out_sbin}; make suexec && cp suexec ${out_sbin}; \
-	popd; \
-	rm -rf httpd-2*; \
-	echo; \
-	echo "suexec binary written to ${out_sbin}."; \
-	echo "Run 'make install-suexec' as root to install it.";
-
-install-suexec:
-	install -m 4510 -o 0 -g apache ${out_sbin}/suexec /usr/sbin/;
-
 frob-openafs:
 	@if [ ! -d "/etc/openafs/" ]; then \
 	echo "/etc/openafs does not exist"; \
