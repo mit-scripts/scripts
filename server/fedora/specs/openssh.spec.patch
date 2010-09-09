@@ -9,11 +9,10 @@
  URL: http://www.openssh.com/portable.html
  #URL1: http://pamsshagentauth.sourceforge.net
  #Source0: ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz
-@@ -88,6 +88,8 @@
+@@ -88,6 +88,7 @@
  Source3: sshd.init
  Source4: http://prdownloads.sourceforge.net/pamsshagentauth/pam_ssh_agent_auth/pam_ssh_agent_auth-%{pam_ssh_agent_ver}.tar.bz2
  Source5: pam_ssh_agent-rmheaders
-+Patch1000: openssh-5.0p1-multihomed.patch
 +Patch1001: openssh-4.7p1-gssapi-name-in-env.patch
  Patch0: openssh-5.4p1-redhat.patch
  Patch2: openssh-5.3p1-skip-initial.patch
@@ -26,11 +25,10 @@
  
  %package askpass
  Summary: A passphrase dialog for OpenSSH and X
-@@ -267,6 +270,9 @@
+@@ -267,6 +270,8 @@
  %patch75 -p1 -b .dso
  %patch76 -p1 -b .bz595935
  
-+%patch1000 -p1 -b .multihomed
 +%patch1001 -p1 -b .gssapi-env
 +
  autoreconf
