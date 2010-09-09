@@ -133,7 +133,7 @@ diff -ur openafs-1.4/src/afs/afs.h openafs-1.4+scripts/src/afs/afs.h
 diff -ur openafs-1.4/src/afs/afs_osi_pag.c openafs-1.4+scripts/src/afs/afs_osi_pag.c
 --- openafs-1.4/src/afs/afs_osi_pag.c
 +++ openafs-1.4+scripts/src/afs/afs_osi_pag.c
-@@ -51,6 +51,8 @@
+@@ -49,6 +49,8 @@
  #endif
  /* Local variables */
  
@@ -142,7 +142,7 @@ diff -ur openafs-1.4/src/afs/afs_osi_pag.c openafs-1.4+scripts/src/afs/afs_osi_p
  /*
   * Pags are implemented as follows: the set of groups whose long
   * representation is '41XXXXXX' hex are used to represent the pags.
-@@ -458,6 +460,15 @@
+@@ -449,6 +451,15 @@
  	av->uid = acred->cr_ruid;	/* default when no pag is set */
  #endif
      }
@@ -155,9 +155,9 @@ diff -ur openafs-1.4/src/afs/afs_osi_pag.c openafs-1.4+scripts/src/afs/afs_osi_p
 +      av->uid = globalpag;
 +    }
 +
-     av->initd = 0;
      return 0;
  }
+ 
 diff -ur openafs-1.4/src/afs/afs_pioctl.c openafs-1.4+scripts/src/afs/afs_pioctl.c
 --- openafs-1.4/src/afs/afs_pioctl.c
 +++ openafs-1.4+scripts/src/afs/afs_pioctl.c
