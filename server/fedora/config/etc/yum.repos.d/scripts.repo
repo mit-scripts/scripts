@@ -1,11 +1,11 @@
 [scripts]
 name=Scripts
-baseurl=http://web.mit.edu/scripts/rpm-fc11/
+baseurl=http://web.mit.edu/scripts/rpm-fc13/
 enabled=1
 gpgcheck=0
 
 [scripts-testing]
 name=Scripts Testing
-baseurl=http://web.mit.edu/scripts/rpm-fc11-testing/
+baseurl=http://web.mit.edu/scripts/rpm-fc13-testing/
 enabled=0
 gpgcheck=0
