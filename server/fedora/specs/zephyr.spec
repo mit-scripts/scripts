@@ -25,12 +25,13 @@ for yourself.
 
 %prep
 %setup -q
+cp -p %{SOURCE1} .
 
 
 %build
 # Mitch wants to make an awesome specfile which makes hesiod/krb5 and friends
 # all fully configurable.  This configure line will have to do for now.
-%configure --with-hesiod=%{_usr} --with-krb5=%{_usr}
+%configure --with-hesiod --with-krb5
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 make %{?_smp_mflags}
@@ -40,9 +41,9 @@ make %{?_smp_mflags}
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT libdir=%{_libdir}
 
-mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
-install -m755 $RPM_SOURCE_DIR/zhm.init \
-        $RPM_BUILD_ROOT/etc/rc.d/init.d/zhm
+mkdir -p $RPM_BUILD_ROOT%{_initddir}
+install -m755 zhm.init \
+        $RPM_BUILD_ROOT%{_initddir}/zhm
 
 
 %post
@@ -77,7 +78,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/*
 %{_datadir}/%{name}/
 %{_sysconfdir}/%{name}/
-%{_sysconfdir}/rc.d/init.d/zhm
+%{_initddir}/zhm
 
 
 %changelog
