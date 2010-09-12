@@ -156,8 +156,17 @@ Fix:
 -----------------------------
 
 web.mit.edu scripts repository (/mit/scripts/rpm-fcXX and
-/mit/scripts/rpm-fcXX-testing) needs to be made [XXX: document how to
-make]
+/mit/scripts/rpm-fcXX-testing) needs to be made.  It's quite simple;
+all you need to do is copy the RPMs from the build server to there
+(probably going through a trusted machine, since you don't want to
+put your root tickets on a server.)  When you're done, run `createrepo`
+on the directory.
+
+Note that if you do a successive rebuild without bumping the Subversion
+revision (via a `svn up`), the new package will have the *same* version
+and yum will probably insist on using the old cached version.  You can
+use `yum clean all` to reset your cache and force yum to get the latest
+version.
 
 5. Extra stuff
 --------------
