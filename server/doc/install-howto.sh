@@ -26,6 +26,9 @@ YUM() {
 
 # Start with a normal install of Fedora.
 
+# Take updates
+    YUM update
+
 if [ $boot = 0 ]; then
 # When the initial configuration screen comes up, under "Firewall
 # configuration", disable the firewall, and under "System services", leave
@@ -70,6 +73,7 @@ if [ $boot = 1 ]; then
     # scripts.mit.edu at the end of the install process.
     svn co svn://$source_server/$branch repository
 
+    # XXX These sed scripts don't work
     sed -i 's/^(# *)*store-passwords.*/store-passwords = no/' /root/.subversion/config
     sed -i 's/^(# *)*store-auth-creds.*/store-auth-creds = no/' /root/.subversion/config
 # The same tweaks should be made on /home/scripts-build/.subversion/config
@@ -88,6 +92,10 @@ if [ $boot = 1 ]; then
     # note if packages you think should exist don't exist anymore.  In
     # particular, if Fedora changes an architecture designation those
     # won't work.
+
+# Get some packages necessary for OpenAFS
+    YUM install -y redhat-lsb
+    YUM install -y autofs
 
 # Add scripts-build to the group 'mock'
     usermod -a -G mock scripts-build
@@ -109,7 +117,8 @@ if [ $boot = 1 ]; then
 
 # You can get password SSH back by editing /etc/ssh/sshd_config (allow
 # password auth) and /etc/pam.d/sshd (comment out the first three auth
-# lines)
+# lines).  However, you can also temporarily install krb5 and setup the
+# keytabs and k5login to get Kerberized authentication.
 
     service named start
     chkconfig named on
@@ -117,25 +126,6 @@ if [ $boot = 1 ]; then
 # This is the point at which you should start updating scriptsified
 # packages for a new Fedora release.  Consult 'upgrade-tips' for more
 # information.
-
-# In the case of the Kerberos libraries, you'll be told that
-# there are conflicting files with the 64-bit versions of the packages,
-# which we scriptsify.  You'll have to use --force to install those
-# rpms despite the conflicts.  After doing that, you may want to
-# install the corresponding 64-bit scriptsified versions again, just
-# to be safe in case the 32-bit versions overwrite files that differ.
-# When you try this, it will complain that you already have the same
-# version installed; again, you'll need to use --force to do it anyway.
-
-# We need yumdownloader to force some RPMs
-    # XXX: This might be wrong. Sanity check what packages ou
-    # have when done
-    YUM install -y yum-utils
-    yumdownloader krb5-libs
-    # XXX: These version numbers are hardcoded, need some cli-fu to generalize
-    # FC13: Check if they are necessary
-    rpm -i krb5-libs-*.i586.rpm
-    rpm -U --force krb5-libs-*.scripts.1138.x86_64.rpm
 
 # env NSS_NONLOCAL_IGNORE=1 yum install scripts-base
     YUM install -y scripts-base
@@ -173,6 +163,7 @@ if [ $boot = 1 ]; then
     YUM install -y mod_fcgid
     YUM install -y nrpe
     YUM install -y nagios-plugins-all
+    YUM install -y fprintd-pam
 
 # Disable NetworkManager with chkconfig NetworkManager off. Configure
 # networking on the front end and back end, and the routing table to send
@@ -197,16 +188,10 @@ if [ $boot = 1 ]; then
 # exhaust our inodes).
 # Edit the parameters in /etc/sysconfig/openafs
 
-# Figure out why Zephyr isn't working. Most recently, it was because there
-# was a 64-bit RPM installed; remove it and install Joe's 32-bit one
-    YUM erase -y mit-zephyr
-    # mit-zephyr has a spurious dependency on mit-krb-config
-    yumdownloader mit-zephyr.i386
-    # if deps change, this breaks
-    YUM install -y libXaw.i586 libXext.i586 libXmu.i586 ncurses-libs.i586 readline.i586
-    rpm -i --nodeps mit-zephyr-2.1-6-linux.i386.rpm
-    # test if it worked by sending an un-authed message
-    zwrite -d -c scripts -i test
+# Test that zephyr is working
+    chkconfig zhm on
+    service zhm start
+    echo 'Test!' | zwrite -d -c scripts -i test
 
 # Install the athena-base, athena-lprng, and athena-lprng-misc RPMs
 # from the Athena 9 build (these are present in our yum repo).  Note
@@ -250,7 +235,7 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
     cd /root
     mkdir vice
     cd vice
-    svn co svn://scripts.mit.edu/trunk/server/fedora/config/usr/vice/etc etc
+    svn co svn://scripts.mit.edu/$branch/server/fedora/config/usr/vice/etc etc
     \cp -a etc /usr/vice
 
 # Install the full list of perl modules that users expect to be on the
@@ -307,26 +292,38 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 # Setup some Python config
     echo 'import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.6/site-packages"))' > /usr/lib/python2.6/site-packages/00scripts-home.pth
 
-# Install the credentials.  There are a lot of things to remember here:
+# Install the credentials.  There are a lot of things to remember here.
+# Be sure to make sure the permissions match up (ls -l on an existing
+# server!).
 #   o This will be different if you're setting up our build/update server.
 #   o You probably installed the machine keytab long ago
     ls -l /etc/krb5.keytab
-#   o Use ktutil to combine the host/scripts.mit.edu and
+#     Use ktutil to combine the host/scripts.mit.edu and
 #     host/scripts-vhosts.mit.edu keys with host/this-server.mit.edu in
 #     the keytab.  Do not use 'k5srvutil change' on the combined keytab
-#     or you'll break the other servers. (real servers only)
+#     or you'll break the other servers. (real servers only).  Be
+#     careful about writing out the keytab: if you write it to an
+#     existing file the keys will just get appended
 #   o The daemon.scripts keytab
     ls -l /etc/daemon.keytab
 #   o The SSL cert private key (real servers only)
+    ls -l /etc/pki/tls/private/scripts.key
 #   o The LDAP password for the signup process (real servers only)
-#   o The SQL password for the signup process (real servers only)
+    ls -l /etc/signup-ldap-pw
+#   o The SQL password for the signup process (real servers only) (you
+#     only need one)
+    ls -l /usr/local/etc/sql-mit-edu.cfg.php
+    ls -l /etc/sql-mit-edu.cfg.php
 #   o The whoisd password (real servers only)
-#   o The LDAP keytab for this server, which will be used later (real servers only)
+#   o The LDAP keytab for this server, which will be used later (real
+#     servers only).
+    ls -l /etc/dirsrv/keytab
 #   o Replace the ssh host keys with the ones common to all scripts servers (real servers only)
-#   o You'll install an LDAP certificate signed by the scripts CA later (real servers only)
+    ls -l /etc/ssh/*key*
 #   o Make sure root's .k5login is correct
     cat /root/.k5login
 #   o Make sure logview's .k5login is correct (real servers only)
+    cat /home/logview/.k5login
 
 # If you are setting up a test server, pay attention to
 # /etc/sysconfig/network-scripts and do not bind scripts' IP address.
@@ -352,8 +349,7 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 # to be renewing with the wrong credentials (daemon.scripts). Change this:
     vim /home/afsagent/renew # replace all mentions of daemon.scripts.mit.edu
 
-# Install 389-ds-base and set up replication (see ./HOWTO-SETUP-LDAP
-#   and ./389-ds-enable-ssl-and-kerberos.diff).
+# Install 389-ds-base and set up replication (see ./HOWTO-SETUP-LDAP).
 
 # Make the services dirsrv, nslcd, nscd, postfix, and httpd start at
 # boot. Run chkconfig to make sure the set of services to be run is
@@ -419,4 +415,4 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #   - Look at the old test server and see what config changes are floating around
 
 # XXX: our SVN checkout should be updated to use scripts.mit.edu
-# (repository and etc)
+# (repository and etc) once serving actually works.
