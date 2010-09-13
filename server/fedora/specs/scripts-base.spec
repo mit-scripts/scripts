@@ -8,7 +8,7 @@ URL: http://scripts.mit.edu
 License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
-Requires: accountadm, execsys, scripts-kmod-openafs, scripts-krb5-libs, scripts-httpd, scripts-mod_ssl, openafs, scripts-openafs-client, scripts-openafs-authlibs, scripts-openafs-devel, scripts-openafs-krb5, openafs-docs, scripts-openssh-server, sql-signup, tokensys, whoisd, logview, nss-ldapd, php_scripts, zephyr, httpdmods, nss_nonlocal
+Requires: accountadm, execsys, scripts-kmod-openafs, scripts-krb5-libs, scripts-httpd, scripts-mod_ssl, openafs, scripts-openafs-client, scripts-openafs-authlibs, scripts-openafs-devel, scripts-openafs-krb5, openafs-docs, scripts-openssh-server, sql-signup, tokensys, whoisd, logview, nss-ldapd, php_scripts, zephyr, httpdmods, nss_nonlocal, nss_nonlocal.i686
 %define debug_package %{nil}
 
 %description 
