@@ -114,6 +114,7 @@ while (1) {
 	} elsif ($message =~ m|^Setting tty modes failed: Invalid argument$|) {
 	} elsif ($message =~ m|^ *nrpe .* COMMAND=/etc/nagios/check_ldap_mmr.real$|) {
 	} elsif ($message =~ m|^ *root : TTY=|) {
+	} elsif ($message =~ m|^Set /proc/self/oom_adj to 0|) {
 	} else {
 	    sendmsg($message, "scripts-spew");
 	}
