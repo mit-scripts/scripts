@@ -168,7 +168,14 @@ and yum will probably insist on using the old cached version.  You can
 use `yum clean all` to reset your cache and force yum to get the latest
 version.
 
-5. Extra stuff
+5. Update fs sysname
+--------------------
+
+Update /etc/sysconfig/openafs with an extra amd64_fedoraX_scripts and
+amd64_fedoraX sysname.  The format should be evident from the existing
+entries.  [XXX There might be other things you want]
+
+6. Extra stuff
 --------------
 
 Fedora occasionally updates the architecture name for 32-bit; the last

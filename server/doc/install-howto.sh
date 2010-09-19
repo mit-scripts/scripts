@@ -2,9 +2,23 @@
 
 set -e -x
 
+# Some commands should be run as the scripts-build user, not root.
+
+alias asbuild="sudo -u scripts-build"
+
+# Old versions of this install document advised setting
+# NSS_NONLOCAL_IGNORE=1 anytime you're setting up anything, e.g. using
+# yum, warning that useradd will query LDAP in a stupid way that makes
+# it hang forever.  As of Fedora 13, this does not seem to be a problem,
+# so it's been removed from the instructions.  If an install is hanging,
+# though, try adding NSS_NONLOCAL_IGNORE.
+
 [ -e /scripts-boot-count ] || echo 0 > /scripts-boot-count
 
-# This is actually just "pick an active scripts server"
+# This is actually just "pick an active scripts server".  It can't be
+# scripts.mit.edu because our networking config points that domain
+# at localhost, and if our server is not setup at that point things
+# will break.
 source_server="cats-whiskers.mit.edu"
 
 boot=${1:$(cat /scripts-boot-count)}
@@ -18,31 +32,16 @@ doreboot() {
     shutdown -r now "Rebooting for step $(cat /scripts-boot-count)"
 }
 
-YUM() {
-    NSS_NONLOCAL_IGNORE=1 yum "$@"
-}
-
 # Helper files for the install are located in server/fedora/config.
 
-# Start with a normal install of Fedora.
+# Start with a minimal install of Fedora.
 
 # Take updates
-    YUM update
+    yum update
 
 if [ $boot = 0 ]; then
-# When the initial configuration screen comes up, under "Firewall
-# configuration", disable the firewall, and under "System services", leave
-# enabled (as of Fedora 9) acpid, anacron, atd, cpuspeed, crond,
-# firstboot, fuse, haldaemon, ip6tables, iptables, irqbalance,
-# kerneloops, mdmonitor, messagebus, microcode_ctl, netfs, network, nscd, ntpd,
-# sshd, udev-post, and nothing else.
 
-# If you did a minimal install, these won't be installed, so you'll
-# need to do this step later in the process.
-    echo "--disabled" > /etc/sysconfig/system-config-firewall
-    for i in NetworkManager avahi-daemon bluetooth cups isdn nfslock nfs pcscd restorecond rpcbind rpcgssd rpcidmapd sendmail; do
-	chkconfig "$i" off
-    done
+echo "--disabled" > /etc/sysconfig/system-config-firewall
 
 # Turn on network, so we can connect at boot
 chkconfig network on
@@ -63,7 +62,7 @@ if [ $boot = 1 ]; then
 # Check out the scripts.mit.edu svn repository. Configure svn not to cache
 # credentials.
 
-    YUM install -y subversion
+    yum install -y subversion
 
     cd /srv
     # We must use an explicit source_server while setting up the Scripts
@@ -73,39 +72,51 @@ if [ $boot = 1 ]; then
     # scripts.mit.edu at the end of the install process.
     svn co svn://$source_server/$branch repository
 
-    # XXX These sed scripts don't work
-    sed -i 's/^(# *)*store-passwords.*/store-passwords = no/' /root/.subversion/config
-    sed -i 's/^(# *)*store-auth-creds.*/store-auth-creds = no/' /root/.subversion/config
-# The same tweaks should be made on /home/scripts-build/.subversion/config
-# once it exists (do something with svn as scripts-build)
+    sed -i 's/^\(# *\)?store-passwords.*/store-passwords = no/' /root/.subversion/config
+    sed -i 's/^\(# *\)?store-auth-creds.*/store-auth-creds = no/' /root/.subversion/config
 
     chown -R scripts-build /srv/repository
+
+    asbuild svn up # generate the config file
+    asbuild sed -i 's/^\(# *\)?store-passwords.*/store-passwords = no/' /home/scripts-build/.subversion/config
+    asbuild sed -i 's/^\(# *\)?store-auth-creds.*/store-auth-creds = no/' /home/scripts-build/.subversion/config
 
 # cd to server/fedora in the svn repository.
     cd /srv/repository/server/fedora
 
 # Run "make install-deps" to install various prereqs.  Nonstandard
 # deps are in /mit/scripts/rpm.
-    YUM install -y make
+    yum install -y make
     make install-deps
     # You should pay close attention to the output of this command, and
-    # note if packages you think should exist don't exist anymore.  In
-    # particular, if Fedora changes an architecture designation those
-    # won't work.
+    # note if packages you think should exist don't exist anymore.
 
 # Get some packages necessary for OpenAFS
-    YUM install -y redhat-lsb
-    YUM install -y autofs
+    yum install -y redhat-lsb
+    yum install -y autofs
+
+# Copy over root's dotfiles from one of the other machines.
+# Perhaps a useful change is to remove the default aliases
+    cd /root
+    ls -l .bashrc
+    ls -l .ldapvirc
+    ls -l .screenrc
+    ls -l .ssh
+    ls -l .vimrc
+    # Trying to scp from server to server won't work, as scp
+    # will attempt to negotiate a server-to-server connection.
+    # Instead, scp to your trusted machine as a temporary file,
+    # and then push to the other server
 
 # Add scripts-build to the group 'mock'
     usermod -a -G mock scripts-build
 
 # Install bind
-    YUM install -y bind
+    yum install -y bind
 
 # Check out the scripts /etc configuration
     cd /root
-    svn co svn://scripts.mit.edu/$branch/server/fedora/config/etc etc
+    svn co svn://$source_server/$branch/server/fedora/config/etc etc
     # backslash to make us not use the alias
     \cp -a etc /
 
@@ -127,109 +138,74 @@ if [ $boot = 1 ]; then
 # packages for a new Fedora release.  Consult 'upgrade-tips' for more
 # information.
 
-# env NSS_NONLOCAL_IGNORE=1 yum install scripts-base
-    YUM install -y scripts-base
-
-# Remember to set NSS_NONLOCAL_IGNORE=1 anytime you're setting up
-# anything, e.g. using yum. Otherwise useradd will query LDAP in a stupid way
-# that makes it hang forever. (This is why we're using YUM, not yum)
+    yum install -y scripts-base
 
 # Reload the iptables config to take down the restrictive firewall 
     service iptables restart
 
-# Copy over root's dotfiles from one of the other machines.
-# Perhaps a useful change is to remove the default aliases
-    # On 2009-07-01, the dotfiles to transfer where:
-    #   .bashrc .ldapvirc (<- HAS PRIVILEDGED DATA)
-    #   .screenrc .ssh (<- directory) .vimrc
-    # Trying to scp from server to server won't work, as scp
-    # will attempt to negotiate a server-to-server connection.
-    # Instead, scp to your trusted machine as a temporary file,
-    # and then push to the other server
-    # You'll need some way to authenticate to the server, and since
-    # password logins are disabled, you'll need some way of
-    # temporarily giving yourself credentials.  On a test server,
-    # reenabling password authentication is ok: frob /etc/pam.d/sshd
-    # and reverse apply r1068.
+# Check that fs sysname is correct.  You should see, among others,
+# 'amd64_fedoraX_scripts' (vary X) and 'scripts'. If it's not, you
+# probably did a distro upgrade and should update /etc/sysconfig/openafs.
+    fs sysname
 
 # Replace rsyslog with syslog-ng by doing:
     rpm -e --nodeps rsyslog
-    YUM install -y syslog-ng
+    yum install -y syslog-ng
     chkconfig syslog-ng on
 
 # Install various dependencies of the scripts system, including
 # glibc-devel.i586 (ezyang: already installed for me),
 # python-twisted-core (ditto), mod_fcgid, nrpe, nagios-plugins-all.
-    YUM install -y mod_fcgid
-    YUM install -y nrpe
-    YUM install -y nagios-plugins-all
-    YUM install -y fprintd-pam
+    yum install -y mod_fcgid
+    yum install -y nrpe
+    yum install -y nagios-plugins-all
+    yum install -y fprintd-pam
 
-# Disable NetworkManager with chkconfig NetworkManager off. Configure
-# networking on the front end and back end, and the routing table to send
-# traffic over the back end. Make sure that chkconfig reports "network" on, so
-# that the network will still be configured at next boot.
-# ezyang: For me, NetworkManager was not installed at this point, and
-# we had already done the basic config for networking front end and
-# back end (because I wanted ssh access, and not just conserver access)
-
-# Fix the openafs /usr/vice/etc <-> /etc/openafs mapping by changing
-#  /usr/vice/etc/cacheinfo to contain:
-#       /afs:/usr/vice/cache:10000000
-# Also fix ThisCell to contain athena.mit.edu in both directories
-# WARNING: if you're installing a test server, this needs to be much
-# smaller; the max filesize on XVM is 10GB.  Pick something like
-# 500000
+# Fix the openafs /usr/vice/etc <-> /etc/openafs mapping.
     echo "/afs:/usr/vice/cache:10000000" > /usr/vice/etc/cacheinfo
-    # ezyang: ThisCell on b-k and c-w don't have anything special
-    # written here
-# If you're making a test server, some of the AFS parameters are
-# kind of retarded (and if you're low on disk space, will actually
-# exhaust our inodes).
-# Edit the parameters in /etc/sysconfig/openafs
+    echo "athena.mit.edu" > /usr/vice/etc/ThisCell
+
+# [TEST SERVER] If you're installing a test server, this needs to be
+# much smaller; the max filesize on XVM is 10GB.  Pick something like
+# 500000. Also, some of the AFS parameters are kind of retarded (and if
+# you're low on disk space, will actually exhaust our inodes).  Edit
+# these parameters in /etc/sysconfig/openafs
 
 # Test that zephyr is working
     chkconfig zhm on
     service zhm start
     echo 'Test!' | zwrite -d -c scripts -i test
 
-# Install the athena-base, athena-lprng, and athena-lprng-misc RPMs
-# from the Athena 9 build (these are present in our yum repo).  Note
-# that you will have to use --nodeps for at least one of the lprng
-# ones because it thinks it needs the Athena hesiod RPM.  It doesn't
-# really.  Before doing this, run it without --nodeps and arrange to
-# install the rest of the things it really does depend on.  This will
-# include a bunch of 32-bit rpms; go ahead and install the .i586 versions
-# of them.
-    YUM install -y athena-base
-    YUM install -y athena-lprng
-    yumdownloader athena-lprng-misc
-    # ezyang: I couldn't find any deps for this that existed in the repos
-    # You might get a "find: `/usr/athena/info': No such file or directory"
-    # error; this is fine
-    rpm -i --nodeps athena-lprng-misc-9.4-0.i386.rpm
-
 # Install the full list of RPMs that users expect to be on the
 # scripts.mit.edu servers.
-
-# on another server, run:
 rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 # arrange for packages.txt to be passed to the server, then run:
-    # notice that yum is not capitalized
-    # Also notice skip-broken
-    cat packages.txt | NSS_NONLOCAL_IGNORE=1 xargs yum install -y --skip-broken
+# --skip-broken will (usually) prevent you from having to sit through
+# several minutes of dependency resolution until it decides that
+# it can't install /one/ package.
+    cat packages.txt | xargs yum install -y --skip-broken
 
 # Check which packages are installed on your new server that are not
 # in the snapshot, and remove ones that aren't needed for some reason
 # on the new machine.  Otherwise, aside from bloat, you may end up
 # with undesirable things for security, like sendmail.
-    rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > newpackages.txt
-    diff -u packages.txt newpackages.txt  | less
-    # if all went well, you'll probably see multiple kernel versions
-    # as the only diff
-    # ezyang: I got exim installed as another package
+    rpm -qa --queryformat "%{Name}.%{Arch}\n" | grep -v kernel | sort > newpackages.txt
+    diff -u packages.txt newpackages.txt | grep -v kernel | less
     # here's a cute script that removes all extra packages
-    diff -u packages.txt newpackages.txt  | grep '+' | cut -c2- | grep -v "@" | grep -v "++" | xargs yum erase -y
+    diff -u packages.txt newpackages.txt | grep -v kernel | grep '+' | cut -c2- | grep -v "@" | grep -v "++" | xargs yum erase -y
+
+# We need an upstream version of cgi which we've packaged ourselves, but
+# it doesn't work with the haskell-platform package which expects
+# explicit versions.  So temporarily rpm -e the package, and then
+# install it again after you install haskell-platform.  [Note: You
+# probably won't need this in Fedora 15 or something, when the Haskell
+# Platform gets updated.]
+    rpm -e ghc-cgi-devel ghc-cgi
+    yum install haskell-platform
+    yumdownloader ghc-cgi
+    yumdownloader ghc-cgi-devel
+    rpm -i ghc-cgi*.rpm
+    rpm -i ghc-cgi-devel*.rpm
 
 # Check out the scripts /usr/vice/etc configuration
     cd /root
@@ -240,19 +216,8 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 
 # Install the full list of perl modules that users expect to be on the
 # scripts.mit.edu servers.
-# - export PERL_MM_USE_DEFAULT=1
-# - Run 'cpan', accept the default configuration, and do 'o conf
-#   prerequisites_policy follow'.
-# - Parse the output of perldoc -u perllocal | grep head2 on an existing
-#   server, and "notest install" them from the cpan prompt.
-# TO DO THIS:
-# On another server, run:
-# perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u | perl -ne 'chomp; print "notest install $_\n" if system("rpm -q --whatprovides \"perl($_)\" >/dev/null 2>/dev/null")' > /mit/scripts/config/perl-packages.txt
-# Then on the server you're installing,
-#    cat perl-packages.txt | perl -MCPAN -e shell
     export PERL_MM_USE_DEFAULT=1
-    # XXX: Some interactive gobbeldygook
-    cpan
+    cpan # this is interactive, enter the next two lines
         o conf prerequisites_policy follow
         o conf commit
 # on a reference server
@@ -268,7 +233,7 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 # - Look at /usr/lib/python2.6/site-packages and
 #           /usr/lib64/python2.6/site-packages for Python eggs and modules.
 #   There will be a lot of gunk that was installed from packages;
-#   easy-install.pth will tell you what was easy_installed.
+#   easy-install.pth in /usr/lib/ will tell you what was easy_installed.
 #   First use 'yum search' to see if the relevant package is now available
 #   as an RPM, and install that if it is.  If not, then use easy_install.
 #   Pass -Z to easy_install to install them unzipped, as some zipped eggs
@@ -311,10 +276,11 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #   o The LDAP password for the signup process (real servers only)
     ls -l /etc/signup-ldap-pw
 #   o The SQL password for the signup process (real servers only) (you
-#     only need one)
+#     only need one, chown as sql user)
     ls -l /usr/local/etc/sql-mit-edu.cfg.php
     ls -l /etc/sql-mit-edu.cfg.php
 #   o The whoisd password (real servers only)
+    ls -l /etc/whoisd-password
 #   o The LDAP keytab for this server, which will be used later (real
 #     servers only).
     ls -l /etc/dirsrv/keytab
@@ -325,7 +291,7 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #   o Make sure logview's .k5login is correct (real servers only)
     cat /home/logview/.k5login
 
-# If you are setting up a test server, pay attention to
+# [TEST SERVER] If you are setting up a test server, pay attention to
 # /etc/sysconfig/network-scripts and do not bind scripts' IP address.
 # You will also need to modify:
 #   o /etc/ldap.conf
@@ -345,11 +311,14 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 # to use scripts.mit.edu instead of localhost.
 # XXX: someone should write sed scripts to do this
 
-# If you are setting up a test server, afsagent's cronjob will attempt
-# to be renewing with the wrong credentials (daemon.scripts). Change this:
+# [TEST SERVER] If you are setting up a test server, afsagent's cronjob
+# will attempt to be renewing with the wrong credentials
+# (daemon.scripts). Change this:
     vim /home/afsagent/renew # replace all mentions of daemon.scripts.mit.edu
 
-# Install 389-ds-base and set up replication (see ./HOWTO-SETUP-LDAP).
+# Install 389-ds-base and set up replication (see ./install-ldap).
+    yum install 389-ds-base
+    # [complicated procedure here]
 
 # Make the services dirsrv, nslcd, nscd, postfix, and httpd start at
 # boot. Run chkconfig to make sure the set of services to be run is
@@ -368,44 +337,40 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
     munin-node-configure --suggest --shell | sh
 
 # Run fmtutil-sys --all, which does something that makes TeX work.
+# (Note: this errors on XeTeX which is ok.)
     fmtutil-sys --all
-    # ezyang: I got errors on xetex
 
 # Ensure that PHP isn't broken:
     mkdir /tmp/sessions
     chmod 01777 /tmp/sessions
 
-# Ensure fcgid isn't broken
-    chmod 755 /var/run/mod_fcgid # ezyang: I suspect this is no longer necessary
+# Ensure fcgid isn't broken (should be 755)
+    ls -l /var/run/mod_fcgid
 
 # Fix etc by making sure none of our config files got overwritten
     cd /etc
-    svn status | grep M
-    # ezyang: I had to revert krb5.conf (not with latest), nsswitch.conf and sysconfig/openafs
+    svn status -q
+    # Some usual candidates for clobbering include nsswitch.conf and
+    # sysconfig/openafs
 
 # ThisCell got clobbered, replace it with athena.mit.edu
     echo "athena.mit.edu" > /usr/vice/etc/ThisCell
 
+# Kill unnecessary services. (It's probably good form to look through
+# `chkconfig | grep on` manually)
+    for i in avahi-daemon isdn nfslock pcscd rpcbind rpcgssd rpcidmapd; do
+        chkconfig "$i" off
+    done
+
 # Reboot the machine to restore a consistent state, in case you
-# changed anything.
-    # ezyang: When I rebooted, the following things happened:
-    #   o Starting kdump failed (this is ok)
-    #   o postfix mailbombed us
-    #   o firstboot configuration screen popped up (ignored; manually will do
-    #     chkconfig after the fact)
+# changed anything. (Note: Starting kdump fails (this is ok))
 
-# (Optional) Beat your head against a wall.
-
-# Possibly perform other steps that I've neglected to put in this
-# document.
-#   o For some reason, syslog-ng wasn't turning on automatically, so we weren't
-#     getting spew
-
-# Some info about changing hostnames: it appears to be in:
+# [OPTIONAL] Your machine's hostname is baked in at install time;
+# in the rare case you need to change it: it appears to be in:
 #   o /etc/sysconfig/network
 #   o your lvm thingies; probably don't need to edit
 
-# More stuff for test servers
+# [TEST SERVER] More stuff for test servers
 #   - You need a self-signed SSL cert.  Generate with:
     openssl req -new -x509 -keyout /etc/pki/tls/private/scripts.key -out /etc/pki/tls/certs/scripts.cert -nodes
 #     Also make /etc/pki/tls/certs/ca.pem match up
@@ -416,3 +381,10 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 
 # XXX: our SVN checkout should be updated to use scripts.mit.edu
 # (repository and etc) once serving actually works.
+    cd /etc
+    svn switch --relocate svn://$source_server/ svn://scripts.mit.edu/
+    cd /usr/vice/etc
+    svn switch --relocate svn://$source_server/ svn://scripts.mit.edu/
+    cd /srv/repository
+    asbuild svn switch --relocate svn://$source_server/ svn://scripts.mit.edu/
+    asbuild svn up # verify scripts.mit.edu works
