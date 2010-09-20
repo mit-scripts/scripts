@@ -21,7 +21,7 @@
 upstream_yum	= krb5 krb5.i686 httpd openssh
 hackage		= MonadCatchIO-mtl-0.3.0.1 cgi-3001.1.8.1 unix-handle-0.0.0
 upstream_hackage = ghc-MonadCatchIO-mtl ghc-cgi ghc-unix-handle
-upstream	= openafs $(upstream_yum) $(upstream_hackage) moira cluster-glue heartbeat pacemaker zephyr zephyr.i686
+upstream	= openafs $(upstream_yum) $(upstream_hackage) moira cluster-glue heartbeat pacemaker zephyr zephyr.i686 python-zephyr
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
@@ -81,6 +81,7 @@ download_stamp:
 	cabal update
 	cabal fetch $(hackage)
 	cp -a $(hackage:%=~/.cabal/packages/*/*/*/%.tar.gz) $(tmp_src)
+	spectool -g -R $(specs)/python-zephyr.spec
 	touch download_stamp
 
 %.src.rpm:
