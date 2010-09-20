@@ -10,7 +10,7 @@ Source0:        http://zephyr.1ts.org/export/HEAD/distribution/%{name}-%{version
 Source1:        zhm.init
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  krb5-devel hesiod-devel libss-devel readline-devel bison
+BuildRequires:  krb5-devel hesiod-devel libss-devel libcom_err-devel readline-devel bison
 Requires:       %{name}-libs = %{version}-%{release}
 Requires(post): chkconfig
 Requires(preun): chkconfig
@@ -50,7 +50,7 @@ that use %{name}.
 Summary:        Development files for Zephyr real-time messaging system
 Group:          Development/Libraries
 
-Requires:       %{name}-libs = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}, libcom_err-devel
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
