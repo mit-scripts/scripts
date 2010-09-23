@@ -6,6 +6,9 @@
 use Net::LDAP;
 use strict;
 
+my $nl  = $ENV{'USE_NEWLINES'} ? "\n" : "";
+my $tab = $ENV{'USE_NEWLINES'} ? "  " : "";
+
 # Nagios codes
 my %ERRORS=('OK'=>0, 'WARNING'=>1, 'CRITICAL'=>2, 'UNKNOWN'=>3, 'DEPENDENT'=>4);
 
@@ -24,7 +27,7 @@ my $result=LDAPSearch($ldap,"objectClass=nsDS5ReplicationAgreement","",$configBa
 my @entries = $result->entries;
 my $replicaErrors = 0;
 my $conflictErrors = 0;
-my $errorstring = "Replication error(s): ";
+my $errorstring = "Replication error(s): $nl";
 foreach my $entr ( @entries ) {
     my $servername=$entr->get_value($server);
     my $serverstatus=$entr->get_value($status);
@@ -34,24 +37,26 @@ foreach my $entr ( @entries ) {
     $statuscode =~ s/(^[-0123456789]+) (.*$)/$1/;
     $serverlaststart =~ s/(....)(..)(..)(..)(..)(..)./$1-$2-$3\ $4:$5:$6/;
     $serverlastend =~ s/(....)(..)(..)(..)(..)(..)./$1-$2-$3\ $4:$5:$6/;
-    print "Replication to $servername last operation $serverlaststart ";
-    print "Status: $serverstatus.     ";
+    print "Replication to $servername last operation $serverlaststart $nl";
+    print $tab . "Status: $serverstatus.     $nl";
     if ($statuscode) {
         $replicaErrors++;
         $errorstring = $errorstring . $serverstatus . ", ";
     }
 }
+print "$nl";
 
 $result=LDAPSearch($ldap,"nsds5ReplConflict=*",["nsds5ReplConflict"],$replicatedBase);
 @entries = $result->entries;
 foreach my $entr ( @entries ) {
     my $conflictingDN=$entr->dn();
     my $conflictDesc=$entr->get_value("nsds5ReplConflict");
-    print "Conflict found for DN $conflictingDN ";
-    print "Reason: $conflictDesc.     ";
+    print "Conflict found for DN $conflictingDN $nl";
+    print $tab . "Reason: $conflictDesc.     $nl";
     $conflictErrors++;
     $errorstring = $errorstring . $conflictDesc . ", ";
 }
+print "$nl";
 
 if ($conflictErrors > 0) {
     &nagios_return("CRITICAL", $errorstring);
