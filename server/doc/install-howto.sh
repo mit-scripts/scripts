@@ -142,7 +142,7 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 # --skip-broken will (usually) prevent you from having to sit through
 # several minutes of dependency resolution until it decides that
 # it can't install /one/ package.
-    cat packages.txt | xargs yum install -y --skip-broken
+    yum install -y --skip-broken $(cat packages.txt)
 
 # Check which packages are installed on your new server that are not
 # in the snapshot, and remove ones that aren't needed for some reason
@@ -151,7 +151,7 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
     rpm -qa --queryformat "%{Name}.%{Arch}\n" | grep -v kernel | sort > newpackages.txt
     diff -u packages.txt newpackages.txt | grep -v kernel | less
     # here's a cute script that removes all extra packages
-    diff -u packages.txt newpackages.txt | grep -v kernel | grep '+' | cut -c2- | grep -v "@" | grep -v "++" | xargs yum erase -y
+    yum erase -y $(grep -Fxvf packages.txt newpackages.txt)
 
 # We need an upstream version of cgi which we've packaged ourselves, but
 # it doesn't work with the haskell-platform package which expects
@@ -201,7 +201,7 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #       ezyang: rspec-rails depends on rspec, and will override the Yum
 #       package, so... don't use that RPM yet
 gem list --no-version > gem.txt
-    gem list --no-version | diff gem.txt - | grep "<" | cut -c3- | xargs gem install
+    gem install $(gem list --no-version | grep -Fxvf - gem.txt)
 # - Look at `pear list` for Pear fruits (or whatever they're called).
 #   Yet again, 'yum search' for RPMs before resorting to 'pear install'.  Note
 #   that for things in the beta repo, you'll need 'pear install package-beta'.
@@ -209,12 +209,12 @@ gem list --no-version > gem.txt
 pear list | tail -n +4 | cut -f 1 -d " " > pear.txt
     pear config-set preferred_state beta
     pear channel-update pear.php.net
-    pear list | tail -n +4 | cut -f 1 -d " " | diff pear.txt - | grep "<" | cut -c3- | xargs pear install
+    pear install $(pear list | tail -n +4 | cut -f 1 -d " " | grep -Fxvf - pear.txt)
 # - Look at `pecl list` for PECL things.  'yum search', and if you must,
 #   'pecl install' needed items. If it doesn't work, try 'pear install
 #   pecl/foo' or 'pecl install foo-beta' or those two combined.
 pecl list | tail -n +4 | cut -f 1 -d " " > pecl.txt
-    pecl list | tail -n +4 | cut -f 1 -d " " | diff pecl.txt - | grep "<" | cut -c3- | xargs pecl install --nodeps
+    pecl install --nodeps $(pecl list | tail -n +4 | cut -f 1 -d " " | grep -Fxvf - pecl.txt)
 
 # Setup some Python config
     echo 'import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.6/site-packages"))' > /usr/lib/python2.6/site-packages/00scripts-home.pth
