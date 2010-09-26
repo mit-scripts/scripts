@@ -26,6 +26,10 @@ source_server="cats-whiskers.mit.edu"
 # if your preparing a server on a new Fedora release.
 branch="trunk"
 
+# 'server' is the public hostname of your server, for SCP'ing files
+# to and from.
+server=YOUR-SERVER-NAME-HERE
+
 # Start with a Scripts kickstarted install of Fedora (install-fedora)
 
 # Take updates, reboot if there's a kernel update.
@@ -35,32 +39,6 @@ branch="trunk"
 # Check out the scripts.mit.edu svn repository. Configure svn not to cache
 # credentials.
 
-    cd /srv
-    # We must use an explicit source_server while setting up the Scripts
-    # server, because once we load the Scripts /etc configuration,
-    # scripts.mit.edu will start resolving to localhost and
-    # updates/commits will stop working.  This will be switched to
-    # scripts.mit.edu at the end of the install process.
-    svn co svn://$source_server/$branch repository
-
-    sed -i 's/^\(# *\)?store-passwords.*/store-passwords = no/' /root/.subversion/config
-    sed -i 's/^\(# *\)?store-auth-creds.*/store-auth-creds = no/' /root/.subversion/config
-
-    chown -R scripts-build /srv/repository
-
-    asbuild svn up # generate the config file
-    asbuild sed -i 's/^\(# *\)?store-passwords.*/store-passwords = no/' /home/scripts-build/.subversion/config
-    asbuild sed -i 's/^\(# *\)?store-auth-creds.*/store-auth-creds = no/' /home/scripts-build/.subversion/config
-
-# cd to server/fedora in the svn repository.
-    cd /srv/repository/server/fedora
-
-# Run "make install-deps" to install various prereqs.  Nonstandard
-# deps are in /mit/scripts/rpm.
-    make install-deps
-    # You should pay close attention to the output of this command, and
-    # note if packages you think should exist don't exist anymore.
-
 # Copy over root's dotfiles from one of the other machines.
 # Perhaps a useful change is to remove the default aliases
     cd /root
@@ -69,15 +47,41 @@ branch="trunk"
     ls -l .screenrc
     ls -l .ssh
     ls -l .vimrc
+    ls -l .k5login
     # Trying to scp from server to server won't work, as scp
     # will attempt to negotiate a server-to-server connection.
     # Instead, scp to your trusted machine as a temporary file,
     # and then push to the other server
+scp -r root@$source_server:~/{.bashrc,.ldapvirc,.screenrc,.ssh,.vimrc,.k5login} .
+scp -r {.bashrc,.ldapvirc,.screenrc,.ssh,.vimrc,.k5login} root@$server:~
+
+# Install the initial set of credentials (to get Kerberized logins once
+# krb5 is installed).  Otherwise, SCP'ing things in will be annoying.
+#   o You probably installed the machine keytab long ago
+    ls -l /etc/krb5.keytab
+#     Use ktutil to combine the host/scripts.mit.edu and
+#     host/scripts-vhosts.mit.edu keys with host/this-server.mit.edu in
+#     the keytab.  Do not use 'k5srvutil change' on the combined keytab
+#     or you'll break the other servers. (real servers only).  Be
+#     careful about writing out the keytab: if you write it to an
+#     existing file the keys will just get appended.  The correct
+#     credential list should look like:
+#       ktutil:  l
+#       slot KVNO Principal
+#       ---- ---- ---------------------------------------------------------------------
+#          1    5 host/old-faithful.mit.edu@ATHENA.MIT.EDU
+#          2    3 host/scripts-vhosts.mit.edu@ATHENA.MIT.EDU
+#          3    2      host/scripts.mit.edu@ATHENA.MIT.EDU
+#   o Replace the ssh host keys with the ones common to all scripts servers (real servers only)
+    ls -l /etc/ssh/*key*
+#     You can do that with:
+scp root@$source_server:/etc/ssh/*key* .
+scp *key* root@$server:/etc/ssh/
+    service sshd reload
 
 # Check out the scripts /etc configuration
-    cd /root
-    svn co svn://$source_server/$branch/server/fedora/config/etc etc
     # backslash to make us not use the alias
+    cd /root
     \cp -a etc /
 
 # NOTE: You will have just lost DNS resolution and the ability
@@ -86,32 +90,30 @@ branch="trunk"
 # with a non 127.0.0.1 address for the DNS server.  Be sure to revert it once
 # you have named.
 
-# You can get password SSH back by editing /etc/ssh/sshd_config (allow
+# NOTE: You can get password SSH back by editing /etc/ssh/sshd_config (allow
 # password auth) and /etc/pam.d/sshd (comment out the first three auth
-# lines).  However, you can also temporarily install krb5 and setup the
-# keytabs and k5login to get Kerberized authentication.
+# lines).  However, you should have the Kerberos credentials in place
+# so as soon as you install the full set of Scripts packages, you'll get
+# Kerberized logins.
 
 # Make sure network is working.  If this is a new server name, you'll
 # need to add it to /etc/hosts and
 # /etc/sysconfig/network-scripts/route-eth1.  Kickstart should have
 # configured eth0 and eth1 correctly; use service network restart
 # to add the new routes in route-eth1.
+    service network restart
     route
     ifconfig
     cat /etc/hosts
     cat /etc/sysconfig/network-scripts/route-eth1
-    service network restart
 
 # This is the point at which you should start updating scriptsified
 # packages for a new Fedora release.  Consult 'upgrade-tips' for more
 # information.
-
     yum install -y scripts-base
-
-# Check that fs sysname is correct.  You should see, among others,
-# 'amd64_fedoraX_scripts' (vary X) and 'scripts'. If it's not, you
-# probably did a distro upgrade and should update /etc/sysconfig/openafs.
-    fs sysname
+    # Some of these packages are naughty and clobber some of our files
+    cd /etc
+    svn revert resolv.conf hosts sysconfig/openafs
 
 # Replace rsyslog with syslog-ng by doing:
     rpm -e --nodeps rsyslog
@@ -158,21 +160,18 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 # probably won't need this in Fedora 15 or something, when the Haskell
 # Platform gets updated.]
     rpm -e ghc-cgi-devel ghc-cgi
-    yum install haskell-platform
+    yum install -y haskell-platform
     yumdownloader ghc-cgi
     yumdownloader ghc-cgi-devel
-    rpm -i ghc-cgi*.rpm
-    rpm -i ghc-cgi-devel*.rpm
+    rpm -i ghc-cgi*1.8.1*.rpm
 
 # Check out the scripts /usr/vice/etc configuration
-    cd /root
-    mkdir vice
-    cd vice
-    svn co svn://scripts.mit.edu/$branch/server/fedora/config/usr/vice/etc etc
+    cd /root/vice
     \cp -a etc /usr/vice
 
 # Install the full list of perl modules that users expect to be on the
 # scripts.mit.edu servers.
+    cd /root
     export PERL_MM_USE_DEFAULT=1
     cpan # this is interactive, enter the next two lines
         o conf prerequisites_policy follow
@@ -201,19 +200,21 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #   Again, use 'yum search' and prefer RPMs, but failing that, 'gem install'.
 #       ezyang: rspec-rails depends on rspec, and will override the Yum
 #       package, so... don't use that RPM yet
-    gem list
+gem list --no-version > gem.txt
+    gem list --no-version | diff gem.txt - | grep "<" | cut -c3- | xargs gem install
 # - Look at `pear list` for Pear fruits (or whatever they're called).
 #   Yet again, 'yum search' for RPMs before resorting to 'pear install'.  Note
 #   that for things in the beta repo, you'll need 'pear install package-beta'.
 #   (you might get complaints about the php_scripts module; ignore them)
-    pear list
+pear list | tail -n +4 | cut -f 1 -d " " > pear.txt
+    pear config-set preferred_state beta
+    pear channel-update pear.php.net
+    pear list | tail -n +4 | cut -f 1 -d " " | diff pear.txt - | grep "<" | cut -c3- | xargs pear install
 # - Look at `pecl list` for PECL things.  'yum search', and if you must,
 #   'pecl install' needed items. If it doesn't work, try 'pear install
 #   pecl/foo' or 'pecl install foo-beta' or those two combined.
-    pecl list
-# Automating this... will require a lot of batonning between
-# the servers. Probably best way to do it is to write an actual
-# script.
+pecl list | tail -n +4 | cut -f 1 -d " " > pecl.txt
+    pecl list | tail -n +4 | cut -f 1 -d " " | diff pecl.txt - | grep "<" | cut -c3- | xargs pecl install --nodeps
 
 # Setup some Python config
     echo 'import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.6/site-packages"))' > /usr/lib/python2.6/site-packages/00scripts-home.pth
@@ -221,36 +222,31 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 # Install the credentials.  There are a lot of things to remember here.
 # Be sure to make sure the permissions match up (ls -l on an existing
 # server!).
-#   o This will be different if you're setting up our build/update server.
-#   o You probably installed the machine keytab long ago
-    ls -l /etc/krb5.keytab
-#     Use ktutil to combine the host/scripts.mit.edu and
-#     host/scripts-vhosts.mit.edu keys with host/this-server.mit.edu in
-#     the keytab.  Do not use 'k5srvutil change' on the combined keytab
-#     or you'll break the other servers. (real servers only).  Be
-#     careful about writing out the keytab: if you write it to an
-#     existing file the keys will just get appended
-#   o The daemon.scripts keytab
+scp root@$source_server:{/etc/{sql-mit-edu.cfg.php,daemon.keytab,pki/tls/private/scripts.key,signup-ldap-pw,whoisd-password},/home/logview/.k5login} .
+scp daemon.keytab signup-ldap-pw whoisd-password sql-mit-edu.cfg.php root@$server:/etc
+scp scripts.key root@$server:/etc/pki/tls/private
+scp .k5login root@$server:/home/logview
+    chown afsagent:afsagent /etc/daemon.keytab
+#   o The daemon.scripts keytab (will be daemon.scripts-test for test)
     ls -l /etc/daemon.keytab
 #   o The SSL cert private key (real servers only)
     ls -l /etc/pki/tls/private/scripts.key
 #   o The LDAP password for the signup process (real servers only)
     ls -l /etc/signup-ldap-pw
-#   o The SQL password for the signup process (real servers only) (you
-#     only need one, chown as sql user)
-    ls -l /usr/local/etc/sql-mit-edu.cfg.php
-    ls -l /etc/sql-mit-edu.cfg.php
 #   o The whoisd password (real servers only)
     ls -l /etc/whoisd-password
-#   o The LDAP keytab for this server, which will be used later (real
-#     servers only).
-    ls -l /etc/dirsrv/keytab
-#   o Replace the ssh host keys with the ones common to all scripts servers (real servers only)
-    ls -l /etc/ssh/*key*
-#   o Make sure root's .k5login is correct
-    cat /root/.k5login
 #   o Make sure logview's .k5login is correct (real servers only)
     cat /home/logview/.k5login
+
+# Spin up OpenAFS.  This will fail if there's been a new kernel since
+# when you last tried.  In that case, you can hold on till later to
+# start OpenAFS.  This will take a little bit of time; 
+    service openafs-client start
+
+# Check that fs sysname is correct.  You should see, among others,
+# 'amd64_fedoraX_scripts' (vary X) and 'scripts'. If it's not, you
+# probably did a distro upgrade and should update /etc/sysconfig/openafs.
+    fs sysname
 
 # [TEST SERVER] If you are setting up a test server, pay attention to
 # /etc/sysconfig/network-scripts and do not bind scripts' IP address.
@@ -278,6 +274,9 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
     vim /home/afsagent/renew # replace all mentions of daemon.scripts.mit.edu
 
 # Set up replication (see ./install-ldap).
+# You'll need the LDAP keytab for this server: be sure to chown it
+# fedora-ds after you create the fedora-ds user
+    ls -l /etc/dirsrv/keytab
     cat install-ldap
 
 # Make the services dirsrv, nslcd, nscd, postfix, and httpd start at
@@ -288,6 +287,9 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
     chkconfig nscd on
     chkconfig postfix on
     chkconfig httpd on
+
+# Check sql user credentials (needs to be done after LDAP is setup)
+    chown sql /etc/sql-mit-edu.cfg.php
 
 # Postfix doesn't actually deliver mail; fix this
     cd /etc/postfix

@@ -281,4 +281,62 @@ nsDS5ReplicaTimeout: 120
     agreement (you'll need to turn off dirsrv), add the changelog, and
     then try again.
 
-[XXX: Do we need the referrals?]
+Troubleshooting
+===============
+
+LDAP multimaster replication can fail in a number of colorful ways.
+If the failure is local to a single master, usually you can recover
+by asking another master to refresh that master with:
+
+nsDS5BeginReplicaRefresh: start
+
+In practice, we've also had problems with this technique.  Some of them
+include:
+
+* Something like https://bugzilla.redhat.com/show_bug.cgi?id=547503
+  on Fedora 11 ns-slapd, where replication is turned off to do the
+  replication, but then it wedges and you need to forcibly kill the
+  process.
+
+* Failed LDAP authentication because another master attempted to do
+  an incremental update.
+
+* Repropagation of the error because the corrupt master thinks it still
+  should push updates.
+
+So the extremely safe method to bring up a crashed master is as follows:
+
+1. Disable all incoming and outgoing replication agreements by editing
+   /etc/dirsrv/slapd-scripts/dse.ldif. You'll need to munge:
+
+   nsDS5ReplicaBindDN in cn=replica,cn=dc\3Dscripts\2Cdc\3Dmit\2Cdc\3Dedu,cn=mapping tree,cn=config
+
+   and all of the push agreements.  Deleting them outright works, but
+   means you'll have to reconstruct all of the agreements from scratch.
+
+2. Bring up the server.
+
+3. Accept incoming replication data from a single server.
+
+4. Initiate a full update from that server.
+
+5. Finish setting up replication as described above.
+
+If your database gets extremely fucked, other servers may not be able
+to authenticate because your authentication information has gone missing.
+In that case, the minimal set of entries you need is:
+
+add dc=scripts,dc=mit,dc=edu
+objectClass: top
+objectClass: domain
+dc: scripts
+
+add ou=People,dc=scripts,dc=mit,dc=edu
+objectClass: top
+objectClass: organizationalunit
+ou: People
+
+add uid=ldap/real-mccoy.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+objectClass: account
+objectClass: top
+uid: ldap/real-mccoy.mit.edu
