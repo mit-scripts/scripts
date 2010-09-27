@@ -36,6 +36,9 @@ server=YOUR-SERVER-NAME-HERE
 
     yum update
 
+# Get rid of network manager
+    yum remove NetworkManager
+
 # Check out the scripts.mit.edu svn repository. Configure svn not to cache
 # credentials.
 
@@ -83,6 +86,7 @@ scp *key* root@$server:/etc/ssh/
     # backslash to make us not use the alias
     cd /root
     \cp -a etc /
+    chmod 0440 /etc/sudoers
 
 # NOTE: You will have just lost DNS resolution and the ability
 # to do password SSH in.  If you managed to botch this step without
@@ -307,7 +311,7 @@ scp .k5login root@$server:/home/logview
     chmod 01777 /tmp/sessions
 
 # Ensure fcgid isn't broken (should be 755)
-    ls -l /var/run/mod_fcgid
+    ls -l /var/run | grep mod_fcgid
 
 # Fix etc by making sure none of our config files got overwritten
     cd /etc
