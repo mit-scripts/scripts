@@ -311,7 +311,7 @@ scp .k5login root@$server:/home/logview
     chmod 01777 /tmp/sessions
 
 # Ensure fcgid isn't broken (should be 755)
-    ls -l /var/run | grep mod_fcgid
+    ls -ld /var/run/mod_fcgid
 
 # Fix etc by making sure none of our config files got overwritten
     cd /etc
