@@ -286,6 +286,10 @@ scp .k5login root@$server:/home/logview
 # Make the services dirsrv, nslcd, nscd, postfix, and httpd start at
 # boot. Run chkconfig to make sure the set of services to be run is
 # correct.
+    service nslcd start
+    service nscd start
+    service postfix start
+    service httpd start
     chkconfig dirsrv on
     chkconfig nslcd on
     chkconfig nscd on
