@@ -1,10 +1,12 @@
 To set up a new LDAP server:
 
-- Install the RPM 389-ds-base with yum
+- Install the RPM 389-ds-base with yum (these are installed by kickstart
+  these days, so these two steps are probably not necessary)
   root# yum install -y 389-ds-base
+  root# yum install -y policycoreutils-python
+  root# yum install -y ldapvi
 - We want to run the directory server as its own user, so create fedora-ds
-  root# env NSS_NONLOCAL_IGNORE=1 useradd -r -d /var/lib/dirsrv fedora-ds
-- root# yum install -y policycoreutils-python
+  root# useradd -r -d /var/lib/dirsrv fedora-ds
 - Temporarily move away the existing slapd-scripts folder
   root# mv /etc/dirsrv/slapd-scripts{,.bak}
 - root# /usr/sbin/setup-ds.pl
@@ -18,9 +20,7 @@ To set up a new LDAP server:
 - Move the schema back
   root# cp -R /etc/dirsrv/slapd-scripts.bak/{.svn,*} /etc/dirsrv/slapd-scripts
   root# rm -Rf /etc/dirsrv/slapd-scripts.bak
-- yum install ldapvi
-- Check if dirsrv starts: /sbin/service dirsrv start
-  then turn it back off: service dirsrv stop
+- Turn dirsrv off: service dirsrv stop
 - Apply the following configuration changes.  If you're editing
   dse.ldif, you don't want dirsrv to be on, otherwise it will
   overwrite your changes. [XXX: show how to do these changes with
@@ -172,7 +172,7 @@ nsIndexType: pres
     1. Pull open the replication part of the database. It's fairly empty
        right now.
 
-        ldapvi -b cn=\"dc=scripts,dc=mit,dc=edu\",cn=mapping\ tree,cn=config 
+        ldapvi -b cn=\"dc=scripts,dc=mit,dc=edu\",cn=mapping\ tree,cn=config
 
     2. Configure the server $SLAVE (this server) to accept $MASTER
        replications by adding the following LDAP entries:
@@ -226,6 +226,9 @@ nsslapd-changelogdir: /etc/dirsrv/slapd-scripts/changelogdb
        been one of the hosts mentioned in nsDS5ReplicaBindDN) and tell
        it to replicate to $SLAVE.
 
+       The last line runs the replication.  This is perhaps the most
+       risky step of the process; see below for help debugging problems.
+
        WARNING: There is a known bug doing full updates from 1.2.6 to
        1.2.6, see https://bugzilla.redhat.com/show_bug.cgi?id=637852
 
@@ -238,16 +241,10 @@ nsDS5ReplicaHost: $SLAVE
 nsDS5ReplicaRoot: dc=scripts,dc=mit,dc=edu
 nsDS5ReplicaPort: 389
 nsDS5ReplicaTransportInfo: LDAP
-nsDS5ReplicaBindDN:
-uid=ldap/$MASTER,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindDN: uid=ldap/$MASTER,ou=People,dc=scripts,dc=mit,dc=edu
 nsDS5ReplicaBindMethod: SASL/GSSAPI
 nsDS5ReplicaUpdateSchedule: "0000-2359 0123456"
 nsDS5ReplicaTimeout: 120
-
-    4. Run the replication.  This is perhaps the most risky step of
-    the process; see below for help debugging problems.
-
-# under cn="GSSAPI Replication to $SLAVE", cn=replica, cn="dc=scripts,dc=mit,dc=edu", cn=mapping tree, cn=config
 nsDS5BeginReplicaRefresh: start
 
     5. Check that the replication is running; the status will be stored
