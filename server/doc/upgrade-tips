@@ -175,7 +175,19 @@ Update /etc/sysconfig/openafs with an extra amd64_fedoraX_scripts and
 amd64_fedoraX sysname.  The format should be evident from the existing
 entries.  [XXX There might be other things you want]
 
-6. Extra stuff
+6. Testing critical infrastructure
+----------------------------------
+
+There are some important Scripts maintained applications you should test
+and ensure run on the new platform.  They include:
+
+    - http://scripts.mit.edu
+    - http://scripts.mit.edu/wiki
+    - http://scripts.mit.edu/trac
+    - http://scripts.mit.edu/whois/
+    - http://pony.scripts.mit.edu
+
+7. Extra stuff
 --------------
 
 Fedora occasionally updates the architecture name for 32-bit; the last
