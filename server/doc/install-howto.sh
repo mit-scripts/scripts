@@ -33,14 +33,10 @@ server=YOUR-SERVER-NAME-HERE
 # Start with a Scripts kickstarted install of Fedora (install-fedora)
 
 # Take updates, reboot if there's a kernel update.
-
-    yum update
+    yum update -y
 
 # Get rid of network manager
     yum remove NetworkManager
-
-# Check out the scripts.mit.edu svn repository. Configure svn not to cache
-# credentials.
 
 # Copy over root's dotfiles from one of the other machines.
 # Perhaps a useful change is to remove the default aliases
@@ -148,6 +144,9 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 # it can't install /one/ package.
     yum install -y --skip-broken $(cat packages.txt)
 
+# Make sure sendmail isn't installed
+    yum remove sendmail
+
 # Check which packages are installed on your new server that are not
 # in the snapshot, and remove ones that aren't needed for some reason
 # on the new machine.  Otherwise, aside from bloat, you may end up
@@ -199,7 +198,8 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #   Pass -Z to easy_install to install them unzipped, as some zipped eggs
 #   want to be able to write to ~/.python-eggs.  (Also makes sourcediving
 #   easier.)
-    cat /usr/lib/python2.6/site-packages/easy-install.pth
+cat /usr/lib/python2.6/site-packages/easy-install.pth | grep "^./" | cut -c3- | cut -f1 -d- . egg.txt
+    cat egg.txt | xargs easy_install -Z
 # - Look at `gem list` for Ruby gems.
 #   Again, use 'yum search' and prefer RPMs, but failing that, 'gem install'.
 #       ezyang: rspec-rails depends on rspec, and will override the Yum
