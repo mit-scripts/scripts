@@ -1,0 +1,3 @@
+#!/bin/sh
+logger -p authpriv.info -- "Ignoring request from kernel: modprobe $*"
+false
