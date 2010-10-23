@@ -145,3 +145,8 @@ Patching packages
       since if you don't mock will use the original specfile (and
       overwrite any changes you made in place).
 
+Tips
+====
+
+    * Don't try to build a 32-bit package without building the 64-bit
+      package as well.

@@ -1,0 +1,354 @@
+To set up a new LDAP server:
+
+- Install the RPM 389-ds-base with yum (these are installed by kickstart
+  these days, so these two steps are probably not necessary)
+  root# yum install -y 389-ds-base
+  root# yum install -y policycoreutils-python
+  root# yum install -y ldapvi
+- We want to run the directory server as its own user, so create fedora-ds
+  root# useradd -r -d /var/lib/dirsrv fedora-ds
+- Temporarily move away the existing slapd-scripts folder
+  root# mv /etc/dirsrv/slapd-scripts{,.bak}
+- root# /usr/sbin/setup-ds.pl
+    - Choose a typical install
+    - Tell it to use the fedora-ds user and group
+    - Directory server identifier: scripts
+        Needed to remove this from the config file first
+    - Suffix: dc=scripts,dc=mit,dc=edu
+    - Input directory manager password
+      (this can be found in  ~/.ldapvirc)
+- Move the schema back
+  root# cp -R /etc/dirsrv/slapd-scripts.bak/{.svn,*} /etc/dirsrv/slapd-scripts
+  root# rm -Rf /etc/dirsrv/slapd-scripts.bak
+- Turn dirsrv off: service dirsrv stop
+- Apply the following configuration changes.  If you're editing
+  dse.ldif, you don't want dirsrv to be on, otherwise it will
+  overwrite your changes. [XXX: show how to do these changes with
+  dsconf, which is the "blessed" method]
+
+# Inside cn=config.  These changes definitely require a restart.
+nsslapd-ldapifilepath: /var/run/dirsrv/slapd-scripts.socket
+nsslapd-ldapilisten: on
+
+# Add these blocks
+
+# mapname, mapping, sasl, config
+# This is the most liberal mapping you can have for SASL: you can
+# basically add authentication for any given GSSAPI mechanism by
+# explicitly creating the UID for that SASL string.
+dn: cn=mapname,cn=mapping,cn=sasl,cn=config
+objectClass: top
+objectClass: nsSaslMapping
+cn: mapname
+nsSaslMapRegexString: \(.*\)
+nsSaslMapBaseDNTemplate: uid=\1,ou=People,dc=scripts,dc=mit,dc=edu
+nsSaslMapFilterTemplate: (objectClass=posixAccount)
+
+- Put LDAP keytab (ldap/hostname.mit.edu) in /etc/dirsrv/keytab.  Make
+  sure you chown/chgrp it to be readable by fedora-ds
+- Uncomment and modify in /etc/sysconfig/dirsrv: KRB5_KTNAME=/etc/dirsrv/keytab ; export KRB5_KTNAME
+- chown fedora-ds:fedora-ds /var/run/dirsrv
+- chmod 755 /var/run/dirsrv
+- /sbin/service dirsrv start
+- Use ldapvi -b cn=config to add these indexes (8 of them):
+
+add cn=apacheServerName, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
+objectClass: top
+objectClass: nsIndex
+cn: apacheServerName
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+
+add cn=apacheServerAlias, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
+objectClass: top
+objectClass: nsIndex
+cn: apacheServerAlias
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+
+add cn=scriptsVhostName, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
+objectClass: top
+objectClass: nsIndex
+cn: scriptsVhostName
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+
+add cn=scriptsVhostAlias, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
+objectClass: top
+objectClass: nsIndex
+cn: scriptsVhostAlias
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+
+add cn=scriptsVhostAccount, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
+objectClass: top
+objectClass: nsIndex
+cn: scriptsVhostAccount
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+
+add cn=memberuid, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
+objectClass: top
+objectClass: nsIndex
+cn: memberuid
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+
+add cn=uidnumber, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
+objectClass: top
+objectClass: nsIndex
+cn: uidnumber
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+
+add cn=gidnumber, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
+objectClass: top
+objectClass: nsIndex
+cn: gidnumber
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+
+- Build the indexes for all the fields:
+
+    /usr/lib64/dirsrv/slapd-scripts/db2index.pl -D "cn=Directory Manager" -j /etc/signup-ldap-pw -n userRoot
+
+  (/etc/signup-ldap-pw is the LDAP root password, make sure it's
+  chmodded correctly and chowned to signup. Also, make sure it doesn't
+  have a trailing newline!)
+
+-  Watch for the indexing operations to finish with this command:
+
+    ldapsearch -x -y /etc/signup-ldap-pw -D 'cn=Directory Manager' -b cn=tasks,cn=config
+
+  (look for nktaskstatus)
+
+- Set up replication.
+
+  We used to tell people to go execute
+  http://directory.fedoraproject.org/sources/contrib/mmr.pl manually
+  (manually because that script assumes only two masters and we have
+  every one of our servers set up as a master.)  However, those
+  instructions are inaccurate, because we use GSSAPI, not SSL and
+  because the initializing procedure is actually prone to a race
+  condition.  Here are some better instructions.
+
+  LDAP replication is based around producers and consumers.  Producers
+  push changes in LDAP to consumers: these arrangements are called
+  "replication agreements" and the producer will hold a
+  nsDS5ReplicationAgreement object that represents this commitment,
+  as well as some extra configuration to say who consumers will accept
+  replication data from (a nsDS5Replica).
+
+  The procedure, at a high level, is this:
+
+    1. Pick an arbitrary existing master.  The current server will
+       be configured as a slave to that master.  Initialize a changelog,
+       then request a replication to populate our server with
+       information.
+
+            M1 <---> M2 ---> S
+
+    2. Configure the new server to be replicated back.
+
+            M1 <---> M2 <---> S
+
+    3. Set up the rest of the replication agreements at your leisure.
+
+                M1 <---> M2
+                ^         ^
+                |         |
+                +--> S <--+
+
+  Here's how you do it.
+
+    1. Pull open the replication part of the database. It's fairly empty
+       right now.
+
+        ldapvi -b cn=\"dc=scripts,dc=mit,dc=edu\",cn=mapping\ tree,cn=config
+
+    2. Configure the server $SLAVE (this server) to accept $MASTER
+       replications by adding the following LDAP entries:
+
+add cn=replica, cn="dc=scripts,dc=mit,dc=edu", cn=mapping tree, cn=config
+objectClass: top
+objectClass: nsDS5Replica
+cn: replica
+nsDS5ReplicaId: $REPLICA_ID
+nsDS5ReplicaRoot: dc=scripts,dc=mit,dc=edu
+nsDS5Flags: 1
+nsDS5ReplicaBindDN: uid=ldap/bees-knees.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindDN: uid=ldap/busy-beaver.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindDN: uid=ldap/cats-whiskers.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindDN: uid=ldap/pancake-bunny.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindDN: uid=ldap/whole-enchilada.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindDN: uid=ldap/real-mccoy.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindDN: uid=ldap/better-mousetrap.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindDN: uid=ldap/old-faithful.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+# ADD SERVERS HERE AS YOU ADD NEW SERVERS
+nsds5ReplicaPurgeDelay: 604800
+nsds5ReplicaLegacyConsumer: off
+nsDS5ReplicaType: 3
+
+        $REPLICA_ID is the scripts$N number (stella $HOSTNAME to find
+        out.)  You might wonder why we are binding to all servers;
+        weren't we going to replicate from only one server?  That is
+        correct, however, simply binding won't mean we will receive
+        updates; we have to setup the $MASTER to send data $SLAVE.
+
+    3. Although we allowed those uids to bind, that user information
+       doesn't exist on $SLAVE yet.  So you'll need to create the entry
+       for just $MASTER.
+
+add uid=ldap/$MASTER,ou=People,dc=scripts,dc=mit,dc=edu
+uid: ldap/$MASTER
+objectClass: account
+objectClass: top
+
+    4. Though our $SLAVE will not be making changes to LDAP, we need to
+       initialize the changelog because we intend to be able to do this
+       later.
+
+add cn=changelog5,cn=config
+objectclass: top
+objectclass: extensibleObject
+cn: changelog5
+nsslapd-changelogdir: /etc/dirsrv/slapd-scripts/changelogdb
+
+    5. Ok, now go to your $MASTER server that you picked (it should have
+       been one of the hosts mentioned in nsDS5ReplicaBindDN) and tell
+       it to replicate to $SLAVE.
+
+       The last line runs the replication.  This is perhaps the most
+       risky step of the process; see below for help debugging problems.
+
+       WARNING: There is a known bug doing full updates from 1.2.6 to
+       1.2.6, see https://bugzilla.redhat.com/show_bug.cgi?id=637852
+
+add cn="GSSAPI Replication to $SLAVE", cn=replica, cn="dc=scripts,dc=mit,dc=edu", cn=mapping tree, cn=config
+objectClass: top
+objectClass: nsDS5ReplicationAgreement
+cn: "GSSAPI Replication to $SLAVE"
+cn: GSSAPI Replication to $SLAVE
+nsDS5ReplicaHost: $SLAVE
+nsDS5ReplicaRoot: dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaPort: 389
+nsDS5ReplicaTransportInfo: LDAP
+nsDS5ReplicaBindDN: uid=ldap/$MASTER,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindMethod: SASL/GSSAPI
+nsDS5ReplicaUpdateSchedule: "0000-2359 0123456"
+nsDS5ReplicaTimeout: 120
+nsDS5BeginReplicaRefresh: start
+
+    5. Check that the replication is running; the status will be stored
+    in the object we've been mucking around with.
+
+    If it fails with LDAP Error 49, check /var/log/dirsrv on $MASTER
+    for more information.  It might be because fedora-ds can't read
+    /etc/dirsrv/keytab
+
+    6. Replicate in the other direction.  On $MASTER, add $SLAVE
+    as a nsDS5ReplicaBindDN in cn=replica,cn="dc=scripts,dc=mit,dc=edu",cn=mapping tree,cn=config
+    Also, add an account for $SLAVE
+
+add uid=ldap/$SLAVE,ou=People,dc=scripts,dc=mit,dc=edu
+uid: ldap/$SLAVE
+objectClass: account
+objectClass: top
+
+    On $SLAVE,
+
+add cn="GSSAPI Replication to $MASTER", cn=replica, cn="dc=scripts,dc=mit,dc=edu", cn=mapping tree, cn=config
+objectClass: top
+objectClass: nsDS5ReplicationAgreement
+cn: "GSSAPI Replication to $MASTER"
+cn: GSSAPI Replication to $MASTER
+nsDS5ReplicaHost: $MASTER
+nsDS5ReplicaRoot: dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaPort: 389
+nsDS5ReplicaTransportInfo: LDAP
+nsDS5ReplicaBindDN: uid=ldap/$SLAVE,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindMethod: SASL/GSSAPI
+nsDS5ReplicaUpdateSchedule: "0000-2359 0123456"
+nsDS5ReplicaTimeout: 120
+
+    If you get a really scary internal server error, that might mean you
+    forgot to initialize the changelog.  Remove the replication
+    agreement (you'll need to turn off dirsrv), add the changelog, and
+    then try again.
+
+Troubleshooting
+===============
+
+LDAP multimaster replication can fail in a number of colorful ways;
+combine that with GSSAPI authentication and it goes exponential.
+
+If authentication is failing with LDAP error 49, check if:
+
+    * /etc/dirsrv/keytab
+    * fedora-ds is able to read /etc/dirsrv/keytab
+    * /etc/hosts has not been modified by Network Manager (you
+      /did/ uninstall it, right? Right?)
+
+If the failure is local to a single master, usually you can recover
+by asking another master to refresh that master with:
+
+nsDS5BeginReplicaRefresh: start
+
+In practice, we've also had problems with this technique.  Some of them
+include:
+
+* Something like https://bugzilla.redhat.com/show_bug.cgi?id=547503
+  on Fedora 11 ns-slapd, where replication is turned off to do the
+  replication, but then it wedges and you need to forcibly kill the
+  process.
+
+* Failed LDAP authentication because another master attempted to do
+  an incremental update.
+
+* Repropagation of the error because the corrupt master thinks it still
+  should push updates.
+
+So the extremely safe method to bring up a crashed master is as follows:
+
+1. Disable all incoming and outgoing replication agreements by editing
+   /etc/dirsrv/slapd-scripts/dse.ldif. You'll need to munge:
+
+   nsDS5ReplicaBindDN in cn=replica,cn=dc\3Dscripts\2Cdc\3Dmit\2Cdc\3Dedu,cn=mapping tree,cn=config
+
+   and all of the push agreements.  Deleting them outright works, but
+   means you'll have to reconstruct all of the agreements from scratch.
+
+2. Bring up the server.
+
+3. Accept incoming replication data from a single server.
+
+4. Initiate a full update from that server.
+
+5. Finish setting up replication as described above.
+
+If your database gets extremely fucked, other servers may not be able
+to authenticate because your authentication information has gone missing.
+In that case, the minimal set of entries you need is:
+
+add dc=scripts,dc=mit,dc=edu
+objectClass: top
+objectClass: domain
+dc: scripts
+
+add ou=People,dc=scripts,dc=mit,dc=edu
+objectClass: top
+objectClass: organizationalunit
+ou: People
+
+add uid=ldap/whole-enchilada.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+objectClass: account
+objectClass: top
+uid: ldap/whole-enchilada.mit.edu

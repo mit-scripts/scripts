@@ -29,9 +29,13 @@
 #include <afs/cellconfig.h>
 #include <afs/afsutil.h>
 #include <krb5.h>
-#include <kerberosIV/krb.h>
 #include <stdbool.h>
 #include <syslog.h>
+
+#define ANAME_SZ 40
+#define REALM_SZ 40
+#define INST_SZ 40
+#define MAX_K_NAME_SZ (ANAME_SZ + INST_SZ + REALM_SZ + 2)
 
 extern int pioctl(char *, afs_int32, struct ViceIoctl *, afs_int32);
 
@@ -116,9 +120,17 @@ resolve_principal(const char *name, const char *cell, char *user)
     char pname[ANAME_SZ], pinst[INST_SZ], prealm[REALM_SZ];
     if (krb5_524_conv_principal(context, principal, pname, pinst, prealm) != 0)
 	die("internal error: krb5_524_conv_principal failed\n");
-    if (kname_unparse(user, pname, pinst,
-		      strcmp(prealm, realm_list[0]) == 0 ? NULL : prealm) != 0)
-	die("internal error: kname_unparse failed\n");
+
+    krb5_data realm = *krb5_princ_realm(context, principal);
+    if (realm.length > REALM_SZ - 1)
+	realm.length = REALM_SZ - 1;
+    if (strlen(realm_list[0]) == realm.length &&
+	memcmp(realm.data, realm_list[0], realm.length) == 0)
+	snprintf(user, MAX_K_NAME_SZ, "%s%s%s",
+		 pname, pinst[0] ? "." : "", pinst);
+    else
+	snprintf(user, MAX_K_NAME_SZ, "%s%s%s@%.*s",
+		 pname, pinst[0] ? "." : "", pinst, realm.length, realm.data);
 
     krb5_free_principal(context, principal);
     krb5_free_host_realm(context, realm_list);

@@ -1,36 +1,36 @@
---- krb5.spec.orig	2010-05-18 14:16:44.000000000 -0400
-+++ krb5.spec	2010-05-20 10:20:32.000000000 -0400
-@@ -16,7 +16,7 @@
- Summary: The Kerberos network authentication system.
+--- rpmbuild/SPECS/krb5.spec.orig	2010-08-25 11:36:57.000000000 -0400
++++ rpmbuild/SPECS/krb5.spec	2010-09-12 20:47:47.000000000 -0400
+@@ -10,7 +10,7 @@
+ Summary: The Kerberos network authentication system
  Name: krb5
- Version: 1.6.3
--Release: 31%{?dist}
-+Release: 31%{?dist}.scripts.%{scriptsversion}
+ Version: 1.7.1
+-Release: 13%{?dist}
++Release: 13%{?dist}.scripts.%{scriptsversion}
  # Maybe we should explode from the now-available-to-everybody tarball instead?
- # http://web.mit.edu/kerberos/dist/krb5/1.6/krb5-1.6.2-signed.tar
+ # http://web.mit.edu/kerberos/dist/krb5/1.7/krb5-1.7.1-signed.tar
  Source0: krb5-%{version}.tar.gz
-@@ -114,6 +114,8 @@
- Patch88: krb5-1.6.1-cs22427.patch
- Patch89: krb5-CVE-2010-1321-1.6.1.patch
+@@ -92,6 +92,8 @@
+ Patch103: krb5-1.7.1-24139.patch
+ Patch104: krb5-1.7.1-explife.patch
  
 +Patch1000: krb5-kuserok-scripts.patch
 +
  License: MIT
  URL: http://web.mit.edu/kerberos/www/
  Group: System Environment/Libraries
-@@ -155,6 +157,7 @@
+@@ -136,6 +138,7 @@
+ %package libs
+ Summary: The shared libraries used by Kerberos 5
  Group: System Environment/Libraries
- Prereq: grep, /sbin/ldconfig, sh-utils
- Obsoletes: krb5-configs
 +Provides: scripts-krb5-libs
  
  %description libs
  Kerberos is a network authentication system. The krb5-libs package
-@@ -1478,6 +1481,7 @@
- %patch87 -p0 -b .kpasswd_ipv6
- %patch88 -p0 -b .cs22427
- %patch89 -p1 -b .CVE-2010-1321
+@@ -1654,6 +1657,7 @@
+ %patch102 -p1 -b .CVE-2010-1321
+ %patch103 -p1 -b .24139
+ %patch104 -p0 -b .explife
 +%patch1000 -p1 -b .kuserok
- cp src/krb524/README README.krb524
  gzip doc/*.ps
  
+ sed -i -e '1s!\[twoside\]!!;s!%\(\\usepackage{hyperref}\)!\1!' doc/api/library.tex

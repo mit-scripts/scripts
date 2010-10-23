@@ -18,6 +18,9 @@
 [root@old-faithful ~]# cp -a /home/scripts-build/rpmbuild/RPMS/x86_64/kernel-vanilla*-2.6.23.8-28.scripts1.fc7.x86_64.rpm .
 [root@old-faithful ~]# rpm -ivh kernel-vanilla{,-devel}-2.6.23.8-28.scripts1.fc7.x86_64.rpm
 
+You can build kernel-firmware, which is a bunch of binary blobs for
+hardware, by running the mock build with --arch=noarch.
+
 <Build kmod-openafs>
 
 [root@old-faithful ~]# su scripts-build -

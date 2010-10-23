@@ -1,0 +1,93 @@
+How to migrate from SSL authentication to GSSAPI authentication
+===============================================================
+
+    :author: Edward Z. Yang <ezyang>
+    :author: Geoffrey Thomas <geofft>
+
+NOTE: This document is strictly for HISTORICAL purposes.  It may
+come in handy if you ever need to migrate from SSL to GSSAPI on
+another LDAP setup, though!  This assumes that ldap service keytabs
+are setup properly on all hosts involved.
+
+----
+
+On $CONSUMER (e.g. real-mccoy.mit.edu)
+
+To cn=replica,cn="dc=scripts,dc=mit,dc=edu",cn=mapping tree,cn=config:
+Add nsDS5ReplicaBindDN: uid=ldap/$PRODUCER,ou=People,dc=scripts,dc=mit,dc=edu
+    This tells the CONSUMER to accept replication pushes from PRODUCER.
+    However, PRODUCER is not configured yet, so you should keep
+    the cn=repman,cn=config entry which is old style.
+
+Create uid=ldap/$PRODUCER,ou=People,dc=scripts,dc=mit,dc=edu
+uid: ldap/$PRODUCER
+objectClass: account
+objectClass: top
+    This creates the LDAP user entry for GSSAPI authentication via the
+    service keytab of LDAP replication.  This information /is/
+    replicated, so if you felt like it you could create entries for all
+    PRODUCERS (which, in full multimaster replication, is all servers.)
+
+----
+
+On $PRODUCER (e.g. cats-whiskers.mit.edu)
+    You will destroy and recreate a replication agreement (well,
+    actually, ldapvi will attempt to create and then destroy the old
+    agreement).
+
+To cn="SSL Replication to $CONSUMER",cn=replica,cn="dc=scripts,dc=mit,dc=edu",cn=mapping tree,cn=config
+Replace all instances of "SSL Replication" to "GSSAPI Replication"
+Replace the number on the entry with 'add'; to indicate destroy/recreate
+Replace nsDS5ReplicaBindDN: uid=ldap/cats-whiskers.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+    (instead of cn=repman,cn=config)
+Replace nsDS5ReplicaTransportInfo: LDAP
+    (instead of SSL)
+Replace nsDS5ReplicaPort: 389
+    (instead of 636)
+Replace nsDS5ReplicaBindMethod: SASL/GSSAPI
+    (instead of simple)
+Remove nsDS5ReplicaCredentials
+
+Here are some search-replace lines that will probably do what you want,
+but be sure to double check how many substitutions were made. '<,'> lines
+should exclude the cn=replica section.
+
+    # n = NUMBER OF SERVERS - 1 = 4
+    # n*3 substitutions
+    :%s/SSL Replication/GSSAPI Replication/g
+    # n substitutions
+    :'<,'>s/cn=repman,cn=config/uid=ldap\/$HOST,ou=People,dc=scripts,dc=mit,dc=edu/g
+    :%s/simple/SASL\/GSSAPI/
+    :%s/nsDS5ReplicaPort: 636/nsDS5ReplicaPort: 389/
+    :%s/SSL/LDAP/g
+    :%s/^nsDS5ReplicaCredentials.\+\n//g
+    :'<,'>s/^nsds5replicareapactive: 0\n//g
+    :%s/^[1-9] /add /g   # fix if more than 9 servers
+
+There is some cleanup that needs to happen after these values change;
+I had luck forcibly rebooting the servers and making LDAP cleanup
+after an unclean shutdown.  You can tell if this cleanup is necessary
+if LDAP refuses to start replication sessions.  This issue is known to
+clear up after several reboots or by destroying and recreating all
+replicas.
+
+----
+
+Once everything is on the new replication and you verify it's working
+correctly, you should then clean out the SSL configuration (most
+notably, turn nsslapd-security off. Despite its ominous name, it only
+controls SSL authentication, not GSSAPI authentication.)  You will need
+to take the server offline to do that; edit
+/etc/dirsrv/slapd-scripts/dse.ldif
+
+When that's gone, there may be some vestigial SSL configuration left.
+Scripts specifically had the following sections that needed to be
+cleaned up:
+
+    cn=RSA,cn=encryption,cn=config
+        (whole thing)
+    cn=encryption,cn=config
+        nsSSL3: on [change to off]
+        nsSSL3Ciphers: +rsa_rc4_128_md5 [delete]
+    cn=config
+        nsslapd-sslclientauth: on [change to off]

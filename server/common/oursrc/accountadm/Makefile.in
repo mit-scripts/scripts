@@ -10,7 +10,7 @@ sysconfdir = @sysconfdir@
 all-local: admof signup-scripts-frontend
 
 admof: admof.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $< -L/usr/lib/afs -L/usr/lib64/afs -lprot -lauth -lrxkad -lubik -laudit -lsys -lrx -llwp -lsys -lafsutil -lcom_err -lresolv -lkrb5 -ldes -lkrb4 -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< -L/usr/lib/afs -L/usr/lib64/afs -lprot -lauth -lrxkad -lubik -laudit -lsys -lrx -llwp -lsys -lafsutil -lcom_err -lresolv -lkrb5 -ldes -o $@
 
 install:
 	install -p -m644 -D mbashrc $(DESTDIR)$(sysconfdir)/mbashrc

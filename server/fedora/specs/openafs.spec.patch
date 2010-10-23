@@ -1,35 +1,34 @@
---- openafs.spec.orig
-+++ openafs.spec
+--- openafs.spec.orig	2010-09-10 18:21:53.000000000 -0400
++++ openafs.spec	2010-09-10 18:34:30.000000000 -0400
 @@ -8,7 +8,7 @@
  # for beta/rc releases make pkgrel 0.X.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
  #%define pkgrel 0.1.rc1
--%define pkgrel 1.1
-+%define pkgrel 1.1.99scripts.%{scriptsversion}
+-%define pkgrel 0.pre3
++%define pkgrel 0.pre3.99scripts.%{scriptsversion}
  
  %if %{?osvers:0}%{!?osvers:1}
  %define osvers 1
-@@ -261,6 +261,11 @@
+@@ -261,6 +261,10 @@
  %endif
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
 +Patch1000: openafs-scripts.patch
 +Patch1003: openafs-localcsdb.patch
 +Patch1005: openafs-numsysnames.patch
-+Patch1006: openafs-release-glock.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -343,6 +348,7 @@
+@@ -343,6 +347,7 @@
  %if %{build_userspace}
  
  %package client
 +Provides: scripts-openafs-client
- Requires: binutils, openafs = %{PACKAGE_VERSION}
+ Requires: binutils, openafs = %{version}
  
  %if %{fedorakmod}
-@@ -403,6 +409,7 @@
+@@ -403,6 +408,7 @@
  
  %if %{build_authlibs}
  %package authlibs
@@ -37,15 +36,15 @@
  Summary: OpenAFS authentication shared libraries
  Group: Networking/Filesystems
  
-@@ -419,6 +426,7 @@
+@@ -419,6 +425,7 @@
  %endif
  
  %package authlibs-devel
 +Provides: scripts-openafs-authlibs-devel
  %if %{build_authlibs}
- Requires: openafs-authlibs = %{PACKAGE_VERSION}
+ Requires: openafs-authlibs = %{version}
  %endif
-@@ -437,6 +445,7 @@
+@@ -437,6 +444,7 @@
  libraries.
  
  %package devel
@@ -53,23 +52,23 @@
  Summary: OpenAFS Development Libraries and Headers
  Group: Development/Filesystems
  
-@@ -465,6 +474,7 @@
+@@ -465,6 +473,7 @@
  administrators.
  
  %package kernel-source
 +Provides: scripts-openafs-kernel-source
  Summary: OpenAFS Kernel Module source tree
  Group: Networking/Filesystems
- Provides: openafs-kernel = %{PACKAGE_VERSION}
-@@ -514,6 +524,7 @@
+ Provides: openafs-kernel = %{version}
+@@ -514,6 +523,7 @@
  
  %if %{krb5support}
  %package krb5
 +Provides: scripts-openafs-krb5
  Summary: OpenAFS programs to use with krb5
- Requires: openafs = %{PACKAGE_VERSION}
+ Requires: openafs = %{version}
  Group: Networking/Filesystems
-@@ -540,7 +551,7 @@
+@@ -540,7 +550,7 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
@@ -78,31 +77,13 @@
  
  %else
  
-@@ -699,6 +710,10 @@
+@@ -699,6 +709,9 @@
  
  # Patch openafs to build a kernel module named "openafs" instead of "libafs"
  %patch0 -p1 -b .kmod26
 +%patch1000 -p1 -b .scripts
 +%patch1003 -p1 -b .localcsdb
 +%patch1005 -p1 -b .numsysnames
-+%patch1006 -p1 -b .release-glock
  
  ##############################################################################
  #
-@@ -1209,7 +1224,7 @@
- rm -rf $RPM_BUILD_ROOT%{_sbindir}/kdump*
- 
- # remove man pages from programs deleted above
--for f in 1/dlog 1/dpass 1/livesys 1/xstat_cm_test 1/xstat_fs_test 8/kdb 8/kpwvalid 8/xfs_size_check 1/package_test 5/package 8/package ; do
-+for f in 1/compile_et 1/dlog 1/dpass 1/livesys 1/xstat_cm_test 1/xstat_fs_test 8/kdb 8/kpwvalid 8/xfs_size_check 1/package_test 5/package 8/package ; do
-   rm -f $RPM_BUILD_ROOT%{_mandir}/man$f.*
- done
- 
-@@ -1569,7 +1584,6 @@
- %{_libdir}/librxstat.a
- %{_libdir}/libubik.a
- %{_mandir}/man1/rxgen.*
--%{_mandir}/man1/compile_et.*
- 
- %if %{build_dkmspkg}
- %files -n dkms-%{name}

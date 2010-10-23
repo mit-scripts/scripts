@@ -1,0 +1,186 @@
+Upgrading Scripts for a new Fedora distribution
+===============================================
+
+1. Gather knowledge
+-------------------
+
+You should read the Release Notes for all of the intervening
+releases.  For example, here are the Fedora 13 release notes:
+
+    http://docs.fedoraproject.org/en-US/Fedora/13/html/Release_Notes/
+
+Because we sometimes skip releases, you should read any skipped
+release's report notes.
+
+Example:
+
+    In Fedora 12, i586 was deprecated in favor of i686; this meant
+    that any parts of Scripts that referenced i586 explicitly had to
+    changed to i686.
+
+2. Update the Scripts build environment
+---------------------------------------
+
+A large amount of the Scripts source repository is Fedora Release
+specific, so when you are ramping up the new release, you will want
+a new branch to do development on, before merging back upon the
+official release.  You can do this with:
+
+    svn cp svn://scripts.mit.edu/trunk \
+           svn://scripts.mit.edu/branches/fcXX-dev
+
+On the new branch, there are a number of files you will have to
+update:
+
+2.1 Mock
+
+Mock needs to be setup for the new environment.  The first thing to do
+is to update the Makefile by substituting
+s/scripts-fcOLD/scripts-fcNEW/g on the /usr/bin/mock invocations.
+After that, you need to go to /etc/mock and create the new cfg file
+for the new scripts-fcXX-ARCH configurations (where ARCH is x86_64 and
+i386).  You can base the new cfg off of the older version's, however
+you will want to make the following changes:
+
+    * Update all references to the old Fedora release to the new
+      Fedora release.  This includes root, dist, mirrorlist, baseurl
+
+    * Temporarily disabling the web.mit.edu Scripts RPM repository
+      and the local RPM repository by setting enabled=0 (it's there for
+      a reason!)  However, the local RPM repository is fairly painless
+      to create and will come in handy when you start attempting to
+      build packages that have dependencies on other scriptsified
+      packages: you can set one up as scripts-build with:
+
+        mkdir ~/mock-local
+        createrepo ~/mock-local
+
+3. Rebuild Scripts packages
+---------------------------
+
+In order to support specific extra functionality, we have scriptsified
+a variety of Fedora packages.  When the base packages get upgrades,
+we need to upgrade the scriptsification.  Some of the following topics
+are covered in 'package-build-howto', but a new Fedora release tends
+to also result in somewhat rarer situations.
+
+As you finish building packages, you'll want to place them somewhere
+so they don't get blown away on a successive mock build.  ~/mock-local
+is a good choice.  The Mock RPMs will be created in:
+
+    /var/lib/mock/$MOCK_ENV/result/
+
+Here are some of the common troubles you'll have to deal with:
+
+3.1 Spec patches are no longer necessary
+
+When a Fedora release gets EOL'ed, we may continue to backport
+patches for CVE's manually.  When we upgrade to a non-EOL'd release,
+those patches will generally become unnecessary and can be dropped.
+
+You can drop a modified specfile from the repository simply by
+`svn rm`ing:
+
+    * The spec patch in server/fedora/specs,
+    * The source code patch in server/common/patches, and
+    * The upstream_yum entry in server/fedora/Makefile
+
+If a specfile merely bumps the version field, there may be no extra
+patch (this indicates that the maintainer rebuilt the package simply
+by manually dropping the new source tarball in rpmbuild/SOURCES,
+which is kind of sketchy but works.  See -c 1586 for an example.)
+
+3.2 Spec patches no longer apply
+
+Symptom:
+
+    $ make patch-specs
+    patching file openssh.spec
+    Hunk #1 succeeded at 74 with fuzz 2 (offset 11 lines).
+    Hunk #2 failed at 88.
+    Hunk #3 succeeded at 177 (offset 14 lines).
+    Hunk #4 succeeded at 270 with fuzz 2 (offset 36 lines).
+    1 out of 4 hunks failed--saving rejects to openssh.spec.rej
+
+Fix:
+
+    The main thing to remember is where the generated files live
+    they are placed in rpmbuild/SPECS/openssh.spec{.rej,.orig}.
+    A workflow for fixing them might look like:
+
+        1. Inspect the rejects file.
+        2. As much as possible, manually fix the original diff
+           file in /srv/repository/server/fedora/specs
+        3. If absolutely necessary, edit the rpmbuild/SPECS/openssh.spec
+           file with any final changes (this is dangerous because
+           this file is blown away on a successive make)
+        4. Generate a new unified diff:
+             diff -u openssh.spec.orig openssh.spec > \
+                 /srv/repository/server/fedora/specs\openssh.spec.patch
+
+3.3 Mock fails with no error message
+
+Fix: You forgot to add scripts-build to the mock group.  See
+     https://bugzilla.redhat.com/show_bug.cgi?id=630791
+     [XXX: remove this entry when this bug is fixed]
+
+3.4 Source patches no longer apply
+
+Symptoms:
+
+    Generally, you will see these error messages after Mock starts
+    building (if they occur before Mock, that means it's a bug in the
+    spec patch, not a source patch that the spec patch references.)
+
+Fix:
+
+    The error message will be from within a schroot that Mock is using.
+    As a result, it's not immediately obvious where the files live.
+
+    The easiest approach is to use rpmbuild to manually reapply the
+    patches.
+
+        rpmbuild -bp path/to/foo.spec
+
+    If this fails complaining about a dependency, you should install
+    the dependency and add it to the Makefile.
+
+    Once you've fixed the patch, you can rerun rpmbuild after running
+
+        make setup
+
+    (This is useful if you can't do a full make due to another mock
+    process running.)
+
+4. "Officializing" everything
+-----------------------------
+
+web.mit.edu scripts repository (/mit/scripts/rpm-fcXX and
+/mit/scripts/rpm-fcXX-testing) needs to be made.  It's quite simple;
+all you need to do is copy the RPMs from the build server to there
+(probably going through a trusted machine, since you don't want to
+put your root tickets on a server.)  When you're done, run `createrepo`
+on the directory.
+
+Note that if you do a successive rebuild without bumping the Subversion
+revision (via a `svn up`), the new package will have the *same* version
+and yum will probably insist on using the old cached version.  You can
+use `yum clean all` to reset your cache and force yum to get the latest
+version.
+
+5. Update fs sysname
+--------------------
+
+Update /etc/sysconfig/openafs with an extra amd64_fedoraX_scripts and
+amd64_fedoraX sysname.  The format should be evident from the existing
+entries.  [XXX There might be other things you want]
+
+6. Extra stuff
+--------------
+
+Fedora occasionally updates the architecture name for 32-bit; the last
+such update was in Fedora 12, when i586 became i686.  Fixing this
+usually just involves replacing i586 with i686 in the appropriate places
+(Makefile, specfiles, /etc/mock configuration).  Note that for
+hysterical raisins we still refer to our 32-bit builds as i386.
+[XXX: Maybe this should change]

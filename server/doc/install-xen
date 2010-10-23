@@ -42,3 +42,7 @@ dpkg -l
 # clone the xen config (/etc/xen)
     git clone ssh://scripts@scripts.mit.edu/mit/scripts/git/xen.git /etc/xen
 
+# setup conserver
+    cat /etc/conserver/console.cf # add the correct entires here
+    visudo # add conservr to sudoers list with:
+        conservr ALL=(ALL) NOPASSWD: /usr/sbin/xm console *
