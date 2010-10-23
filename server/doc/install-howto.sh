@@ -296,6 +296,9 @@ scp .k5login root@$server:/home/logview
     chkconfig postfix on
     chkconfig httpd on
 
+# nrpe is required for nagios alerts
+    chkconfig nrpe on
+
 # Check sql user credentials (needs to be done after LDAP is setup)
     chown sql /etc/sql-mit-edu.cfg.php
 
