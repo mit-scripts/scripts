@@ -337,6 +337,9 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
     chkconfig postfix on
     chkconfig httpd on
 
+# nrpe is required for nagios alerts
+    chkconfig nrpe on
+
 # Postfix doesn't actually deliver mail; fix this
     cd /etc/postfix
     postmap virtual
