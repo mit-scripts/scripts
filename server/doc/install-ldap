@@ -29,6 +29,7 @@ To set up a new LDAP server:
 # Inside cn=config.  These changes definitely require a restart.
 nsslapd-ldapifilepath: /var/run/dirsrv/slapd-scripts.socket
 nsslapd-ldapilisten: on
+nsslapd-syntaxcheck: off
 
 # Add these blocks
 
@@ -48,6 +49,7 @@ nsSaslMapFilterTemplate: (objectClass=posixAccount)
   sure you chown/chgrp it to be readable by fedora-ds
 - Uncomment and modify in /etc/sysconfig/dirsrv: KRB5_KTNAME=/etc/dirsrv/keytab ; export KRB5_KTNAME
 - chown fedora-ds:fedora-ds /var/run/dirsrv
+- chown fedora-ds /etc/dirsrv/keytab
 - chmod 755 /var/run/dirsrv
 - /sbin/service dirsrv start
 - Use ldapvi -b cn=config to add these indexes (8 of them):
@@ -192,7 +194,7 @@ nsDS5ReplicaBindDN: uid=ldap/whole-enchilada.mit.edu,ou=People,dc=scripts,dc=mit
 nsDS5ReplicaBindDN: uid=ldap/real-mccoy.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
 nsDS5ReplicaBindDN: uid=ldap/better-mousetrap.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
 nsDS5ReplicaBindDN: uid=ldap/old-faithful.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
-# ADD SERVERS HERE AS YOU ADD NEW SERVERS
+nsDS5ReplicaBindDN: uid=ldap/shining-armor.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
 nsds5ReplicaPurgeDelay: 604800
 nsds5ReplicaLegacyConsumer: off
 nsDS5ReplicaType: 3

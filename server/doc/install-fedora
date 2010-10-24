@@ -1,6 +1,11 @@
 Installing a Scripts guest on a Xen host
 ----------------------------------------
 
+You need to create the volumes to use:
+
+    lvcreate -n $MACHINE-root --size 50.00G $HOST
+    lvcreate -n $MACHINE-swap --size 10.00G $HOST
+
 We use Kickstart to to initial Fedora configuration.  Installing a new
 vanilla machine is as easy as:
 
