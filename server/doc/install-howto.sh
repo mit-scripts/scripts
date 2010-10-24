@@ -330,6 +330,8 @@ scp .k5login root@$server:/home/logview
 # Ensure that PHP isn't broken:
     mkdir /tmp/sessions
     chmod 01777 /tmp/sessions
+    # XXX: this seems to get deleted if tmp gets cleaned up, so we
+    # might need something a little better (maybe init script.)
 
 # Ensure fcgid isn't broken (should be 755)
     ls -ld /var/run/mod_fcgid
