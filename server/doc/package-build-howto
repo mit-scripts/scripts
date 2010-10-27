@@ -145,6 +145,15 @@ Patching packages
       since if you don't mock will use the original specfile (and
       overwrite any changes you made in place).
 
+Replacing the source of packages
+===============================
+
+    * Patch the specfile to have an alternate Source0 (or SourceX) URL
+      pointing to the updated source of the package.  You will then
+      need to add a spectool line to the Makefile to ensure this new
+      source gets downloaded on build:
+        spectool -g -R $(specs)/PACKAGE-NAME.spec
+
 Tips
 ====
 
