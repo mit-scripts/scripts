@@ -19,4 +19,4 @@ LogLevel VERBOSE
 HostbasedAuthentication yes
 IgnoreRhosts yes
 IgnoreUserKnownHosts yes
-DenyUsers root@old-faithful.mit.edu root@better-mousetrap.mit.edu root@bees-knees.mit.edu root@cats-whiskers.mit.edu root@pancake-bunny.mit.edu root@busy-beaver.mit.edu root@real-mccoy.mit.edu
+DenyUsers root@old-faithful.mit.edu root@better-mousetrap.mit.edu root@bees-knees.mit.edu root@cats-whiskers.mit.edu root@pancake-bunny.mit.edu root@busy-beaver.mit.edu root@real-mccoy.mit.edu root@whole-enchilada.mit.edu root@shining-armor.mit.edu
