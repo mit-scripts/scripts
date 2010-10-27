@@ -93,6 +93,12 @@ scp *key* root@$server:/etc/ssh/
 #     /etc/sysconfig/network-scripts/route-eth1
 #   o Adding the IP address to the hosts file (same hosts as for
 #     scripts-vhost-names)
+#   o Update SSH config at
+#       - server/fedora/config/etc/ssh/shosts.equiv
+#       - server/fedora/config/etc/ssh/ssh_known_hosts
+#       - server/fedora/config/etc/ssh/sshd_config : DenyUsers
+#     (the last part is critical to ensure that rooting one server
+#     doesn't give you root to all the other servers)
 #   o Put the hostname information in LDAP so SVN and Git work
 #   o Set up Nagios monitoring on sipb-noc for the host
 #   o Set up the host as in the pool on r-b/r-b /etc/heartbeat/ldirectord.cf
