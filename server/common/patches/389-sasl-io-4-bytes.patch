@@ -75,8 +75,8 @@ index 4bf81cc..52d6506 100644
 +        sp->encrypted_buffer_offset = sizeof(buffer);
      }
 -    if (ret == sizeof(buffer)) {
--        /* Decode the length */
--        packet_length = ntohl(*(uint32_t *)buffer);
+-        /* Decode the length (could use ntohl here ??) */
+-        packet_length = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
 -        /* add length itself (for Cyrus SASL library) */
 -        packet_length += 4;
 -
