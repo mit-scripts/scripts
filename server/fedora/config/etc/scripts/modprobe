@@ -1,3 +1,12 @@
 #!/bin/sh
-logger -p authpriv.info -- "Ignoring request from kernel: modprobe $*"
+(
+    echo "Ignoring request from kernel: modprobe $*"
+    stacks=$(grep -ls request_module /proc/*/stack)
+    if [ "$stacks" ]; then
+	ps -Lfwp $(for stack in $stacks; do
+		proc="${stack%/stack}"
+		echo "${proc#/proc/}";
+	    done)
+    fi
+) | logger -p authpriv.info
 false
