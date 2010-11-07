@@ -98,3 +98,4 @@ scripts-build:	root
 
 # People who are abusing or otherwise causing problems with the mail system
 # Put "/dev/null" as the target of their alias
+srimano:	/dev/null	# has a phpBB generating a lot of backscatter
