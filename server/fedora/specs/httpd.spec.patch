@@ -1,13 +1,13 @@
---- httpd.spec.orig	2010-07-27 11:55:33.000000000 -0400
-+++ httpd.spec	2010-09-06 20:45:28.000000000 -0400
+--- httpd.spec.orig	2010-10-27 08:26:15.000000000 -0400
++++ httpd.spec	2010-11-18 18:20:43.000000000 -0500
 @@ -7,7 +7,7 @@
  Summary: Apache HTTP Server
  Name: httpd
- Version: 2.2.16
--Release: 1%{?dist}
-+Release: 1%{?dist}.scripts.%{scriptsversion}
+ Version: 2.2.17
+-Release: 1%{?dist}.1
++Release: 1%{?dist}.1.scripts.%{scriptsversion}
  URL: http://httpd.apache.org/
- Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.gz
+ Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
  Source1: index.html
 @@ -55,6 +55,14 @@
  Conflicts: pcre < 4.0
@@ -54,7 +54,7 @@
  # Safety check: prevent build if defined MMN does not equal upstream MMN.
  vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
  if test "x${vmmn}" != "x%{mmn}"; then
-@@ -178,10 +195,12 @@
+@@ -177,10 +194,12 @@
          --with-apr=%{_prefix} --with-apr-util=%{_prefix} \
  	--enable-suexec --with-suexec \
  	--with-suexec-caller=%{suexec_caller} \
