@@ -1,0 +1,35 @@
+--- openssh/auth2-pubkey.c.hold	2010-11-20 20:27:13.000000000 -0500
++++ openssh/auth2-pubkey.c	2010-11-20 20:33:23.000000000 -0500
+@@ -233,13 +233,14 @@
+ 				continue;
+ 			}
+ 		}
+-		if (auth_parse_options(pw, key_options, file, linenum) != 1)
+-			continue;
+ 		if (key->type == KEY_RSA_CERT || key->type == KEY_DSA_CERT) {
+-			if (!key_is_cert_authority)
+-				continue;
+ 			if (!key_equal(found, key->cert->signature_key))
+ 				continue;
++			if (auth_parse_options(pw, key_options, file,
++			    linenum) != 1)
++				continue;
++			if (!key_is_cert_authority)
++				continue;
+ 			debug("matching CA found: file %s, line %lu",
+ 			    file, linenum);
+ 			fp = key_fingerprint(found, SSH_FP_MD5,
+@@ -258,7 +259,12 @@
+ 				continue;
+ 			found_key = 1;
+ 			break;
+-		} else if (!key_is_cert_authority && key_equal(found, key)) {
++		} else if (key_equal(found, key)) {
++			if (auth_parse_options(pw, key_options, file,
++			    linenum) != 1)
++				continue;
++			if (key_is_cert_authority)
++				continue;
+ 			found_key = 1;
+ 			debug("matching key found: file %s, line %lu",
+ 			    file, linenum);
