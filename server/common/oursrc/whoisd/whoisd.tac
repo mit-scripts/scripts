@@ -64,9 +64,10 @@ class WhoisFactory(protocol.ServerFactory):
 #        else:
 #            return vhost + ".mit.edu"
     def searchLDAP(self, vhost):
-        results = self.ldap.search_s(self.ldap_base, ldap.SCOPE_SUBTREE,
+        results = self.ldap.search_st(self.ldap_base, ldap.SCOPE_SUBTREE,
             ldap.filter.filter_format(
-                '(|(apacheServername=%s)(apacheServerAlias=%s))', (vhost,)*2))
+                '(|(apacheServername=%s)(apacheServerAlias=%s))', (vhost,)*2),
+                timeout=5)
         if len(results) >= 1:
             result = results[0]
             attrs = result[1]
@@ -83,11 +84,19 @@ class WhoisFactory(protocol.ServerFactory):
     def getWhois(self, vhost):
         vhost = self.canonicalize(vhost)
         info = self.vhosts.get(vhost)
-        if not info:
-            info = self.searchLDAP(vhost)
+        tries = 0
+        while (tries < 3) and not info:
+            tries += 1
+            try:
+                info = self.searchLDAP(vhost)
+            except (ldap.TIMEOUT, ldap.SERVER_DOWN):
+                self.ldap.unbind()
+                self.ldap = ldap.initialize(self.ldap_URL)
         if info:
             ret = "Hostname: %s\nAlias: %s\nLocker: %s\nDocument Root: %s" % \
                 (info['apacheServerName'], vhost, info['locker'], info['apacheDocumentRoot'])
+        elif tries == 3:
+            ret = "The whois server is experiencing problems looking up LDAP records.\nPlease contact scripts@mit.edu for help if this problem persists."
         else:
             ret = "No such hostname"
         return defer.succeed(ret)
