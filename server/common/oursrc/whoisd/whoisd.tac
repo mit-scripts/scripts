@@ -89,6 +89,7 @@ class WhoisFactory(protocol.ServerFactory):
             tries += 1
             try:
                 info = self.searchLDAP(vhost)
+                break
             except (ldap.TIMEOUT, ldap.SERVER_DOWN):
                 self.ldap.unbind()
                 self.ldap = ldap.initialize(self.ldap_URL)
