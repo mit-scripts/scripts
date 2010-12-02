@@ -109,6 +109,7 @@ while (1) {
 	} elsif ($message =~ m|^Failed keyboard-interactive/pam for invalid user |) {
 	} elsif ($message =~ m|^Postponed gssapi-with-mic for |) {
 	} elsif ($message =~ m|^Address \S+ maps to \S+, but this does not map back to the address|) {
+	} elsif ($message =~ m|^Nasty PTR record .* is set up for .*, ignoring|) {
 	} elsif ($message =~ m|^User child is on pid \d+$|) {
 	} elsif ($message =~ m|^Transferred: sent \d+, received \d+ bytes$|) {
 	} elsif ($message =~ m|^Setting tty modes failed: Invalid argument$|) {
