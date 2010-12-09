@@ -1,0 +1,38 @@
+--- 389-ds-base.spec.orig	2010-12-09 01:59:34.000000000 -0500
++++ 389-ds-base.spec	2010-12-09 02:05:59.000000000 -0500
+@@ -13,7 +13,7 @@
+ Summary:          389 Directory Server (base)
+ Name:             389-ds-base
+ Version:          1.2.7.1
+-Release:          %{?relprefix}1%{?prerel}%{?dist}
++Release:          %{?relprefix}1%{?prerel}.scripts.%{scriptsversion}%{?dist}
+ License:          GPLv2 with exceptions
+ URL:              http://port389.org/
+ Group:            System Environment/Daemons
+@@ -88,6 +88,8 @@
+ Source1:          %{name}-git.sh
+ Source2:          %{name}-devel.README
+ 
++Patch0:           389-ds-base-fix-changelog-paths.patch
++
+ %description
+ 389 Directory Server is an LDAPv3 compliant server.  The base package includes
+ the LDAP server and command line utilities for server administration.
+@@ -109,6 +111,7 @@
+ 
+ %prep
+ %setup -q -n %{name}-%{version}%{?prerel}
++%patch0 -p1 -b .fix-changelog-paths
+ cp %{SOURCE2} README.devel
+ 
+ %build
+@@ -300,6 +303,9 @@
+ %{_libdir}/%{pkgname}/*.so
+ 
+ %changelog
++* Thu Dec  9 2010 Mitchell E Berger <mitchb@mit.edu> - 1.2.7.1-1.scripts
++- Correct changelog path logic in MMR plugin
++
+ * Tue Nov 23 2010 Rich Megginson <rmeggins@redhat.com> - 1.2.7.1-1
+ - 1.2.7.1 release - git tag 389-ds-base-1.2.7.1
+ - Bug 656515 - Allow Name and Optional UID syntax for grouping attributes
