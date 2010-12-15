@@ -79,6 +79,28 @@ if($homedir !~ /\/afs\/athena\.mit\.edu\/user\//) {
 # Complain if user's gid is already taken
 complain("gid already taken") if(getgrgid $gid1);
 
+my $disabledmsg = "scripts.mit.edu signups are currently disabled";
+if(-e "/afs/athena.mit.edu/contrib/scripts/admin/nosignup") {
+	open NOSIGNUP, "</afs/athena.mit.edu/contrib/scripts/admin/nosignup" or
+		complain("internal error");
+	while (<NOSIGNUP>) {
+		chomp;
+		$disabledmsg .= "\n$_";
+	}
+	close NOSIGNUP;
+	complain($disabledmsg);
+}
+elsif(-e "/etc/nosignup") {
+	$disabledmsg .= " on this server";
+	open NOSIGNUP, "</etc/nosignup" or complain("internal error");
+	while (<NOSIGNUP>) {
+		chomp;
+		$disabledmsg .= "\n$_";
+	}
+	close NOSIGNUP;
+	complain($disabledmsg);
+}
+
 my $pid;
 defined ($pid = open LDAP, '|-') or complain("internal error");
 if (!$pid) {
