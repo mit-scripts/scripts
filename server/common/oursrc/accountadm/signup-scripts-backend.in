@@ -58,7 +58,7 @@ opendir TEMP, '.';
 closedir TEMP;
 
 # Obtain user's homedir uid
-my (undef, undef, undef, undef, $uid1, $gid1, undef, undef, undef, undef, undef, undef, undef) = stat '.' or complain("athena homedir not found");
+my (undef, undef, undef, undef, $uid1, $gid1, undef, undef, undef, undef, undef, undef, undef) = stat '.' or complain("athena homedir could not be examined");
 
 # Complain if user's uid is too low or too high
 complain("bad uid") unless($uid1 > 110 and $uid1 < (1 << 31));
