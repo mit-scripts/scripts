@@ -1,9 +1,9 @@
---- 389-ds-base.spec.orig	2010-12-12 18:40:22.000000000 -0500
-+++ 389-ds-base.spec	2010-12-12 18:43:45.000000000 -0500
+--- 389-ds-base.spec.orig	2010-12-18 01:18:33.000000000 -0500
++++ 389-ds-base.spec	2010-12-18 01:37:42.000000000 -0500
 @@ -13,7 +13,7 @@
  Summary:          389 Directory Server (base)
  Name:             389-ds-base
- Version:          1.2.7.2
+ Version:          1.2.7.4
 -Release:          %{?relprefix}1%{?prerel}%{?dist}
 +Release:          %{?relprefix}1%{?prerel}.scripts.%{scriptsversion}%{?dist}
  License:          GPLv2 with exceptions
@@ -34,13 +34,13 @@
  cp %{SOURCE2} README.devel
  
  %build
-@@ -300,6 +304,9 @@
- %{_libdir}/%{pkgname}/*.so
+@@ -304,6 +308,9 @@
+ - 1.2.7.4 release - git tag 389-ds-base-1.2.7.4
+ - Bug 661792 - Valid managed entry config rejected
  
- %changelog
 +* Thu Dec  9 2010 Mitchell E Berger <mitchb@mit.edu> - 1.2.7.1-1.scripts
 +- Correct changelog path logic in MMR plugin
 +
- * Fri Dec  3 2010 Rich Megginson <rmeggins@redhat.com> - 1.2.7.2-1
- - 1.2.7.2 release - git tag 389-ds-base-1.2.7.2
- - Bug 659456 - Incorrect usage of ber_printf() in winsync code
+ * Wed Dec  8 2010 Rich Megginson <rmeggins@redhat.com> - 1.2.7.3-1
+ - 1.2.7.3 release - git tag 389-ds-base-1.2.7.3
+ - Bug 658312 - Invalid free in Managed Entry plug-in
