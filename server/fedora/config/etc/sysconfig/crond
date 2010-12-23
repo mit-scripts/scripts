@@ -6,7 +6,7 @@
 #                           restricted to contain only the chars
 #                           from this tr(1) set : [@!:%-_.,:alnum:]
 #                           otherwise mailing is not attempted.
-CRONDARGS=
+CRONDARGS="-m '/usr/sbin/sendmail -FCronDaemon -i -odi -oem -oi -t'"
 
 # Force crond to always run with tokens
 su -c '/home/afsagent/renew' -l afsagent || :
