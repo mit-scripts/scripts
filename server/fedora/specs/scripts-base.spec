@@ -8,7 +8,29 @@ URL: http://scripts.mit.edu
 License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
-Requires: accountadm, execsys, scripts-kmod-openafs, scripts-krb5-libs, scripts-httpd, scripts-mod_ssl, openafs, scripts-openafs-client, scripts-openafs-authlibs, scripts-openafs-devel, scripts-openafs-krb5, openafs-docs, scripts-openssh-server, sql-signup, tokensys, whoisd, logview, nss-ldapd, php_scripts, zephyr, httpdmods, nss_nonlocal, scripts-389-ds
+%define all_archs() %1%{?_isa}, %{?__isa_name: %1(%{__isa_name}-32)}
+Requires: accountadm
+Requires: execsys
+Requires: scripts-kmod-openafs
+Requires: %{all_archs scripts-krb5-libs}
+Requires: scripts-httpd
+Requires: scripts-mod_ssl
+Requires: scripts-openafs-client
+Requires: scripts-openafs-authlibs
+Requires: scripts-openafs-devel
+Requires: scripts-openafs-krb5
+Requires: scripts-openssh-server
+Requires: sql-signup
+Requires: tokensys
+Requires: whoisd
+Requires: logview
+Requires: %{all_archs nss-pam-ldapd}
+Requires: php_scripts
+Requires: zephyr
+Requires: %{all_archs zephyr-libs}
+Requires: httpdmods
+Requires: %{all_archs nss_nonlocal}
+Requires: scripts-389-ds
 %define debug_package %{nil}
 
 %description 
