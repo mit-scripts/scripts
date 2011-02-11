@@ -1,2 +1,0 @@
-MAILTO=quickprint@mit.edu
-13 */6 * * * quickprint [ -e /etc/nologin ] || /mit/quickprint/bin/cleanup-tmp >/dev/null
