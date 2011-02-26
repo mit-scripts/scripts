@@ -67,6 +67,8 @@ my @static = qw(
  wav
  mid
  midi
+ ttf
+ otf
 );
 
 my %map;
