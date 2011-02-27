@@ -72,7 +72,7 @@
      "SSL_",
  
      /* variable name is */
-@@ -245,9 +250,69 @@
+@@ -245,9 +250,71 @@
      environ = cleanenv;
  }
  
@@ -114,6 +114,8 @@
 +    "wav",
 +    "mid",
 +    "midi",
++    "ttf",
++    "otf",
 +    NULL
 +};
 +
