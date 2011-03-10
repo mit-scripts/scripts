@@ -1,11 +1,11 @@
 #!/bin/sh
-case "$*" in
-  *binfmt-464c*) # 464c are the second two bytes of the ELF magic.
-                 # This module doesn't exist; being called for it
-                 # indicates the in-kernel binfmt_elf decided to
-                 # return ENOEXEC for this ELF file for some reason.
-                 exit 1 ;;
-esac
+if [ $# -eq 3 ] && [ "$1" = "-q" ] && [ "$2" = "--" ] && [ "$3" = "binfmt-464c" ]; then
+    # 464c are the second two bytes of the ELF magic.  This module
+    # doesn't exist; being called for it indicates the in-kernel
+    # binfmt_elf decided to return ENOEXEC for this ELF file for some
+    # reason.
+    exit 1
+fi
 (
     echo "Ignoring request from kernel: modprobe $*"
     stacks=$(grep -ls request_module /proc/*/stack)
