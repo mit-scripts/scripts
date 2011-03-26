@@ -1,6 +1,6 @@
 APXS = apxs
 
-MODS = mod_auth_sslcert mod_authz_afsgroup mod_auth_optional mod_vhost_ldap
+MODS = mod_auth_sslcert mod_authz_afsgroup mod_auth_optional mod_vhost_ldap mod_original_dst
 
 all-local: $(patsubst %,.libs/%.so,$(MODS))
 

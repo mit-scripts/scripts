@@ -21,6 +21,8 @@ Contains:
  - module to do authorization based on Athena AFS groups <mod_authz_afsgroup>
  - module to enable optional authentication <mod_auth_optional>
  - module to get vhosts from LDAP, taken from Debian <mod_vhost_ldap>
+ - module to use the original destination address of a request that
+     has gone through something like a transparent proxy <mod_original_dst>
 See http://scripts.mit.edu/wiki for more information.
 
 %prep
@@ -36,6 +38,7 @@ install -D .libs/mod_auth_sslcert.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod
 install -D .libs/mod_authz_afsgroup.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_authz_afsgroup.so
 install -D .libs/mod_auth_optional.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_auth_optional.so
 install -D .libs/mod_vhost_ldap.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_vhost_ldap.so
+install -D .libs/mod_original_dst.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_original_dst.so
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
@@ -46,6 +49,7 @@ install -D .libs/mod_vhost_ldap.so $RPM_BUILD_ROOT/usr/lib64/httpd/modules/mod_v
 /usr/lib64/httpd/modules/mod_authz_afsgroup.so
 /usr/lib64/httpd/modules/mod_auth_optional.so
 /usr/lib64/httpd/modules/mod_vhost_ldap.so
+/usr/lib64/httpd/modules/mod_original_dst.so
 
 %changelog
 
