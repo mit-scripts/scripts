@@ -6,6 +6,21 @@ use warnings;
 use Net::LDAP;
 use Net::LDAP::Filter;
 
+sub report_error
+{
+    my $proto = shift;
+    my $mesg = shift;
+
+    if ($proto eq 'git') {
+        $mesg = "ERR \n  " . $mesg . "\n";
+        my $len = length($mesg)+4;
+        printf "%04x%s", $len, $mesg;
+    } else {
+        print $mesg;
+    }
+    exit 0;
+}
+
 my $url = $ARGV[0];
 my ($proto, $hostname, $path) = $url =~ m|^(.*?)://([^/]*)(.*)| or die "Could not match URL";
 my $mesg;
@@ -30,6 +45,10 @@ $mesg = $ldap->search(base => "ou=VirtualHosts,dc=scripts,dc=mit,dc=edu",
 $mesg->code && die $mesg->error;
 
 my $vhostEntry = $mesg->pop_entry;
+if (!$vhostEntry)
+{
+    report_error($proto, "Could not find Host $hostname");
+}
 my $vhostDirectory = $vhostEntry->get_value('scriptsVhostDirectory');
 
 $mesg = $ldap->search(base => $vhostEntry->get_value('scriptsVhostAccount'),
