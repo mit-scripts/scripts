@@ -1,5 +1,5 @@
 Name:           zephyr
-Version:        3.0
+Version:        3.0.1
 Release:        0.%{scriptsversion}%{?dist}
 Summary:        Client programs for the Zephyr real-time messaging system
 
@@ -138,6 +138,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Apr 16 2011 Alexander Chernyakhovsky <achernya@mit.edu> 3.0.1-0
+- Zephyr 3.0.1
+
 * Sun Sep 19 2010 Anders Kaseorg <andersk@mit.edu> - 3.0-0
 - Decrease version below a hypothetical Fedora package.
 - Split out -server, -libs, and -devel into subpackages.
