@@ -28,15 +28,24 @@
  
  #if defined(_AIX) && defined(_IBMR2)
  #include <sys/access.h>
-@@ -100,6 +101,7 @@
-     struct stat sbuf;
+@@ -93,13 +94,12 @@
+ static enum result
+ k5login_ok(krb5_context context, krb5_principal principal, const char *luser)
+ {
+-    int authoritative = TRUE, gobble;
++    int authoritative = TRUE;
+     enum result result = REJECT;
+     char *filename = NULL, *princname = NULL;
+-    char *newline, linebuf[BUFSIZ], pwbuf[BUFSIZ];
+-    struct stat sbuf;
++    char pwbuf[BUFSIZ];
      struct passwd pwx, *pwd;
-     FILE *fp = NULL;
+-    FILE *fp = NULL;
 +    int pid, status;
  
      if (profile_get_boolean(context->profile, KRB5_CONF_LIBDEFAULTS,
                              KRB5_CONF_K5LOGIN_AUTHORITATIVE, NULL, TRUE,
-@@ -110,41 +112,27 @@
+@@ -110,46 +110,30 @@
      if (k5_getpwnam_r(luser, &pwx, pwbuf, sizeof(pwbuf), &pwd) != 0)
          goto cleanup;
  
@@ -93,3 +102,8 @@
  cleanup:
      free(princname);
      free(filename);
+-    if (fp != NULL)
+-        fclose(fp);
+     /* If k5login files are non-authoritative, never reject. */
+     return (!authoritative && result == REJECT) ? PASS : result;
+ }
