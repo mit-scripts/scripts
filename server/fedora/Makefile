@@ -21,7 +21,7 @@
 upstream_yum	= krb5 krb5.i686 httpd openssh
 hackage		= MonadCatchIO-mtl-0.3.0.1 cgi-3001.1.8.1 unix-handle-0.0.0
 upstream_hackage = ghc-MonadCatchIO-mtl ghc-cgi ghc-unix-handle
-upstream	= openafs $(upstream_yum) $(upstream_hackage) moira cluster-glue heartbeat pacemaker zephyr zephyr.i686 python-zephyr
+upstream	= openafs $(upstream_yum) $(upstream_hackage) moira zephyr zephyr.i686 python-zephyr
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
@@ -41,9 +41,6 @@ server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
 #openafs_url	= "http://dl.openafs.org/dl/openafs/1.4.12/openafs-1.4.12-1.1.2.src.rpm"
 openafs_url	= "http://web.mit.edu/~scripts/rpm-fc13/openafs-1.4.12.1-1.0.pre3.src.rpm"
-clusterglue_url	= "http://kojipkgs.fedoraproject.org/packages/cluster-glue/1.0/0.11.b79635605337.hg.fc12/src/cluster-glue-1.0-0.11.b79635605337.hg.fc12.src.rpm"
-heartbeat_url	= "http://kojipkgs.fedoraproject.org/packages/heartbeat/3.0.0/0.5.0daab7da36a8.hg.fc12/src/heartbeat-3.0.0-0.5.0daab7da36a8.hg.fc12.src.rpm"
-pacemaker_url	= "http://kojipkgs.fedoraproject.org/packages/pacemaker/1.0.5/5.fc12/src/pacemaker-1.0.5-5.fc12.src.rpm"
 zephyr_url	= "http://zephyr.1ts.org/export/HEAD/distribution/zephyr-3.0.1.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
@@ -73,9 +70,6 @@ download_stamp:
 	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
 	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
 	wget -P $(dload) $(openafs_url)
-	wget -P $(dload) $(clusterglue_url)
-	wget -P $(dload) $(heartbeat_url)
-	wget -P $(dload) $(pacemaker_url)
 	wget -P $(dload) $(zephyr_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 	cabal update
