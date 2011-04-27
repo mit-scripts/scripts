@@ -30,7 +30,6 @@ Requires: zephyr
 Requires: %{all_archs zephyr-libs}
 Requires: httpdmods
 Requires: %{all_archs nss_nonlocal}
-Requires: scripts-389-ds
 %define debug_package %{nil}
 
 %description 
