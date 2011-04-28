@@ -36,7 +36,7 @@ my $filter = bless({and =>
                              assertionValue => $hostname}}]}]},
     'Net::LDAP::Filter');
 
-my $ldap = Net::LDAP->new("ldapi://%2fvar%2frun%2fdirsrv%2fslapd-scripts.socket/");
+my $ldap = Net::LDAP->new("ldapi://%2fvar%2frun%2fslapd-scripts.socket/");
 $mesg = $ldap->bind();
 $mesg->code && die $mesg->error;
 

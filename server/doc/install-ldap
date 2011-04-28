@@ -27,7 +27,7 @@ To set up a new LDAP server:
   dsconf, which is the "blessed" method]
 
 # Inside cn=config.  These changes definitely require a restart.
-nsslapd-ldapifilepath: /var/run/dirsrv/slapd-scripts.socket
+nsslapd-ldapifilepath: /var/run/slapd-scripts.socket
 nsslapd-ldapilisten: on
 nsslapd-syntaxcheck: off
 
@@ -50,7 +50,6 @@ nsSaslMapFilterTemplate: (objectClass=posixAccount)
 - Uncomment and modify in /etc/sysconfig/dirsrv: KRB5_KTNAME=/etc/dirsrv/keytab ; export KRB5_KTNAME
 - chown fedora-ds:fedora-ds /var/run/dirsrv
 - chown fedora-ds /etc/dirsrv/keytab
-- chmod 755 /var/run/dirsrv
 - /sbin/service dirsrv start
 - Use ldapvi -b cn=config to add these indexes (8 of them):
 
