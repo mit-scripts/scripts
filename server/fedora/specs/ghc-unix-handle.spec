@@ -22,7 +22,7 @@ Release:        0.%{scriptsversion}%{?dist}
 Summary:        %{common_summary}
 
 Group:          System Environment/Libraries
-License:        @LICENSE@
+License:        BSD
 URL:            http://hackage.haskell.org/package/%{pkg_name}
 Source0:        http://hackage.haskell.org/packages/archive/%{pkg_name}/%{version}/%{pkg_name}-%{version}.tar.gz
 # fedora ghc archs:
