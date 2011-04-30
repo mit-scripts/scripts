@@ -70,7 +70,6 @@ sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 make %{?_smp_mflags}
 
-
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT libdir=%{_libdir}
@@ -79,7 +78,14 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 mkdir -p $RPM_BUILD_ROOT%{_initddir}
 install -m755 zhm.init \
         $RPM_BUILD_ROOT%{_initddir}/zhm
-
+# Make RPM's Provide: searcher actually search the .so files! A recent
+# change in how RPM detects Provides automatically means that only
+# files that are executable get searched. Without this hack, all of
+# the zephyr client tools are Requires: libzephyr.so.4 which is never
+# Provides:, leading to uninstallable RPMS. This can be removed when
+# zephyr starts installing the libraries with mode 755 rather than
+# 644. (Zephyr #79)
+chmod a+x $RPM_BUILD_ROOT%{_libdir}/libzephyr.so.*
 
 %post
 /sbin/chkconfig --add zhm
