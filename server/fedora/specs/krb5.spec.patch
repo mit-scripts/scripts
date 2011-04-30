@@ -4,21 +4,21 @@
  Summary: The Kerberos network authentication system
  Name: krb5
  Version: 1.9
--Release: 6%{?dist}
-+Release: 6%{?dist}.scripts.%{scriptsversion}
+-Release: 7%{?dist}
++Release: 7%{?dist}.scripts.%{scriptsversion}
  # Maybe we should explode from the now-available-to-everybody tarball instead?
  # http://web.mit.edu/kerberos/dist/krb5/1.9/krb5-1.9-signed.tar
  Source0: krb5-%{version}.tar.gz
-@@ -53,6 +53,8 @@
- Patch74: http://web.mit.edu/kerberos/advisories/2011-002-patch.txt
- Patch75: http://web.mit.edu/kerberos/advisories/2011-003-patch.txt
+@@ -55,6 +55,8 @@
+ Patch76: krb5-1.9-paren.patch
+ Patch77: http://web.mit.edu/kerberos/advisories/2011-004-patch.txt
  
 +Patch1000: krb5-kuserok-scripts.patch
 +
  License: MIT
  URL: http://web.mit.edu/kerberos/www/
  Group: System Environment/Libraries
-@@ -97,6 +99,7 @@
+@@ -99,6 +101,7 @@
  %package libs
  Summary: The shared libraries used by Kerberos 5
  Group: System Environment/Libraries
@@ -26,10 +26,10 @@
  
  %description libs
  Kerberos is a network authentication system. The krb5-libs package
-@@ -192,6 +195,7 @@
- %patch73 -p1 -b .2011-001
- %patch74 -p1 -b .2011-002
+@@ -196,6 +199,7 @@
  %patch75 -p1 -b .2011-003
+ %patch76 -p1 -b .paren
+ %patch77 -p1 -b .2011-004
 +%patch1000 -p1 -b .kuserok
  gzip doc/*.ps
  
