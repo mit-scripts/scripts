@@ -19,7 +19,7 @@
 # See /COPYRIGHT in this repository for more information.
 
 upstream_yum	= krb5 krb5.i686 httpd openssh
-hackage		= MonadCatchIO-mtl-0.3.0.1 cgi-3001.1.8.1 unix-handle-0.0.0
+hackage		= MonadCatchIO-mtl-0.3.0.2 cgi-3001.1.8.2 unix-handle-0.0.0
 upstream_hackage = ghc-MonadCatchIO-mtl ghc-cgi ghc-unix-handle
 upstream	= openafs $(upstream_yum) $(upstream_hackage) moira zephyr zephyr.i686 python-zephyr
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat
@@ -39,8 +39,8 @@ out_sbin	= $(topdir)/sbin
 dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
-#openafs_url	= "http://dl.openafs.org/dl/openafs/1.4.12/openafs-1.4.12-1.1.2.src.rpm"
-openafs_url	= "http://web.mit.edu/~scripts/rpm-fc13/openafs-1.4.12.1-1.0.pre3.src.rpm"
+openafs_url	= "http://dl.openafs.org/dl/openafs/1.4.14/openafs-1.4.14-1.1.1.src.rpm"
+#openafs_url	= "http://web.mit.edu/~scripts/rpm-fc13/openafs-1.4.12.1-1.0.pre3.src.rpm"
 zephyr_url	= "http://zephyr.1ts.org/export/HEAD/distribution/zephyr-3.0.1.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
