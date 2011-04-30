@@ -39,15 +39,16 @@ $mesg->code && die $mesg->error;
 my $userEntry = $mesg->pop_entry;
 my ($homeDirectory, $uidNumber, $gidNumber) =
     map { $userEntry->get_value($_) } qw(homeDirectory uidNumber gidNumber);
+(my $scriptsdir = $homeDirectory) =~ s{(?:/Scripts)?$}{/Scripts};
 
 if ($proto eq 'svn') {
   chdir '/usr/libexec/scripts-trusted';
-  exec('/usr/sbin/suexec', $uidNumber, $gidNumber, '/usr/libexec/scripts-trusted/svn', "$homeDirectory/Scripts/svn/$vhostDirectory");
+  exec('/usr/sbin/suexec', $uidNumber, $gidNumber, '/usr/libexec/scripts-trusted/svn', "$scriptsdir/svn/$vhostDirectory");
 } elsif ($proto eq 'git') {
   chdir '/usr/libexec/scripts-trusted';
-  exec('/usr/sbin/suexec', $uidNumber, $gidNumber, '/usr/libexec/scripts-trusted/git', "$homeDirectory/Scripts/git/$vhostDirectory");
+  exec('/usr/sbin/suexec', $uidNumber, $gidNumber, '/usr/libexec/scripts-trusted/git', "$scriptsdir/git/$vhostDirectory");
 } elsif ($proto eq 'http') {
-  print "suexec $uidNumber $gidNumber $homeDirectory/Scripts/web/$vhostDirectory/$path\n";
+  print "suexec $uidNumber $gidNumber $scriptsdir/web/$vhostDirectory/$path\n";
 } else {
   die "Unknown protocol\n";
 }
