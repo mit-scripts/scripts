@@ -39,18 +39,26 @@
 #include "nonlocal.h"
 
 
-static service_user *
-nss_shadow_nonlocal_database(void)
-{
-    static service_user *nip = NULL;
-    if (nip == NULL)
-        __nss_database_lookup("shadow_nonlocal", NULL, "", &nip);
+static service_user *__nss_shadow_nonlocal_database;
 
-    return nip;
+static int
+internal_function
+__nss_shadow_nonlocal_lookup(service_user **ni, const char *fct_name,
+			    void **fctp)
+{
+    if (__nss_shadow_nonlocal_database == NULL
+	&& __nss_database_lookup("shadow_nonlocal", NULL, NULL,
+				 &__nss_shadow_nonlocal_database) < 0)
+	return -1;
+
+    *ni = __nss_shadow_nonlocal_database;
+
+    *fctp = __nss_lookup_function(*ni, fct_name);
+    return 0;
 }
 
 
-static service_user *spent_nip = NULL;
+static service_user *spent_startp, *spent_nip;
 static void *spent_fct_start;
 static union {
     enum nss_status (*l)(struct spwd *pwd, char *buffer, size_t buflen,
@@ -62,33 +70,22 @@ static const char *spent_fct_name = "getspent_r";
 enum nss_status
 _nss_nonlocal_setspent(int stayopen)
 {
-    static const char *fct_name = "setspent";
-    static void *fct_start = NULL;
     enum nss_status status;
-    service_user *nip;
-    union {
-	enum nss_status (*l)(int stayopen);
-	void *ptr;
-    } fct;
-
-    nip = nss_shadow_nonlocal_database();
-    if (nip == NULL)
-	return NSS_STATUS_UNAVAIL;
-    if (fct_start == NULL)
-	fct_start = __nss_lookup_function(nip, fct_name);
-    fct.ptr = fct_start;
-    do {
-	if (fct.ptr == NULL)
-	    status = NSS_STATUS_UNAVAIL;
-	else
-	    status = DL_CALL_FCT(fct.l, (stayopen));
-    } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
+    const struct walk_nss w = {
+	.lookup = &__nss_shadow_nonlocal_lookup, .fct_name = "setspent",
+	.status = &status
+    };
+    const __typeof__(&_nss_nonlocal_setspent) self = NULL;
+#define args (stayopen)
+#include "walk_nss.h"
+#undef args
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    spent_nip = nip;
     if (spent_fct_start == NULL)
-	spent_fct_start = __nss_lookup_function(nip, spent_fct_name);
+	__nss_shadow_nonlocal_lookup(&spent_startp, spent_fct_name,
+				     &spent_fct_start);
+    spent_nip = spent_startp;
     spent_fct.ptr = spent_fct_start;
     return NSS_STATUS_SUCCESS;
 }
@@ -96,29 +93,18 @@ _nss_nonlocal_setspent(int stayopen)
 enum nss_status
 _nss_nonlocal_endspent(void)
 {
-    static const char *fct_name = "endspent";
-    static void *fct_start = NULL;
     enum nss_status status;
-    service_user *nip;
-    union {
-	enum nss_status (*l)(void);
-	void *ptr;
-    } fct;
+    const struct walk_nss w = {
+	.lookup = &__nss_shadow_nonlocal_lookup, .fct_name = "endspent",
+	.status = &status
+    };
+    const __typeof__(&_nss_nonlocal_endspent) self = NULL;
 
     spent_nip = NULL;
 
-    nip = nss_shadow_nonlocal_database();
-    if (nip == NULL)
-	return NSS_STATUS_UNAVAIL;
-    if (fct_start == NULL)
-	fct_start = __nss_lookup_function(nip, fct_name);
-    fct.ptr = fct_start;
-    do {
-	if (fct.ptr == NULL)
-	    status = NSS_STATUS_UNAVAIL;
-	else
-	    status = DL_CALL_FCT(fct.l, ());
-    } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
+#define args ()
+#include "walk_nss.h"
+#undef args
     return status;
 }
 
@@ -153,30 +139,15 @@ enum nss_status
 _nss_nonlocal_getspnam_r(const char *name, struct spwd *pwd,
 			 char *buffer, size_t buflen, int *errnop)
 {
-    static const char *fct_name = "getspnam_r";
-    static void *fct_start = NULL;
     enum nss_status status;
-    service_user *nip;
-    union {
-	enum nss_status (*l)(const char *name, struct spwd *pwd,
-			     char *buffer, size_t buflen, int *errnop);
-	void *ptr;
-    } fct;
-
-    nip = nss_shadow_nonlocal_database();
-    if (nip == NULL)
-	return NSS_STATUS_UNAVAIL;
-    if (fct_start == NULL)
-	fct_start = __nss_lookup_function(nip, fct_name);
-    fct.ptr = fct_start;
-    do {
-	if (fct.ptr == NULL)
-	    status = NSS_STATUS_UNAVAIL;
-	else
-	    status = DL_CALL_FCT(fct.l, (name, pwd, buffer, buflen, errnop));
-	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE)
-	    break;
-    } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
+    const struct walk_nss w = {
+	.lookup = __nss_shadow_nonlocal_lookup, .fct_name = "getspnam_r",
+	.status = &status, .errnop = errnop
+    };
+    const __typeof__(&_nss_nonlocal_getspnam_r) self = NULL;
+#define args (name, pwd, buffer, buflen, errnop)
+#include "walk_nss.h"
+#undef args
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 

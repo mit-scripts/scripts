@@ -49,75 +49,49 @@ _nss_nonlocal_getpwnam_r(const char *name, struct passwd *pwd,
 			 char *buffer, size_t buflen, int *errnop);
 
 
-static service_user *
-nss_passwd_nonlocal_database(void)
-{
-    static service_user *nip = NULL;
-    if (nip == NULL)
-	__nss_database_lookup("passwd_nonlocal", NULL, "", &nip);
+static service_user *__nss_passwd_nonlocal_database;
 
-    return nip;
+static int
+internal_function
+__nss_passwd_nonlocal_lookup(service_user **ni, const char *fct_name,
+			     void **fctp)
+{
+    if (__nss_passwd_nonlocal_database == NULL
+	&& __nss_database_lookup("passwd_nonlocal", NULL, NULL,
+				 &__nss_passwd_nonlocal_database) < 0)
+	return -1;
+
+    *ni = __nss_passwd_nonlocal_database;
+
+    *fctp = __nss_lookup_function(*ni, fct_name);
+    return 0;
 }
 
 
 enum nss_status
 check_nonlocal_uid(const char *user, uid_t uid, int *errnop)
 {
-    static const char *fct_name = "getpwuid_r";
-    static service_user *startp = NULL;
-    static void *fct_start = NULL;
     enum nss_status status;
-    service_user *nip;
-    union {
-	enum nss_status (*l)(uid_t uid, struct passwd *pwd,
-			     char *buffer, size_t buflen, int *errnop);
-	void *ptr;
-    } fct;
     struct passwd pwbuf;
-    int old_errno = errno;
-
+    char *buf;
     size_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
-    char *buf = malloc(buflen);
-    if (buf == NULL) {
-	*errnop = ENOMEM;
-	errno = old_errno;
-	return NSS_STATUS_TRYAGAIN;
-    }
-
-    if (fct_start == NULL &&
-	__nss_passwd_lookup(&startp, fct_name, &fct_start) != 0) {
-	free(buf);
-	return NSS_STATUS_UNAVAIL;
-    }
-    nip = startp;
-    fct.ptr = fct_start;
-    do {
-    morebuf:
-	if (fct.l == _nss_nonlocal_getpwuid_r)
-	    status = NSS_STATUS_NOTFOUND;
-	else
-	    status = DL_CALL_FCT(fct.l, (uid, &pwbuf, buf, buflen, errnop));
-	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE) {
-	    free(buf);
-	    buflen *= 2;
-	    buf = malloc(buflen);
-	    if (buf == NULL) {
-		*errnop = ENOMEM;
-		errno = old_errno;
-		return NSS_STATUS_TRYAGAIN;
-	    }
-	    goto morebuf;
-	}
-    } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
+    const struct walk_nss w = {
+	.lookup = &__nss_passwd_lookup, .fct_name = "getpwuid_r",
+	.status = &status, .errnop = errnop, .buf = &buf, .buflen = &buflen
+    };
+    const __typeof__(&_nss_nonlocal_getpwuid_r) self = &_nss_nonlocal_getpwuid_r;
+#define args (uid, &pwbuf, buf, buflen, errnop)
+#include "walk_nss.h"
+#undef args
 
     if (status == NSS_STATUS_SUCCESS) {
 	syslog(LOG_ERR, "nss_nonlocal: possible spoofing attack: non-local user %s has same UID as local user %s!\n", user, pwbuf.pw_name);
+	free(buf);
 	status = NSS_STATUS_NOTFOUND;
     } else if (status != NSS_STATUS_TRYAGAIN) {
 	status = NSS_STATUS_SUCCESS;
     }
 
-    free(buf);
     return status;
 }
 
@@ -131,9 +105,12 @@ check_nonlocal_passwd(const char *user, struct passwd *pwd, int *errnop)
 
     errno = 0;
     uid = strtoul(pwd->pw_name, &end, 10);
-    if (errno == 0 && *end == '\0' && (uid_t)uid == uid)
+    if (errno == 0 && *end == '\0' && (uid_t)uid == uid) {
+	errno = old_errno;
 	status = check_nonlocal_uid(user, uid, errnop);
-    errno = old_errno;
+    } else {
+	errno = old_errno;
+    }
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
@@ -143,64 +120,48 @@ check_nonlocal_passwd(const char *user, struct passwd *pwd, int *errnop)
 enum nss_status
 check_nonlocal_user(const char *user, int *errnop)
 {
-    static const char *fct_name = "getpwnam_r";
-    static service_user *startp = NULL;
-    static void *fct_start = NULL;
     enum nss_status status;
-    service_user *nip;
-    union {
-	enum nss_status (*l)(const char *name, struct passwd *pwd,
-			     char *buffer, size_t buflen, int *errnop);
-	void *ptr;
-    } fct;
     struct passwd pwbuf;
-    int old_errno = errno;
-
+    char *buf;
     size_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
-    char *buf = malloc(buflen);
-    if (buf == NULL) {
-	*errnop = ENOMEM;
-	errno = old_errno;
-	return NSS_STATUS_TRYAGAIN;
-    }
+    const struct walk_nss w = {
+	.lookup = __nss_passwd_lookup, .fct_name = "getpwnam_r",
+	.status = &status, .errnop = errnop, .buf = &buf, .buflen = &buflen
+    };
+    const __typeof__(&_nss_nonlocal_getpwnam_r) self = &_nss_nonlocal_getpwnam_r;
+#define args (user, &pwbuf, buf, buflen, errnop)
+#include "walk_nss.h"
+#undef args
 
-    if (fct_start == NULL &&
-	__nss_passwd_lookup(&startp, fct_name, &fct_start) != 0) {
+    if (status == NSS_STATUS_SUCCESS) {
 	free(buf);
-	return NSS_STATUS_UNAVAIL;
-    }
-    nip = startp;
-    fct.ptr = fct_start;
-    do {
-    morebuf:
-	if (fct.l == _nss_nonlocal_getpwnam_r)
-	    status = NSS_STATUS_NOTFOUND;
-	else
-	    status = DL_CALL_FCT(fct.l, (user, &pwbuf, buf, buflen, errnop));
-	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE) {
-	    free(buf);
-	    buflen *= 2;
-	    buf = malloc(buflen);
-	    if (buf == NULL) {
-		*errnop = ENOMEM;
-		errno = old_errno;
-		return NSS_STATUS_TRYAGAIN;
-	    }
-	    goto morebuf;
-	}
-    } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
-
-    if (status == NSS_STATUS_SUCCESS)
 	status = NSS_STATUS_NOTFOUND;
-    else if (status != NSS_STATUS_TRYAGAIN)
+    } else if (status != NSS_STATUS_TRYAGAIN) {
 	status = NSS_STATUS_SUCCESS;
+    }
 
-    free(buf);
+    return status;
+}
+
+enum nss_status
+get_nonlocal_passwd(const char *name, struct passwd *pwd, char **buffer,
+		    int *errnop)
+{
+    enum nss_status status;
+    size_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+    const struct walk_nss w = {
+	.lookup = __nss_passwd_nonlocal_lookup, .fct_name = "getpwnam_r",
+	.status = &status, .errnop = errnop, .buf = buffer, .buflen = &buflen
+    };
+    const __typeof__(&_nss_nonlocal_getpwnam_r) self = NULL;
+#define args (name, pwd, *buffer, buflen, errnop)
+#include "walk_nss.h"
+#undef args
     return status;
 }
 
 
-static service_user *pwent_nip = NULL;
+static service_user *pwent_startp, *pwent_nip;
 static void *pwent_fct_start;
 static union {
     enum nss_status (*l)(struct passwd *pwd, char *buffer, size_t buflen,
@@ -212,33 +173,22 @@ static const char *pwent_fct_name = "getpwent_r";
 enum nss_status
 _nss_nonlocal_setpwent(int stayopen)
 {
-    static const char *fct_name = "setpwent";
-    static void *fct_start = NULL;
     enum nss_status status;
-    service_user *nip;
-    union {
-	enum nss_status (*l)(int stayopen);
-	void *ptr;
-    } fct;
-
-    nip = nss_passwd_nonlocal_database();
-    if (nip == NULL)
-	return NSS_STATUS_UNAVAIL;
-    if (fct_start == NULL)
-	fct_start = __nss_lookup_function(nip, fct_name);
-    fct.ptr = fct_start;
-    do {
-	if (fct.ptr == NULL)
-	    status = NSS_STATUS_UNAVAIL;
-	else
-	    status = DL_CALL_FCT(fct.l, (stayopen));
-    } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
+    const struct walk_nss w = {
+	.lookup = &__nss_passwd_nonlocal_lookup, .fct_name = "setpwent",
+	.status = &status
+    };
+    const __typeof__(&_nss_nonlocal_setpwent) self = NULL;
+#define args (stayopen)
+#include "walk_nss.h"
+#undef args
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    pwent_nip = nip;
     if (pwent_fct_start == NULL)
-	pwent_fct_start = __nss_lookup_function(nip, pwent_fct_name);
+	__nss_passwd_nonlocal_lookup(&pwent_startp, pwent_fct_name,
+				     &pwent_fct_start);
+    pwent_nip = pwent_startp;
     pwent_fct.ptr = pwent_fct_start;
     return NSS_STATUS_SUCCESS;
 }
@@ -246,29 +196,18 @@ _nss_nonlocal_setpwent(int stayopen)
 enum nss_status
 _nss_nonlocal_endpwent(void)
 {
-    static const char *fct_name = "endpwent";
-    static void *fct_start = NULL;
     enum nss_status status;
-    service_user *nip;
-    union {
-	enum nss_status (*l)(void);
-	void *ptr;
-    } fct;
+    const struct walk_nss w = {
+	.lookup = &__nss_passwd_nonlocal_lookup, .fct_name = "endpwent",
+	.status = &status
+    };
+    const __typeof__(&_nss_nonlocal_endpwent) self = NULL;
 
     pwent_nip = NULL;
 
-    nip = nss_passwd_nonlocal_database();
-    if (nip == NULL)
-	return NSS_STATUS_UNAVAIL;
-    if (fct_start == NULL)
-	fct_start = __nss_lookup_function(nip, fct_name);
-    fct.ptr = fct_start;
-    do {
-	if (fct.ptr == NULL)
-	    status = NSS_STATUS_UNAVAIL;
-	else
-	    status = DL_CALL_FCT(fct.l, ());
-    } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
+#define args ()
+#include "walk_nss.h"
+#undef args
     return status;
 }
 
@@ -313,35 +252,21 @@ enum nss_status
 _nss_nonlocal_getpwnam_r(const char *name, struct passwd *pwd,
 			 char *buffer, size_t buflen, int *errnop)
 {
-    static const char *fct_name = "getpwnam_r";
-    static void *fct_start = NULL;
     enum nss_status status;
-    service_user *nip;
-    union {
-	enum nss_status (*l)(const char *name, struct passwd *pwd,
-			     char *buffer, size_t buflen, int *errnop);
-	void *ptr;
-    } fct;
     int group_errno;
+    const struct walk_nss w = {
+	.lookup = __nss_passwd_nonlocal_lookup, .fct_name = "getpwnam_r",
+	.status = &status, .errnop = errnop
+    };
+    const __typeof__(&_nss_nonlocal_getpwnam_r) self = NULL;
 
     char *nonlocal_ignore = getenv(NONLOCAL_IGNORE_ENV);
     if (nonlocal_ignore != NULL && nonlocal_ignore[0] != '\0')
 	return NSS_STATUS_UNAVAIL;
 
-    nip = nss_passwd_nonlocal_database();
-    if (nip == NULL)
-	return NSS_STATUS_UNAVAIL;
-    if (fct_start == NULL)
-	fct_start = __nss_lookup_function(nip, fct_name);
-    fct.ptr = fct_start;
-    do {
-	if (fct.ptr == NULL)
-	    status = NSS_STATUS_UNAVAIL;
-	else
-	    status = DL_CALL_FCT(fct.l, (name, pwd, buffer, buflen, errnop));
-	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE)
-	    break;
-    } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
+#define args (name, pwd, buffer, buflen, errnop)
+#include "walk_nss.h"
+#undef args
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
@@ -354,7 +279,7 @@ _nss_nonlocal_getpwnam_r(const char *name, struct passwd *pwd,
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    if (check_nonlocal_gid(name, pwd->pw_gid, &group_errno) !=
+    if (check_nonlocal_gid(name, NULL, pwd->pw_gid, &group_errno) !=
 	NSS_STATUS_SUCCESS)
 	pwd->pw_gid = 65534 /* nogroup */;
     return NSS_STATUS_SUCCESS;
@@ -364,35 +289,21 @@ enum nss_status
 _nss_nonlocal_getpwuid_r(uid_t uid, struct passwd *pwd,
 			 char *buffer, size_t buflen, int *errnop)
 {
-    static const char *fct_name = "getpwuid_r";
-    static void *fct_start = NULL;
     enum nss_status status;
-    service_user *nip;
-    union {
-	enum nss_status (*l)(uid_t uid, struct passwd *pwd,
-			     char *buffer, size_t buflen, int *errnop);
-	void *ptr;
-    } fct;
     int group_errno;
+    const struct walk_nss w = {
+	.lookup = &__nss_passwd_nonlocal_lookup, .fct_name = "getpwuid_r",
+	.status = &status, .errnop = errnop
+    };
+    const __typeof__(&_nss_nonlocal_getpwuid_r) self = NULL;
 
     char *nonlocal_ignore = getenv(NONLOCAL_IGNORE_ENV);
     if (nonlocal_ignore != NULL && nonlocal_ignore[0] != '\0')
 	return NSS_STATUS_UNAVAIL;
 
-    nip = nss_passwd_nonlocal_database();
-    if (nip == NULL)
-	return NSS_STATUS_UNAVAIL;
-    if (fct_start == NULL)
-	fct_start = __nss_lookup_function(nip, fct_name);
-    fct.ptr = fct_start;
-    do {
-	if (fct.ptr == NULL)
-	    status = NSS_STATUS_UNAVAIL;
-	else
-	    status = DL_CALL_FCT(fct.l, (uid, pwd, buffer, buflen, errnop));
-	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE)
-	    break;
-    } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
+#define args (uid, pwd, buffer, buflen, errnop)
+#include "walk_nss.h"
+#undef args
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
@@ -405,7 +316,7 @@ _nss_nonlocal_getpwuid_r(uid_t uid, struct passwd *pwd,
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    if (check_nonlocal_gid(pwd->pw_name, pwd->pw_gid, &group_errno) !=
+    if (check_nonlocal_gid(pwd->pw_name, NULL, pwd->pw_gid, &group_errno) !=
 	NSS_STATUS_SUCCESS)
 	pwd->pw_gid = 65534 /* nogroup */;
     return NSS_STATUS_SUCCESS;
