@@ -10,15 +10,18 @@ my $url = $ARGV[0];
 my ($proto, $hostname, $path) = $url =~ m|^(.*?)://([^/]*)(.*)| or die "Could not match URL";
 my $mesg;
 
+my $vhostName = $hostname;
+
+vhost:
 # oh my gosh Net::LDAP::Filter SUCKS
 my $filter = bless({and =>
     [{equalityMatch => {attributeDesc  => 'objectClass',
                         assertionValue => 'scriptsVhost'}},
      {or =>
          [{equalityMatch => {attributeDesc  => 'scriptsVhostName',
-                             assertionValue => $hostname}},
+                             assertionValue => $vhostName}},
           {equalityMatch => {attributeDesc  => 'scriptsVhostAlias',
-                             assertionValue => $hostname}}]}]},
+                             assertionValue => $vhostName}}]}]},
     'Net::LDAP::Filter');
 
 my $ldap = Net::LDAP->new("ldapi://%2fvar%2frun%2fslapd-scripts.socket/");
@@ -30,6 +33,12 @@ $mesg = $ldap->search(base => "ou=VirtualHosts,dc=scripts,dc=mit,dc=edu",
 $mesg->code && die $mesg->error;
 
 my $vhostEntry = $mesg->pop_entry;
+if (!defined $vhostEntry) {
+  $vhostName ne '*' or die 'No vhost for *';
+  $vhostName =~ s/^(?:\*\.)?[^.]*/*/;  # Try next wildcard
+  goto vhost;
+}
+
 my $vhostDirectory = $vhostEntry->get_value('scriptsVhostDirectory');
 
 $mesg = $ldap->search(base => $vhostEntry->get_value('scriptsVhostAccount'),
