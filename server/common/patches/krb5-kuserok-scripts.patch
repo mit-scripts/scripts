@@ -28,16 +28,57 @@
  
  #if defined(_AIX) && defined(_IBMR2)
  #include <sys/access.h>
-@@ -93,13 +94,12 @@
+@@ -51,39 +52,6 @@
+ enum result { ACCEPT, REJECT, PASS };
+ 
+ /*
+- * Find the k5login filename for luser, either in the user's homedir or in a
+- * configured directory under the username.
+- */
+-static krb5_error_code
+-get_k5login_filename(krb5_context context, const char *luser,
+-                     const char *homedir, char **filename_out)
+-{
+-    krb5_error_code ret;
+-    char *dir, *filename;
+-
+-    *filename_out = NULL;
+-    ret = profile_get_string(context->profile, KRB5_CONF_LIBDEFAULTS,
+-                             KRB5_CONF_K5LOGIN_DIRECTORY, NULL, NULL, &dir);
+-    if (ret != 0)
+-        return ret;
+-
+-    if (dir == NULL) {
+-        /* Look in the user's homedir. */
+-        if (asprintf(&filename, "%s/.k5login", homedir) < 0)
+-            return ENOMEM;
+-    } else {
+-        /* Look in the configured directory. */
+-        if (asprintf(&filename, "%s/%s", dir, luser) < 0)
+-            ret = ENOMEM;
+-        profile_release_string(dir);
+-        if (ret)
+-            return ret;
+-    }
+-    *filename_out = filename;
+-    return 0;
+-}
+-
+-/*
+  * Determine whether principal is authorized to log in as luser according to
+  * the user's k5login file.  Return ACCEPT if the k5login file authorizes the
+  * principal, PASS if the k5login file does not exist, or REJECT if the k5login
+@@ -93,13 +61,12 @@
  static enum result
  k5login_ok(krb5_context context, krb5_principal principal, const char *luser)
  {
 -    int authoritative = TRUE, gobble;
 +    int authoritative = TRUE;
      enum result result = REJECT;
-     char *filename = NULL, *princname = NULL;
+-    char *filename = NULL, *princname = NULL;
 -    char *newline, linebuf[BUFSIZ], pwbuf[BUFSIZ];
 -    struct stat sbuf;
++    char *princname = NULL;
 +    char pwbuf[BUFSIZ];
      struct passwd pwx, *pwd;
 -    FILE *fp = NULL;
@@ -45,7 +86,7 @@
  
      if (profile_get_boolean(context->profile, KRB5_CONF_LIBDEFAULTS,
                              KRB5_CONF_K5LOGIN_AUTHORITATIVE, NULL, TRUE,
-@@ -110,46 +110,30 @@
+@@ -110,46 +77,29 @@
      if (k5_getpwnam_r(luser, &pwx, pwbuf, sizeof(pwbuf), &pwd) != 0)
          goto cleanup;
  
@@ -101,7 +142,7 @@
 +    
  cleanup:
      free(princname);
-     free(filename);
+-    free(filename);
 -    if (fp != NULL)
 -        fclose(fp);
      /* If k5login files are non-authoritative, never reject. */
