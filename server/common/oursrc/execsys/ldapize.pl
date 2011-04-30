@@ -54,6 +54,12 @@ if ($proto eq 'svn') {
   chdir '/usr/libexec/scripts-trusted';
   exec('/usr/sbin/suexec', $uidNumber, $gidNumber, '/usr/libexec/scripts-trusted/svn', "$scriptsdir/svn/$vhostDirectory");
 } elsif ($proto eq 'git') {
+  if ($vhostEntry->get_value('scriptsVhostName') eq 'notfound.example.com') {
+    # git-daemon doesn’t report useful errors yet
+    my $msg = "ERR No such host $hostname\n";
+    printf '%04x%s', length($msg) + 4, $msg;
+    exit;
+  }
   chdir '/usr/libexec/scripts-trusted';
   exec('/usr/sbin/suexec', $uidNumber, $gidNumber, '/usr/libexec/scripts-trusted/git', "$scriptsdir/git/$vhostDirectory");
 } elsif ($proto eq 'http') {
