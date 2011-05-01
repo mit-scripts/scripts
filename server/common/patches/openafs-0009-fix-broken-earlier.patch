@@ -1,0 +1,67 @@
+From 1f4c2d96550e8c51178a68633965e4f0b788bc39 Mon Sep 17 00:00:00 2001
+From: Anders Kaseorg <andersk@mit.edu>
+Date: Sat, 30 Apr 2011 23:35:02 -0400
+Subject: [PATCH] =?UTF-8?q?Fix=20cherry-pick=20of=20=E2=80=9Clinux:=202.6.38:=20New=20d=5Fop=20handling=E2=80=9D?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Conflicts in this cherry-pick (http://gerrit.openafs.org/4041) were
+resolved incorrectly.  The correct resolution of
+"""
+ <<<<<<< HEAD
+ ||||||| parent of 0d95e6b... linux: 2.6.38: New d_op handling
+ #if defined(AFS_LINUX26_ENV)
+ =======
+
+ #if defined(STRUCT_SUPER_BLOCK_HAS_S_D_OP)
+     sb->s_d_op = &afs_dentry_operations;
+ #endif
+
+ #if defined(AFS_LINUX26_ENV)
+ >>>>>>> 0d95e6b... linux: 2.6.38: New d_op handling
+"""
+is
+"""
+
+ #if defined(STRUCT_SUPER_BLOCK_HAS_S_D_OP)
+     sb->s_d_op = &afs_dentry_operations;
+ #endif
+
+"""
+and not
+"""
+
+ #if defined(STRUCT_SUPER_BLOCK_HAS_S_D_OP)
+     sb->s_d_op = &afs_dentry_operations;
+ #endif
+
+ #if defined(AFS_LINUX26_ENV)
+"""
+
+As usual, it’s impossible to tell the difference in the default
+conflict style, so I urge everyone reading this to run
+
+git config --global merge.conflictstyle diff3
+
+Change-Id: I09fb77b2f1d80beda7b81fa1f40f663117dae920
+Signed-off-by: Anders Kaseorg <andersk@mit.edu>
+---
+ src/afs/LINUX/osi_vfsops.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+diff --git a/src/afs/LINUX/osi_vfsops.c b/src/afs/LINUX/osi_vfsops.c
+index 2a937e4..904bd79 100644
+--- a/src/afs/LINUX/osi_vfsops.c
++++ b/src/afs/LINUX/osi_vfsops.c
+@@ -145,7 +145,6 @@ afs_read_super(struct super_block *sb, void *data, int silent)
+     sb->s_d_op = &afs_dentry_operations;
+ #endif
+ 
+-#if defined(AFS_LINUX26_ENV)
+     /* used for inodes backing_dev_info field, also */
+     afs_backing_dev_info = osi_Alloc(sizeof(struct backing_dev_info));
+ #if defined(HAVE_BDI_INIT)
+-- 
+1.7.3.4
+

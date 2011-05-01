@@ -1,0 +1,164 @@
+From 2c3b79c8c242d12398eff647753370787b7cf300 Mon Sep 17 00:00:00 2001
+From: Marc Dionne <marc.c.dionne@gmail.com>
+Date: Fri, 28 Jan 2011 20:59:17 -0500
+Subject: [PATCH 7/8] Linux: 2.6.38: deal with dcache_lock removal
+
+dcache_lock is gone in 2.6.38, and some of the vfs locking rules
+have changed.
+
+Of interest for openafs:
+- inode->i_lock protects the d_alias list
+- dentry->d_lock protects d_unhashed()
+
+Add a new configure test for dcache_lock, and replace its use by
+the appropriate new lock(s).
+
+Reviewed-on: http://gerrit.openafs.org/3771
+Tested-by: BuildBot <buildbot@rampaginggeek.com>
+Reviewed-by: Derrick Brashear <shadow@dementia.org>
+(cherry picked from commit 2eca7aef7b2940e4ef5f9901ce28481af6edb6dd)
+
+Change-Id: Ie405bb1e40cca4ba83bca3e051e2ab54b8850ac6
+Signed-off-by: Anders Kaseorg <andersk@mit.edu>
+Reviewed-on: http://gerrit.openafs.org/3998
+Reviewed-by: Simon Wilkinson <sxw@inf.ed.ac.uk>
+Tested-by: BuildBot <buildbot@rampaginggeek.com>
+Reviewed-by: Marc Dionne <marc.c.dionne@gmail.com>
+Reviewed-by: Russ Allbery <rra@stanford.edu>
+Reviewed-on: http://gerrit.openafs.org/4043
+Reviewed-by: Derrick Brashear <shadow@dementia.org>
+Tested-by: Derrick Brashear <shadow@dementia.org>
+---
+ acinclude.m4          |    1 +
+ src/afs/afs_daemons.c |    8 ++++++++
+ src/afs/afs_vcache.c  |   35 +++++++++++++++++++++++++++++++++--
+ src/cf/linux-test4.m4 |   11 +++++++++++
+ 4 files changed, 53 insertions(+), 2 deletions(-)
+
+diff --git a/acinclude.m4 b/acinclude.m4
+index 7904e20..655fb11 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -817,6 +817,7 @@ case $AFS_SYSNAME in *_linux* | *_umlinux*)
+ 		 LINUX_GENERIC_FILE_AIO_READ
+ 		 LINUX_INIT_WORK_HAS_DATA
+ 		 LINUX_REGISTER_SYSCTL_TABLE_NOFLAG
++		 LINUX_HAVE_DCACHE_LOCK
+ 		 LINUX_SYSCTL_TABLE_CHECKING
+ 		 LINUX_STRUCT_CTL_TABLE_HAS_CTL_NAME
+ 		 LINUX_HAVE_IGET
+diff --git a/src/afs/afs_daemons.c b/src/afs/afs_daemons.c
+index bd5bba8..3d9d977 100644
+--- a/src/afs/afs_daemons.c
++++ b/src/afs/afs_daemons.c
+@@ -376,7 +376,11 @@ afs_CheckRootVolume(void)
+ 		    dp = d_find_alias(AFSTOV(afs_globalVp));
+ 		    
+ #if defined(AFS_LINUX24_ENV)
++#if defined(HAVE_DCACHE_LOCK)
+ 		    spin_lock(&dcache_lock);
++#else
++		    spin_lock(&AFSTOV(vcp)->i_lock);
++#endif
+ #if defined(AFS_LINUX26_ENV)
+ 		    spin_lock(&dp->d_lock);
+ #endif
+@@ -388,7 +392,11 @@ afs_CheckRootVolume(void)
+ #if defined(AFS_LINUX26_ENV)
+ 		    spin_unlock(&dp->d_lock);
+ #endif
++#if defined(HAVE_DCACHE_LOCK)
+ 		    spin_unlock(&dcache_lock);
++#else
++		    spin_unlock(&AFSTOV(vcp)->i_lock);
++#endif
+ #endif
+ 		    dput(dp);
+ 		    
+diff --git a/src/afs/afs_vcache.c b/src/afs/afs_vcache.c
+index 201bae7..63e6a27 100644
+--- a/src/afs/afs_vcache.c
++++ b/src/afs/afs_vcache.c
+@@ -673,12 +673,15 @@ afs_ShakeLooseVCaches(afs_int32 anumber)
+ #if defined(AFS_LINUX22_ENV)
+ 	    if (tvc != afs_globalVp && VREFCOUNT(tvc) > 1 && tvc->opens == 0) {
+                 struct dentry *dentry;
++		struct inode *inode = AFSTOV(tvc);
+                 struct list_head *cur, *head;
+                 AFS_GUNLOCK();
++
++#if defined(HAVE_DCACHE_LOCK)
+ #if defined(AFS_LINUX24_ENV)
+                 spin_lock(&dcache_lock);
+ #endif
+-		head = &(AFSTOV(tvc))->i_dentry;
++		head = &inode->i_dentry;
+ 
+ restart:
+                 cur = head;
+@@ -687,7 +690,6 @@ restart:
+ 
+ 		    if (d_unhashed(dentry))
+ 			continue;
+-
+ 		    dget_locked(dentry);
+ 
+ #if defined(AFS_LINUX24_ENV)
+@@ -707,6 +709,35 @@ restart:
+ #if defined(AFS_LINUX24_ENV)
+ 		spin_unlock(&dcache_lock);
+ #endif
++#else /* HAVE_DCACHE_LOCK */
++		spin_lock(&inode->i_lock);
++		head = &inode->i_dentry;
++
++restart:
++		cur = head;
++		while ((cur = cur->next) != head) {
++		    dentry = list_entry(cur, struct dentry, d_alias);
++
++		    spin_lock(&dentry->d_lock);
++		    if (d_unhashed(dentry)) {
++			spin_unlock(&dentry->d_lock);
++			continue;
++		    }
++		    spin_unlock(&dentry->d_lock);
++		    dget(dentry);
++
++		    spin_unlock(&inode->i_lock);
++		    if (d_invalidate(dentry) == -EBUSY) {
++			dput(dentry);
++			/* perhaps lock and try to continue? (use cur as head?) */
++			goto inuse;
++		    }
++		    dput(dentry);
++		    spin_lock(&inode->i_lock);
++		    goto restart;
++		}
++		spin_unlock(&inode->i_lock);
++#endif /* HAVE_DCACHE_LOCK */
+ 	    inuse:
+ 		AFS_GLOCK();
+ 	    }
+diff --git a/src/cf/linux-test4.m4 b/src/cf/linux-test4.m4
+index 88e4863..2f426ce 100644
+--- a/src/cf/linux-test4.m4
++++ b/src/cf/linux-test4.m4
+@@ -1316,3 +1316,14 @@ AC_DEFUN([LINUX_HAVE_INODE_SETATTR], [
+   if test "x$ac_cv_linux_inode_setattr" = "xyes"; then
+     AC_DEFINE([HAVE_LINUX_INODE_SETATTR], 1, [define if your kernel has inode_setattr()])
+   fi])
++
++AC_DEFUN([LINUX_HAVE_DCACHE_LOCK], [
++  AC_CHECK_LINUX_BUILD([for dcache_lock],
++			[ac_cv_linux_have_dcache_lock],
++			[#include <linux/dcache.h> ],
++			[printk("%p", &dcache_lock);],
++			[HAVE_DCACHE_LOCK],
++			[define if dcache_lock exists],
++			[])
++])
++
+-- 
+1.7.3.4
+

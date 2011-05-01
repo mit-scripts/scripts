@@ -1,0 +1,110 @@
+From a615bc198e3fd99378d248eeb5868c773b0a2ec5 Mon Sep 17 00:00:00 2001
+From: Marc Dionne <marc.c.dionne@gmail.com>
+Date: Tue, 25 Jan 2011 17:17:21 -0500
+Subject: [PATCH 5/8] linux: 2.6.38: New d_op handling
+
+In 2.6.38, the super block structure has a new field to hold the
+default dentry ops.  The vfs will automatically set it for new
+dentries in most cases.
+
+Set s_d_op to our set of operations, and omit setting the dentry
+ops where the vfs will already do it (and where new locking rules
+prohibit it).
+
+Reviewed-on: http://gerrit.openafs.org/3758
+Tested-by: BuildBot <buildbot@rampaginggeek.com>
+Reviewed-by: Derrick Brashear <shadow@dementia.org>
+(cherry picked from commit 08bb83d95027bb3ac68834d12b72bdc647fa24a9)
+
+Change-Id: Ia808d6bcd119f3999a1805b1d31678f5a3ba3d55
+Signed-off-by: Anders Kaseorg <andersk@mit.edu>
+Reviewed-on: http://gerrit.openafs.org/3994
+Reviewed-by: Simon Wilkinson <sxw@inf.ed.ac.uk>
+Tested-by: BuildBot <buildbot@rampaginggeek.com>
+Reviewed-by: Marc Dionne <marc.c.dionne@gmail.com>
+Reviewed-by: Russ Allbery <rra@stanford.edu>
+Reviewed-on: http://gerrit.openafs.org/4041
+Reviewed-by: Derrick Brashear <shadow@dementia.org>
+Tested-by: Derrick Brashear <shadow@dementia.org>
+---
+ acinclude.m4                 |    1 +
+ src/afs/LINUX/osi_vfsops.c   |    8 ++++++++
+ src/afs/LINUX/osi_vnodeops.c |    6 ++++++
+ 3 files changed, 15 insertions(+), 0 deletions(-)
+
+diff --git a/acinclude.m4 b/acinclude.m4
+index de82283..7904e20 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -749,6 +749,7 @@ case $AFS_SYSNAME in *_linux* | *_umlinux*)
+ 		 LINUX_FS_STRUCT_SUPER_HAS_ALLOC_INODE
+ 		 LINUX_FS_STRUCT_SUPER_HAS_EVICT_INODE
+ 		 LINUX_FS_STRUCT_SUPER_BLOCK_HAS_S_BDI
++		 AC_CHECK_LINUX_STRUCT([super_block], [s_d_op], [fs.h])
+ 		 LINUX_STRUCT_BDI_HAS_NAME
+ 	         LINUX_FS_STRUCT_ADDRESS_SPACE_HAS_PAGE_LOCK
+ 	         LINUX_FS_STRUCT_ADDRESS_SPACE_HAS_GFP_MASK
+diff --git a/src/afs/LINUX/osi_vfsops.c b/src/afs/LINUX/osi_vfsops.c
+index fb69d39..2a937e4 100644
+--- a/src/afs/LINUX/osi_vfsops.c
++++ b/src/afs/LINUX/osi_vfsops.c
+@@ -140,6 +140,12 @@ afs_read_super(struct super_block *sb, void *data, int silent)
+     sb->s_blocksize_bits = 10;
+     sb->s_magic = AFS_VFSMAGIC;
+     sb->s_op = &afs_sops;	/* Super block (vfs) ops */
++
++#if defined(STRUCT_SUPER_BLOCK_HAS_S_D_OP)
++    sb->s_d_op = &afs_dentry_operations;
++#endif
++
++#if defined(AFS_LINUX26_ENV)
+     /* used for inodes backing_dev_info field, also */
+     afs_backing_dev_info = osi_Alloc(sizeof(struct backing_dev_info));
+ #if defined(HAVE_BDI_INIT)
+@@ -227,7 +233,9 @@ afs_root(struct super_block *afsp)
+ #else
+ 		afsp->s_root = d_alloc_root(ip, NULL);
+ #endif
++#if !defined(STRUCT_SUPER_BLOCK_HAS_S_D_OP)
+ 		afsp->s_root->d_op = &afs_dentry_operations;
++#endif
+ 	    } else
+ 		code = ENOENT;
+ 	}
+diff --git a/src/afs/LINUX/osi_vnodeops.c b/src/afs/LINUX/osi_vnodeops.c
+index 8352769..03294b2 100644
+--- a/src/afs/LINUX/osi_vnodeops.c
++++ b/src/afs/LINUX/osi_vnodeops.c
+@@ -1067,7 +1067,9 @@ afs_linux_create(struct inode *dip, struct dentry *dp, int mode)
+ 	afs_getattr(vcp, &vattr, credp);
+ 	afs_fill_inode(ip, &vattr);
+ 	insert_inode_hash(ip);
++#if !defined(STRUCT_SUPER_BLOCK_HAS_S_D_OP)
+ 	dp->d_op = &afs_dentry_operations;
++#endif
+ 	dp->d_time = hgetlo(VTOAFS(dip)->m.DataVersion);
+ 	d_instantiate(dp, ip);
+     }
+@@ -1123,7 +1125,9 @@ afs_linux_lookup(struct inode *dip, struct dentry *dp)
+ 	    )
+ 	    insert_inode_hash(ip);
+     }
++#if !defined(STRUCT_SUPER_BLOCK_HAS_S_D_OP)
+     dp->d_op = &afs_dentry_operations;
++#endif
+     dp->d_time = hgetlo(VTOAFS(dip)->m.DataVersion);
+     AFS_GUNLOCK();
+ 
+@@ -1315,7 +1319,9 @@ afs_linux_mkdir(struct inode *dip, struct dentry *dp, int mode)
+ 	afs_getattr(tvcp, &vattr, credp);
+ 	afs_fill_inode(ip, &vattr);
+ 
++#if !defined(STRUCT_SUPER_BLOCK_HAS_S_D_OP)
+ 	dp->d_op = &afs_dentry_operations;
++#endif
+ 	dp->d_time = hgetlo(VTOAFS(dip)->m.DataVersion);
+ 	d_instantiate(dp, ip);
+     }
+-- 
+1.7.3.4
+

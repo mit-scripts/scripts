@@ -4,18 +4,27 @@
  # for beta/rc releases make pkgrel 0.X.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
  #%define pkgrel 0.1.rc1
--%define pkgrel 0.pre3
-+%define pkgrel 0.pre3.99scripts.%{scriptsversion}
+-%define pkgrel 1.1
++%define pkgrel 1.1.99scripts.%{scriptsversion}
  
  %if %{?osvers:0}%{!?osvers:1}
  %define osvers 1
-@@ -261,6 +261,10 @@
+@@ -261,6 +261,19 @@
  %endif
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
 +Patch1000: openafs-scripts.patch
 +Patch1003: openafs-localcsdb.patch
 +Patch1005: openafs-numsysnames.patch
++Patch1006: openafs-0001-Linux-Add-autoconf-macro-for-structure-checks.patch
++Patch1007: openafs-0002-Linux-Add-general-autoconf-macro-for-Linux-kernel.patch
++Patch1008: openafs-0003-Linux-allow-compile-flags-to-be-passed-to-AC_CHECK_L.patch
++Patch1009: openafs-0004-Linux-2.6.38-Adjust-for-permission-inode-operation-c.patch
++Patch1010: openafs-0005-linux-2.6.38-New-d_op-handling.patch
++Patch1011: openafs-0006-linux-2.6.38-Make-d_revalidate-RCU-walk-aware.patch
++Patch1012: openafs-0007-Linux-2.6.38-deal-with-dcache_lock-removal.patch
++Patch1013: openafs-0008-Linux-2.6.38-dentry-d_count-is-not-an-atomic.patch
++Patch1014: openafs-0009-fix-broken-earlier.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
@@ -77,13 +86,22 @@
  
  %else
  
-@@ -699,6 +709,9 @@
+@@ -699,6 +709,18 @@
  
  # Patch openafs to build a kernel module named "openafs" instead of "libafs"
  %patch0 -p1 -b .kmod26
 +%patch1000 -p1 -b .scripts
 +%patch1003 -p1 -b .localcsdb
 +%patch1005 -p1 -b .numsysnames
++%patch1006 -p1 -b .0001
++%patch1007 -p1 -b .0002
++%patch1008 -p1 -b .0003
++%patch1009 -p1 -b .0004
++%patch1010 -p1 -b .0005
++%patch1011 -p1 -b .0006
++%patch1012 -p1 -b .0007
++%patch1013 -p1 -b .0008
++%patch1014 -p1 -b .0009
  
  ##############################################################################
  #
