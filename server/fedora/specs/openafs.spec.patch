@@ -105,3 +105,12 @@
  
  ##############################################################################
  #
+@@ -1140,7 +1140,6 @@
+ %{_bindir}/bos
+ %{_bindir}/fs
+ %{_bindir}/kapasswd
+-%{_bindir}/kpasswd
+ %{_bindir}/klog
+ %{_bindir}/klog.krb
+ %{_bindir}/pagsh
+
