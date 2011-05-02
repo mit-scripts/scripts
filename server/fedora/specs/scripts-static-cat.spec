@@ -17,7 +17,7 @@ Source0:        %{name}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # fedora ghc archs:
 ExclusiveArch:  %{ix86} x86_64 ppc alpha
-BuildRequires:  ghc
+BuildRequires:  ghc-devel
 BuildRequires:  ghc-rpm-macros >= 0.7.0
 BuildRequires:  ghc-cgi-devel >= 3001.1.8, ghc-MonadCatchIO-mtl-devel, ghc-unix-handle-devel
 
