@@ -1,0 +1,47 @@
+#!/bin/sh
+. /usr/lib64/nagios/plugins/utils.sh
+
+taintval=$(cat /proc/sys/kernel/tainted)
+
+if [ "$taintval" = 0 ]; then
+    $ECHO "Not tainted"
+    exit $STATE_OK
+fi
+
+# This is a bash reimplementation of kernel/panic.c:print_tainted
+# Letters are as follows:
+# 181 *      print_tainted - return a string to represent the kernel taint state.
+# 182 *
+# 183 *  'P' - Proprietary module has been loaded.
+# 184 *  'F' - Module has been forcibly loaded.
+# 185 *  'S' - SMP with CPUs not designed for SMP.
+# 186 *  'R' - User forced a module unload.
+# 187 *  'M' - System experienced a machine check exception.
+# 188 *  'B' - System has hit bad_page.
+# 189 *  'U' - Userspace-defined naughtiness.
+# 190 *  'D' - Kernel has oopsed before
+# 191 *  'A' - ACPI table overridden.
+# 192 *  'W' - Taint on warning.
+# 193 *  'C' - modules from drivers/staging are loaded.
+# 194 *  'I' - Working around severe firmware bug.
+# 195 *
+
+flag=1
+taints=""
+for i in P F S R M B U D A W C I; do
+    if [ $(($taintval & $flag)) -ne 0 ]; then
+	taints="$taints$i"
+    else
+	taints="$taints "
+    fi
+    flag=$(($flag * 2))
+done
+
+echo "Tainted: $taints"
+
+case "$taints" in
+    *M*|*B*|*D*) exit $STATE_CRITICAL;;
+    *U*|*W*) exit $STATE_WARNING;;
+    *) exit $STATE_OK;;
+esac
+
