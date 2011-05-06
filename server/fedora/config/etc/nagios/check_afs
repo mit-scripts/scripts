@@ -7,7 +7,7 @@ STATUS=$?
 $ECHO "$CHECKS"
 
 if [ $STATUS -gt 0 ]; then
-    if $ECHO "$CHECKS" | grep -i STYX >/dev/null; then
+    if $ECHO "$CHECKS" | grep -i PHLEGETHON >/dev/null; then
 	exit $STATE_CRITICAL;
     else
 	exit $STATE_WARNING;
