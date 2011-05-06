@@ -37,7 +37,7 @@ for i in P F S R M B U D A W C I; do
     flag=$(($flag * 2))
 done
 
-echo "Tainted: $taints"
+$ECHO "Tainted: $taints"
 
 case "$taints" in
     *M*|*B*|*D*) exit $STATE_CRITICAL;;
