@@ -10,6 +10,7 @@ fi
 
 # This is a bash reimplementation of kernel/panic.c:print_tainted
 # Letters are as follows:
+# (As quoted from http://lxr.linux.no/#linux+v2.6.38/kernel/panic.c#L181)
 # 181 *      print_tainted - return a string to represent the kernel taint state.
 # 182 *
 # 183 *  'P' - Proprietary module has been loaded.
