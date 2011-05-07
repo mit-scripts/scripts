@@ -11,21 +11,21 @@ fi
 # This is a bash reimplementation of kernel/panic.c:print_tainted
 # Letters are as follows:
 # (As quoted from http://lxr.linux.no/#linux+v2.6.38/kernel/panic.c#L181)
-# 181 *      print_tainted - return a string to represent the kernel taint state.
-# 182 *
-# 183 *  'P' - Proprietary module has been loaded.
-# 184 *  'F' - Module has been forcibly loaded.
-# 185 *  'S' - SMP with CPUs not designed for SMP.
-# 186 *  'R' - User forced a module unload.
-# 187 *  'M' - System experienced a machine check exception.
-# 188 *  'B' - System has hit bad_page.
-# 189 *  'U' - Userspace-defined naughtiness.
-# 190 *  'D' - Kernel has oopsed before
-# 191 *  'A' - ACPI table overridden.
-# 192 *  'W' - Taint on warning.
-# 193 *  'C' - modules from drivers/staging are loaded.
-# 194 *  'I' - Working around severe firmware bug.
-# 195 *
+# *      print_tainted - return a string to represent the kernel taint state.
+# *
+# *  'P' - Proprietary module has been loaded.
+# *  'F' - Module has been forcibly loaded.
+# *  'S' - SMP with CPUs not designed for SMP.
+# *  'R' - User forced a module unload.
+# *  'M' - System experienced a machine check exception.
+# *  'B' - System has hit bad_page.
+# *  'U' - Userspace-defined naughtiness.
+# *  'D' - Kernel has oopsed before
+# *  'A' - ACPI table overridden.
+# *  'W' - Taint on warning.
+# *  'C' - modules from drivers/staging are loaded.
+# *  'I' - Working around severe firmware bug.
+# *
 
 flag=1
 taints=""
