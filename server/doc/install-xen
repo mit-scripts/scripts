@@ -1,47 +1,51 @@
-# install Hardy
-# this involves complicated partitioning (with lvm)
-# the popular version of Grub doesn't cope with this.
-# Thus, we need a boot partition not under LVM
-# allocate about 1G for /root ext3 filesystem
-# partition the two disks the same way
-# that means you have two disks, each with a 1G partition and
-# a "rest-of-the-space"G partition
-# now, combine the two 1G partitions into a RAID 1 (as /boot ext3)
-# take the two other partitions, another RAID 1 (set up as lvm)
-# create one volume group the same as the host
-# in that volume group, create two lvs one of them named root (ext3)
-# and one named swap (copy sizes, 10G root and 2G swap)
-# F11 will suggest ext4, DON'T USE IT.
+# install Squeeze
+ # Configure each drive with a 1G partition and a rest-of-the-space partition, as RAID
+ # Create a RAID1 for the 1G partitions
+ # Create a RAID1 for each pair of rest-of-the-space partitions
+ # Create an ext3 /boot on the 1G RAID1
+ # Create an LVM volume group named after the machine's short hostname
+ # Create an LV called "swap" that is the same size as the machine's physical RAM
+ # Create an LV called "root" that is 50G ext4
+
+# ??? F11 will suggest ext4, DON'T USE IT.
 #   - New filesystem, so it's scary
 #   - The hosts can't mount it
 #   - Grub can't cope with it
 
-# enable backports (because Xen 3.3 is in hardy backports)
-    apt-get update
-    apt-get dist-upgrade
+# install useful utility packages
+    aptitude install htop ipmitool emacs23-nox vim memtest86 memtest86+ ntp ntpdate git
+    git config --global color.ui auto
+
 # install Xen
-    apt-get install ubuntu-xen-server
+    aptitude install xen-linux-system
 # download Debathena archive key, verify
-    apt-key add ...
-# add Debathena repos to etc/apt.d/sources.list
-# install Debathena software
-    apt-get install debathena-clients
+# Fetch https://debathena.mit.edu/apt/debathena-archive.asc from a
+# machine with the MIT CA, then paste it into
+    apt-key adv --import
+# add Debathena repos to etc/apt/sources.list.d
+  cat <<EOF > /etc/apt/sources.list.d/debathena.list
+deb http://debathena.mit.edu/apt squeeze debathena debathena-config debathena-system openafs
+deb-src http://debathena.mit.edu/apt squeeze debathena debathena-config debathena-system openafs
+EOF
+
+# install host keytab
+# install Debathena software (hit enter to take the defaults at the
+# configuration prompts)
+  aptitude update
+  aptitude install debathena-clients debathena-ssh-server-config
 # compare packages with another server
-dpkg -l
+  dpkg -l
 # reconfigure so that we can get an MTA, although we don't
-# want the hosts to accept mail (smart host, does not take mail)
+# want the hosts to accept mail (mail sent by smarthost; no local mail)
 # outgoing.mit.edu
-    dpkg reconfigure xm4-config
+    dpkg-reconfigure exim4-config
         # answer questions properly
 # change root alias in /etc/aliases to be the same as scripts server
 # reload it
     newaliases
-# ssh key for host...
-# install host keytab
-# copy conserver config (we need to version this)
 # clone the xen config (/etc/xen)
-    git clone ssh://scripts@scripts.mit.edu/mit/scripts/git/xen.git /etc/xen
-
+    git clone -b squeeze ssh://scripts@scripts.mit.edu/mit/scripts/git/xen.git /etc/xen
+# copy conserver config (we need to version this)
 # setup conserver
     cat /etc/conserver/console.cf # add the correct entires here
     visudo # add conservr to sudoers list with:
