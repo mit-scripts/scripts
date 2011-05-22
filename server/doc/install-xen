@@ -18,10 +18,17 @@
 
 # install Xen
     aptitude install xen-linux-system
+
 # download Debathena archive key, verify
-# Fetch https://debathena.mit.edu/apt/debathena-archive.asc from a
-# machine with the MIT CA, then paste it into
-    apt-key adv --import
+  (aptitude install debian-keyring &&
+  cd /tmp &&
+  wget http://debathena.mit.edu/apt/debathena-archive.asc &&
+  kcr_fingerprint=$(gpg --keyring /usr/share/keyrings/debian-keyring.gpg --no-default-keyring --list-keys --with-colons kcr@debian.org | grep ^pub | cut -f 5 -d :) &&
+  gpg --primary-keyring /tmp/debathena.gpg --no-default-keyring --import debathena-archive.asc &&
+  gpg --primary-keyring /tmp/debathena.gpg --no-default-keyring --refresh-keys &&
+  gpg --primary-keyring /tmp/debathena.gpg --no-default-keyring --keyring /usr/share/keyrings/debian-keyring.gpg --list-sigs --with-colons debathena@mit.edu | grep ^sig | cut -d: -f5 | grep -q $kcr_fingerprint &&
+  gpg --primary-keyring /tmp/debathena.gpg --no-default-keyring --export debathena@mit.edu | apt-key adv --import)
+
 # add Debathena repos to etc/apt/sources.list.d
   cat <<EOF > /etc/apt/sources.list.d/debathena.list
 deb http://debathena.mit.edu/apt squeeze debathena debathena-config debathena-system openafs
