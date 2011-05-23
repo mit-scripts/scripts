@@ -13,7 +13,7 @@
 #   - Grub can't cope with it
 
 # install useful utility packages
-    aptitude install htop ipmitool emacs23-nox vim memtest86 memtest86+ ntp ntpdate git smartmontools kpartx
+    aptitude install htop ipmitool emacs23-nox vim memtest86 memtest86+ ntp ntpdate git smartmontools kpartx apticron
     git config --global color.ui auto
 
 # install Xen
@@ -36,6 +36,10 @@ deb-src http://debathena.mit.edu/apt squeeze debathena debathena-config debathen
 EOF
 
 # install host keytab
+  cp $keytab /etc/krb5.keytab
+  k5srvutil change
+  k5srvutil delold
+# install ~/.k5login
 # install Debathena software (hit enter to take the defaults at the
 # configuration prompts)
   aptitude update
