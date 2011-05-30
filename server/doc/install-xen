@@ -13,7 +13,7 @@
 #   - Grub can't cope with it
 
 # install useful utility packages
-    aptitude install htop ipmitool emacs23-nox vim memtest86 memtest86+ ntp ntpdate git smartmontools kpartx apticron
+    aptitude install htop ipmitool emacs23-nox vim memtest86 memtest86+ ntp ntpdate git smartmontools kpartx apticron bwm-ng bzip2 ethtool i2c-tools lm-sensors mii-diag molly-guard mtr-tiny nbd-client nbd-server rlwrap strace tcpdump tree
     git config --global color.ui auto
 
 # install Xen
