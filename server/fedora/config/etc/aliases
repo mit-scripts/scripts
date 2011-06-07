@@ -88,7 +88,7 @@ hostmaster:	root
 decode:		root
 
 # Person who should get root's mail
-root:		andersk@mit.edu, quentin@mit.edu, geofft+root@mit.edu, mitchb@mit.edu, ezyang@mit.edu, xavid@mit.edu, adehnert-sipb@mit.edu
+root:		andersk@mit.edu, quentin@mit.edu, geofft+root@mit.edu, mitchb@mit.edu, ezyang@mit.edu, xavid@mit.edu, adehnert-sipb@mit.edu, achernya@mit.edu
 
 scripts:	root
 signup:		root
@@ -99,3 +99,6 @@ scripts-build:	root
 # People who are abusing or otherwise causing problems with the mail system
 # Put "/dev/null" as the target of their alias
 srimano:	/dev/null	# has a phpBB generating a lot of backscatter
+
+# Temporary to clear the queue
+# Should be deleted if left uncommitted

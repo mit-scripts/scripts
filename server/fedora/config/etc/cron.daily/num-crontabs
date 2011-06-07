@@ -1,0 +1,8 @@
+#!/bin/sh
+
+numcrontabs=$(ls -1 /var/spool/cron | wc -l)
+if [ $numcrontabs -lt 100 ] && [ $numcrontabs -gt 0 ]; then
+    msg="$(hostname --fqdn) has $numcrontabs files in /var/spool/cron and should have none or hundreds."
+    logger -u /dev/log -p cron.warning -t cron "$msg"
+    echo "$msg"
+fi

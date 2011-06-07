@@ -9,6 +9,21 @@ passwd_nonlocal: hesiod
 group:          compat nonlocal
 group_nonlocal: hesiod
 
+The module also assigns special properties to two local groups and one
+local user, if they exist:
+
+• If the local group ‘nss-nonlocal-users’ exists, then nonlocal users
+  will be automatically added to it.  Furthermore, if a local user is
+  added to this group, then that user will inherit any nonlocal gids
+  from a nonlocal user of the same name, as supplementary gids.
+
+• If the local group ‘nss-local-users’ exists, then local users will
+  be automatically added to it.
+
+• If the local user ‘nss-nonlocal-users’ is added to a local group,
+  then the local group will inherit the nonlocal membership of a group
+  of the same gid.
+
 Copyright © 2007–2010 Anders Kaseorg <andersk@mit.edu> and Tim Abbott
 <tabbott@mit.edu>
 

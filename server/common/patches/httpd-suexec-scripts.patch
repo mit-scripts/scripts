@@ -72,7 +72,7 @@
      "SSL_",
  
      /* variable name is */
-@@ -245,9 +250,71 @@
+@@ -245,9 +250,108 @@
      environ = cleanenv;
  }
  
@@ -99,6 +99,29 @@
 +    "doc",
 +    "xls",
 +    "ppt",
++    "dot",
++    "docx",
++    "dotx",
++    "docm",
++    "dotm",
++    "xlt",
++    "xla",
++    "xlsx",
++    "xltx",
++    "xlsm",
++    "xltm",
++    "xlam",
++    "xlsb",
++    "pot",
++    "pps",
++    "ppa",
++    "pptx",
++    "potx",
++    "ppsx",
++    "ppam",
++    "pptm",
++    "potm",
++    "ppsm",
 +    "swf",
 +    "mp3",
 +    "mov",
@@ -116,6 +139,20 @@
 +    "midi",
 +    "ttf",
 +    "otf",
++    "odc",
++    "odb",
++    "odf",
++    "odg",
++    "otg",
++    "odi",
++    "odp",
++    "otp",
++    "ods",
++    "ots",
++    "odt",
++    "odm",
++    "ott",
++    "oth",
 +    NULL
 +};
 +
@@ -144,7 +181,7 @@
      uid_t uid;              /* user information          */
      gid_t gid;              /* target group placeholder  */
      char *target_uname;     /* target user name          */
-@@ -268,6 +331,7 @@
+@@ -268,6 +368,7 @@
       * Start with a "clean" environment
       */
      clean_env();
@@ -152,7 +189,7 @@
  
      prog = argv[0];
      /*
-@@ -350,6 +414,20 @@
+@@ -350,6 +451,20 @@
  #endif /*_OSD_POSIX*/
  
      /*
@@ -173,7 +210,7 @@
       * Check for a leading '/' (absolute path) in the command to be executed,
       * or attempts to back up out of the current directory,
       * to protect against attacks.  If any are
-@@ -371,6 +449,7 @@
+@@ -371,6 +486,7 @@
          userdir = 1;
      }
  
@@ -181,7 +218,7 @@
      /*
       * Error out if the target username is invalid.
       */
-@@ -452,7 +531,7 @@
+@@ -452,7 +568,7 @@
       * Error out if attempt is made to execute as root or as
       * a UID less than AP_UID_MIN.  Tsk tsk.
       */
@@ -190,7 +227,7 @@
          log_err("cannot run as forbidden uid (%d/%s)\n", uid, cmd);
          exit(107);
      }
-@@ -484,6 +563,7 @@
+@@ -484,6 +599,7 @@
          log_err("failed to setuid (%ld: %s)\n", uid, cmd);
          exit(110);
      }
@@ -198,7 +235,7 @@
  
      /*
       * Get the current working directory, as well as the proper
-@@ -506,6 +600,21 @@
+@@ -506,6 +637,21 @@
              log_err("cannot get docroot information (%s)\n", target_homedir);
              exit(112);
          }
@@ -220,7 +257,7 @@
      }
      else {
          if (((chdir(AP_DOC_ROOT)) != 0) ||
-@@ -532,15 +641,17 @@
+@@ -532,15 +678,17 @@
      /*
       * Error out if cwd is writable by others.
       */
@@ -239,7 +276,7 @@
          log_err("cannot stat program: (%s)\n", cmd);
          exit(117);
      }
-@@ -548,10 +659,12 @@
+@@ -548,10 +696,12 @@
      /*
       * Error out if the program is writable by others.
       */
@@ -252,7 +289,7 @@
  
      /*
       * Error out if the file is setuid or setgid.
-@@ -565,6 +678,7 @@
+@@ -565,6 +715,7 @@
       * Error out if the target name/group is different from
       * the name/group of the cwd or the program.
       */
@@ -260,7 +297,7 @@
      if ((uid != dir_info.st_uid) ||
          (gid != dir_info.st_gid) ||
          (uid != prg_info.st_uid) ||
-@@ -576,12 +690,14 @@
+@@ -576,12 +727,14 @@
                  prg_info.st_uid, prg_info.st_gid);
          exit(120);
      }
@@ -276,7 +313,7 @@
          log_err("file has no execute permission: (%s/%s)\n", cwd, cmd);
          exit(121);
      }
-@@ -614,6 +730,23 @@
+@@ -614,6 +767,23 @@
      /*
       * Execute the command, replacing our image with its own.
       */

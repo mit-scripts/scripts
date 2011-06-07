@@ -1,7 +1,7 @@
 Summary: nsswitch proxy module to prevent local account spoofing
 Group: System Environment/Libraries
 Name: nss_nonlocal
-Version: 1.11
+Version: 2.0
 Release: 1
 URL: http://debathena.mit.edu/nss_nonlocal/
 BuildRequires: autoconf
@@ -10,6 +10,7 @@ BuildRequires: libtool
 License: LGPLv2+
 Source: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Requires(pre): shadow-utils
 
 %description
 This nsswitch module acts as a proxy for other nsswitch modules like hesiod,
@@ -46,8 +47,12 @@ make install DESTDIR=$RPM_BUILD_ROOT
 /%{_lib}/libnss_nonlocal.so.*
 
 %pre
-groupadd -r nss-local-users || :
-groupadd -r nss-nonlocal-users || :
+getent passwd nss-nonlocal-users >/dev/null || \
+    useradd -r -g nobody -d / -s /sbin/nologin \
+    -c 'Magic user for local group whitelist' nss-nonlocal-users
+getent group nss-local-users || groupadd -r nss-local-users
+getent group nss-nonlocal-users || groupadd -r nss-nonlocal-users
+exit 0
 
 %post
 /sbin/ldconfig
@@ -56,6 +61,9 @@ groupadd -r nss-nonlocal-users || :
 /sbin/ldconfig
 
 %changelog
+
+* Tue Mar 29 2011 Anders Kaseorg <andersk@mit.edu> 2.0-1
+- New upstream version.
 
 * Sun May  2 2010 Anders Kaseorg <andersk@mit.edu> 1.11-1
 - New upstream version.
