@@ -52,6 +52,29 @@ my @static = qw(
  doc
  xls
  ppt
+ dot
+ docx
+ dotx
+ docm
+ dotm
+ xlt
+ xla
+ xlsx
+ xltx
+ xlsm
+ xltm
+ xlam
+ xlsb
+ pot
+ pps
+ ppa
+ pptx
+ potx
+ ppsx
+ ppam
+ pptm
+ potm
+ ppsm
  swf
  mp3
  mov
@@ -69,6 +92,20 @@ my @static = qw(
  midi
  ttf
  otf
+ odc
+ odb
+ odf
+ odg
+ otg
+ odi
+ odp
+ otp
+ ods
+ ots
+ odt
+ odm
+ ott
+ oth
 );
 
 my %map;

@@ -508,3 +508,31 @@ video/x-ms-wmv			wmv
 x-conference/x-cooltalk		ice
 application/xaml+xml		xaml
 application/x-silverlight-app	xap
+# The following MS Office MIME types are from this source:
+# http://blogs.msdn.com/b/vsofficedeveloper/archive/2008/05/08/office-2007-open-xml-mime-types.aspx
+# There's a typo in .potm that's corrected in this alternate source:
+# http://therightstuff.de/2006/12/16/Office+2007+File+Icons+For+Windows+SharePoint+Services+20+And+SharePoint+Portal+Server+2003.aspx
+application/msword	dot
+application/vnd.openxmlformats-officedocument.wordprocessingml.document	docx
+application/vnd.openxmlformats-officedocument.wordprocessingml.template	dotx
+application/vnd.ms-word.document.macroEnabled.12	docm
+application/vnd.ms-word.template.macroEnabled.12	dotm
+application/vnd.ms-excel	xlt
+application/vnd.ms-excel	xla
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet	xlsx
+application/vnd.openxmlformats-officedocument.spreadsheetml.template	xltx
+application/vnd.ms-excel.sheet.macroEnabled.12	xlsm
+application/vnd.ms-excel.template.macroEnabled.12	xltm
+application/vnd.ms-excel.addin.macroEnabled.12	xlam
+application/vnd.ms-excel.sheet.binary.macroEnabled.12	xlsb
+application/vnd.ms-powerpoint	pot
+application/vnd.ms-powerpoint	pps
+application/vnd.ms-powerpoint	ppa
+application/vnd.openxmlformats-officedocument.presentationml.presentation	pptx
+application/vnd.openxmlformats-officedocument.presentationml.template	potx
+application/vnd.openxmlformats-officedocument.presentationml.slideshow	ppsx
+application/vnd.ms-powerpoint.addin.macroEnabled.12	ppam
+application/vnd.ms-powerpoint.presentation.macroEnabled.12	pptm
+application/vnd.ms-powerpoint.template.macroEnabled.12	potm
+application/vnd.ms-powerpoint.slideshow.macroEnabled.12	ppsm
+# End MS Office MIME types.
