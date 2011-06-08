@@ -20,6 +20,7 @@ Requires: scripts-openafs-authlibs
 Requires: scripts-openafs-devel
 Requires: scripts-openafs-krb5
 Requires: scripts-openssh-server
+Requires: scripts-static-cat
 Requires: sql-signup
 Requires: tokensys
 Requires: whoisd
