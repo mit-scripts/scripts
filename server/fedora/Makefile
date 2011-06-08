@@ -78,9 +78,9 @@ download_stamp:
 	spectool -g -R $(specs)/python-zephyr.spec
 	touch download_stamp
 
-        cd $(tmp_src) && wget -nd -r -l1 -np -A.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-aclocal/
-        cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-discuss/
-        cp $(oursrcdir)/discuss/* $(tmp_src)
+	cd $(tmp_src) && wget -nd -r -l1 -np -A.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-aclocal/
+	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-discuss/
+	cp $(oursrcdir)/discuss/* $(tmp_src)
 %.src.rpm:
 	wget -q -nv -N -B $(server_url) -nd -nH -P $(dload) $(server_url)/$*.src.rpm
 
