@@ -21,7 +21,7 @@
 upstream_yum	= krb5 krb5.i686 httpd openssh
 hackage		= MonadCatchIO-mtl-0.3.0.2 cgi-3001.1.8.2 unix-handle-0.0.0
 upstream_hackage = ghc-MonadCatchIO-mtl ghc-cgi ghc-unix-handle
-upstream	= openafs $(upstream_yum) $(upstream_hackage) moira zephyr zephyr.i686 python-zephyr
+upstream	= openafs $(upstream_yum) $(upstream_hackage) moira zephyr zephyr.i686 python-zephyr athena-aclocal discuss
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
@@ -78,6 +78,9 @@ download_stamp:
 	spectool -g -R $(specs)/python-zephyr.spec
 	touch download_stamp
 
+        cd $(tmp_src) && wget -nd -r -l1 -np -A.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-aclocal/
+        cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-discuss/
+        cp $(oursrcdir)/discuss/* $(tmp_src)
 %.src.rpm:
 	wget -q -nv -N -B $(server_url) -nd -nH -P $(dload) $(server_url)/$*.src.rpm
 
