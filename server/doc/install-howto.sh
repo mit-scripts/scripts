@@ -240,9 +240,6 @@ pear list | tail -n +4 | cut -f 1 -d " " > pear.txt
 pecl list | tail -n +4 | cut -f 1 -d " " > pecl.txt
     pecl install --nodeps $(pecl list | tail -n +4 | cut -f 1 -d " " | grep -Fxvf - pecl.txt)
 
-# Setup some Python config
-    echo 'import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.6/site-packages"))' > /usr/lib/python2.6/site-packages/00scripts-home.pth
-
 # Install the credentials.  There are a lot of things to remember here.
 # Be sure to make sure the permissions match up (ls -l on an existing
 # server!).
