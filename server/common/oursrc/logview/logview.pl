@@ -11,8 +11,8 @@ print "--- Error logs for $caller ---";
 open FOO, $elogsrc;
 while (<FOO>) {
     # Prevent deviousness, like web_scripts directories within web_scripts
-    if (m|/afs/athena.mit.edu/| &&
-        m|/([^/]+)/web_scripts/| && $caller eq $1) {
+    if (m(/afs/(?:athena|sipb).mit.edu/) &&
+        m(/([^/]+)/web_scripts/) && $caller eq $1) {
         print;
     }
 }
