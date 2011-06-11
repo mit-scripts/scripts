@@ -42,6 +42,7 @@ Depends: ${misc:Depends},
  conserver-client,
  conserver-server,
  munin-node,
+ subversion,
 Description: Configures a machine to be a scripts VM host
  Configures a machine to be a scripts VM host, installing all
  appropriate dependencies.
