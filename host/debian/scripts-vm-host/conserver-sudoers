@@ -1,0 +1,1 @@
+conservr ALL=(ALL) NOPASSWD: /usr/sbin/xm console *

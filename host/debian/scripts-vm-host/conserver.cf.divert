@@ -1,0 +1,21 @@
+config * {
+       sslrequired no;
+}
+default full {
+	rw *;
+}
+default * {
+	logfile /var/log/conserver/&.log;
+	timestamp "1lab";
+	include full;
+	sslrequired no;
+	options reinitoncc;
+}
+default xen {
+        type exec;
+        exec sudo xm console f;
+        execsubst f=cs;
+}
+access * {
+       trusted 127.0.0.1;
+}
