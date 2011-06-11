@@ -31,6 +31,7 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 
 %pre
 useradd logview || [ $? -eq 9 ]
+chmod 710 /home/logview
 
 %postun
 if [ "$1" = "0" ] ; then
@@ -40,7 +41,7 @@ fi
 %files
 %defattr(0755, root, root)
 /usr/local/bin/logview.pl
-%defattr(4755, logview, root)
+%defattr(2755, logview, root)
 /usr/local/bin/logview
 
 %changelog
