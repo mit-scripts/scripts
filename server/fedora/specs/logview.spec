@@ -41,7 +41,7 @@ fi
 %files
 %defattr(0755, root, root)
 /usr/local/bin/logview.pl
-%defattr(2755, logview, root)
+%defattr(2755, root, logview)
 /usr/local/bin/logview
 
 %changelog
