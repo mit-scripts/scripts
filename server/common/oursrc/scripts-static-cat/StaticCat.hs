@@ -6,13 +6,17 @@ import Control.Applicative
 import Control.Monad
 import Control.Monad.CatchIO
 import qualified Data.ByteString.Lazy as B
+import Data.ByteString.Lazy.Char8 (pack)
 import Data.Char
 import Data.Dynamic
 import Data.Int
+import Data.List (unfoldr)
+import Data.List.Split (splitOn)
+import Data.Maybe (fromJust, isNothing, isJust)
 import qualified Data.Map as M
 import Data.Time.Clock.POSIX
 import Data.Time.Format
-import Network.CGI
+import Network.CGI hiding (ContentType)
 import Numeric
 import System.FilePath
 import System.IO
@@ -21,15 +25,19 @@ import System.IO.Unsafe
 import System.Locale
 import System.Posix
 import System.Posix.Handle
+import System.Random
 
-encodings :: M.Map String String
+type Encoding = String
+type ContentType = String
+
+encodings :: M.Map String Encoding
 encodings = M.fromList [
              (".bz2", "bzip2"),
              (".gz", "gzip"),
              (".z", "compress")
             ]
 
-types :: M.Map String String
+types :: M.Map String ContentType
 types = M.fromList [
          (".avi", "video/x-msvideo"),
          (".css", "text/css"),
@@ -121,18 +129,17 @@ outputMyError NotFound = outputError 404 "Not Found" []
 outputMyError BadMethod = outputError 405 "Method Not Allowed" []
 outputMyError BadRange = outputError 416 "Requested Range Not Satisfiable" []
 
-checkExtension :: FilePath -> CGI ()
-checkExtension file = do
+-- | Nothing if type is not whitelisted.
+checkExtension :: FilePath -> Maybe (Maybe Encoding, ContentType)
+checkExtension file =
   let (base, ext) = splitExtension file
-  ext' <- case M.lookup (map toLower ext) encodings of
-            Nothing -> return ext
-            Just e -> do
-              setHeader "Content-Encoding" e
-              return $ takeExtension base
-
-  case M.lookup (map toLower ext') types of
-    Nothing -> throw Forbidden
-    Just t -> setHeader "Content-Type" t
+      (file', enc) = case M.lookup (map toLower ext) encodings of
+                        Nothing -> (file, Nothing)
+                        Just e -> (base, Just e)
+      (_, ext') = splitExtension file'
+   in case M.lookup (map toLower ext') types of
+            Nothing -> Nothing
+            Just e -> Just (enc, e)
 
 checkMethod :: CGI CGIResult -> CGI CGIResult
 checkMethod rOutput = do
@@ -163,27 +170,32 @@ checkIfRange mTime = do
   (requestHeader "If-Range" >>=) $ maybe (return $ Just ()) $ \ir ->
       return $ if parseHTTPDate ir == Just mTime then Just () else Nothing
 
-parseRange :: String -> FileOffset -> Maybe (FileOffset, FileOffset)
-parseRange (splitAt 6 -> ("bytes=", '-':(readDec -> [(len, "")]))) size =
-    Just (max 0 (size - len), size - 1)
-parseRange (splitAt 6 -> ("bytes=", readDec -> [(a, "-")])) size =
-    Just (a, size - 1)
-parseRange (splitAt 6 -> ("bytes=", readDec -> [(a, '-':(readDec -> [(b, "")]))])) size =
-    Just (a, min (size - 1) b)
-parseRange _ _ = Nothing
+-- | parseRanges string size returns a list of ranges, or Nothing if parse fails.
+parseRanges :: String -> FileOffset -> Maybe [(FileOffset, FileOffset)]
+parseRanges (splitAt 6 -> ("bytes=", ranges)) size =
+    mapM parseOneRange $ splitOn "," ranges
+    where parseOneRange ('-':(readDec -> [(len, "")])) =
+            Just (max 0 (size - len), size - 1)
+          parseOneRange (readDec -> [(a, "-")]) =
+            Just (a, size - 1)
+          parseOneRange (readDec -> [(a, '-':(readDec -> [(b, "")]))]) =
+            Just (a, min (size - 1) b)
+          parseOneRange _ = Nothing
+parseRanges _ _ = Nothing
 
-checkRange :: EpochTime -> FileOffset -> CGI (Maybe (FileOffset, FileOffset))
-checkRange mTime size = do
+checkRanges :: EpochTime -> FileOffset -> CGI (Maybe [(FileOffset, FileOffset)])
+checkRanges mTime size = do
   setHeader "Accept-Ranges" "bytes"
   (requestHeader "Range" >>=) $ maybe (return Nothing) $ \range -> do
   (checkIfRange mTime >>=) $ maybe (return Nothing) $ \() -> do
-    case parseRange range size of
-      Just (a, b) | a <= b -> return $ Just (a, b)
+    case parseRanges range size of
+      Just rs | all (\(a, b) -> a <= b) rs -> return $ Just rs
       Just _ -> throw BadRange
       Nothing -> return Nothing
 
-outputAll :: Handle -> FileOffset -> CGI CGIResult
-outputAll h size = do
+outputAll :: Handle -> FileOffset -> ContentType -> CGI CGIResult
+outputAll h size ctype = do
+  setHeader "Content-Type" ctype
   setHeader "Content-Length" $ show size
   outputFPS =<< liftIO (B.hGetContents h)
 
@@ -195,21 +207,58 @@ hGetClose h len = do
   end <- unsafeInterleaveIO (hClose h >> return B.empty)
   return (B.append (B.take len contents) end)
 
-outputRange :: Handle -> FileOffset -> Maybe (FileOffset, FileOffset) -> CGI CGIResult
-outputRange h size Nothing = outputAll h size
-outputRange h size (Just (a, b)) = do
+outputRange :: Handle -> FileOffset -> ContentType -> Maybe [(FileOffset, FileOffset)] -> CGI CGIResult
+outputRange h size ctype Nothing = outputAll h size ctype
+outputRange h size ctype (Just [(a, b)]) = do
   let len = b - a + 1
 
   setStatus 206 "Partial Content"
+  setHeader "Content-Type" ctype
   setHeader "Content-Range" $
    "bytes " ++ show a ++ "-" ++ show b ++ "/" ++ show size
   setHeader "Content-Length" $ show len
   liftIO $ hSeek h AbsoluteSeek (fromIntegral a)
   outputFPS =<< liftIO (hGetClose h (fromIntegral len))
+outputRange h size ctype (Just rs) = do
+  seed <- liftIO getStdGen
+  let ints = take 16 $ unfoldr (Just . random) seed :: [Int]
+      sep  = concat $ map (flip showHex "" . (`mod` 16)) ints
+  setStatus 206 "Partial Content"
+
+  setHeader "Content-Type" $ "multipart/byteranges; boundary=" ++ sep
+  -- Need Content-Length? RFC doesn't seem to mandate it...
+  chunks <- liftIO $ sequence $ map readChunk rs
+  let parts = map (uncurry $ mkPartHeader sep) (zip rs chunks)
+      body = B.concat [ pack "\r\n"
+                      , B.concat parts
+                      , pack "--", pack sep, pack "--\r\n"
+                      ]
+  end <- liftIO $ unsafeInterleaveIO (hClose h >> return B.empty)
+  -- TODO figure out how to guarantee handle is ALWAYS closed, and NEVER before
+  -- reading is finished...
+  outputFPS (B.append body end)
+   where readChunk :: (FileOffset, FileOffset) -> IO B.ByteString
+         readChunk (a, b) = do
+            hSeek h AbsoluteSeek (fromIntegral a)
+            -- Carful here, hGetContents makes the handle unusable afterwards.
+            -- TODO Anders says use hGetSome or some other way lazy way
+            B.hGet h (fromIntegral $ b - a + 1)
+         mkPartHeader :: String -> (FileOffset, FileOffset) -> B.ByteString -> B.ByteString
+         mkPartHeader sep (a, b) chunk = B.concat [ pack "--" , pack sep
+                                                  , pack "\r\nContent-Type: ", pack ctype
+                                                  , pack "\r\nContent-Range: bytes "
+                                                  , pack $ show a, pack "-", pack $ show b
+                                                  , pack "/", pack $ show size
+                                                  , pack "\r\n\r\n", chunk, pack "\r\n"
+                                                  ]
+
 
 serveFile :: FilePath -> CGI CGIResult
 serveFile file = (`catch` outputMyError) $ do
-  checkExtension file
+  let menctype = checkExtension file
+  when (isNothing menctype) $ throw Forbidden
+  let (menc, ctype) = fromJust menctype
+  when (isJust menc) $ setHeader "Content-Encoding" (fromJust menc)
 
   checkMethod $ do
 
@@ -225,8 +274,8 @@ serveFile file = (`catch` outputMyError) $ do
       size = fileSize status
   checkModified mTime
 
-  range <- checkRange mTime size
-  outputRange h size range
+  ranges <- checkRanges mTime size
+  outputRange h size ctype ranges
 
 main :: IO ()
 main = runCGI $ handleErrors $ serveFile =<< pathTranslated

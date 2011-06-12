@@ -18,6 +18,8 @@ Executable		static-cat
     filepath,
     MonadCatchIO-mtl,
     old-locale,
+    random,
+    split,
     time,
     unix,
     unix-handle
