@@ -158,8 +158,8 @@ Fix:
 web.mit.edu scripts repository (/mit/scripts/rpm-fcXX and
 /mit/scripts/rpm-fcXX-testing) needs to be made.  It's quite simple;
 all you need to do is copy the RPMs from the build server to there
-(probably going through a trusted machine, since you don't want to
-put your root tickets on a server.)  When you're done, run `createrepo`
+(probably going through a trusted machine, since you don't want to put
+your root tickets on a server.)  When you're done, run `createrepo -d`
 on the directory.
 
 Note that if you do a successive rebuild without bumping the Subversion
