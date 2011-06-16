@@ -49,12 +49,12 @@ Directions
     krootscp root@[BUILD-SERVER]:/var/lib/mock/fedora-[RELEASE]-{x86_64|i386}/result /mit/scripts/rpm-fc[RELEASE]
 
   * # Rebuild the repo metadata to include the new packages.
-    cd /mit/scripts/rpm-fc[RELEASE]
+    cd /mit/scripts/yum-repos/rpm-fc[RELEASE]
     # If you have a trusted machine:
-    createrepo .
+    createrepo -d .
     # Otherwise, on a scripts server, as root:
     mkdir /root/repodata-YYYYMMDD # Or any suitable temp directory
-    createrepo -o /root/repodata-YYYYMMDD .
+    createrepo -d -o /root/repodata-YYYYMMDD .
     # Then from your trusted machine
     krootscp -r root@[BUILD-SERVER]:/root/repodata-YYYYMMDD /mit/scripts/rpm-fc[RELEASE]
     # Sanity check the files, and then replace the current repodata directory
