@@ -1,35 +1,24 @@
---- openafs.spec.orig	2010-09-10 18:21:53.000000000 -0400
-+++ openafs.spec	2010-09-10 18:34:30.000000000 -0400
-@@ -8,7 +8,7 @@
- # for beta/rc releases make pkgrel 0.X.<tag>
+--- openafs.spec.orig	2011-06-20 15:32:57.000000000 -0400
++++ openafs.spec	2011-06-20 17:45:49.000000000 -0400
+@@ -4,7 +4,7 @@
+ %define pkgvers 1.6.0
+ # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
- #%define pkgrel 0.1.rc1
--%define pkgrel 1.1
-+%define pkgrel 1.1.99scripts.%{scriptsversion}
+-%define pkgrel 0.pre6
++%define pkgrel 0.pre6.99.scripts.%{scriptsversion}
  
- %if %{?osvers:0}%{!?osvers:1}
- %define osvers 1
-@@ -261,6 +261,19 @@
+ %{!?fedorakmod: %define fedorakmod 1}
+ %{!?build_dkmspkg: %define build_dkmspkg 1}
+@@ -247,6 +247,8 @@
  %endif
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
 +Patch1000: openafs-scripts.patch
-+Patch1003: openafs-localcsdb.patch
-+Patch1005: openafs-numsysnames.patch
-+Patch1006: openafs-0001-Linux-Add-autoconf-macro-for-structure-checks.patch
-+Patch1007: openafs-0002-Linux-Add-general-autoconf-macro-for-Linux-kernel.patch
-+Patch1008: openafs-0003-Linux-allow-compile-flags-to-be-passed-to-AC_CHECK_L.patch
-+Patch1009: openafs-0004-Linux-2.6.38-Adjust-for-permission-inode-operation-c.patch
-+Patch1010: openafs-0005-linux-2.6.38-New-d_op-handling.patch
-+Patch1011: openafs-0006-linux-2.6.38-Make-d_revalidate-RCU-walk-aware.patch
-+Patch1012: openafs-0007-Linux-2.6.38-deal-with-dcache_lock-removal.patch
-+Patch1013: openafs-0008-Linux-2.6.38-dentry-d_count-is-not-an-atomic.patch
-+Patch1014: openafs-0009-fix-broken-earlier.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -343,6 +347,7 @@
+@@ -326,6 +328,7 @@
  %if %{build_userspace}
  
  %package client
@@ -37,7 +26,7 @@
  Requires: binutils, openafs = %{version}
  
  %if %{fedorakmod}
-@@ -403,6 +408,7 @@
+@@ -386,6 +389,7 @@
  
  %if %{build_authlibs}
  %package authlibs
@@ -45,7 +34,7 @@
  Summary: OpenAFS authentication shared libraries
  Group: Networking/Filesystems
  
-@@ -419,6 +425,7 @@
+@@ -402,6 +406,7 @@
  %endif
  
  %package authlibs-devel
@@ -53,7 +42,7 @@
  %if %{build_authlibs}
  Requires: openafs-authlibs = %{version}
  %endif
-@@ -437,6 +444,7 @@
+@@ -420,6 +425,7 @@
  libraries.
  
  %package devel
@@ -61,7 +50,7 @@
  Summary: OpenAFS Development Libraries and Headers
  Group: Development/Filesystems
  
-@@ -465,6 +473,7 @@
+@@ -448,6 +454,7 @@
  administrators.
  
  %package kernel-source
@@ -69,7 +58,7 @@
  Summary: OpenAFS Kernel Module source tree
  Group: Networking/Filesystems
  Provides: openafs-kernel = %{version}
-@@ -514,6 +523,7 @@
+@@ -497,6 +504,7 @@
  
  %if %{krb5support}
  %package krb5
@@ -77,7 +66,7 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{version}
  Group: Networking/Filesystems
-@@ -540,7 +550,7 @@
+@@ -523,7 +531,7 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
@@ -86,31 +75,27 @@
  
  %else
  
-@@ -699,6 +709,18 @@
+@@ -680,6 +688,9 @@
+ #%setup -q -n %{srcdir}
+ %setup -q -b 1 -n %{srcdir}
  
- # Patch openafs to build a kernel module named "openafs" instead of "libafs"
- %patch0 -p1 -b .kmod26
++# Apply the Scripts patch
 +%patch1000 -p1 -b .scripts
-+%patch1003 -p1 -b .localcsdb
-+%patch1005 -p1 -b .numsysnames
-+%patch1006 -p1 -b .0001
-+%patch1007 -p1 -b .0002
-+%patch1008 -p1 -b .0003
-+%patch1009 -p1 -b .0004
-+%patch1010 -p1 -b .0005
-+%patch1011 -p1 -b .0006
-+%patch1012 -p1 -b .0007
-+%patch1013 -p1 -b .0008
-+%patch1014 -p1 -b .0009
- 
++
  ##############################################################################
  #
-@@ -1140,7 +1140,6 @@
- %{_bindir}/bos
- %{_bindir}/fs
- %{_bindir}/kapasswd
--%{_bindir}/kpasswd
- %{_bindir}/klog
- %{_bindir}/klog.krb
- %{_bindir}/pagsh
-
+ # building
+@@ -1215,6 +1226,13 @@
+ rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
+ rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
+ rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*
++%else
++chmod +x $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so
++chmod +x $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
++chmod +x $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
++chmod +x $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*
++chmod +x $RPM_BUILD_ROOT%{_libdir}/libkopenafs.so
++chmod +x $RPM_BUILD_ROOT%{_libdir}/libkopenafs.so.*
+ %endif
+ 
+ %endif
