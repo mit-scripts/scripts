@@ -269,16 +269,3 @@ index f282510..00f1360 100644
      AFS_STATCNT(PUnlog);
      if (!afs_resourceinit_flag)	/* afs daemons haven't started yet */
  	return EIO;		/* Inappropriate ioctl for device */
-diff --git a/src/packaging/RedHat/openafs-client.init b/src/packaging/RedHat/openafs-client.init
-index 10ec647..a4ecbc8 100644
---- a/src/packaging/RedHat/openafs-client.init
-+++ b/src/packaging/RedHat/openafs-client.init
-@@ -14,7 +14,7 @@
- 
- start() {
-         echo -n $"Updating CellServDB: "
--        cat /usr/vice/etc/CellServDB.local /usr/vice/etc/CellServDB.dist > \
-+        cat /usr/vice/etc/CellServDB.local > \
-                /usr/vice/etc/CellServDB
-         chmod 644 /usr/vice/etc/CellServDB
-         echo

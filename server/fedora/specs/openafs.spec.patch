@@ -1,5 +1,5 @@
 --- openafs.spec.orig	2011-06-20 15:32:57.000000000 -0400
-+++ openafs.spec	2011-06-20 17:45:49.000000000 -0400
++++ openafs.spec	2011-06-21 17:15:24.000000000 -0400
 @@ -4,7 +4,7 @@
  %define pkgvers 1.6.0
  # for beta/rc releases make pkgrel 0.<tag>
@@ -9,16 +9,17 @@
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -247,6 +247,8 @@
+@@ -247,6 +247,9 @@
  %endif
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
 +Patch1000: openafs-scripts.patch
++Patch1001: openafs-localcsdb.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -326,6 +328,7 @@
+@@ -326,6 +329,7 @@
  %if %{build_userspace}
  
  %package client
@@ -26,7 +27,7 @@
  Requires: binutils, openafs = %{version}
  
  %if %{fedorakmod}
-@@ -386,6 +389,7 @@
+@@ -386,6 +390,7 @@
  
  %if %{build_authlibs}
  %package authlibs
@@ -34,7 +35,7 @@
  Summary: OpenAFS authentication shared libraries
  Group: Networking/Filesystems
  
-@@ -402,6 +406,7 @@
+@@ -402,6 +407,7 @@
  %endif
  
  %package authlibs-devel
@@ -42,7 +43,7 @@
  %if %{build_authlibs}
  Requires: openafs-authlibs = %{version}
  %endif
-@@ -420,6 +425,7 @@
+@@ -420,6 +426,7 @@
  libraries.
  
  %package devel
@@ -50,7 +51,7 @@
  Summary: OpenAFS Development Libraries and Headers
  Group: Development/Filesystems
  
-@@ -448,6 +454,7 @@
+@@ -448,6 +455,7 @@
  administrators.
  
  %package kernel-source
@@ -58,7 +59,7 @@
  Summary: OpenAFS Kernel Module source tree
  Group: Networking/Filesystems
  Provides: openafs-kernel = %{version}
-@@ -497,6 +504,7 @@
+@@ -497,6 +505,7 @@
  
  %if %{krb5support}
  %package krb5
@@ -66,7 +67,7 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{version}
  Group: Networking/Filesystems
-@@ -523,7 +531,7 @@
+@@ -523,7 +532,7 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
@@ -75,17 +76,18 @@
  
  %else
  
-@@ -680,6 +688,9 @@
+@@ -680,6 +689,10 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
 +# Apply the Scripts patch
 +%patch1000 -p1 -b .scripts
++%patch1001 -p1 -b .localcsdb
 +
  ##############################################################################
  #
  # building
-@@ -1215,6 +1226,13 @@
+@@ -1215,6 +1228,13 @@
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*

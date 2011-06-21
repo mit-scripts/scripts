@@ -1,0 +1,11 @@
+--- openafs-1.4/src/packaging/RedHat/openafs-client.init.orig	2009-04-14 04:28:32.000000000 -0400
++++ openafs-1.4/src/packaging/RedHat/openafs-client.init	2009-04-14 04:27:08.000000000 -0400
+@@ -14,7 +14,7 @@
+ 
+ start() {
+         echo -n $"Updating CellServDB: "
+-        cat /usr/vice/etc/CellServDB.local /usr/vice/etc/CellServDB.dist > \
++        cat /usr/vice/etc/CellServDB.local > \
+                /usr/vice/etc/CellServDB
+         chmod 644 /usr/vice/etc/CellServDB
+         echo
