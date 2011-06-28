@@ -1,0 +1,42 @@
+#action_key:transaction_state:command
+# action_key can be: pkgglob, /path/to/file (wildcards allowed)
+# transaction_state can be: install,update,remove,any
+# command can be: any shell command
+#  the following variables are allowed to be passed to any command:
+#   $name - package name
+#   $arch - package arch
+#   $ver - package version
+#   $rel - package release
+#   $epoch - package epoch
+#   $repoid - package repository id
+#   $state - text string of state of the package in the transaction set
+#
+# file matches cannot be used with removes b/c we don't have the info available
+/bin/cgexec:any:chmod -f ug-s /bin/cgexec
+/bin/fusermount:any:chmod -f ug-s /bin/fusermount
+/bin/mount:any:chmod -f ug-s /bin/mount
+/bin/su:any:chmod -f ug-s /bin/su
+/bin/umount:any:chmod -f ug-s /bin/umount
+/sbin/netreport:any:chmod -f ug-s /sbin/netreport
+/usr/bin/chage:any:chmod -f ug-s /usr/bin/chage
+/usr/bin/chfn:any:chmod -f ug-s /usr/bin/chfn
+/usr/bin/chsh:any:chmod -f ug-s /usr/bin/chsh
+/usr/bin/gpasswd:any:chmod -f ug-s /usr/bin/gpasswd
+/usr/bin/lockfile:any:chmod -f ug-s /usr/bin/lockfile
+/usr/bin/newgrp:any:chmod -f ug-s /usr/bin/newgrp
+/usr/bin/newrole:any:chmod -f ug-s /usr/bin/newrole
+/usr/bin/passwd:any:chmod -f ug-s /usr/bin/passwd
+/usr/bin/rcp:any:chmod -f ug-s /usr/bin/rcp
+/usr/bin/rlogin:any:chmod -f ug-s /usr/bin/rlogin
+/usr/bin/rsh:any:chmod -f ug-s /usr/bin/rsh
+/usr/bin/sperl5.10.1:any:chmod -f ug-s /usr/bin/sperl5.10.1
+/usr/bin/ssh-agent:any:chmod -f ug-s /usr/bin/ssh-agent
+/usr/bin/wall:any:chmod -f ug-s /usr/bin/wall
+/usr/bin/write:any:chmod -f ug-s /usr/bin/write
+/usr/bin/Xorg:any:chmod -f ug-s /usr/bin/Xorg
+/usr/kerberos/bin/ksu:any:chmod -f ug-s /usr/kerberos/bin/ksu
+/usr/lib64/nspluginwrapper/plugin-config:any:chmod -f ug-s /usr/lib64/nspluginwrapper/plugin-config
+/usr/lib64/vte/gnome-pty-helper:any:chmod -f ug-s /usr/lib64/vte/gnome-pty-helper
+/usr/sbin/ccreds_chkpwd:any:chmod -f ug-s /usr/sbin/ccreds_chkpwd
+/usr/sbin/userisdnctl:any:chmod -f ug-s /usr/sbin/userisdnctl
+/usr/sbin/usernetctl:any:chmod -f ug-s /usr/sbin/usernetctl
