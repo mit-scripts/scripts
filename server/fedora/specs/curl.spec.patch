@@ -1,5 +1,5 @@
---- /tmp/t/curl.spec	2011-07-01 10:50:07.000000000 -0400
-+++ /tmp/t/curl.spec	2011-07-01 10:50:46.000000000 -0400
+--- curl.spec.orig	2011-07-01 10:50:07.000000000 -0400
++++ curl.spec	2011-07-01 10:50:46.000000000 -0400
 @@ -1,7 +1,7 @@
  Summary: A utility for getting files from remote servers (FTP, HTTP, and others)
  Name: curl
@@ -31,7 +31,7 @@
  %{_datadir}/aclocal/libcurl.m4
  
  %changelog
-+* Fri Jul 01 2011 Geoffrey Thomas <geofft@mit.edu> 7.20.1-5.scripts.r1922
++* Fri Jul 01 2011 Geoffrey Thomas <geofft@mit.edu> 7.20.1-5.scripts.r1923
 +- disable credential delegation over Negotiate (CVE-2011-2192)
 +  Patch from upstream: http://curl.haxx.se/docs/adv_20110623.html
 +
