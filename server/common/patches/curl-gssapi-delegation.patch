@@ -1,0 +1,28 @@
+From a4be0864ba953b3317ece66bf8c2332ea74a4715 Mon Sep 17 00:00:00 2001
+From: Daniel Stenberg <daniel@haxx.se>
+Date: Wed, 8 Jun 2011 00:10:26 +0200
+Subject: [PATCH] Curl_input_negotiate: do not delegate credentials
+
+This is a security flaw. See curl advisory 201106xx for details.
+
+Reported by: Richard Silverman
+---
+ lib/http_negotiate.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/lib/http_negotiate.c b/lib/http_negotiate.c
+index 202d69e..5127e64 100644
+--- a/lib/http_negotiate.c
++++ b/lib/http_negotiate.c
+@@ -243,7 +243,7 @@ int Curl_input_negotiate(struct connectdata *conn, bool proxy,
+                                       &neg_ctx->context,
+                                       neg_ctx->server_name,
+                                       GSS_C_NO_OID,
+-                                      GSS_C_DELEG_FLAG,
++                                      0,
+                                       0,
+                                       GSS_C_NO_CHANNEL_BINDINGS,
+                                       &input_token,
+-- 
+1.7.5.3
+

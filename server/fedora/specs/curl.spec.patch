@@ -1,0 +1,40 @@
+--- /tmp/t/curl.spec	2011-07-01 10:50:07.000000000 -0400
++++ /tmp/t/curl.spec	2011-07-01 10:50:46.000000000 -0400
+@@ -1,7 +1,7 @@
+ Summary: A utility for getting files from remote servers (FTP, HTTP, and others)
+ Name: curl
+ Version: 7.20.1
+-Release: 5%{?dist}
++Release: 5.scripts.%{scriptsversion}%{?dist}
+ License: MIT
+ Group: Applications/Internet
+ Source: http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
+@@ -90,6 +90,9 @@
+ # workaround for broken applications using curl multi (#599340)
+ Patch108: 0108-curl-7.20.1-threaded-dns-multi.patch
+ 
++# disable credential delegation over Negotiate (CVE-2011-2192)
++Patch1000: curl-gssapi-delegation.patch
++
+ Provides: webclient
+ URL: http://curl.haxx.se/
+ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+@@ -190,6 +193,7 @@
+ %patch105 -p1
+ %patch106 -p1
+ %patch108 -p1
++%patch1000 -p1
+ 
+ # other patches
+ %patch15 -p1
+@@ -289,6 +293,10 @@
+ %{_datadir}/aclocal/libcurl.m4
+ 
+ %changelog
++* Fri Jul 01 2011 Geoffrey Thomas <geofft@mit.edu> 7.20.1-5.scripts.r1922
++- disable credential delegation over Negotiate (CVE-2011-2192)
++  Patch from upstream: http://curl.haxx.se/docs/adv_20110623.html
++
+ * Fri Nov 26 2010 Kamil Dudka <kdudka@redhat.com> 7.20.1-5
+ - do not send QUIT to a dead FTP control connection (#650255)
+ - prevent FTP client from hanging on unrecognized ABOR response (#649347)
