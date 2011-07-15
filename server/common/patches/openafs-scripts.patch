@@ -170,9 +170,9 @@ index fcc4c70..0d53af6 100644
      afs_int32 busyCount;	/* how many busies we've seen so far */
      afs_int32 flags;		/* things like O_SYNC, O_NONBLOCK go here */
      char initd;			/* if non-zero, Error fields meaningful */
-@@ -872,6 +880,7 @@ struct vcache {
+@@ -887,6 +895,7 @@ struct vcache {
  #ifdef AFS_SUN5_ENV
-     short multiPage;		/* count of multi-page getpages in progress */
+     struct afs_q multiPage;	/* list of multiPage_range structs */
  #endif
 +    int apache_access;		/* whether or not Apache has access to a file */
  };
