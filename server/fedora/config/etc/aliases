@@ -98,7 +98,12 @@ scripts-build:	root
 
 # People who are abusing or otherwise causing problems with the mail system
 # Put "/dev/null" as the target of their alias
-srimano:	/dev/null	# has a phpBB generating a lot of backscatter
+# srimano: has a phpBB generating a lot of backscatter
+srimano:	/dev/null
+# dbriggs: phpBB: added 2011-06-25, see mail to -root 2011-03-27, 2011-06-03
+dbriggs:	/dev/null
+# ro21531: spam to rosmosis.net: added 2011-06-25, see mail to -root 2011-06-03
+ro21531:	/dev/null
 
 # Temporary to clear the queue
 # Should be deleted if left uncommitted

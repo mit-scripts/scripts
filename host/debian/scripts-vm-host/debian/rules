@@ -1,0 +1,8 @@
+#!/usr/bin/make -f
+
+DEB_DIVERT_FILES_scripts-vm-host = /etc/conserver/conserver.cf.divert
+DEB_TRANSFORM_FILES_scripts-vm-host = /etc/munin/munin-node.conf.divert
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/rules/config-package.mk
+

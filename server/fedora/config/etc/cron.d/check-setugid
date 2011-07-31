@@ -1,0 +1,2 @@
+MAILTO=scripts-root@mit.edu
+23 5 * * * root find / -xdev -not -perm -o=x -prune -o -type f -perm /ug=s -print | grep -Fxvf /etc/scripts/allowed-setugid.list | sed 's/^/Extra set[ug]id binary: /'

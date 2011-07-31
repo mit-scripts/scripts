@@ -1,0 +1,48 @@
+Source: scripts-vm-host
+Section: misc
+Priority: extra
+Maintainer: scripts team <scripts-team@mit.edu>
+Build-Depends: cdbs, debhelper (>= 7.0.50~), config-package-dev, munin-node
+Standards-Version: 3.9.1
+Homepage: http://scripts.mit.edu/
+
+Package: scripts-vm-host
+Architecture: all
+Depends: ${misc:Depends},
+ apticron,
+ bwm-ng,
+ bzip2,
+ emacs23-nox,
+ ethtool,
+ git,
+ htop,
+ i2c-tools,
+ ipmitool,
+ kpartx,
+ lm-sensors,
+ memtest86+,
+ memtest86,
+ mii-diag,
+ molly-guard,
+ mtr-tiny,
+ nbd-client,
+ nbd-server,
+ ntp,
+ ntpdate,
+ rlwrap,
+ smartmontools,
+ strace,
+ tcpdump,
+ tree,
+ vim,
+ xen-linux-system,
+ debathena-clients,
+ debathena-ssh-server-config,
+ sudo,
+ conserver-client,
+ conserver-server,
+ munin-node,
+ subversion,
+Description: Configures a machine to be a scripts VM host
+ Configures a machine to be a scripts VM host, installing all
+ appropriate dependencies.

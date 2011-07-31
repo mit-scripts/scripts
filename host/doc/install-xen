@@ -12,13 +12,6 @@
 #   - The hosts can't mount it
 #   - Grub can't cope with it
 
-# install useful utility packages
-    aptitude install htop ipmitool emacs23-nox vim memtest86 memtest86+ ntp ntpdate git smartmontools kpartx apticron bwm-ng bzip2 ethtool i2c-tools lm-sensors mii-diag molly-guard mtr-tiny nbd-client nbd-server rlwrap strace tcpdump tree
-    git config --global color.ui auto
-
-# install Xen
-    aptitude install xen-linux-system
-
 # download Debathena archive key, verify
   (aptitude install debian-keyring &&
   cd /tmp &&
@@ -40,56 +33,8 @@ EOF
   k5srvutil change
   k5srvutil delold
 # install ~/.k5login
-# install Debathena software (hit enter to take the defaults at the
-# configuration prompts)
-  aptitude update
-  aptitude install debathena-clients debathena-ssh-server-config
-# compare packages with another server
-  dpkg -l
-# reconfigure so that we can get an MTA, although we don't
-# want the hosts to accept mail (mail sent by smarthost; no local mail)
-# outgoing.mit.edu
-    dpkg-reconfigure exim4-config
-        # answer questions properly
-# change root alias in /etc/aliases to be the same as scripts server
-# reload it
-    newaliases
 # clone the xen config (/etc/xen)
     git clone -b squeeze ssh://scripts@scripts.mit.edu/mit/scripts/git/xen.git /etc/xen
-# copy conserver config (we need to version this)
-  aptitude install sudo conserver-{server,client}
-# setup conserver
-  cat <<EOF > /etc/conserver/conserver.cf
-config * {
-	sslrequired no;
-}
-default full {
-	rw *;
-}
-default * {
-	logfile /var/log/conserver/&.log;
-	timestamp "1lab";
-	include full;
-	sslrequired no;
-	options reinitoncc;
-}
-default xen {
-        type exec;
-        exec sudo xm console f;
-        execsubst f=cs;
-}
-access * {
-	trusted 127.0.0.1;
-}
-EOF
-    visudo # add conservr to sudoers list with:
-        conservr ALL=(ALL) NOPASSWD: /usr/sbin/xm console *
 
-# setup munin and nagios  
-    aptitude install munin-node
-cat <<EOF >> /etc/munin/munin-node.conf
-allow ^18\.187\.1\.128$
-allow ^18\.181\.0\.65$
-allow ^18\.181\.0\.51$
-EOF
-
+# Install scripts-vm-host
+  aptitude install scripts-vm-host

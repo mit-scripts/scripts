@@ -1,18 +1,12 @@
 #!/usr/bin/perl -T -w
 
-%ENV = ();
-$ENV{'PATH'} = '/bin:/usr/bin';
 my $elogsrc = '/home/logview/error_log';
 # get by uid the caller's name to find the corresponding locker name
-my $caller = (getpwuid $<)[0];
-$\ = "\n";
+my ($caller, $home) = (getpwuid($<))[0, 7];
+my $search = "$home/";
 
-print "--- Error logs for $caller ---";
-open FOO, $elogsrc;
+print "--- Error logs for $caller ---\n";
+open FOO, '<', $elogsrc or die $!;
 while (<FOO>) {
-    # Prevent deviousness, like web_scripts directories within web_scripts
-    if (m|/afs/athena.mit.edu/| &&
-        m|/([^/]+)/web_scripts/| && $caller eq $1) {
-        print;
-    }
+    print if index($_, $search) != -1;
 }
