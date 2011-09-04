@@ -224,12 +224,12 @@ diff --git a/src/afs/afs_pioctl.c b/src/afs/afs_pioctl.c
 index f282510..00f1360 100644
 --- a/src/afs/afs_pioctl.c
 +++ b/src/afs/afs_pioctl.c
-@@ -1405,6 +1405,10 @@ DECL_PIOCTL(PSetAcl)
-     struct AFSFetchStatus OutStatus;
+@@ -1406,6 +1406,10 @@ DECL_PIOCTL(PSetAcl)
+     struct rx_connection *rxconn;
      XSTATS_DECLS;
  
 +    if (areq->uid == globalpag && areq->realuid != AFSAGENT_UID) {
-+	return EACCES;
++       return EACCES;
 +    }
 +
      AFS_STATCNT(PSetAcl);
