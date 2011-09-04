@@ -2,6 +2,16 @@
 # It is semi-vaguely in the form of a shell script, but is not really
 # runnable as it stands.
 
+# Notation
+# [PRODUCTION] Production server that will be put into the pool
+# [WIZARD]     Semi-production server that will only have
+#              daemon.scripts-security-upd bits, among other
+#              restricted permissions bits, among other
+#              restricted permissions bits, among other
+#              restricted permissions bits, among other
+#              restricted permissions
+# [TESTSERVER] Completely untrusted server
+
 set -e -x
 
 # Some commands should be run as the scripts-build user, not root.
@@ -19,7 +29,7 @@ alias asbuild="sudo -u scripts-build"
 # scripts.mit.edu because our networking config points that domain
 # at localhost, and if our server is not setup at that point things
 # will break.
-source_server="cats-whiskers.mit.edu"
+source_server="shining-armor.mit.edu"
 
 # 'branch' is the current svn branch you are on.  You want to
 # use trunk if your just installing a new server, and branches/fcXX-dev
@@ -42,21 +52,26 @@ server=YOUR-SERVER-NAME-HERE
 # Perhaps a useful change is to remove the default aliases
     cd /root
     ls -l .bashrc
-    ls -l .ldapvirc
     ls -l .screenrc
     ls -l .ssh
     ls -l .vimrc
     ls -l .k5login
+    # [PRODUCTION] This rc file has sensitive data on it and should only
+    # be pushed onto production servers.
+    ls -l .ldapvirc
     # Trying to scp from server to server won't work, as scp
     # will attempt to negotiate a server-to-server connection.
     # Instead, scp to your trusted machine as a temporary file,
     # and then push to the other server
-scp -r root@$source_server:~/{.bashrc,.ldapvirc,.screenrc,.ssh,.vimrc,.k5login} .
-scp -r {.bashrc,.ldapvirc,.screenrc,.ssh,.vimrc,.k5login} root@$server:~
+scp -r root@$source_server:~/{.bashrc,.screenrc,.ssh,.vimrc,.k5login} .
+scp -r {.bashrc,.screenrc,.ssh,.vimrc,.k5login} root@$server:~
+# [PRODUCTION]
+scp root@$source_server:~/.ldapvirc .
+scp .ldapvirc root@$server:~
 
 # Install the initial set of credentials (to get Kerberized logins once
 # krb5 is installed).  Otherwise, SCP'ing things in will be annoying.
-#   o You probably installed the machine keytab long ago
+#   o Install the machine keytab.
     ls -l /etc/krb5.keytab
 #     Use ktutil to combine the host/scripts.mit.edu and
 #     host/scripts-vhosts.mit.edu keys with host/this-server.mit.edu in
@@ -71,7 +86,8 @@ scp -r {.bashrc,.ldapvirc,.screenrc,.ssh,.vimrc,.k5login} root@$server:~
 #          1    5 host/old-faithful.mit.edu@ATHENA.MIT.EDU
 #          2    3 host/scripts-vhosts.mit.edu@ATHENA.MIT.EDU
 #          3    2      host/scripts.mit.edu@ATHENA.MIT.EDU
-#   o Replace the ssh host keys with the ones common to all scripts servers (real servers only)
+#   o [PRODUCTION] Replace the ssh host keys with the ones common to all
+#     scripts servers (real servers only)
     ls -l /etc/ssh/*key*
 #     You can do that with:
 scp root@$source_server:/etc/ssh/*key* .
@@ -84,8 +100,9 @@ scp *key* root@$server:/etc/ssh/
     \cp -a etc /
     chmod 0440 /etc/sudoers
 
-# If this is the first time you've installed this hostname, you will
-# need to update a bunch of files to add support for it. These include:
+# [PRODUCTION] If this is the first time you've installed this hostname,
+# you will need to update a bunch of files to add support for it. These
+# include:
 #   o Adding all aliases to /etc/httpd/conf.d/scripts-vhost-names.conf
 #     (usually this is hostname, hostname.mit.edu, h-n, h-n.mit.edu,
 #     scriptsN, scriptsN.mit.edu, and the IP address.)
@@ -140,15 +157,18 @@ scp *key* root@$server:/etc/ssh/
     yum install -y syslog-ng
     chkconfig syslog-ng on
 
-# Fix the openafs /usr/vice/etc <-> /etc/openafs mapping.
+# [PRODUCTION/WIZARD] Fix the openafs /usr/vice/etc <-> /etc/openafs
+# mapping.
     echo "/afs:/usr/vice/cache:10000000" > /usr/vice/etc/cacheinfo
     echo "athena.mit.edu" > /usr/vice/etc/ThisCell
 
-# [TEST SERVER] If you're installing a test server, this needs to be
+# [TESTSERVER] If you're installing a test server, this needs to be
 # much smaller; the max filesize on XVM is 10GB.  Pick something like
 # 500000. Also, some of the AFS parameters are kind of retarded (and if
 # you're low on disk space, will actually exhaust our inodes).  Edit
 # these parameters in /etc/sysconfig/openafs
+    echo "/afs:/usr/vice/cache:500000" > /usr/vice/etc/cacheinfo
+    XXX TODO COMMANDS
 
 # Test that zephyr is working
     chkconfig zhm on
@@ -175,6 +195,9 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
     diff -u packages.txt newpackages.txt | grep -v kernel | less
     # here's a cute script that removes all extra packages
     yum erase -y $(grep -Fxvf packages.txt newpackages.txt)
+    # 20101208 - Mysteriously we manage to get these extra packages
+    # from kickstart: mcelog mobile-broadband-provider-info
+    # ModemManager PackageKit
 
 # We need an upstream version of cgi which we've packaged ourselves, but
 # it doesn't work with the haskell-platform package which expects
@@ -218,7 +241,7 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 #   Pass -Z to easy_install to install them unzipped, as some zipped eggs
 #   want to be able to write to ~/.python-eggs.  (Also makes sourcediving
 #   easier.)
-cat /usr/lib/python2.6/site-packages/easy-install.pth | grep "^./" | cut -c3- | cut -f1 -d- . egg.txt
+cat /usr/lib/python2.6/site-packages/easy-install.pth | grep "^./" | cut -c3- | cut -f1 -d- > egg.txt
     cat egg.txt | xargs easy_install -Z
 # - Look at `gem list` for Ruby gems.
 #   Again, use 'yum search' and prefer RPMs, but failing that, 'gem install'.
@@ -243,16 +266,13 @@ pecl list | tail -n +4 | cut -f 1 -d " " > pecl.txt
 # Setup some Python config
     echo 'import site, os.path; site.addsitedir(os.path.expanduser("~/lib/python2.6/site-packages"))' > /usr/lib/python2.6/site-packages/00scripts-home.pth
 
-# Install the credentials.  There are a lot of things to remember here.
-# Be sure to make sure the permissions match up (ls -l on an existing
-# server!).
-scp root@$source_server:{/etc/{sql-mit-edu.cfg.php,daemon.keytab,pki/tls/private/scripts.key,signup-ldap-pw,whoisd-password},/home/logview/.k5login} .
-scp daemon.keytab signup-ldap-pw whoisd-password sql-mit-edu.cfg.php root@$server:/etc
+# [PRODUCTION] Install the credentials.  There are a lot of things to
+# remember here.  Be sure to make sure the permissions match up (ls -l
+# on an existing server!).
+scp root@$source_server:{/etc/{sql-mit-edu.cfg.php,pki/tls/private/scripts.key,signup-ldap-pw,whoisd-password},/home/logview/.k5login} .
+scp signup-ldap-pw whoisd-password sql-mit-edu.cfg.php root@$server:/etc
 scp scripts.key root@$server:/etc/pki/tls/private
 scp .k5login root@$server:/home/logview
-    chown afsagent:afsagent /etc/daemon.keytab
-#   o The daemon.scripts keytab (will be daemon.scripts-test for test)
-    ls -l /etc/daemon.keytab
 #   o The SSL cert private key (real servers only)
     ls -l /etc/pki/tls/private/scripts.key
 #   o The LDAP password for the signup process (real servers only)
@@ -262,42 +282,61 @@ scp .k5login root@$server:/home/logview
 #   o Make sure logview's .k5login is correct (real servers only)
     cat /home/logview/.k5login
 
+# All types of servers will have an /etc/daemon.keytab file, however,
+# different types of server will have different credentials in this
+# keytab.
+#   [PRODUCTION] daemon.scripts
+#   [WIZARD]     daemon.scripts-security-upd
+#   [TESTSERVER] daemon.scripts-test
+k5srvutil list -f daemon.keytab
+scp daemon.keytab root@$server:/etc
+    chown afsagent:afsagent /etc/daemon.keytab
+#   o The daemon.scripts keytab (will be daemon.scripts-test for test)
+    ls -l /etc/daemon.keytab
+
 # Spin up OpenAFS.  This will fail if there's been a new kernel since
 # when you last tried.  In that case, you can hold on till later to
 # start OpenAFS.  This will take a little bit of time; 
     service openafs-client start
-
-# Check that fs sysname is correct.  You should see, among others,
+# Then, check that fs sysname is correct.  You should see, among others,
 # 'amd64_fedoraX_scripts' (vary X) and 'scripts'. If it's not, you
 # probably did a distro upgrade and should update /etc/sysconfig/openafs.
     fs sysname
 
-# [TEST SERVER] If you are setting up a test server, pay attention to
-# /etc/sysconfig/network-scripts and do not bind scripts' IP address.
-# You will also need to modify:
+# [WIZARD/TESTSERVER] If you are setting up a non-production server,
+# there are some services that it won't provide, and you will need to
+# make it talk to a real server instead.  In particular:
+#   - We don't serve the web, so don't bind scripts.mit.edu
+#   - We don't serve LDAP, so use another server
+# This involves editing the following files:
+#   o /etc/sysconfig/network-scripts/ifcfg-lo:0
+#   o /etc/sysconfig/network-scripts/ifcfg-lo:1
+#   o /etc/sysconfig/network-scripts/ifcfg-lo:2
+#   o /etc/sysconfig/network-scripts/ifcfg-lo:3
+       \rm /etc/sysconfig/network-scripts/ifcfg-lo:{0,1,2,3}
 #   o /etc/ldap.conf
 #       add: host scripts.mit.edu
-#   o /etc/nss-ldapd.conf
-#       replace: uri *****
+#   o /etc/{nss-ldapd,nslcd}.conf
+#       replace: uri ldapi://%2fvar%2frun%2fdirsrv%2fslapd-scripts.socket/
 #       with: uri ldap://scripts.mit.edu/
 #   o /etc/openldap/ldap.conf
 #       add: URI ldap://scripts.mit.edu/
 #            BASE dc=scripts,dc=mit,dc=edu
 #   o /etc/httpd/conf.d/vhost_ldap.conf
-#       replace: VhostLDAPUrl ****
+#       replace: VhostLDAPUrl "ldap://127.0.0.1/ou=VirtualHosts,dc=scripts,dc=mit,dc=edu"
 #       with: VhostLDAPUrl "ldap://scripts.mit.edu/ou=VirtualHosts,dc=scripts,dc=mit,dc=edu"
 #   o /etc/postfix/virtual-alias-{domains,maps}-ldap.cf
-#       replace: server_host *****
+#       replace: server_host ldapi://%2fvar%2frun%2fdirsrv%2fslapd-scripts.socket/
 #       with: server_host = ldap://scripts.mit.edu
 # to use scripts.mit.edu instead of localhost.
 # XXX: someone should write sed scripts to do this
 
-# [TEST SERVER] If you are setting up a test server, afsagent's cronjob
-# will attempt to be renewing with the wrong credentials
-# (daemon.scripts). Change this:
+# [WIZARD/TESTSERVER] If you are setting up a non-production server,
+# afsagent's cronjob will attempt to be renewing with the wrong
+# credentials (daemon.scripts). Change this:
     vim /home/afsagent/renew # replace all mentions of daemon.scripts.mit.edu
 
-# Set up replication (see ./install-ldap).
+# [PRODUCTION] Set up replication (see ./install-ldap).
 # You'll need the LDAP keytab for this server: be sure to chown it
 # fedora-ds after you create the fedora-ds user
     ls -l /etc/dirsrv/keytab
@@ -309,17 +348,24 @@ scp .k5login root@$server:/home/logview
     service nslcd start
     service nscd start
     service postfix start
-    service httpd start
-    chkconfig dirsrv on
     chkconfig nslcd on
     chkconfig nscd on
     chkconfig postfix on
+
+# [PRODUCTION]
+    chkconfig dirsrv on
+
+# [PRODUCTION/TESTSERVER]
+# (Maybe WIZARD too once we start doing strange things to autoupgrade
+# installs behind firewalls.)
+    service httpd start # will fail if AFS is not running
     chkconfig httpd on
 
 # nrpe is required for nagios alerts
     chkconfig nrpe on
 
-# Check sql user credentials (needs to be done after LDAP is setup)
+# [PRODUCTION] Check sql user credentials (needs to be done after LDAP
+# is setup)
     chown sql /etc/sql-mit-edu.cfg.php
 
 # Postfix doesn't actually deliver mail; fix this
@@ -347,6 +393,8 @@ scp .k5login root@$server:/home/logview
     svn status -q
     # Some usual candidates for clobbering include nsswitch.conf and
     # sysconfig/openafs
+    # [WIZARD/TEST] Remember that changes you made should not get
+    # reverted!
 
 # ThisCell got clobbered, replace it with athena.mit.edu
     echo "athena.mit.edu" > /usr/vice/etc/ThisCell
@@ -359,10 +407,14 @@ scp .k5login root@$server:/home/logview
 #   o /etc/sysconfig/network
 #   o your lvm thingies; probably don't need to edit
 
-# [TEST SERVER] More stuff for test servers
-#   - You need a self-signed SSL cert.  Generate with:
+# [TESTERVER]
+#   - You need a self-signed SSL cert or Apache will refuse to start
+#     or do SSL.  Generate with:
     openssl req -new -x509 -keyout /etc/pki/tls/private/scripts.key -out /etc/pki/tls/certs/scripts.cert -nodes
-#     Also make /etc/pki/tls/certs/ca.pem match up
+#     Also make /etc/pki/tls/certs/ca.pem match up (XXX what's the
+#     incant for that?)
+
+# [TESTSERVER] More stuff for test servers
 #   - Make (/etc/aliases) root mail go to /dev/null, so we don't spam people
 #   - Edit /etc/httpd/conf.d/scripts-vhost-names.conf to have scripts-fX-test.xvm.mit.edu
 #     be an accepted vhost name
