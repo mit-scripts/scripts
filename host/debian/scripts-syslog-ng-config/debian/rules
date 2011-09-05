@@ -1,0 +1,7 @@
+#!/usr/bin/make -f
+
+DEB_TRANSFORM_FILES_scripts-syslog-ng-config = /etc/syslog-ng/syslog-ng.conf.divert
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/rules/config-package.mk
+

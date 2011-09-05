@@ -1,0 +1,14 @@
+Source: scripts-syslog-ng-config
+Section: misc
+Priority: extra
+Maintainer: scripts team <scripts-team@mit.edu>
+Build-Depends: cdbs, debhelper (>= 7.0.50~), config-package-dev, syslog-ng,
+Standards-Version: 3.9.1
+Homepage: http://scripts.mit.edu/
+
+Package: scripts-syslog-ng-config
+Architecture: all
+Depends: ${misc:Depends},
+ syslog-ng,
+Description: Configures syslog-ng for zephyr logging
+ Configures a machine to log messages sent to syslog-ng to zephyr.
