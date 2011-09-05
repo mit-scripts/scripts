@@ -1,3 +1,9 @@
+scripts-vm-host (0.4) stable; urgency=low
+
+  * Depend on scripts-syslog-ng-config
+
+ -- Alexander Chernaykhovsky <achernya@mit.edu>  Mon, 05 Sep 2011 15:19:01 -0400
+
 scripts-vm-host (0.3) stable; urgency=low
 
   * Rebuild for inclusion in Scripts APT repository
