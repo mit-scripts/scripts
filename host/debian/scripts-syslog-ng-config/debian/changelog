@@ -1,4 +1,4 @@
-scripts-syslog-ng-config (0.2) unstable; urgency=low
+scripts-syslog-ng-config (0.2) stable; urgency=low
 
   * Move d_zroot into /usr/lib
 
