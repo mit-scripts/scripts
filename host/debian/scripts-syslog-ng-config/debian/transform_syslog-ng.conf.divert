@@ -1,0 +1,11 @@
+#!/bin/sh
+
+cat
+cat <<EOF
+
+# Zephyr to scripts
+destination d_zroot { program("/usr/lib/scripts-syslog-ng-config/d_zroot.pl"); };
+filter f_oom { facility(kern) and (message("Out of memory:") or message("Killed process")); };
+log { source(s_src); filter(f_auth); destination(d_zroot); };
+log { source(s_src); filter(f_oom); destination(d_zroot); };
+EOF

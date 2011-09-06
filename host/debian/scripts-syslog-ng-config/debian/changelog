@@ -1,0 +1,12 @@
+scripts-syslog-ng-config (0.2) stable; urgency=low
+
+  * Move d_zroot into /usr/lib
+
+ -- Quentin Smith <quentin@mit.edu>  Mon, 05 Sep 2011 15:01:04 -0400
+
+scripts-syslog-ng-config (0.1) stable; urgency=low
+
+  * Initial release
+
+ -- Alexander Chernyakhovsky <achernya@mit.edu>  Mon, 05 Sep 2011 14:45:27 -0400
+

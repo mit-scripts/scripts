@@ -43,6 +43,7 @@ Depends: ${misc:Depends},
  conserver-server,
  munin-node,
  subversion,
+ scripts-syslog-ng-config,
 Description: Configures a machine to be a scripts VM host
  Configures a machine to be a scripts VM host, installing all
  appropriate dependencies.

@@ -1,3 +1,15 @@
+scripts-vm-host (0.4) stable; urgency=low
+
+  * Depend on scripts-syslog-ng-config
+
+ -- Alexander Chernaykhovsky <achernya@mit.edu>  Mon, 05 Sep 2011 15:19:01 -0400
+
+scripts-vm-host (0.3) stable; urgency=low
+
+  * Rebuild for inclusion in Scripts APT repository
+
+ -- Alexander Chernyakhovsky <achernya@mit.edu>  Sun, 04 Sep 2011 20:57:55 -0400
+
 scripts-vm-host (0.2) unstable; urgency=low
 
   * Uhh, actually depend on c-p-d
