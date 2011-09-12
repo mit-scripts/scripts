@@ -1,4 +1,4 @@
-scripts-vm-host (0.5) unstable; urgency=low
+scripts-vm-host (0.5) stable; urgency=low
 
   * Add useful dependencies
 
