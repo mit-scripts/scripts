@@ -71,6 +71,9 @@ scp .ldapvirc root@$server:~
 
 # Install the initial set of credentials (to get Kerberized logins once
 # krb5 is installed).  Otherwise, SCP'ing things in will be annoying.
+# Note that if you don't feel like forcefully ignoring "public key
+# changed" errors, all you need to transfer is /etc/ssh/ssh_host_rsa_key
+# initially.
 #   o Install the machine keytab.
     ls -l /etc/krb5.keytab
 #     Use ktutil to combine the host/scripts.mit.edu and
@@ -92,6 +95,7 @@ scp .ldapvirc root@$server:~
 #     You can do that with:
 scp root@$source_server:/etc/ssh/*key* .
 scp *key* root@$server:/etc/ssh/
+    # Actually, this appears to be unnecessary
     service sshd reload
 
 # Check out the scripts /etc configuration
