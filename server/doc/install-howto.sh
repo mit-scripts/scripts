@@ -45,6 +45,10 @@ server=YOUR-SERVER-NAME-HERE
 # Take updates, reboot if there's a kernel update.
     yum update -y
 
+# Install compilation deps
+    cd /srv/repository/server/fedora
+    make install-deps
+
 # Get rid of network manager
     yum remove NetworkManager
 
