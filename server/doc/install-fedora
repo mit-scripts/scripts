@@ -6,6 +6,17 @@ You need to create the volumes to use:
     lvcreate -n $MACHINE-root --size 50.00G $HOST
     lvcreate -n $MACHINE-swap --size 10.00G $HOST
 
+Make sure that the console has an entry for this host:
+
+    vim /etc/conserver/conserver.cf
+
+If it doesn't, add:
+
+    console $MACHINE {
+        master $HOST;
+        include xen;
+    }
+
 We use Kickstart to to initial Fedora configuration.  Installing a new
 vanilla machine is as easy as:
 
