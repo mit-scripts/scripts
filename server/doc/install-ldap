@@ -173,17 +173,16 @@ nsIndexType: pres
        In addition to merely testing that replication works, this will
        set up the servers' changelogs properly.
 
-       Until this step is complete, no changes (other than the replica
-       refresh, to initially populate the new server) should be sent, or
-       you risk the cluster's replication agreements falling apart.
-       Possibly disabling Pony for the duration of this setup is a good
-       plan.
+       If this step is not completed before any server's LDAP server
+       shuts down, then the replication agreements will fall apart the
+       next time a change is made. You may wish to intentionally reboot
+       any servers that look like they want to crash _before_ beginning
+       this process.
 
   Here's how you do it.
 
-    0. Disable Pony (we don't have a particularly good way of doing
-       this at the moment), and tell -c scripts you're doing this and
-       not to go off and make changes to the database until you're done.
+    0. Tell -c scripts not to go off and reboot servers until you're
+       done (or to get any rebooting done with first).
 
     1. Pull open the replication part of the database. It's fairly empty
        right now.
@@ -315,8 +314,6 @@ nsDS5ReplicaTimeout: 120
     propagated to the new server, and then one from the new server so it
     gets propagated to all the existing servers' changelogs. This is
     also good for making sure the replication agreements actually work.
-
-    9. Re-enable Pony and celebrate on -c scripts.
 
 Troubleshooting
 ===============
