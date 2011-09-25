@@ -28,6 +28,11 @@ deb http://debathena.mit.edu/apt squeeze debathena debathena-config debathena-sy
 deb-src http://debathena.mit.edu/apt squeeze debathena debathena-config debathena-system openafs
 EOF
 
+# (on HPs) add HP repos to etc/apt/sources.list.d
+  cat <<EOF > /etc/apt/sources.list.d/hp.list
+deb http://downloads.linux.hp.com/SDR/downloads/ProLiantSupportPack/ maverick/current non-free
+EOF
+
 # install host keytab
   cp $keytab /etc/krb5.keytab
   k5srvutil change
@@ -37,4 +42,8 @@ EOF
     git clone -b squeeze ssh://scripts@scripts.mit.edu/mit/scripts/git/xen.git /etc/xen
 
 # Install scripts-vm-host
+  aptitude update
   aptitude install scripts-vm-host
+
+# (on HPs) install HP software
+  aptitude install hpacucli hp-health

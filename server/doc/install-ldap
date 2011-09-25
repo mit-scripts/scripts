@@ -161,14 +161,28 @@ nsIndexType: pres
 
             M1 <---> M2 <---> S
 
-    3. Set up the rest of the replication agreements at your leisure.
+    3. Set up the rest of the replication agreements.
 
                 M1 <---> M2
                 ^         ^
                 |         |
                 +--> S <--+
 
+    4. Push a change from every existing server (to the new server), and
+       then a change from the new server to (all) the existing servers.
+       In addition to merely testing that replication works, this will
+       set up the servers' changelogs properly.
+
+       If this step is not completed before any server's LDAP server
+       shuts down, then the replication agreements will fall apart the
+       next time a change is made. You may wish to intentionally reboot
+       any servers that look like they want to crash _before_ beginning
+       this process.
+
   Here's how you do it.
+
+    0. Tell -c scripts not to go off and reboot servers until you're
+       done (or to get any rebooting done with first).
 
     1. Pull open the replication part of the database. It's fairly empty
        right now.
@@ -284,6 +298,22 @@ nsDS5ReplicaTimeout: 120
     forgot to initialize the changelog.  Remove the replication
     agreement (you'll need to turn off dirsrv), add the changelog, and
     then try again.
+
+    7. Repeat step 6 to complete the graph of replications (i.e., from
+    every other server to the new server, and from the new server to
+    every other server).
+
+    Note the only difference between steps 5 and 6 is the lack of
+    nsDS5ReplicaRefresh: start. That only needs to be done once, to the
+    new server.
+
+    8. If at this point you look at the new server's changelog with
+    cl-dump (preferably /mit/scripts/admin/cl-dump.pl, to not prompt you
+    for a password), you won't see the servers you added in step 7. So,
+    from each of those servers, make a change to some record so it gets
+    propagated to the new server, and then one from the new server so it
+    gets propagated to all the existing servers' changelogs. This is
+    also good for making sure the replication agreements actually work.
 
 Troubleshooting
 ===============

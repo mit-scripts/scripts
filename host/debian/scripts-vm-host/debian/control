@@ -10,6 +10,7 @@ Package: scripts-vm-host
 Architecture: all
 Depends: ${misc:Depends},
  apticron,
+ build-essential,
  bwm-ng,
  bzip2,
  emacs23-nox,
@@ -43,7 +44,9 @@ Depends: ${misc:Depends},
  conserver-server,
  munin-node,
  subversion,
+ screen,
  scripts-syslog-ng-config,
+ sysstat,
 Description: Configures a machine to be a scripts VM host
  Configures a machine to be a scripts VM host, installing all
  appropriate dependencies.
