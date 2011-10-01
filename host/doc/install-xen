@@ -47,3 +47,6 @@ EOF
 
 # (on HPs) install HP software
   aptitude install hpacucli hp-health
+
+# Configure exim4 to use smarthost (outgoing.mit.edu), no local mail
+dpkg-reconfigure exim4-config
