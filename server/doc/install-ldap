@@ -6,7 +6,7 @@ To set up a new LDAP server:
   root# yum install -y policycoreutils-python
   root# yum install -y ldapvi
 - We want to run the directory server as its own user, so create fedora-ds
-  root# useradd -r -d /var/lib/dirsrv fedora-ds
+  root# useradd -u 103 -r -d /var/lib/dirsrv fedora-ds
 - Temporarily move away the existing slapd-scripts folder
   root# mv /etc/dirsrv/slapd-scripts{,.bak}
 - root# /usr/sbin/setup-ds.pl
