@@ -4,17 +4,19 @@
  %define pkgvers 1.6.0
  # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
--%define pkgrel 0.pre7
-+%define pkgrel 0.pre7.99.scripts.%{scriptsversion}
+-%define pkgrel 1
++%define pkgrel 1.99.scripts.%{scriptsversion}
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -247,6 +247,9 @@
+@@ -247,6 +247,11 @@
  %endif
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
 +Patch1000: openafs-scripts.patch
 +Patch1001: openafs-localcsdb.patch
++Patch1002: openafs-systemd.patch
++Patch1003: openafs-systemd-crond.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
@@ -76,18 +78,20 @@
  
  %else
  
-@@ -680,6 +689,10 @@
+@@ -680,6 +689,12 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
 +# Apply the Scripts patch
 +%patch1000 -p1 -b .scripts
 +%patch1001 -p1 -b .localcsdb
++%patch1002 -p1 -b .systemd
++%patch1003 -p1 -b .systemd-crond
 +
  ##############################################################################
  #
  # building
-@@ -1215,6 +1228,13 @@
+@@ -1215,6 +1230,13 @@
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*
