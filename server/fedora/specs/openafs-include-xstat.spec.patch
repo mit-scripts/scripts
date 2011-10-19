@@ -1,0 +1,38 @@
+--- openafs.spec.orig	2011-10-19 16:05:41.000000000 -0400
++++ openafs.spec	2011-10-19 16:10:06.000000000 -0400
+@@ -1115,7 +1115,7 @@
+ 
+ # create list of man pages that go in the 'openafs' package
+ /bin/ls $RPM_BUILD_ROOT%{_mandir}/man1 \
+-	|egrep '^afs|^fs|^kas|^klog|kapasswd|pagsh|^pts|^rxdebug|scout|^sys|tokens|translate|udebug|unlog|^uss|^vos' \
++	|egrep '^afs|^fs|^kas|^klog|kapasswd|pagsh|^pts|^rxdebug|scout|^sys|tokens|translate|^xstat|udebug|unlog|^uss|^vos' \
+ 	>openafs-man1files
+ 
+ /bin/ls $RPM_BUILD_ROOT%{_mandir}/man5 \
+@@ -1145,6 +1145,8 @@
+ %{_bindir}/tokens
+ %{_bindir}/tokens.krb
+ %{_bindir}/translate_et
++%{_bindir}/xstat_cm_test
++%{_bindir}/xstat_fs_test
+ %{_bindir}/udebug
+ %{_bindir}/unlog
+ %{_sbindir}/backup
+@@ -1196,7 +1198,7 @@
+ done
+ 
+ # the rest are not needed.
+-for f in dlog dpass install knfs livesys xstat_cm_test xstat_fs_test ; do
++for f in dlog dpass install knfs livesys ; do
+   rm -f $RPM_BUILD_ROOT%{_bindir}/$f
+ done
+ 
+@@ -1208,7 +1210,7 @@
+ rm -rf $RPM_BUILD_ROOT%{_sbindir}/kdump*
+ 
+ # remove man pages from programs deleted above
+-for f in 1/dlog 1/dpass 1/livesys 1/xstat_cm_test 1/xstat_fs_test 8/kdb 8/kpwvalid 8/xfs_size_check 1/package_test 5/package 8/package ; do
++for f in 1/dlog 1/dpass 1/livesys 8/kdb 8/kpwvalid 8/xfs_size_check 1/package_test 5/package 8/package ; do
+   rm -f $RPM_BUILD_ROOT%{_mandir}/man$f.*
+ done
+ 
