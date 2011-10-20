@@ -196,3 +196,7 @@ usually just involves replacing i586 with i686 in the appropriate places
 (Makefile, specfiles, /etc/mock configuration).  Note that for
 hysterical raisins we still refer to our 32-bit builds as i386.
 [XXX: Maybe this should change]
+
+Until we decide that the performance impact is negligible, any new PHP
+extensions other than the few we’ve whitelisted should be disabled by
+emptying their .ini files in /etc/php.d.
