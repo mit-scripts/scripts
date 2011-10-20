@@ -5,6 +5,7 @@ You need to create the volumes to use:
 
     lvcreate -n $MACHINE-root --size 50.00G $HOST
     lvcreate -n $MACHINE-swap --size 10.00G $HOST
+    lvcreate -n $MACHINE-cache --size 11.00G $HOST
 
 Make sure that the console has an entry for this host:
 
