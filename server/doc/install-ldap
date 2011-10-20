@@ -27,9 +27,12 @@ To set up a new LDAP server:
   dsconf, which is the "blessed" method]
 
 # Inside cn=config.  These changes definitely require a restart.
-nsslapd-ldapifilepath: /var/run/slapd-scripts.socket
+nsslapd-ldapifilepath: /var/run/slapd-scripts.socket  [NOTE: didn't need to do this]
 nsslapd-ldapilisten: on
 nsslapd-syntaxcheck: off
+
+# We need to turn off syntax check because our schema is wrong and too
+# restrictive on some value. This should get fixed.
 
 # Add these blocks
 
@@ -48,6 +51,7 @@ nsSaslMapFilterTemplate: (objectClass=posixAccount)
 - Put LDAP keytab (ldap/hostname.mit.edu) in /etc/dirsrv/keytab.  Make
   sure you chown/chgrp it to be readable by fedora-ds
 - Uncomment and modify in /etc/sysconfig/dirsrv: KRB5_KTNAME=/etc/dirsrv/keytab ; export KRB5_KTNAME
+  [NOTE: didn't need to do this either]
 - chown fedora-ds:fedora-ds /var/run/dirsrv
 - chown fedora-ds /etc/dirsrv/keytab
 - /sbin/service dirsrv start
@@ -208,6 +212,7 @@ nsDS5ReplicaBindDN: uid=ldap/real-mccoy.mit.edu,ou=People,dc=scripts,dc=mit,dc=e
 nsDS5ReplicaBindDN: uid=ldap/better-mousetrap.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
 nsDS5ReplicaBindDN: uid=ldap/old-faithful.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
 nsDS5ReplicaBindDN: uid=ldap/shining-armor.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindDN: uid=ldap/golden-egg.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
 nsds5ReplicaPurgeDelay: 604800
 nsds5ReplicaLegacyConsumer: off
 nsDS5ReplicaType: 3
@@ -221,6 +226,9 @@ nsDS5ReplicaType: 3
     3. Although we allowed those uids to bind, that user information
        doesn't exist on $SLAVE yet.  So you'll need to create the entry
        for just $MASTER.
+
+       REMEMBER: You need to use FOO.mit.edu for the names!  Otherwise you will get
+       unauthorized errors.
 
 add uid=ldap/$MASTER,ou=People,dc=scripts,dc=mit,dc=edu
 uid: ldap/$MASTER
@@ -247,6 +255,8 @@ nsslapd-changelogdir: /etc/dirsrv/slapd-scripts/changelogdb
        WARNING: There is a known bug doing full updates from 1.2.6 to
        1.2.6, see https://bugzilla.redhat.com/show_bug.cgi?id=637852
 
+        ldapvi -b cn=\"dc=scripts,dc=mit,dc=edu\",cn=mapping\ tree,cn=config
+
 add cn="GSSAPI Replication to $SLAVE", cn=replica, cn="dc=scripts,dc=mit,dc=edu", cn=mapping tree, cn=config
 objectClass: top
 objectClass: nsDS5ReplicationAgreement
@@ -267,7 +277,8 @@ nsDS5BeginReplicaRefresh: start
 
     If it fails with LDAP Error 49, check /var/log/dirsrv on $MASTER
     for more information.  It might be because fedora-ds can't read
-    /etc/dirsrv/keytab
+    /etc/dirsrv/keytab or because you setup the account on the SLAVE
+    incorrectly.
 
     6. Replicate in the other direction.  On $MASTER, add $SLAVE
     as a nsDS5ReplicaBindDN in cn=replica,cn="dc=scripts,dc=mit,dc=edu",cn=mapping tree,cn=config
