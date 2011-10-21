@@ -1,0 +1,37 @@
+Migrating a Scripts guest between Xen hosts
+-------------------------------------------
+
+Two main components:
+
+    1. Copying the disk image (we do this with dd/netcat/backend network)
+    2. Modifying Xen configuration
+
+First, get a copy of /etc/fstab; in particular, you care about the UUIDs
+of the swap and cache partitions.
+
+Next, shut off the relevant VM.  Make sure that you have space on the
+destination host, and that you have a volume ready to receive the data
+(check with 'lvs').  From now, we'll assume $MACHINE is the name of the
+VM you're migrating, $SRC is the source host, and $DST is the destination host.
+
+Setup dd listening on a port on the destination host.  Pick a random,
+hard to guess port number.
+
+    root@$DST:~# nc -l -p $RANDOMPORT | dd of=/dev/$DST/$MACHINE-root bs=16M
+
+Next, send the data over the *backend network*.  We have 172.21.*.* setup
+to be routed on our backend network, do NOT use the public IPs on 18.*.*.*.
+
+    root@$SRC:~# dd if=/dev/$SRC/$MACHINE-root bs=16M | nc 172.21.X.Y $RANDOMPORT
+
+where X and Y are the last two digits of the normal 18.181.X.Y IP address of $DST.
+
+Once you're done, ensure that the swap and cache partitions are ready on the
+destination (you don't, mercifully, have to dd those over)--make sure they're
+properly configured; especially make sure that they the right UUIDs (from
+the fstab you saved!)  Check 'install-fedora' if you need to be reminded
+what the incants are.
+
+Finally, edit /etc/xen/scripts and modify the host that is hosting the server.
+Spin it up on the host and make sure everything is in order, then nuke the
+old disk image (multiple copies of a Scripts server is a bad idea!)
