@@ -18,7 +18,7 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 krb5.i686 httpd openssh
+upstream_yum	= krb5 krb5.i686 httpd openssh rubygems
 hackage		= MonadCatchIO-mtl-0.3.0.2 cgi-3001.1.8.2 unix-handle-0.0.0
 upstream_hackage = ghc-MonadCatchIO-mtl ghc-cgi ghc-unix-handle
 upstream	= openafs $(upstream_yum) $(upstream_hackage) moira zephyr zephyr.i686 python-zephyr athena-aclocal discuss
@@ -192,8 +192,10 @@ zephyr-deps	= hesiod-devel libss-devel krb5-devel readline-devel
 openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth pango-devel cairo-devel libedit-devel nss-devel fipscheck-devel
 php-deps	= bzip2-devel curl-devel gmp-devel libstdc++-devel sqlite-devel gcc-c++ libc-client-devel mysql-devel postgresql-devel unixODBC-devel libxml2-devel net-snmp-devel libxslt-devel libxml2-devel libXpm-devel libjpeg-devel t1lib-devel libmcrypt-devel mhash-devel libtidy-devel freetds-devel aspell-devel recode-devel
 haskell-deps	= cabal-install
+# ezyang: not 100% sure this is correct
+rubygems-deps	= ruby ruby-rdoc
 install-deps:
-	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(moira-deps) $(zephyr-deps) $(openssh-deps) $(php-deps) $(haskell-deps)
+	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(moira-deps) $(zephyr-deps) $(openssh-deps) $(php-deps) $(haskell-deps) $(rubygems-deps)
 # XXX: We need to figure out what's going on with compat-readline43
 #	rpm -ivh http://kojipkgs.fedoraproject.org/packages/compat-readline43/4.3/3/i386/compat-readline43-4.3-3.i386.rpm
 #	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
