@@ -1,10 +1,10 @@
---- redland-bindings.spec	2011-10-12 14:51:58.000000000 -0400
-+++ redland-bindings-php.spec	2011-10-13 10:15:24.000000000 -0400
+--- redland-bindings.spec.old	2011-10-12 14:51:58.000000000 -0400
++++ redland-bindings.spec	2011-10-13 10:15:24.000000000 -0400
 @@ -1,6 +1,6 @@
  Name:           redland-bindings
- Version:        1.0.7.1
--Release:        1%{?dist}
-+Release:        1%{?dist}.scripts.%{scriptsversion}
+ Version:        1.0.11.1
+-Release:        6%{?dist}
++Release:        6%{?dist}.scripts.%{scriptsversion}
  Summary:        Redland RDF Application Framework API Bindings
  
  Group:          System Environment/Libraries
