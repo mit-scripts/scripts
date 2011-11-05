@@ -1,15 +1,15 @@
---- openafs.spec.orig	2011-10-19 16:05:41.000000000 -0400
-+++ openafs.spec	2011-10-19 16:10:06.000000000 -0400
-@@ -1115,7 +1115,7 @@
+--- openafs.spec.orig	2011-11-04 23:50:34.842221577 -0400
++++ openafs.spec	2011-11-04 23:52:00.538590290 -0400
+@@ -1103,7 +1103,7 @@
  
  # create list of man pages that go in the 'openafs' package
  /bin/ls $RPM_BUILD_ROOT%{_mandir}/man1 \
--	|egrep '^afs|^fs|^kas|^klog|kapasswd|pagsh|^pts|^rxdebug|scout|^sys|tokens|translate|udebug|unlog|^uss|^vos' \
-+	|egrep '^afs|^fs|^kas|^klog|kapasswd|pagsh|^pts|^rxdebug|scout|^sys|tokens|translate|^xstat|udebug|unlog|^uss|^vos' \
+-	|egrep '^afs|^fs|^kas|^klog|kapasswd|pagsh|^pts|^restorevol|^rxdebug|scout|^sys|tokens|translate|udebug|unlog|^uss|^vos' \
++	|egrep '^afs|^fs|^kas|^klog|kapasswd|pagsh|^pts|^restorevol|^rxdebug|scout|^sys|tokens|translate|^xstat|udebug|unlog|^uss|^vos' \
+ 	|egrep -v '^afs_compile_et' \
  	>openafs-man1files
  
- /bin/ls $RPM_BUILD_ROOT%{_mandir}/man5 \
-@@ -1145,6 +1145,8 @@
+@@ -1134,6 +1134,8 @@
  %{_bindir}/tokens
  %{_bindir}/tokens.krb
  %{_bindir}/translate_et
@@ -18,7 +18,7 @@
  %{_bindir}/udebug
  %{_bindir}/unlog
  %{_sbindir}/backup
-@@ -1196,7 +1198,7 @@
+@@ -1184,7 +1186,7 @@
  done
  
  # the rest are not needed.
@@ -27,7 +27,7 @@
    rm -f $RPM_BUILD_ROOT%{_bindir}/$f
  done
  
-@@ -1208,7 +1210,7 @@
+@@ -1196,7 +1198,7 @@
  rm -rf $RPM_BUILD_ROOT%{_sbindir}/kdump*
  
  # remove man pages from programs deleted above
