@@ -200,3 +200,15 @@ hysterical raisins we still refer to our 32-bit builds as i386.
 Until we decide that the performance impact is negligible, any new PHP
 extensions other than the few we’ve whitelisted should be disabled by
 emptying their .ini files in /etc/php.d.
+
+8. Sending announcements
+------------------------
+
+Once development work has finished, we need to allow users to test
+their websites on the new servers.
+
+    SIPB Internal Testing: Send an email to scripts-team@mit.edu
+    and -c sipb notifying them of testing procedure and known
+    issues.
+
+    General Testing:
