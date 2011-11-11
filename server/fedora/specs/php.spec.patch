@@ -1,0 +1,39 @@
+--- rpmbuild/SPECS/php.spec.orig	2011-11-09 14:44:56.673119178 -0500
++++ rpmbuild/SPECS/php.spec	2011-11-10 21:12:59.705782920 -0500
+@@ -37,7 +37,7 @@
+ Summary: PHP scripting language for creating dynamic web sites
+ Name: php
+ Version: 5.3.8
+-Release: 3%{?dist}
++Release: 3%{?dist}.scripts.%{scriptsversion}
+ License: PHP
+ Group: Development/Languages
+ URL: http://www.php.net/
+@@ -79,6 +79,9 @@
+ # Fixes for tests
+ Patch61: php-5.0.4-tests-wddx.patch
+ 
++Patch1000: php-zend-llist-destroy.patch
++Patch1001: php-user-ini-extension.patch
++
+ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+ 
+ BuildRequires: bzip2-devel, curl-devel >= 7.9, db4-devel, gmp-devel
+@@ -94,6 +97,7 @@
+ Requires: php-cli%{?_isa} = %{version}-%{release}
+ # To ensure correct /var/lib/php/session ownership:
+ Requires(pre): httpd
++Provides: scripts-php = %{version}-%{release}
+ 
+ 
+ # Don't provides extensions, which are not shared library, as .so
+@@ -549,6 +553,9 @@
+ 
+ %patch61 -p1 -b .tests-wddx
+ 
++%patch1000 -p1 -b .llist-destroy
++%patch1001 -p1 -b .userini-ext
++
+ # Prevent %%doc confusion over LICENSE files
+ cp Zend/LICENSE Zend/ZEND_LICENSE
+ cp TSRM/LICENSE TSRM_LICENSE

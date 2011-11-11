@@ -1,0 +1,11 @@
+--- php-5.3.8-orig/Zend/zend_llist.c	2011-11-09 14:50:55.691289017 -0500
++++ php-5.3.8/Zend/zend_llist.c	2011-11-10 21:11:02.585017295 -0500
+@@ -117,6 +117,8 @@
+ 		current = next;
+ 	}
+ 
++	l->head = NULL;
++	l->tail = NULL;
+ 	l->count = 0;
+ }
+ 
