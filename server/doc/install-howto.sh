@@ -65,25 +65,18 @@ server=YOUR-SERVER-NAME-HERE
 #
 # The LDAP keytab should be by itself, so be sure to delete it and
 # put it in its own file.
+
 # ----------------------------->8--------------------------------------
+#                      INFINITE INSTALLATION
 
 # Start with a Scripts kickstarted install of Fedora (install-fedora)
 
 # Take updates, reboot if there's a kernel update.
     yum update -y
 
-# Get rid of network manager
+# Get rid of network manager (XXX figure out to make kickstarter do
+# this for us)
     yum remove NetworkManager
-
-# This is superseded by credit-card, but only for [PRODUCTION]
-# Don't use credit-card on [WIZARD]: it will put in the wrong creds!
-#
-#   # All types of servers will have an /etc/daemon.keytab file, however,
-#   # different types of server will have different credentials in this
-#   # keytab.
-#   #   [PRODUCTION] daemon.scripts
-#   #   [WIZARD]     daemon.scripts-security-upd
-#   #   [TESTSERVER] daemon.scripts-test
 
 # Check out the scripts /etc configuration
     cd /root
@@ -148,6 +141,9 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
     yumdownloader ghc-cgi
     yumdownloader ghc-cgi-devel
     rpm -i ghc-cgi*1.8.1*.rpm
+
+# ----------------------------->8--------------------------------------
+#                      SPHEROID SHENANIGANS
 
 # Note: Since ultimately we'd like to move away from using per-language
 # package manager and all of these be RPMs, it is of questionable
@@ -217,6 +213,16 @@ pecl list | tail -n +4 | cut -f 1 -d " " > pecl.txt
 # Run credit-card to clone in credentials and make things runabble
 python host.py push $server
 
+# This is superseded by credit-card, but only for [PRODUCTION]
+# Don't use credit-card on [WIZARD]: it will put in the wrong creds!
+#
+#   # All types of servers will have an /etc/daemon.keytab file, however,
+#   # different types of server will have different credentials in this
+#   # keytab.
+#   #   [PRODUCTION] daemon.scripts
+#   #   [WIZARD]     daemon.scripts-security-upd
+#   #   [TESTSERVER] daemon.scripts-test
+
 # [PRODUCTION/WIZARD] Fix the openafs /usr/vice/etc <-> /etc/openafs
 # mapping.
     echo "/afs:/usr/vice/cache:10000000" > /usr/vice/etc/cacheinfo
@@ -225,9 +231,10 @@ python host.py push $server
 # much smaller; the max filesize on XVM is 10GB.  Pick something like
 # 500000. Also, some of the AFS parameters are kind of retarded (and if
 # you're low on disk space, will actually exhaust our inodes).  Edit
-# these parameters in /etc/sysconfig/openafs
+# these parameters in /etc/sysconfig/openafs (but wait, that won't
+# work, will it...)
     echo "/afs:/usr/vice/cache:500000" > /usr/vice/etc/cacheinfo
-    XXX TODO COMMANDS
+    vim /etc/sysconfig/openafs
 
 # Test that zephyr is working
     systemctl enable zhm.service
@@ -244,6 +251,7 @@ python host.py push $server
     ls -l /etc/dirsrv/keytab
     cat install-ldap
 
+# Enable lots of services
     systemctl enable openafs-client.service
     systemctl enable dirsrv.service
     systemctl enable nslcd.service
