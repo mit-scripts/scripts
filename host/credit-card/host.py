@@ -50,6 +50,7 @@ COMMON_PROD_CREDS = [ # important: no leading slashes!
     ('root', 0o600, 'etc/ssh/ssh_host_dsa_key'),
     ('root', 0o600, 'etc/ssh/ssh_host_key'),
     ('root', 0o600, 'etc/ssh/ssh_host_rsa_key'),
+    ('root', 0o600, 'etc/pki/tls/private/scripts-1024.key'),
     ('root', 0o600, 'etc/pki/tls/private/scripts.key'),
     ('root', 0o600, 'etc/whoisd-password'),
     ('root', 0o600, 'etc/daemon.keytab'),
