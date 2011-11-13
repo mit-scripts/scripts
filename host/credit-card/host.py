@@ -53,7 +53,7 @@ COMMON_PROD_CREDS = [ # important: no leading slashes!
     ('root', 0o600, 'etc/pki/tls/private/scripts-1024.key'),
     ('root', 0o600, 'etc/pki/tls/private/scripts.key'),
     ('root', 0o600, 'etc/whoisd-password'),
-    ('root', 0o600, 'etc/daemon.keytab'),
+    ('afsagent', 0o600, 'etc/daemon.keytab'),
 
     ('root', 0o644, 'etc/ssh/ssh_host_dsa_key.pub'),
     ('root', 0o644, 'etc/ssh/ssh_host_key.pub'),
