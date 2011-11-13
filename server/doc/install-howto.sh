@@ -78,6 +78,9 @@ server=YOUR-SERVER-NAME-HERE
 # this for us)
     yum remove NetworkManager
 
+# Make sure sendmail isn't installed
+    yum remove sendmail
+
 # Check out the scripts /etc configuration
     cd /root
     \cp -a etc /
@@ -99,7 +102,7 @@ server=YOUR-SERVER-NAME-HERE
     yum install -y scripts-base
     # Some of these packages are naughty and clobber some of our files
     cd /etc
-    svn revert resolv.conf hosts sysconfig/openafs
+    svn revert resolv.conf hosts sysconfig/openafs nsswitch.conf
 
 # Replace rsyslog with syslog-ng by doing:
     rpm -e --nodeps rsyslog
@@ -114,9 +117,6 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 # several minutes of dependency resolution until it decides that
 # it can't install /one/ package.
     yum install -y --skip-broken $(cat packages.txt)
-
-# Make sure sendmail isn't installed
-    yum remove sendmail
 
 # Check which packages are installed on your new server that are not
 # in the snapshot, and remove ones that aren't needed for some reason
@@ -134,7 +134,7 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 # it doesn't work with the haskell-platform package which expects
 # explicit versions.  So temporarily rpm -e the package, and then
 # install it again after you install haskell-platform.  [Note: You
-# probably won't need this in Fedora 15 or something, when the Haskell
+# probably won't need this in Fedora 17 or something, when the Haskell
 # Platform gets updated.]
     rpm -e ghc-cgi-devel ghc-cgi
     yum install -y haskell-platform
@@ -191,6 +191,7 @@ cat /usr/lib/python2.7/site-packages/easy-install.pth | grep "^./" | cut -c3- | 
 gem list --no-version > gem.txt
     gem install $(gem list --no-version | grep -Fxvf - gem.txt)
     # Also, we need to install the old rails version
+    gem install -v=2.3.5 rails
 
 # - Look at `pear list` for Pear fruits (or whatever they're called).
 #   Yet again, 'yum search' for RPMs before resorting to 'pear install'.  Note
@@ -209,6 +210,9 @@ pecl list | tail -n +4 | cut -f 1 -d " " > pecl.txt
 
 # ----------------------------->8--------------------------------------
 #                       INFINITE CONFIGURATION
+
+# Create fedora-ds user (needed for credit-card)
+useradd -u 103 -r -d /var/lib/dirsrv fedora-ds
 
 # Run credit-card to clone in credentials and make things runabble
 python host.py push $server
@@ -295,13 +299,10 @@ python host.py push $server
 # Fix etc by making sure none of our config files got overwritten
     cd /etc
     svn status -q
-    # Some usual candidates for clobbering include nsswitch.conf and
-    # sysconfig/openafs
+    # Some usual candidates for clobbering include nsswitch.conf,
+    # resolv.conf and sysconfig/openafs
     # [WIZARD/TEST] Remember that changes you made should not get
     # reverted!
-
-# ThisCell got clobbered, replace it with athena.mit.edu
-    echo "athena.mit.edu" > /usr/vice/etc/ThisCell
 
 # Reboot the machine to restore a consistent state, in case you
 # changed anything. (Note: Starting kdump fails (this is ok))

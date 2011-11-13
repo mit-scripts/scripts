@@ -1,33 +1,34 @@
-To set up a new LDAP server:
+# To set up a new LDAP server:
 
-- Install the RPM 389-ds-base with yum (these are installed by kickstart
-  these days, so these two steps are probably not necessary)
-  root# yum install -y 389-ds-base
-  root# yum install -y policycoreutils-python
-  root# yum install -y ldapvi
-- We want to run the directory server as its own user, so create fedora-ds
-  root# useradd -u 103 -r -d /var/lib/dirsrv fedora-ds
-- Temporarily move away the existing slapd-scripts folder
-  root# mv /etc/dirsrv/slapd-scripts{,.bak}
-- root# /usr/sbin/setup-ds.pl
-    - Choose a typical install
-    - Tell it to use the fedora-ds user and group
-    - Directory server identifier: scripts
-        Needed to remove this from the config file first
-    - Suffix: dc=scripts,dc=mit,dc=edu
-    - Input directory manager password
-      (this can be found in  ~/.ldapvirc)
-- Move the schema back
-  root# cp -R /etc/dirsrv/slapd-scripts.bak/{.svn,*} /etc/dirsrv/slapd-scripts
-  root# rm -Rf /etc/dirsrv/slapd-scripts.bak
-- Turn dirsrv off: service dirsrv stop
-- Apply the following configuration changes.  If you're editing
-  dse.ldif, you don't want dirsrv to be on, otherwise it will
-  overwrite your changes. [XXX: show how to do these changes with
-  dsconf, which is the "blessed" method]
+# Temporarily move away the existing slapd-scripts folder
+mv /etc/dirsrv/slapd-scripts{,.bak}
+
+# Setup directory server
+/usr/sbin/setup-ds.pl
+#   - Choose a typical install
+#   - Tell it to use the fedora-ds user and group
+#   - Directory server identifier: scripts
+#   - Suffix: dc=scripts,dc=mit,dc=edu
+#   - Input directory manager password
+#     (this can be found in  ~/.ldapvirc)
+
+# Move the schema back
+cp -R /etc/dirsrv/slapd-scripts.bak/{.svn,*} /etc/dirsrv/slapd-scripts
+rm -Rf /etc/dirsrv/slapd-scripts.bak
+
+# Turn dirsrv off:
+systemctl stop dirsrv.service
+
+# Apply the following configuration changes.  If you're editing
+# dse.ldif, you don't want dirsrv to be on, otherwise it will
+# overwrite your changes. [XXX: show how to do these changes with
+# dsconf, which is the "blessed" method, although it seems
+# dsconf only exists for Red Hat]
+
+vim /etc/dirsrv/slapd-scripts/dse.ldif
+<<<EOF
 
 # Inside cn=config.  These changes definitely require a restart.
-nsslapd-ldapifilepath: /var/run/slapd-scripts.socket  [NOTE: didn't need to do this]
 nsslapd-ldapilisten: on
 nsslapd-syntaxcheck: off
 
@@ -48,14 +49,14 @@ nsSaslMapRegexString: \(.*\)
 nsSaslMapBaseDNTemplate: uid=\1,ou=People,dc=scripts,dc=mit,dc=edu
 nsSaslMapFilterTemplate: (objectClass=posixAccount)
 
-- Put LDAP keytab (ldap/hostname.mit.edu) in /etc/dirsrv/keytab.  Make
-  sure you chown/chgrp it to be readable by fedora-ds
-- Uncomment and modify in /etc/sysconfig/dirsrv: KRB5_KTNAME=/etc/dirsrv/keytab ; export KRB5_KTNAME
-  [NOTE: didn't need to do this either]
-- chown fedora-ds:fedora-ds /var/run/dirsrv
-- chown fedora-ds /etc/dirsrv/keytab
-- /sbin/service dirsrv start
-- Use ldapvi -b cn=config to add these indexes (8 of them):
+EOF;
+
+systemctl start dirsrv.service
+
+ldapvi -b cn=config
+# Add these indexes (8 of them):
+
+<<<EOF
 
 add cn=apacheServerName, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
 objectClass: top
@@ -121,6 +122,8 @@ nsSystemIndex: false
 nsIndexType: eq
 nsIndexType: pres
 
+EOF;
+
 - Build the indexes for all the fields:
 
     /usr/lib64/dirsrv/slapd-scripts/db2index.pl -D "cn=Directory Manager" -j /etc/signup-ldap-pw -n userRoot
@@ -184,6 +187,10 @@ nsIndexType: pres
        this process.
 
   Here's how you do it.
+
+  NOTE: There's this spiffy new tool MMR hammer which automates some of
+  this process.  Check the "MMR Hammer" sections to see how.  Install it
+  here:  https://github.com/ezyang/mmr-hammer
 
     0. Tell -c scripts not to go off and reboot servers until you're
        done (or to get any rebooting done with first).
@@ -252,8 +259,7 @@ nsslapd-changelogdir: /etc/dirsrv/slapd-scripts/changelogdb
        The last line runs the replication.  This is perhaps the most
        risky step of the process; see below for help debugging problems.
 
-       WARNING: There is a known bug doing full updates from 1.2.6 to
-       1.2.6, see https://bugzilla.redhat.com/show_bug.cgi?id=637852
+       MMR Hammer: mmr-hammer -h $MASTER init agreements $SLAVE
 
         ldapvi -b cn=\"dc=scripts,dc=mit,dc=edu\",cn=mapping\ tree,cn=config
 
@@ -282,7 +288,7 @@ nsDS5BeginReplicaRefresh: start
 
     6. Replicate in the other direction.  On $MASTER, add $SLAVE
     as a nsDS5ReplicaBindDN in cn=replica,cn="dc=scripts,dc=mit,dc=edu",cn=mapping tree,cn=config
-    Also, add an account for $SLAVE
+    Also, add an account for $SLAVE if it doesn't exist already.
 
 add uid=ldap/$SLAVE,ou=People,dc=scripts,dc=mit,dc=edu
 uid: ldap/$SLAVE
@@ -290,6 +296,8 @@ objectClass: account
 objectClass: top
 
     On $SLAVE,
+
+       MMR Hammer: mmr-hammer -h $SLAVE init agreements $MASTER
 
 add cn="GSSAPI Replication to $MASTER", cn=replica, cn="dc=scripts,dc=mit,dc=edu", cn=mapping tree, cn=config
 objectClass: top
@@ -318,6 +326,10 @@ nsDS5ReplicaTimeout: 120
     nsDS5ReplicaRefresh: start. That only needs to be done once, to the
     new server.
 
+    With MMR hammer, that's something like:
+
+        for i in $SERVER_NAMES; do mmr-hammer -h $i init agreements $SERVER_NAMES; done
+
     8. If at this point you look at the new server's changelog with
     cl-dump (preferably /mit/scripts/admin/cl-dump.pl, to not prompt you
     for a password), you won't see the servers you added in step 7. So,
@@ -325,6 +337,10 @@ nsDS5ReplicaTimeout: 120
     propagated to the new server, and then one from the new server so it
     gets propagated to all the existing servers' changelogs. This is
     also good for making sure the replication agreements actually work.
+
+    With MMR hammer, that's something like:
+
+        for i in $SERVER_NAMES; do mmr-hammer -h $i test; sleep 20; done
 
 Troubleshooting
 ===============
