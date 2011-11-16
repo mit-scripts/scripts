@@ -1,24 +1,24 @@
---- krb5.spec.orig	2011-07-14 16:07:42.000000000 -0400
-+++ krb5.spec	2011-07-14 16:09:58.000000000 -0400
+--- krb5.spec.orig	2011-11-16 12:37:32.246736120 -0500
++++ krb5.spec	2011-11-16 12:42:47.134740975 -0500
 @@ -6,7 +6,7 @@
  Summary: The Kerberos network authentication system
  Name: krb5
  Version: 1.9.1
--Release: 5%{?dist}
-+Release: 5%{?dist}.scripts.%{scriptsversion}
+-Release: 14%{?dist}
++Release: 14%{?dist}.scripts.%{scriptsversion}
  # Maybe we should explode from the now-available-to-everybody tarball instead?
  # http://web.mit.edu/kerberos/dist/krb5/1.9/krb5-1.9.1-signed.tar
  Source0: krb5-%{version}.tar.gz
-@@ -58,6 +58,8 @@
- Patch82: krb5-1.9.1-ai_addrconfig.patch
- Patch83: krb5-1.9.1-ai_addrconfig2.patch
+@@ -65,6 +65,8 @@
+ Patch89: krb5-1.9.1-sendto_poll3.patch
+ Patch90: krb5-1.9-MITKRB5-SA-2011-006.patch
  
 +Patch1000: krb5-kuserok-scripts.patch
 +
  License: MIT
  URL: http://web.mit.edu/kerberos/www/
  Group: System Environment/Libraries
-@@ -105,6 +107,7 @@
+@@ -114,6 +116,7 @@
  %package libs
  Summary: The shared libraries used by Kerberos 5
  Group: System Environment/Libraries
@@ -26,10 +26,10 @@
  
  %description libs
  Kerberos is a network authentication system. The krb5-libs package
-@@ -205,6 +208,7 @@
- %patch81 -p1 -b .canonicalize-fallback
- %patch82 -p0 -b .ai_addrconfig
- %patch83 -p0 -b .ai_addrconfig2
+@@ -221,6 +224,7 @@
+ %patch88 -p1 -b .crossrealm
+ %patch89 -p1 -b .sendto_poll3
+ %patch90 -p1 -b .2011-006
 +%patch1000 -p1 -b .kuserok
  gzip doc/*.ps
  
