@@ -1,5 +1,5 @@
---- openafs.spec.orig	2011-06-20 15:32:57.000000000 -0400
-+++ openafs.spec	2011-06-21 17:15:24.000000000 -0400
+--- rpmbuild/SPECS/openafs.spec
++++ rpmbuild/SPECS/openafs.spec.~3~	2011-11-20 20:13:52.211673609 -0500
 @@ -4,7 +4,7 @@
  %define pkgvers 1.6.0
  # for beta/rc releases make pkgrel 0.<tag>
@@ -9,19 +9,21 @@
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -247,6 +247,11 @@
- %endif
+@@ -237,6 +237,13 @@
+ 
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
 +Patch1000: openafs-scripts.patch
 +Patch1001: openafs-localcsdb.patch
 +Patch1002: openafs-systemd.patch
 +Patch1003: openafs-systemd-crond.patch
++Patch1004: openafs-linux-3.1-rcu.patch
++Patch1005: openafs-linux-3.1-fsync.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -326,6 +329,7 @@
+@@ -316,6 +323,7 @@
  %if %{build_userspace}
  
  %package client
@@ -29,7 +31,7 @@
  Requires: binutils, openafs = %{version}
  
  %if %{fedorakmod}
-@@ -386,6 +390,7 @@
+@@ -376,6 +384,7 @@
  
  %if %{build_authlibs}
  %package authlibs
@@ -37,23 +39,23 @@
  Summary: OpenAFS authentication shared libraries
  Group: Networking/Filesystems
  
-@@ -402,6 +407,7 @@
+@@ -392,6 +401,7 @@
  %endif
  
  %package authlibs-devel
 +Provides: scripts-openafs-authlibs-devel
  %if %{build_authlibs}
- Requires: openafs-authlibs = %{version}
+ Requires: openafs-authlibs = %{version}-%{release}
  %endif
-@@ -420,6 +426,7 @@
+@@ -410,6 +420,7 @@
  libraries.
  
  %package devel
 +Provides: scripts-openafs-devel
  Summary: OpenAFS Development Libraries and Headers
  Group: Development/Filesystems
- 
-@@ -448,6 +455,7 @@
+ Requires: openafs = %{version}-%{release}
+@@ -439,6 +450,7 @@
  administrators.
  
  %package kernel-source
@@ -61,7 +63,7 @@
  Summary: OpenAFS Kernel Module source tree
  Group: Networking/Filesystems
  Provides: openafs-kernel = %{version}
-@@ -497,6 +505,7 @@
+@@ -488,6 +500,7 @@
  
  %if %{krb5support}
  %package krb5
@@ -69,7 +71,7 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{version}
  Group: Networking/Filesystems
-@@ -523,7 +532,7 @@
+@@ -514,7 +527,7 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
@@ -78,7 +80,7 @@
  
  %else
  
-@@ -680,6 +689,12 @@
+@@ -671,6 +684,14 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
@@ -87,11 +89,13 @@
 +%patch1001 -p1 -b .localcsdb
 +%patch1002 -p1 -b .systemd
 +%patch1003 -p1 -b .systemd-crond
++%patch1004 -p1 -b .rcu
++%patch1005 -p1 -b .fsync
 +
  ##############################################################################
  #
  # building
-@@ -1215,6 +1230,13 @@
+@@ -1212,6 +1233,13 @@
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*
