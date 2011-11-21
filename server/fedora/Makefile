@@ -93,11 +93,14 @@ install-srpms: mkdir-tree download
 copy-specs: mkdir-tree
 	cp ${specs}/*.spec $(tmp_specs)
 
+# Remove old .orig files so we're not mislead
 patch-specs: install-srpms
 	@cd ${tmp_specs}; \
 	list=`ls ${specs}/*.spec.patch`; \
+	rm -f *.orig; \
+	rm -f *.spec.~*~; \
 	for i in $$list; do \
-		patch < $$i; \
+		patch -bV numbered < $$i; \
 	done; \
 	list2=`svn ls ${oursrcdir}`; \
 	for i in $$list2; do \
