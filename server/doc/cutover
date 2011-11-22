@@ -1,0 +1,22 @@
+Scripts Fedora Transition Cutover Documentation
+===============================================
+
+1. Audit all of the servers.
+
+2. Tag end of life revision from trunk
+
+3. Merge any remaining revisions from trunk to the dev branch.
+
+4. Reintegrate the branch into trunk.
+
+5. Switch all of the servers (new servers to trunk, old servers to end of life tag).
+
+6. List all new servers in ldirectord.
+
+7. Migrate cron (remove reboot flag so they get run).
+
+8. Edit heartbeat.php (the actual cutover.)
+
+9. Nologin the old servers.
+
+10. Update Nagios
