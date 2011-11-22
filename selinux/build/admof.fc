@@ -1,5 +1,0 @@
-# Joe Presbrey
-# presbrey@mit.edu
-# 2006/1/15
-
-/usr/local/sbin/admof					gen_context(system_u:object_r:admof_exec_t,s0)
