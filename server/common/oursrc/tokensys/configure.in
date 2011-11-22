@@ -23,5 +23,14 @@ AC_ARG_WITH(aklog,
 ])
 REQUIRE_PATH(aklog)
 
+AC_ARG_WITH(fs,
+[  --with-fs[=PATH]          fs is located at PATH],[
+  if test "$withval" != "no" -a "$withval" != "yes"; then
+    fs_path="$withval"
+  fi
+])
+REQUIRE_PATH(fs)
+
 AC_OUTPUT(Makefile)
 AC_OUTPUT(renew)
+AC_OUTPUT(scripts-afsagent-startup)

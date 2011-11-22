@@ -3,12 +3,3 @@
 touch /var/lock/subsys/local
 
 /bin/mkdir -pm 1773 /tmp/sessions
-
-#### Set the AFS sysname. Ideally, this should go elsewhere, but this
-#### is a horrible hack to clean up after another horrible hack, so...
-
-/sbin/sysctl -q afs.GCPAGs=0
-/usr/bin/fs setcrypt on
-/usr/bin/fs sysname 'amd64_fedora15_scripts' 'amd64_fedora13_scripts' 'amd64_fedora11_scripts' 'amd64_fedora9_scripts' 'amd64_fedora7_scripts' 'scripts' 'amd64_fedora15' 'amd64_fedora13' 'amd64_fedora11' 'amd64_fedora9' 'amd64_fedora7' 'amd64_linux26' 'i386_deb60' 'i386_deb50' 'i386_deb40' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux26' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux2'
-
-/usr/bin/fs setcell -nosuid -c athena
