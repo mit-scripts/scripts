@@ -1,23 +1,2 @@
 AFSD_ARGS="-afsdb -dynroot -fakestat-all -stat 25000 -daemons 100 -volumes 4000 -files 400000 -chunksize 19"
 BOSSERVER_ARGS=
-
-postinit () {
-	/sbin/sysctl -q afs.GCPAGs=0
-	/usr/bin/fs setcrypt on
-	case "$(lsb_release -cs)" in
-	  Moonshine)
-	    /usr/bin/fs sysname 'amd64_fedora7_scripts' 'scripts' 'amd64_fedora7' 'amd64_linux26' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux26' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux2' 'i386_linux1' ;;
-	  Sulphur)
-	    /usr/bin/fs sysname 'amd64_fedora9_scripts' 'amd64_fedora7_scripts' 'scripts' 'amd64_fedora9' 'amd64_fedora7' 'amd64_linux26' 'i386_deb40' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux26' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux2' ;;
-	  Leonidas)
-	    /usr/bin/fs sysname 'amd64_fedora11_scripts' 'amd64_fedora9_scripts' 'amd64_fedora7_scripts' 'scripts' 'amd64_fedora11' 'amd64_fedora9' 'amd64_fedora7' 'amd64_linux26' 'i386_deb50' 'i386_deb40' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux26' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux2' ;;
-	  Goddard)
-	    /usr/bin/fs sysname 'amd64_fedora13_scripts' 'amd64_fedora11_scripts' 'amd64_fedora9_scripts' 'amd64_fedora7_scripts' 'scripts' 'amd64_fedora13' 'amd64_fedora11' 'amd64_fedora9' 'amd64_fedora7' 'amd64_linux26' 'i386_deb50' 'i386_deb40' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux26' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux2' ;;
-	  Lovelock)
-	    /usr/bin/fs sysname 'amd64_fedora15_scripts' 'amd64_fedora13_scripts' 'amd64_fedora11_scripts' 'amd64_fedora9_scripts' 'amd64_fedora7_scripts' 'scripts' 'amd64_fedora15' 'amd64_fedora13' 'amd64_fedora11' 'amd64_fedora9' 'amd64_fedora7' 'amd64_linux26' 'i386_deb60' 'i386_deb50' 'i386_deb40' 'i386_rhel4' 'i386_rhel3' 'i386_rh9' 'i386_linux26' 'i386_linux24' 'i386_linux22' 'i386_linux3' 'i386_linux2' ;;
-	  *)
-	    echo "Warning: unknown platform. AFS sysname not set."
-	esac
-	/usr/bin/fs setcell -nosuid -c athena
-}
-AFS_POST_INIT=postinit
