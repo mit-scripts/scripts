@@ -5,6 +5,44 @@ You need to create the volumes to use:
 
     lvcreate -n $MACHINE-root --size 50.00G $HOST
     lvcreate -n $MACHINE-swap --size 10.00G $HOST
+    lvcreate -n $MACHINE-cache --size 11.00G $HOST
+
+/-------------------------------------------------------------------\
+    Note: If you need to manually format the the swap and cache
+    partitions (for example, you are migrating a host from 'migrate'),
+    these commands should work.  If in doubt, consult the kickstart.
+
+        # Use fdisk to generate a DOS partition table, and a single
+        # partition extending the entire volume.
+        fdisk /dev/$HOST/$MACHINE-swap
+        fdisk /dev/$HOST/$MACHINE-cache
+        # Figure out what kpartx is going to make the devices as
+        # (e.g. $SWAP_DEV and $CACHE_DEV)
+        kpartx -l /dev/$HOST/$MACHINE-swap
+        kpartx -l /dev/$HOST/$MACHINE-cache
+        # Read out the partition tables
+        kpartx -a /dev/$HOST/$MACHINE-swap
+        kpartx -a /dev/$HOST/$MACHINE-cache
+
+        # FORMAT!
+        mkswap $SWAP_DEV
+        mkfs.ext4 -O ^has_journal -m 0 -N 1000000 $CACHE_DEV
+
+        # Remove the devices
+        kpartx -d /dev/$HOST/$MACHINE-swap
+        kpartx -d /dev/$HOST/$MACHINE-cache
+\-------------------------------------------------------------------/
+
+Make sure that the console has an entry for this host:
+
+    vim /etc/conserver/conserver.cf
+
+If it doesn't, add:
+
+    console $MACHINE {
+        master $HOST;
+        include xen;
+    }
 
 We use Kickstart to to initial Fedora configuration.  Installing a new
 vanilla machine is as easy as:

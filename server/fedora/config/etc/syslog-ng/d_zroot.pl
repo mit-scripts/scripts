@@ -31,7 +31,7 @@ my %sshkeys;
 
 sub buildKeyMap($) {
     my ($file) = @_;
-    open (KEYS, $file) or warn "Couldn't open $file: $!";
+    open (KEYS, $file) or (warn "Couldn't open $file: $!\n" and return);
     while (<KEYS>) {
 	chomp;
 	my ($fingerprint, $comment) = parseKey($_);
@@ -57,8 +57,10 @@ sub parseKey($) {
 buildKeyMap("/root/.ssh/authorized_keys");
 buildKeyMap("/root/.ssh/authorized_keys2");
 
-while (1) {
-    my @message = scalar(<>);
+my @message;
+
+while (my $line = <>) {
+    @message = $line;
     eval {
         local $SIG{ALRM} = sub { die "alarm\n" }; # NB: \n required
         ualarm(500*1000);
@@ -79,8 +81,8 @@ while (1) {
 	    sendmsg($message) if exists $USERS{$1};
 	} elsif ($message =~ m|Root (\S+) shell|) {
 	    sendmsg($message);
-	} elsif ($message =~ m|session \S+ for user (\S+)|) {
-	    sendmsg($message) if exists $USERS{$1};
+	} elsif ($message =~ m|pam_unix\(([^:]+):session\): session \S+ for user (\S+)|) {
+	    sendmsg($message) if $1 ne "cron" and exists $USERS{$2};
 	} elsif ($message =~ m|^Found matching (\w+) key: (\S+)|) {
 	    if ($sshkeys{$2}) {
 		sendmsg($message." (".$sshkeys{$2}.")");
@@ -116,6 +118,7 @@ while (1) {
 	} elsif ($message =~ m|^ *nrpe .* COMMAND=/etc/nagios/check_ldap_mmr.real$|) {
 	} elsif ($message =~ m|^ *root : TTY=|) {
 	} elsif ($message =~ m|^Set /proc/self/oom_adj to |) {
+	} elsif ($message =~ m|^fatal: mm_request_receive: read: Connection reset by peer$|) {
 	} else {
 	    sendmsg($message, "scripts-spew");
 	}

@@ -1,46 +1,59 @@
---- httpd.spec.orig	2010-10-27 08:26:15.000000000 -0400
-+++ httpd.spec	2010-11-18 18:20:43.000000000 -0500
-@@ -7,7 +7,7 @@
+--- httpd.spec.orig	2011-09-13 09:43:36.000000000 -0400
++++ httpd.spec	2011-11-05 20:57:13.910145847 -0400
+@@ -8,7 +8,7 @@
  Summary: Apache HTTP Server
  Name: httpd
- Version: 2.2.17
--Release: 1%{?dist}.1
-+Release: 1%{?dist}.1.scripts.%{scriptsversion}
+ Version: 2.2.21
+-Release: 1%{?dist}
++Release: 1%{?dist}.scripts.%{scriptsversion}
  URL: http://httpd.apache.org/
  Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
  Source1: index.html
-@@ -55,6 +55,14 @@
- Conflicts: pcre < 4.0
- Requires: httpd-tools = %{version}-%{release}, apr-util-ldap
+@@ -54,6 +54,15 @@
+ Provides: httpd-mmn = %{mmn}, httpd-mmn = %{mmnisa}
+ Requires: httpd-tools = %{version}-%{release}, apr-util-ldap, systemd-units
  
-+Provides: scripts-httpd
++Provides: scripts-httpd = %{version}-%{release}
 +Patch1000: httpd-suexec-scripts.patch
 +Patch1003: httpd-2.2.x-mod_status-security.patch
 +Patch1004: httpd-2.2.x-304.patch
 +Patch1005: httpd-2.2.x-mod_ssl-sessioncaching.patch
 +Patch1006: httpd-suexec-cloexec.patch
 +Patch1007: httpd-fixup-vhost.patch
++Patch1008: httpd-sysv-deps.patch
 +
  %description
  The Apache HTTP Server is a powerful, efficient, and extensible
  web server.
-@@ -65,6 +73,7 @@
+@@ -64,6 +73,7 @@
  Obsoletes: secureweb-devel, apache-devel, stronghold-apache-devel
  Requires: apr-devel, apr-util-devel, pkgconfig
  Requires: httpd = %{version}-%{release}
-+Provides: scripts-httpd-devel
++Provides: scripts-httpd-devel = %{version}-%{release}
  
  %description devel
  The httpd-devel package contains the APXS binary and other files
-@@ -103,6 +112,7 @@
- Requires(post): openssl >= 0.9.7f-4, /bin/cat
+@@ -102,6 +112,7 @@
+ Requires(post): openssl, /bin/cat
  Requires(pre): httpd
- Requires: httpd = 0:%{version}-%{release}, httpd-mmn = %{mmn}
+ Requires: httpd = 0:%{version}-%{release}, httpd-mmn = %{mmnisa}
 +Provides: scripts-mod_ssl
  Obsoletes: stronghold-mod_ssl
  
  %description -n mod_ssl
-@@ -130,6 +140,13 @@
+@@ -110,6 +121,11 @@
+ Security (TLS) protocols.
+ 
+ %prep
++
++# Horrible hack to patch the httpd.init file
++cd $RPM_SOURCE_DIR
++%patch1008 -p1 -b .sysv-deps
++
+ %setup -q
+ %patch1 -p1 -b .apctl
+ %patch2 -p1 -b .apxs
+@@ -128,6 +144,13 @@
  # Patch in vendor/release string
  sed "s/@RELEASE@/%{vstring}/" < %{PATCH20} | patch -p1
  
@@ -54,7 +67,7 @@
  # Safety check: prevent build if defined MMN does not equal upstream MMN.
  vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
  if test "x${vmmn}" != "x%{mmn}"; then
-@@ -177,10 +194,12 @@
+@@ -175,10 +198,12 @@
          --with-apr=%{_prefix} --with-apr-util=%{_prefix} \
  	--enable-suexec --with-suexec \
  	--with-suexec-caller=%{suexec_caller} \

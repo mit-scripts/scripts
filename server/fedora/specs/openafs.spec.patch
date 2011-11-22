@@ -1,26 +1,30 @@
---- openafs.spec.orig	2010-09-10 18:21:53.000000000 -0400
-+++ openafs.spec	2010-09-10 18:34:30.000000000 -0400
-@@ -8,7 +8,7 @@
- # for beta/rc releases make pkgrel 0.X.<tag>
+--- rpmbuild/SPECS/openafs.spec
++++ rpmbuild/SPECS/openafs.spec.~3~	2011-11-20 20:13:52.211673609 -0500
+@@ -4,7 +4,7 @@
+ %define pkgvers 1.6.0
+ # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
- #%define pkgrel 0.1.rc1
--%define pkgrel 0.pre3
-+%define pkgrel 0.pre3.99scripts.%{scriptsversion}
+-%define pkgrel 1
++%define pkgrel 1.99.scripts.%{scriptsversion}
  
- %if %{?osvers:0}%{!?osvers:1}
- %define osvers 1
-@@ -261,6 +261,10 @@
- %endif
+ %{!?fedorakmod: %define fedorakmod 1}
+ %{!?build_dkmspkg: %define build_dkmspkg 1}
+@@ -237,6 +237,14 @@
+ 
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
 +Patch1000: openafs-scripts.patch
-+Patch1003: openafs-localcsdb.patch
-+Patch1005: openafs-numsysnames.patch
++Patch1001: openafs-localcsdb.patch
++Patch1002: openafs-systemd.patch
++Patch1003: openafs-systemd-crond.patch
++Patch1004: openafs-linux-3.1-rcu.patch
++Patch1005: openafs-linux-3.1-fsync.patch
++Patch1006: openafs-linux-3.1-zalloc.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -343,6 +347,7 @@
+@@ -316,6 +324,7 @@
  %if %{build_userspace}
  
  %package client
@@ -28,7 +32,7 @@
  Requires: binutils, openafs = %{version}
  
  %if %{fedorakmod}
-@@ -403,6 +408,7 @@
+@@ -376,6 +385,7 @@
  
  %if %{build_authlibs}
  %package authlibs
@@ -36,23 +40,23 @@
  Summary: OpenAFS authentication shared libraries
  Group: Networking/Filesystems
  
-@@ -419,6 +425,7 @@
+@@ -392,6 +402,7 @@
  %endif
  
  %package authlibs-devel
 +Provides: scripts-openafs-authlibs-devel
  %if %{build_authlibs}
- Requires: openafs-authlibs = %{version}
+ Requires: openafs-authlibs = %{version}-%{release}
  %endif
-@@ -437,6 +444,7 @@
+@@ -410,6 +421,7 @@
  libraries.
  
  %package devel
 +Provides: scripts-openafs-devel
  Summary: OpenAFS Development Libraries and Headers
  Group: Development/Filesystems
- 
-@@ -465,6 +473,7 @@
+ Requires: openafs = %{version}-%{release}
+@@ -439,6 +451,7 @@
  administrators.
  
  %package kernel-source
@@ -60,7 +64,7 @@
  Summary: OpenAFS Kernel Module source tree
  Group: Networking/Filesystems
  Provides: openafs-kernel = %{version}
-@@ -514,6 +523,7 @@
+@@ -488,6 +501,7 @@
  
  %if %{krb5support}
  %package krb5
@@ -68,7 +72,7 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{version}
  Group: Networking/Filesystems
-@@ -540,7 +550,7 @@
+@@ -514,7 +528,7 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
@@ -77,13 +81,33 @@
  
  %else
  
-@@ -699,6 +709,9 @@
+@@ -671,6 +685,15 @@
+ #%setup -q -n %{srcdir}
+ %setup -q -b 1 -n %{srcdir}
  
- # Patch openafs to build a kernel module named "openafs" instead of "libafs"
- %patch0 -p1 -b .kmod26
++# Apply the Scripts patch
 +%patch1000 -p1 -b .scripts
-+%patch1003 -p1 -b .localcsdb
-+%patch1005 -p1 -b .numsysnames
- 
++%patch1001 -p1 -b .localcsdb
++%patch1002 -p1 -b .systemd
++%patch1003 -p1 -b .systemd-crond
++%patch1004 -p1 -b .rcu
++%patch1005 -p1 -b .fsync
++%patch1006 -p1 -b .zalloc
++
  ##############################################################################
  #
+ # building
+@@ -1212,6 +1235,13 @@
+ rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
+ rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
+ rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*
++%else
++chmod +x $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so
++chmod +x $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
++chmod +x $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
++chmod +x $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*
++chmod +x $RPM_BUILD_ROOT%{_libdir}/libkopenafs.so
++chmod +x $RPM_BUILD_ROOT%{_libdir}/libkopenafs.so.*
+ %endif
+ 
+ %endif

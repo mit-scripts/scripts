@@ -1,0 +1,2 @@
+MAILTO=scripts-root@mit.edu
+27 5 * * * root find / -xdev -not -perm -o=x -prune -o -type f -print0 | xargs -0r /usr/sbin/getcap | cut -d' ' -f1 | grep -Fxvf /etc/scripts/allowed-filecaps.list | sed 's/^/Extra file_caps binary: /'

@@ -20,3 +20,11 @@ HTTPD=/usr/sbin/httpd.worker
 # variable can be set.
 #
 #HTTPD_LANG=C
+
+#
+# When stopping the server a 10 second timeout is allowed before
+# forcibly terminating the parent process (with a SIGKILL signal).
+# To allow a longer delay, set the STOP_TIMEOUT variable.
+#
+#STOP_TIMEOUT=10
+#

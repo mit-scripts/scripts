@@ -1,0 +1,10 @@
+[Unit]
+Description=Scripts whois Service
+After=syslog.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/twistd --nodaemon -l /var/log/scripts-whoisd.log -y /usr/local/libexec/whoisd.tac
+
+[Install]
+WantedBy=multi-user.target

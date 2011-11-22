@@ -158,8 +158,8 @@ Fix:
 web.mit.edu scripts repository (/mit/scripts/rpm-fcXX and
 /mit/scripts/rpm-fcXX-testing) needs to be made.  It's quite simple;
 all you need to do is copy the RPMs from the build server to there
-(probably going through a trusted machine, since you don't want to
-put your root tickets on a server.)  When you're done, run `createrepo`
+(probably going through a trusted machine, since you don't want to put
+your root tickets on a server.)  When you're done, run `createrepo -d`
 on the directory.
 
 Note that if you do a successive rebuild without bumping the Subversion
@@ -196,3 +196,19 @@ usually just involves replacing i586 with i686 in the appropriate places
 (Makefile, specfiles, /etc/mock configuration).  Note that for
 hysterical raisins we still refer to our 32-bit builds as i386.
 [XXX: Maybe this should change]
+
+Until we decide that the performance impact is negligible, any new PHP
+extensions other than the few we’ve whitelisted should be disabled by
+emptying their .ini files in /etc/php.d.
+
+8. Sending announcements
+------------------------
+
+Once development work has finished, we need to allow users to test
+their websites on the new servers.
+
+    SIPB Internal Testing: Send an email to scripts-team@mit.edu
+    and -c sipb notifying them of testing procedure and known
+    issues.
+
+    General Testing:

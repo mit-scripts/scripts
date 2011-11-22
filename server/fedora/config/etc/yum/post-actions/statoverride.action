@@ -21,9 +21,11 @@
 /usr/bin/wall:install:chmod ug-s /usr/bin/wall
 /usr/bin/write:install:chmod ug-s /usr/bin/write
 /usr/bin/Xorg:install:chmod ug-s /usr/bin/Xorg
-/usr/kerberos/bin/ksu:install:chmod ug-s /usr/kerberos/bin/ksu
+/usr/bin/ksu:install:chmod ug-s /usr/bin/ksu
 /usr/lib64/nspluginwrapper/plugin-config:install:chmod ug-s /usr/lib64/nspluginwrapper/plugin-config
 /usr/lib64/vte/gnome-pty-helper:install:chmod ug-s /usr/lib64/vte/gnome-pty-helper
+/usr/libexec/kde4/kpac_dhcp_helper:install:chmod ug-s /usr/libexec/kde4/kpac_dhcp_helper
 /usr/sbin/ccreds_chkpwd:install:chmod ug-s /usr/sbin/ccreds_chkpwd
 /usr/sbin/userisdnctl:install:chmod ug-s /usr/sbin/userisdnctl
 /usr/sbin/usernetctl:install:chmod ug-s /usr/sbin/usernetctl
+/usr/bin/pkexec:install:chmod ug-s /usr/bin/pkexec

@@ -1,5 +1,6 @@
 # scripts.mit.edu krb5 kuserok patch
 # Copyright (C) 2006  Tim Abbott <tabbott@mit.edu>
+#               2011  Alexander Chernyakhovsky <achernya@mit.edu>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,109 +18,133 @@
 #
 # See /COPYRIGHT in this repository for more information.
 #
---- krb5-1.6.3/src/lib/krb5/os/kuserok.c.old	2009-04-08 06:17:06.000000000 -0400
-+++ krb5-1.6.3/src/lib/krb5/os/kuserok.c	2009-04-08 06:17:18.000000000 -0400
-@@ -31,6 +31,7 @@
- #if !defined(_WIN32)		/* Not yet for Windows */
+--- krb5-1.9/src/lib/krb5/os/kuserok.c.old	2011-04-16 19:09:58.000000000 -0400
++++ krb5-1.9/src/lib/krb5/os/kuserok.c	2011-04-16 19:34:23.000000000 -0400
+@@ -32,6 +32,7 @@
+ #if !defined(_WIN32)            /* Not yet for Windows */
  #include <stdio.h>
  #include <pwd.h>
 +#include <sys/wait.h>
  
  #if defined(_AIX) && defined(_IBMR2)
  #include <sys/access.h>
-@@ -71,7 +72,6 @@
+@@ -51,39 +52,6 @@
+ enum result { ACCEPT, REJECT, PASS };
+ 
+ /*
+- * Find the k5login filename for luser, either in the user's homedir or in a
+- * configured directory under the username.
+- */
+-static krb5_error_code
+-get_k5login_filename(krb5_context context, const char *luser,
+-                     const char *homedir, char **filename_out)
+-{
+-    krb5_error_code ret;
+-    char *dir, *filename;
+-
+-    *filename_out = NULL;
+-    ret = profile_get_string(context->profile, KRB5_CONF_LIBDEFAULTS,
+-                             KRB5_CONF_K5LOGIN_DIRECTORY, NULL, NULL, &dir);
+-    if (ret != 0)
+-        return ret;
+-
+-    if (dir == NULL) {
+-        /* Look in the user's homedir. */
+-        if (asprintf(&filename, "%s/.k5login", homedir) < 0)
+-            return ENOMEM;
+-    } else {
+-        /* Look in the configured directory. */
+-        if (asprintf(&filename, "%s/%s", dir, luser) < 0)
+-            ret = ENOMEM;
+-        profile_release_string(dir);
+-        if (ret)
+-            return ret;
+-    }
+-    *filename_out = filename;
+-    return 0;
+-}
+-
+-/*
+  * Determine whether principal is authorized to log in as luser according to
+  * the user's k5login file.  Return ACCEPT if the k5login file authorizes the
+  * principal, PASS if the k5login file does not exist, or REJECT if the k5login
+@@ -93,13 +61,12 @@
+ static enum result
+ k5login_ok(krb5_context context, krb5_principal principal, const char *luser)
  {
-     struct stat sbuf;
-     struct passwd *pwd;
--    char pbuf[MAXPATHLEN];
-     krb5_boolean isok = FALSE;
-     FILE *fp;
-     char kuser[MAX_USERNAME];
-@@ -79,71 +79,35 @@
-     char linebuf[BUFSIZ];
-     char *newline;
-     int gobble;
+-    int authoritative = TRUE, gobble;
++    int authoritative = TRUE;
+     enum result result = REJECT;
+-    char *filename = NULL, *princname = NULL;
+-    char *newline, linebuf[BUFSIZ], pwbuf[BUFSIZ];
+-    struct stat sbuf;
++    char *princname = NULL;
++    char pwbuf[BUFSIZ];
+     struct passwd pwx, *pwd;
+-    FILE *fp = NULL;
 +    int pid, status;
  
-     /* no account => no access */
-     char pwbuf[BUFSIZ];
-     struct passwd pwx;
+     if (profile_get_boolean(context->profile, KRB5_CONF_LIBDEFAULTS,
+                             KRB5_CONF_K5LOGIN_AUTHORITATIVE, NULL, TRUE,
+@@ -110,46 +77,29 @@
      if (k5_getpwnam_r(luser, &pwx, pwbuf, sizeof(pwbuf), &pwd) != 0)
- 	return(FALSE);
--    (void) strncpy(pbuf, pwd->pw_dir, sizeof(pbuf) - 1);
--    pbuf[sizeof(pbuf) - 1] = '\0';
--    (void) strncat(pbuf, "/.k5login", sizeof(pbuf) - 1 - strlen(pbuf));
--
--    if (access(pbuf, F_OK)) {	 /* not accessible */
--	/*
--	 * if he's trying to log in as himself, and there is no .k5login file,
--	 * let him.  To find out, call
--	 * krb5_aname_to_localname to convert the principal to a name
--	 * which we can string compare. 
--	 */
--	if (!(krb5_aname_to_localname(context, principal,
--				      sizeof(kuser), kuser))
--	    && (strcmp(kuser, luser) == 0)) {
--	    return(TRUE);
--	}
--    }
-     if (krb5_unparse_name(context, principal, &princname))
- 	return(FALSE);			/* no hope of matching */
+         goto cleanup;
  
--    /* open ~/.k5login */
--    if ((fp = fopen(pbuf, "r")) == NULL) {
--	free(princname);
--	return(FALSE);
+-    if (get_k5login_filename(context, luser, pwd->pw_dir, &filename) != 0)
+-        goto cleanup;
+-
+-    if (access(filename, F_OK) != 0) {
+-        result = PASS;
+-        goto cleanup;
 -    }
+-
+     if (krb5_unparse_name(context, principal, &princname) != 0)
+         goto cleanup;
+ 
+-    fp = fopen(filename, "r");
+-    if (fp == NULL)
++    if ((pid = fork()) == -1)
+         goto cleanup;
 -    set_cloexec_file(fp);
--    /*
--     * For security reasons, the .k5login file must be owned either by
--     * the user himself, or by root.  Otherwise, don't grant access.
--     */
--    if (fstat(fileno(fp), &sbuf)) {
--	fclose(fp);
--	free(princname);
--	return(FALSE);
-+    if ((pid = fork()) == -1) {
-+       free(princname);
-+       return(FALSE);
-     }
--    if (sbuf.st_uid != pwd->pw_uid && !FILE_OWNER_OK(sbuf.st_uid)) {
--	fclose(fp);
--	free(princname);
--	return(FALSE);
-+    if (pid == 0) {
-+       char *args[4];
-+#define ADMOF_PATH "/usr/local/sbin/ssh-admof"
-+       args[0] = ADMOF_PATH;
-+       args[1] = (char *) luser;
-+       args[2] = princname;
-+       args[3] = NULL;
-+       execv(ADMOF_PATH, args);
-+       exit(1);
-     }
 -
--    /* check each line */
--    while (!isok && (fgets(linebuf, BUFSIZ, fp) != NULL)) {
--	/* null-terminate the input string */
--	linebuf[BUFSIZ-1] = '\0';
--	newline = NULL;
--	/* nuke the newline if it exists */
--	if ((newline = strchr(linebuf, '\n')))
--	    *newline = '\0';
--	if (!strcmp(linebuf, princname)) {
--	    isok = TRUE;
--	    continue;
--	}
--	/* clean up the rest of the line if necessary */
--	if (!newline)
--	    while (((gobble = getc(fp)) != EOF) && gobble != '\n');
-+    if (waitpid(pid, &status, 0) > 0 && WIFEXITED(status) && WEXITSTATUS(status) == 33) {
-+       isok=TRUE;
-     }
+-    /* For security reasons, the .k5login file must be owned either by
+-     * the user or by root. */
+-    if (fstat(fileno(fp), &sbuf))
+-        goto cleanup;
+-    if (sbuf.st_uid != pwd->pw_uid && !FILE_OWNER_OK(sbuf.st_uid))
+-        goto cleanup;
+-
+-    /* Check each line. */
+-    while (result != ACCEPT && (fgets(linebuf, sizeof(linebuf), fp) != NULL)) {
+-        newline = strrchr(linebuf, '\n');
+-        if (newline != NULL)
+-            *newline = '\0';
+-        if (strcmp(linebuf, princname) == 0)
+-            result = ACCEPT;
+-        /* Clean up the rest of the line if necessary. */
+-        if (newline == NULL)
+-            while (((gobble = getc(fp)) != EOF) && gobble != '\n');
 +    
-     free(princname);
--    fclose(fp);
-     return(isok);
- }
++    if (pid == 0) {
++        char *args[4];
++#define ADMOF_PATH "/usr/local/sbin/ssh-admof"
++        args[0] = ADMOF_PATH;
++        args[1] = (char *) luser;
++        args[2] = princname;
++        args[3] = NULL;
++        execv(ADMOF_PATH, args);
++        exit(1);
+     }
  
++    if (waitpid(pid, &status, 0) > 0 && WIFEXITED(status) && WEXITSTATUS(status) == 33) {
++        result = ACCEPT;
++    }
++    
+ cleanup:
+     free(princname);
+-    free(filename);
+-    if (fp != NULL)
+-        fclose(fp);
+     /* If k5login files are non-authoritative, never reject. */
+     return (!authoritative && result == REJECT) ? PASS : result;
+ }

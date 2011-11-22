@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # This script renews afsagent's tickets and tokens.
-# It is called by afsagent's crontab every 8 hours.
+# It is called by systemd on a regular schedule.
 
 export KRB5CCNAME=/home/afsagent/krb5cc
 export KRBTKFILE=/home/afsagent/tkt

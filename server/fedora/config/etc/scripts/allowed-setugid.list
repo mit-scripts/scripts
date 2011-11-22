@@ -1,5 +1,3 @@
-/bin/ping
-/bin/ping6
 /sbin/pam_timestamp_check
 /sbin/unix_chkpwd
 /usr/bin/at

@@ -31,7 +31,7 @@ KRB5_KTNAME=/etc/dirsrv/keytab ; export KRB5_KTNAME
 # Use a disk ccache instead of a memory one (this is renewed by the
 # slapdagent cronjob) -- geofft 30 October 2010
 KRB5CCNAME=/var/run/dirsrv/krb5cc; export KRB5CCNAME
-/usr/kerberos/bin/kinit -k -t "$KRB5_KTNAME" ldap/"$(hostname)"
+/usr/bin/kinit -k -t "$KRB5_KTNAME" ldap/"$(hostname)"
 chown --reference="$KRB5_KTNAME" "$KRB5CCNAME"
 
 # other environment settings can be added here too

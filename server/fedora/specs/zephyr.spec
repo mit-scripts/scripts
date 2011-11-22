@@ -1,5 +1,5 @@
 Name:           zephyr
-Version:        3.0
+Version:        3.0.1
 Release:        0.%{scriptsversion}%{?dist}
 Summary:        Client programs for the Zephyr real-time messaging system
 
@@ -70,7 +70,6 @@ sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 make %{?_smp_mflags}
 
-
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT libdir=%{_libdir}
@@ -79,7 +78,14 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 mkdir -p $RPM_BUILD_ROOT%{_initddir}
 install -m755 zhm.init \
         $RPM_BUILD_ROOT%{_initddir}/zhm
-
+# Make RPM's Provide: searcher actually search the .so files! A recent
+# change in how RPM detects Provides automatically means that only
+# files that are executable get searched. Without this hack, all of
+# the zephyr client tools are Requires: libzephyr.so.4 which is never
+# Provides:, leading to uninstallable RPMS. This can be removed when
+# zephyr starts installing the libraries with mode 755 rather than
+# 644. (Zephyr #79)
+chmod a+x $RPM_BUILD_ROOT%{_libdir}/libzephyr.so.*
 
 %post
 /sbin/chkconfig --add zhm
@@ -138,6 +144,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Apr 16 2011 Alexander Chernyakhovsky <achernya@mit.edu> 3.0.1-0
+- Zephyr 3.0.1
+
 * Sun Sep 19 2010 Anders Kaseorg <andersk@mit.edu> - 3.0-0
 - Decrease version below a hypothetical Fedora package.
 - Split out -server, -libs, and -devel into subpackages.

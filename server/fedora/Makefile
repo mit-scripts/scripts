@@ -18,10 +18,10 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 krb5.i686 httpd openssh curl redland-bindings
-hackage		= MonadCatchIO-mtl-0.3.0.1 cgi-3001.1.8.1 unix-handle-0.0.0
+upstream_yum	= krb5 krb5.i686 httpd openssh redland-bindings rubygems
+hackage		= MonadCatchIO-mtl-0.3.0.2 cgi-3001.1.8.2 unix-handle-0.0.0
 upstream_hackage = ghc-MonadCatchIO-mtl ghc-cgi ghc-unix-handle
-upstream	= openafs $(upstream_yum) $(upstream_hackage) moira cluster-glue heartbeat pacemaker zephyr zephyr.i686 python-zephyr athena-aclocal discuss
+upstream	= openafs $(upstream_yum) $(upstream_hackage) moira zephyr zephyr.i686 python-zephyr athena-aclocal discuss
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
@@ -39,12 +39,8 @@ out_sbin	= $(topdir)/sbin
 dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
-#openafs_url	= "http://dl.openafs.org/dl/openafs/1.4.12/openafs-1.4.12-1.1.2.src.rpm"
-openafs_url	= "http://web.mit.edu/~scripts/yum-repos/rpm-fc13/openafs-1.4.12.1-1.0.pre3.src.rpm"
-clusterglue_url	= "http://kojipkgs.fedoraproject.org/packages/cluster-glue/1.0/0.11.b79635605337.hg.fc12/src/cluster-glue-1.0-0.11.b79635605337.hg.fc12.src.rpm"
-heartbeat_url	= "http://kojipkgs.fedoraproject.org/packages/heartbeat/3.0.0/0.5.0daab7da36a8.hg.fc12/src/heartbeat-3.0.0-0.5.0daab7da36a8.hg.fc12.src.rpm"
-pacemaker_url	= "http://kojipkgs.fedoraproject.org/packages/pacemaker/1.0.5/5.fc12/src/pacemaker-1.0.5-5.fc12.src.rpm"
-zephyr_url	= "http://zephyr.1ts.org/export/HEAD/distribution/zephyr-3.0.tar.gz"
+openafs_url	= "http://dl.openafs.org/dl/openafs/1.6.0/openafs-1.6.0-1.src.rpm"
+zephyr_url	= "http://zephyr.1ts.org/export/HEAD/distribution/zephyr-3.0.1.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
 
@@ -73,20 +69,17 @@ download_stamp:
 	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
 	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
 	wget -P $(dload) $(openafs_url)
-	wget -P $(dload) $(clusterglue_url)
-	wget -P $(dload) $(heartbeat_url)
-	wget -P $(dload) $(pacemaker_url)
 	wget -P $(dload) $(zephyr_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
-	cd $(tmp_src) && wget -nd -r -l1 -np -A.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-aclocal/
-	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-discuss/
-	cp $(oursrcdir)/discuss/* $(tmp_src)
 	cabal update
 	cabal fetch $(hackage)
 	cp -a $(hackage:%=~/.cabal/packages/*/*/*/%.tar.gz) $(tmp_src)
 	spectool -g -R $(specs)/python-zephyr.spec
 	touch download_stamp
 
+	cd $(tmp_src) && wget -nd -r -l1 -np -A.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-aclocal/
+	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-discuss/
+	cp $(oursrcdir)/discuss/* $(tmp_src)
 %.src.rpm:
 	wget -q -nv -N -B $(server_url) -nd -nH -P $(dload) $(server_url)/$*.src.rpm
 
@@ -100,11 +93,14 @@ install-srpms: mkdir-tree download
 copy-specs: mkdir-tree
 	cp ${specs}/*.spec $(tmp_specs)
 
+# Remove old .orig files so we're not mislead
 patch-specs: install-srpms
 	@cd ${tmp_specs}; \
 	list=`ls ${specs}/*.spec.patch`; \
+	rm -f *.orig; \
+	rm -f *.spec.~*~; \
 	for i in $$list; do \
-		patch < $$i; \
+		patch -bV numbered < $$i; \
 	done; \
 	list2=`svn ls ${oursrcdir}`; \
 	for i in $$list2; do \
@@ -149,27 +145,27 @@ $(oursrc): rpmbuild_args += --define 'scriptsversion $(shell svnversion ${oursrc
 $(filter %.i686,$(oursrc)): %.i686: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc13-i386 --arch=i686 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc15-i386 --arch=i686 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(filter-out %.i686,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc13-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc15-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(upstream) openafs-kernel: rpmbuild_args += --define 'scriptsversion $(shell svnversion ${patches} | tr ':' '_')'
 
 $(filter %.i686,$(upstream)): %.i686: setup patch-specs
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc13-i386 --arch=i686 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc15-i386 --arch=i686 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(filter-out %.i686,$(upstream)): %: setup patch-specs
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc13-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc15-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/openafs*.spec
-	/usr/bin/mock -r scripts-fc13-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc15-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
 
 #sort -n sorts "2.6.25-1" later than "2.6.25.1-1", so it's Wrong
 #kernvers = $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)
@@ -187,26 +183,11 @@ frob-openafs:
 	ln -nfs /etc/openafs/* /usr/vice/etc/; \
 	fi
 
-# The following packages are needed for our packages
-basic-deps	= kernel-devel rpm-build rpmdevtools mock gcc autoconf patch krb5-workstation glibc-devel.i686 glibc-devel libtool libgcc.i686
-oursrc-deps	= hesinfo openldap-clients openldap-devel.i686 php-devel
-httpdmods-deps	= httpd-devel
-httpd-deps	= xmlto db4-devel expat-devel zlib-devel libselinux-devel apr-devel apr-util-devel pcre-devel openssl-devel distcache-devel
-krb5-deps	= bison ncurses-devel texinfo keyutils-libs-devel texinfo-tex texlive-latex libss-devel rsh
-openafs-deps	= pam-devel automake
-moira-deps      = e2fsprogs-devel
-zephyr-deps	= hesiod-devel libss-devel krb5-devel readline-devel
-openssh-deps	= gtk2-devel libX11-devel autoconf automake openssl-devel perl zlib-devel audit-libs-devel util-linux groff man pam-devel tcp_wrappers-devel krb5-devel libselinux-devel audit-libs xauth pango-devel cairo-devel libedit-devel nss-devel fipscheck-devel
-php-deps	= bzip2-devel curl-devel gmp-devel libstdc++-devel sqlite-devel gcc-c++ libc-client-devel mysql-devel postgresql-devel unixODBC-devel libxml2-devel net-snmp-devel libxslt-devel libxml2-devel libXpm-devel libjpeg-devel t1lib-devel libmcrypt-devel mhash-devel libtidy-devel freetds-devel aspell-devel recode-devel
-haskell-deps	= cabal-install
-install-deps:
-	yum -y install $(basic-deps) $(oursrc-deps) $(httpdmods-deps) $(httpd-deps) $(krb5-deps) $(openafs-deps) $(moira-deps) $(zephyr-deps) $(openssh-deps) $(php-deps) $(haskell-deps)
 # XXX: We need to figure out what's going on with compat-readline43
 #	rpm -ivh http://kojipkgs.fedoraproject.org/packages/compat-readline43/4.3/3/i386/compat-readline43-4.3-3.i386.rpm
 #	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
 
 fedora:
-	make install-deps
 	make upstream
 	rpm -ivh $(out_rpms)/`uname -m`/openafs-devel*.rpm
 	make oursrc
