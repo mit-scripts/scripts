@@ -9,12 +9,6 @@
 #              restricted permissions
 # [TESTSERVER] Completely untrusted server
 
-# This is actually just "pick an active scripts server".  It can't be
-# scripts.mit.edu because our networking config points that domain
-# at localhost, and if our server is not setup at that point things
-# will break.
-source_server="shining-armor.mit.edu"
-
 # 'branch' is the current svn branch you are on.  You want to
 # use trunk if your just installing a new server, and branches/fcXX-dev
 # if your preparing a server on a new Fedora release.
@@ -47,6 +41,9 @@ server=YOUR-SERVER-NAME-HERE
 #   o Set up Nagios monitoring on sipb-noc for the host
 #   o Set up the host as in the pool on r-b/r-b /etc/heartbeat/ldirectord.cf
 #   o Update locker/etc/known_hosts
+#   o Update website files:
+#       /mit/scripts/web_scripts/home/server.css.cgi
+#       /mit/scripts/web_scripts/heartbeat/heartbeat.php
 #
 # You will also need to prepare the keytabs for credit-card.  In particular,
 # use ktutil to combine the host/scripts.mit.edu and
@@ -61,7 +58,8 @@ server=YOUR-SERVER-NAME-HERE
 #   ---- ---- ---------------------------------------------------------------------
 #      1    5 host/old-faithful.mit.edu@ATHENA.MIT.EDU
 #      2    3 host/scripts-vhosts.mit.edu@ATHENA.MIT.EDU
-#      3    2      host/scripts.mit.edu@ATHENA.MIT.EDU
+#      3    2 host/scripts.mit.edu@ATHENA.MIT.EDU
+#      4    8 host/scripts-test.mit.edu@ATHENA.MIT.EDU
 #
 # The LDAP keytab should be by itself, so be sure to delete it and
 # put it in its own file.
@@ -140,7 +138,7 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
     yum install -y haskell-platform
     yumdownloader ghc-cgi
     yumdownloader ghc-cgi-devel
-    rpm -i ghc-cgi*1.8.1*.rpm
+    rpm -i ghc-cgi*1.8.2*.rpm
 
 # ----------------------------->8--------------------------------------
 #                      SPHEROID SHENANIGANS
@@ -235,8 +233,8 @@ python host.py push $server
 # much smaller; the max filesize on XVM is 10GB.  Pick something like
 # 500000. Also, some of the AFS parameters are kind of retarded (and if
 # you're low on disk space, will actually exhaust our inodes).  Edit
-# these parameters in /etc/sysconfig/openafs (but wait, that won't
-# work, will it...)
+# these parameters in /etc/sysconfig/openafs (This doesn't work in the
+# new systemd world order: try editing the unit file instead.)
     echo "/afs:/usr/vice/cache:500000" > /usr/vice/etc/cacheinfo
     vim /etc/sysconfig/openafs
 
@@ -306,17 +304,6 @@ python host.py push $server
 
 # Reboot the machine to restore a consistent state, in case you
 # changed anything. (Note: Starting kdump fails (this is ok))
-
-# When all is said and done, fix up the Subversion checkouts
-    cd /etc
-    svn switch --relocate svn://$source_server/ svn://scripts.mit.edu/
-    cd /usr/vice/etc
-    svn switch --relocate svn://$source_server/ svn://scripts.mit.edu/
-    cd /srv/repository
-    # Some commands should be run as the scripts-build user, not root.
-    alias asbuild="sudo -u scripts-build"
-    asbuild svn switch --relocate svn://$source_server/ svn://scripts.mit.edu/
-    asbuild svn up # verify scripts.mit.edu works
 
 # ------------------------------->8-------------------------------
 #                ADDENDA AND MISCELLANEOUS THINGS

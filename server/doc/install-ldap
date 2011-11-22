@@ -259,7 +259,9 @@ nsslapd-changelogdir: /etc/dirsrv/slapd-scripts/changelogdb
        The last line runs the replication.  This is perhaps the most
        risky step of the process; see below for help debugging problems.
 
-       MMR Hammer: mmr-hammer -h $MASTER init agreements $SLAVE
+       MMR Hammer:
+        mmr-hammer -h $MASTER init agreements $SLAVE
+        mmr-hammer -h $MASTER update $SLAVE # XXX pick a better name
 
         ldapvi -b cn=\"dc=scripts,dc=mit,dc=edu\",cn=mapping\ tree,cn=config
 
