@@ -1,0 +1,32 @@
+From e7669883d5124f85bad6840a4e8280e4de32f7a5 Mon Sep 17 00:00:00 2001
+From: Marc Dionne <marc.c.dionne@gmail.com>
+Date: Mon, 21 Nov 2011 21:27:06 -0500
+Subject: [PATCH] Linux: make sure backing_dev_info is zeroed
+
+The afs backing_dev_info structure is allocated dynamically
+without zeroing out the contents.  In particular there's no
+guarantee that congested_fn is NULL, causing spurious oopses
+when bdi_congested in the kernel tries to call it.
+
+(adapted from commit 8e97cf6f215d5575c63d86eaec59031399f4beda)
+
+Change-Id: I83755b6bb5ec2fada7e077c00d3d8edf8af1cae4
+---
+ src/afs/LINUX/osi_vfsops.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/src/afs/LINUX/osi_vfsops.c b/src/afs/LINUX/osi_vfsops.c
+index d32720f..0d41bc7 100644
+--- a/src/afs/LINUX/osi_vfsops.c
++++ b/src/afs/LINUX/osi_vfsops.c
+@@ -114,6 +114,7 @@ afs_fill_super(struct super_block *sb, void *data, int silent)
+ 
+     /* used for inodes backing_dev_info field, also */
+     afs_backing_dev_info = osi_Alloc(sizeof(struct backing_dev_info));
++    memset(afs_backing_dev_info, 0, sizeof(struct backing_dev_info));
+ #if defined(HAVE_LINUX_BDI_INIT)
+     bdi_init(afs_backing_dev_info);
+ #endif
+-- 
+1.7.2.5
+

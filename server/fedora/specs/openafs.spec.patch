@@ -9,7 +9,7 @@
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -237,6 +237,13 @@
+@@ -237,6 +237,14 @@
  
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
@@ -19,11 +19,12 @@
 +Patch1003: openafs-systemd-crond.patch
 +Patch1004: openafs-linux-3.1-rcu.patch
 +Patch1005: openafs-linux-3.1-fsync.patch
++Patch1006: openafs-linux-3.1-zalloc.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -316,6 +323,7 @@
+@@ -316,6 +324,7 @@
  %if %{build_userspace}
  
  %package client
@@ -31,7 +32,7 @@
  Requires: binutils, openafs = %{version}
  
  %if %{fedorakmod}
-@@ -376,6 +384,7 @@
+@@ -376,6 +385,7 @@
  
  %if %{build_authlibs}
  %package authlibs
@@ -39,7 +40,7 @@
  Summary: OpenAFS authentication shared libraries
  Group: Networking/Filesystems
  
-@@ -392,6 +401,7 @@
+@@ -392,6 +402,7 @@
  %endif
  
  %package authlibs-devel
@@ -47,7 +48,7 @@
  %if %{build_authlibs}
  Requires: openafs-authlibs = %{version}-%{release}
  %endif
-@@ -410,6 +420,7 @@
+@@ -410,6 +421,7 @@
  libraries.
  
  %package devel
@@ -55,7 +56,7 @@
  Summary: OpenAFS Development Libraries and Headers
  Group: Development/Filesystems
  Requires: openafs = %{version}-%{release}
-@@ -439,6 +450,7 @@
+@@ -439,6 +451,7 @@
  administrators.
  
  %package kernel-source
@@ -63,7 +64,7 @@
  Summary: OpenAFS Kernel Module source tree
  Group: Networking/Filesystems
  Provides: openafs-kernel = %{version}
-@@ -488,6 +500,7 @@
+@@ -488,6 +501,7 @@
  
  %if %{krb5support}
  %package krb5
@@ -71,7 +72,7 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{version}
  Group: Networking/Filesystems
-@@ -514,7 +527,7 @@
+@@ -514,7 +528,7 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
@@ -80,7 +81,7 @@
  
  %else
  
-@@ -671,6 +684,14 @@
+@@ -671,6 +685,15 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
@@ -91,11 +92,12 @@
 +%patch1003 -p1 -b .systemd-crond
 +%patch1004 -p1 -b .rcu
 +%patch1005 -p1 -b .fsync
++%patch1006 -p1 -b .zalloc
 +
  ##############################################################################
  #
  # building
-@@ -1212,6 +1233,13 @@
+@@ -1212,6 +1235,13 @@
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*
