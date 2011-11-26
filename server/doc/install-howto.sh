@@ -91,6 +91,8 @@ server=YOUR-SERVER-NAME-HERE
     \cp -a etc /
     chmod 0440 /etc/sudoers
 
+# [TEST] You'll need to fix some config now.  See bottom of document.
+
 # Make sure network is working.  Kickstart should have
 # configured eth0 and eth1 correctly; use service network restart
 # to add the new routes from etc in route-eth1.
@@ -323,17 +325,29 @@ python host.py push $server
 #   o /etc/sysconfig/network
 #   o your lvm thingies; probably don't need to edit
 
+# [TESTSERVER] Enable password log in
+        vim /etc/ssh/sshd_config
+        service sshd reload
+        vim /etc/pam.d/sshd
+# Replace the first auth block with:
+#           # If they're not root, but their user exists (success),
+#           auth    [success=ignore ignore=ignore default=1]        pam_succeed_if.so uid > 0
+#           # print the "You don't have tickets" error:
+#           auth    [success=die ignore=reset default=die]  pam_echo.so file=/etc/issue.net.no_tkt
+#           # If !(they are root),
+#           auth    [success=1 ignore=ignore default=ignore]        pam_succeed_if.so uid eq 0
+#           # print the "your account doesn't exist" error:
+#           auth    [success=die ignore=reset default=die]  pam_echo.so file=/etc/issue.net.no_user
+
+
 # [WIZARD/TESTSERVER] If you are setting up a non-production server,
 # there are some services that it won't provide, and you will need to
 # make it talk to a real server instead.  In particular:
 #   - We don't serve the web, so don't bind scripts.mit.edu
 #   - We don't serve LDAP, so use another server
 # This involves editing the following files:
-#   o /etc/sysconfig/network-scripts/ifcfg-lo:0
-#   o /etc/sysconfig/network-scripts/ifcfg-lo:1
-#   o /etc/sysconfig/network-scripts/ifcfg-lo:2
-#   o /etc/sysconfig/network-scripts/ifcfg-lo:3
-       \rm /etc/sysconfig/network-scripts/ifcfg-lo:{0,1,2,3}
+        \rm /etc/sysconfig/network-scripts/ifcfg-lo:{0,1,2,3}
+        \rm /etc/sysconfig/network-scripts/route-eth1 # [TESTSERVER] only
 #   o /etc/nslcd.conf
 #       replace: uri ldapi://%2fvar%2frun%2fdirsrv%2fslapd-scripts.socket/
 #       with: uri ldap://scripts.mit.edu/
