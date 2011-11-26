@@ -69,6 +69,13 @@ server=YOUR-SERVER-NAME-HERE
 
 # Start with a Scripts kickstarted install of Fedora (install-fedora)
 
+# IMPORTANT: If you are installing a server without the benefit of
+# Kickstart (for example, you are installing on XVM, it is VITALLY
+# IMPORTANT that you go through the kickstart and apply all of the
+# necessary changes--for example, disabling selinux or enabling
+# network.)
+#   XXX We should make Kickstart work for test servers too
+
 # Take updates, reboot if there's a kernel update.
     yum update -y
 
@@ -101,6 +108,8 @@ server=YOUR-SERVER-NAME-HERE
     # Some of these packages are naughty and clobber some of our files
     cd /etc
     svn revert resolv.conf hosts sysconfig/openafs nsswitch.conf
+    # Troubleshooting: if accountadm, tokensys and nscd fail to install
+    # you probably forgot to turn off selinux
 
 # Replace rsyslog with syslog-ng by doing:
     rpm -e --nodeps rsyslog
@@ -133,7 +142,8 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 # explicit versions.  So temporarily rpm -e the package, and then
 # install it again after you install haskell-platform.  [Note: You
 # probably won't need this in Fedora 17 or something, when the Haskell
-# Platform gets updated.]
+# Platform gets updated.] [It's not obvious to me that this actually
+# works]
     rpm -e ghc-cgi-devel ghc-cgi
     yum install -y haskell-platform
     yumdownloader ghc-cgi
@@ -324,11 +334,10 @@ python host.py push $server
 #   o /etc/sysconfig/network-scripts/ifcfg-lo:2
 #   o /etc/sysconfig/network-scripts/ifcfg-lo:3
        \rm /etc/sysconfig/network-scripts/ifcfg-lo:{0,1,2,3}
-#   o /etc/ldap.conf
-#       add: host scripts.mit.edu
-#   o /etc/{nss-ldapd,nslcd}.conf
+#   o /etc/nslcd.conf
 #       replace: uri ldapi://%2fvar%2frun%2fdirsrv%2fslapd-scripts.socket/
 #       with: uri ldap://scripts.mit.edu/
+#           (what happened to nss-ldapd?)
 #   o /etc/openldap/ldap.conf
 #       add: URI ldap://scripts.mit.edu/
 #            BASE dc=scripts,dc=mit,dc=edu
