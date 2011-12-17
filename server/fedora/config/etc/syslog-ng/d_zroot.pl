@@ -121,6 +121,7 @@ while (my $line = <>) {
 	} elsif ($message =~ m|^pam_succeed_if\(sshd\:auth\)\:|) {
 	} elsif ($message =~ m|^error: PAM: Authentication failure|) {
 	} elsif ($message =~ m|^pam_unix\(sshd:auth\): authentication failure|) {
+	} elsif ($message =~ m|^pam_unix\(sshd:auth\): check pass; user unknown|) {
 	} elsif ($message =~ m|^Postponed keyboard-interactive for invalid user |) {
 	} elsif ($message =~ m|^Failed keyboard-interactive/pam for invalid user |) {
 	} elsif ($message =~ m|^Postponed gssapi-with-mic for |) {
