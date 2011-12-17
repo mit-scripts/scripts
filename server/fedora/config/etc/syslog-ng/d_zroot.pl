@@ -24,6 +24,7 @@ sub zwrite($;$$\@) {
             @recipients = @$recipref;
         } else {
             $message = '@b(Empty recipient list specified, message redacted)';
+            $class = $ZCLASS;
         }
     }
     $class ||= $ZCLASS;
@@ -34,6 +35,7 @@ sub zwrite($;$$\@) {
 }
 
 unless (@RECIPIENTS) {
+    # Also give a warning at startup
     zwrite('@b(No .k5login found, sensitive logs will not be zephyred)', $ZCLASS);
 }
 
