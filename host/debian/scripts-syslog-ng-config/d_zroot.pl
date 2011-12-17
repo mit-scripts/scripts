@@ -16,13 +16,27 @@ close $k5login;
 our %USERS;
 @USERS{@USERS} = undef;
 
-sub zwrite($;$$@) {
-    my ($message, $class, $instance, @recipients) = @_;
+sub zwrite($;$$\@) {
+    my ($message, $class, $instance, $recipref) = @_;
+    my @recipients = ();
+    if (defined($recipref)) {
+        if (@$recipref) {
+            @recipients = @$recipref;
+        } else {
+            $message = '@b(Empty recipient list specified, message redacted)';
+            $class = $ZCLASS;
+        }
+    }
     $class ||= $ZCLASS;
     $instance ||= 'root.'.hostname;
     open(ZWRITE, "|-", qw|/usr/bin/zwrite -d -n -O log -c|, $class, '-i', $instance, '-s', hostname, @recipients) or die "Couldn't open zwrite";
     print ZWRITE $message;
     close(ZWRITE);
+}
+
+unless (@RECIPIENTS) {
+    # Also give a warning at startup
+    zwrite('@b(No .k5login found, sensitive logs will not be zephyred)', $ZCLASS);
 }
 
 my %toclass;
@@ -126,7 +140,7 @@ while (my $line = <>) {
     }
 
     foreach my $class (keys %toclass) {
-	if ($class eq "scripts-auto") {
+	if ($class eq $ZCLASS) {
 	    zwrite($toclass{$class}, $class);
 	} else {
 	    zwrite($toclass{$class}, $class, undef, @RECIPIENTS);
