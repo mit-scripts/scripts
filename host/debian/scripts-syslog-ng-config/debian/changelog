@@ -1,10 +1,16 @@
-scripts-syslog-ng-config (0.3) stable; urgency=low
+scripts-syslog-ng-config (0.4) stable; urgency=low
 
   * Synchronize filtered logs with Fedora copy (r2095).
   * Avoid accidentally sending sensitive logs to a public class (r2096).
 
  -- Geoffrey Thomas <geofft@mit.edu>  Sat, 17 Dec 2011 03:06:59 -0500
 
+scripts-syslog-ng-config (0.3) stable; urgency=low
+
+  * Depend on debathena-zephyr-config
+
+ -- Alexander Chernyakhovsky <achernya@mit.edu>  Sat, 12 Nov 2011 23:27:51 -0500
+  
 scripts-syslog-ng-config (0.2) stable; urgency=low
 
   * Move d_zroot into /usr/lib

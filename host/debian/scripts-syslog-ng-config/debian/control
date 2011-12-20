@@ -9,6 +9,6 @@ Homepage: http://scripts.mit.edu/
 Package: scripts-syslog-ng-config
 Architecture: all
 Depends: ${misc:Depends},
- syslog-ng,
+ syslog-ng, debathena-zephyr-config
 Description: Configures syslog-ng for zephyr logging
  Configures a machine to log messages sent to syslog-ng to zephyr.
