@@ -47,9 +47,9 @@ PKG		= $(patsubst %.i686,%,$@)
 .PHONY: minimal-clean
 
 info:
-	@echo "The following packages are available:"; \
-	echo "$(allsrc)"; \
-	echo "Run 'make all' to build all packages."
+	@echo "The following packages are available:"
+	@echo "$(allsrc)"
+	@echo "Run 'make all' to build all packages."
 
 minimal-clean:
 	rm -rf $(topdir) $(dload)
@@ -59,13 +59,13 @@ clean: minimal-clean
 	rm -f download_stamp
 
 mkdir-tree:
-	@rpmdev-setuptree
+	rpmdev-setuptree
 	mkdir -p $(out_sbin)
 	ln -sTf $(topdir) rpmbuild
 
 download: download_stamp
 download_stamp:
-	@mkdir -p $(dload); \
+	mkdir -p $(dload)
 	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
 	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
 	wget -P $(dload) $(openafs_url)
@@ -85,18 +85,18 @@ download_stamp:
 	wget -q -nv -N -B $(server_url) -nd -nH -P $(dload) $(server_url)/$*.src.rpm
 
 copy-patches: mkdir-tree
-	@cp $(patches)/*.patch $(tmp_src); \
-	cd $(tmp_src);
+	cp $(patches)/*.patch $(tmp_src)
 
 install-srpms: mkdir-tree download
-	rpm $(rpm_args) -i $(dload)/*.src.rpm 2>/dev/null;
+	rpm $(rpm_args) -i $(dload)/*.src.rpm 2>/dev/null
 
 copy-specs: mkdir-tree
 	cp ${specs}/*.spec $(tmp_specs)
 
 # Remove old .orig files so we're not mislead
 patch-specs: install-srpms
-	@cd ${tmp_specs}; \
+	@set -ex; \
+	cd ${tmp_specs}; \
 	list=`ls ${specs}/*.spec.patch`; \
 	rm -f *.orig; \
 	rm -f *.spec.~*~; \
@@ -113,12 +113,13 @@ patch-specs: install-srpms
 		sed --in-place \
 			-e "s/SVNVERSION_TO_UPDATE/$${version}/" \
 		${tmp_specs}/$$base.spec; \
-	done;
+	done
 
 # 1. use the package's Makefile to delete leftover files and run autoconf
 # 2. create a tarball (we want it to contain the autoconf output)
 tarballs: mkdir-tree
-	@cd ${oursrcdir}; \
+	@set -ex; \
+	cd ${oursrcdir}; \
 	list=`find -mindepth 1 -maxdepth 1 -type d | grep -v ".svn"`; \
 	for i in $$list; do \
 		pushd $$i; \
@@ -130,7 +131,7 @@ tarballs: mkdir-tree
 		fi; \
 		popd; \
 		tar -czf $(tmp_src)/$$i.tar.gz $$i; \
-	done;
+	done
 
 #setup: install-srpms copy-patches copy-specs patch-specs tarballs
 setup: copy-patches copy-specs patch-specs tarballs
@@ -180,7 +181,8 @@ openafs: rpmbuild_args += $(openafs_rpmbuild_args)
 openafs-kernel: rpmbuild_args += $(openafs_rpmbuild_args) --define "build_userspace 0" --define "build_modules 1"
 
 frob-openafs:
-	@if [ ! -d "/etc/openafs/" ]; then \
+	@set -ex; \
+	if [ ! -d "/etc/openafs/" ]; then \
 	echo "/etc/openafs does not exist"; \
 	exit 1; \
 	else \
