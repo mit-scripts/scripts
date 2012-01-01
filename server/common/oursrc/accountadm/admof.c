@@ -20,6 +20,7 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <netinet/in.h>
+#include <afs/stds.h>
 #include <afs/vice.h>
 #include <afs/venus.h>
 #include <afs/ptclient.h>
@@ -89,9 +90,7 @@ parse_rights(int n, const char **p, char *user)
 	    rights |= trights[i];
     }
 
-    /* Note: this first free probably should be xdr_free in OpenAFS 1.5.
-     * See commits b40b606 and f02f2e8 */
-    free(tids.idlist_val);
+    xdr_free((xdrproc_t) xdr_idlist, &tids);
     tids.idlist_val = NULL;
     free(tnames.namelist_val);
     free(trights);

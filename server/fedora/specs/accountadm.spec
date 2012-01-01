@@ -8,7 +8,7 @@ URL: http://scripts.mit.edu
 License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
-BuildRequires: scripts-openafs-devel
+BuildRequires: scripts-openafs-devel, scripts-openafs-authlibs-devel
 BuildRequires: hesinfo
 BuildRequires: openldap-clients
 BuildRequires: krb5-devel

@@ -9,8 +9,8 @@ sysconfdir = @sysconfdir@
 
 all-local: admof signup-scripts-frontend
 
-admof: admof.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $< -L/usr/lib/afs -L/usr/lib64/afs -lprot -lauth -lrxkad -lubik -laudit -lsys -lrx -llwp -lsys -lafsutil -lcom_err -lresolv -lkrb5 -ldes -o $@
+admof: LDLIBS = -lafsauthent_pic -lafsrpc_pic -lresolv -lkrb5 -lpthread
+admof: admof.o
 
 install:
 	install -p -m644 -D mbashrc $(DESTDIR)$(sysconfdir)/mbashrc
@@ -25,7 +25,7 @@ install:
 	install -p -m755 -D ldap-backup $(DESTDIR)$(sbindir)/ldap-backup
 
 clean:
-	rm -f admof signup-scripts-frontend
+	rm -f admof admof.o signup-scripts-frontend
 
 distclean: clean
 	rm -f mbash signup-scripts-backend
