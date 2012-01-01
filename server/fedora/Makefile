@@ -124,7 +124,9 @@ tarballs: mkdir-tree
 		pushd $$i; \
 		if [ -x ./mrproper ]; then \
 			./mrproper; \
-			autoconf; \
+			if [ -e configure.in ] || [ -e configure.ac ]; then \
+				autoconf; \
+			fi; \
 		fi; \
 		popd; \
 		tar -czf $(tmp_src)/$$i.tar.gz $$i; \
