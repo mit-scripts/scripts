@@ -106,6 +106,7 @@ patch-specs: install-srpms
 	list2=`svn ls ${oursrcdir}`; \
 	for i in $$list2; do \
 		base=`basename $$i`; \
+		[ -e ${tmp_specs}/$$base.spec ] || continue; \
 		version=`svnversion ${oursrcdir}/$$i`; \
 		version=$${version//:/_}; \
 		echo "$$i version $$version"; \
