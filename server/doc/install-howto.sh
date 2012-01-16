@@ -83,8 +83,13 @@ server=YOUR-SERVER-NAME-HERE
 # this for us)
     yum remove NetworkManager
 
-# Make sure sendmail isn't installed
-    yum remove sendmail
+# Make sure sendmail isn't installed, replace it with postfix
+    yum shell <<EOF
+remove sendmail
+install postfix
+run
+exit
+EOF
 
 # Check out the scripts /etc configuration
     cd /root
@@ -114,18 +119,26 @@ server=YOUR-SERVER-NAME-HERE
     # you probably forgot to turn off selinux
 
 # Replace rsyslog with syslog-ng by doing:
-    rpm -e --nodeps rsyslog
-    yum install -y syslog-ng
+    yum shell <<EOF
+remove rsyslog
+install syslog-ng
+run
+exit
+EOF
     systemctl enable syslog-ng.service
 
 # Install the full list of RPMs that users expect to be on the
 # scripts.mit.edu servers.
 rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 # arrange for packages.txt to be passed to the server, then run:
-# --skip-broken will (usually) prevent you from having to sit through
-# several minutes of dependency resolution until it decides that
-# it can't install /one/ package.
-    yum install -y --skip-broken $(cat packages.txt)
+    cd /tmp
+    yumdownloader --disablerepo=scripts ghc-cgi ghc-cgi-devel
+    yum localinstall ghc-cgi*.x86_64.rpm
+    yum install -y $(cat packages.txt)
+# The reason this works is that ghc-cgi is marked as installonlypkgs
+# in yum.conf, telling yum to install them side-by-side rather than
+# updating them. If it doesn't work, use --skip-broken on the yum
+# command line.
 
 # Check which packages are installed on your new server that are not
 # in the snapshot, and remove ones that aren't needed for some reason
@@ -138,19 +151,6 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
     # 20101208 - Mysteriously we manage to get these extra packages
     # from kickstart: mcelog mobile-broadband-provider-info
     # ModemManager PackageKit
-
-# We need an upstream version of cgi which we've packaged ourselves, but
-# it doesn't work with the haskell-platform package which expects
-# explicit versions.  So temporarily rpm -e the package, and then
-# install it again after you install haskell-platform.  [Note: You
-# probably won't need this in Fedora 17 or something, when the Haskell
-# Platform gets updated.] [It's not obvious to me that this actually
-# works]
-    rpm -e ghc-cgi-devel ghc-cgi
-    yum install -y haskell-platform
-    yumdownloader ghc-cgi
-    yumdownloader ghc-cgi-devel
-    rpm -i ghc-cgi*1.8.2*.rpm
 
 # ----------------------------->8--------------------------------------
 #                      SPHEROID SHENANIGANS
@@ -180,8 +180,8 @@ perldoc -u perllocal | grep head2 | cut -f 3 -d '<' | cut -f 1 -d '|' | sort -u 
 # The general mode of operation will be to run the "list" command
 # on both servers, see what the differences are, check if those diffs
 # are packaged up as rpms, and install them (rpm if possible, native otherwise)
-# - Look at /usr/lib/python2.6/site-packages and
-#           /usr/lib64/python2.6/site-packages for Python eggs and modules.
+# - Look at /usr/lib/python2.7/site-packages and
+#           /usr/lib64/python2.7/site-packages for Python eggs and modules.
 #   There will be a lot of gunk that was installed from packages;
 #   easy-install.pth in /usr/lib/ will tell you what was easy_installed.
 #   First use 'yum search' to see if the relevant package is now available
@@ -237,10 +237,6 @@ python host.py push $server
 #   #   [WIZARD]     daemon.scripts-security-upd
 #   #   [TESTSERVER] daemon.scripts-test
 
-# [PRODUCTION/WIZARD] Fix the openafs /usr/vice/etc <-> /etc/openafs
-# mapping.
-    echo "/afs:/usr/vice/cache:10000000" > /usr/vice/etc/cacheinfo
-    echo "athena.mit.edu" > /usr/vice/etc/ThisCell
 # [TESTSERVER] If you're installing a test server, this needs to be
 # much smaller; the max filesize on XVM is 10GB.  Pick something like
 # 500000. Also, some of the AFS parameters are kind of retarded (and if
@@ -248,6 +244,7 @@ python host.py push $server
 # these parameters in /etc/sysconfig/openafs (This doesn't work in the
 # new systemd world order: try editing the unit file instead.)
     echo "/afs:/usr/vice/cache:500000" > /usr/vice/etc/cacheinfo
+# XXX This is out of date in the systemd world.
     vim /etc/sysconfig/openafs
 
 # Test that zephyr is working
@@ -299,12 +296,6 @@ python host.py push $server
 # Run fmtutil-sys --all, which does something that makes TeX work.
 # (Note: this errors on XeTeX which is ok.)
     fmtutil-sys --all
-
-# Ensure that PHP isn't broken:
-    mkdir /tmp/sessions
-    chmod 01777 /tmp/sessions
-    # XXX: this seems to get deleted if tmp gets cleaned up, so we
-    # might need something a little better (maybe init script.)
 
 # Fix etc by making sure none of our config files got overwritten
     cd /etc
