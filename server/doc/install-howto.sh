@@ -127,9 +127,6 @@ exit
 EOF
     systemctl enable syslog-ng.service
 
-# Temporarily remove ghc-cgi-devel and ghc-cgi
-    rpm -e --nodeps ghc-cgi-devel ghc-cgi
-
 # Install the full list of RPMs that users expect to be on the
 # scripts.mit.edu servers.
 rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
