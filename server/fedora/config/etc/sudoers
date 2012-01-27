@@ -70,7 +70,6 @@ Defaults    env_keep += "USE_NEWLINES"
 root	ALL=(ALL) 	ALL
 
 scripts	ALL=(root)	NOPASSWD: /usr/local/sbin/ldap-backup ""
-rebecca	ALL=(root)	NOPASSWD: /sbin/service nscd restart
 nrpe	ALL=(signup)	NOPASSWD: /etc/nagios/check_ldap_mmr.real
 
 Defaults:munin !syslog
