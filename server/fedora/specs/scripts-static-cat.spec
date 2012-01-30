@@ -2,6 +2,9 @@
 # - https://fedoraproject.org/wiki/Packaging:Haskell
 # - https://fedoraproject.org/wiki/PackagingDrafts/Haskell
 
+# Link Haskell libs statically for 3x faster startup speed.
+%define ghc_without_dynamic 1
+
 Name:           scripts-static-cat
 Version:        0.0
 Release:        0.%{scriptsversion}%{?dist}
