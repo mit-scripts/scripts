@@ -9,7 +9,7 @@
  URL: http://httpd.apache.org/
  Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
  Source1: index.html
-@@ -54,6 +54,15 @@
+@@ -54,6 +54,18 @@
  Provides: httpd-mmn = %{mmn}, httpd-mmn = %{mmnisa}
  Requires: httpd-tools = %{version}-%{release}, apr-util-ldap, systemd-units
  
@@ -21,6 +21,9 @@
 +Patch1006: httpd-suexec-cloexec.patch
 +Patch1007: httpd-fixup-vhost.patch
 +Patch1008: httpd-sysv-deps.patch
++Patch1009: httpd-2.2.x-CVE-2011-3607.patch
++Patch1010: httpd-2.2.x-CVE-2012-0053.patch
++Patch1011: httpd-2.2.x-CVE-2012-0031.patch
 +
  %description
  The Apache HTTP Server is a powerful, efficient, and extensible
@@ -53,7 +56,7 @@
  %setup -q
  %patch1 -p1 -b .apctl
  %patch2 -p1 -b .apxs
-@@ -128,6 +144,13 @@
+@@ -128,6 +144,17 @@
  # Patch in vendor/release string
  sed "s/@RELEASE@/%{vstring}/" < %{PATCH20} | patch -p1
  
@@ -63,6 +66,10 @@
 +%patch1005 -p1 -b .ssl-sessioncache
 +%patch1006 -p1 -b .cloexec
 +%patch1007 -p1 -b .fixup-vhost
++# Note that patch1008 is not here, as it patches the initscript elsewhere in this .spec
++%patch1009 -p4 -b .cve-2011-3607
++%patch1010 -p4 -b .cve-2012-0053
++%patch1011 -p4 -b .cve-2012-0031
 +
  # Safety check: prevent build if defined MMN does not equal upstream MMN.
  vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
