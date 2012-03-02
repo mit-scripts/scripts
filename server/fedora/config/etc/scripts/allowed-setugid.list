@@ -11,7 +11,6 @@
 /usr/libexec/pt_chown
 /usr/libexec/utempter/utempter
 /usr/local/bin/logview
-/usr/local/sbin/signup-scripts-frontend
 /usr/sbin/fping
 /usr/sbin/fping6
 /usr/sbin/lockdev

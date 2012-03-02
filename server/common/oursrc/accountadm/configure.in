@@ -1,4 +1,4 @@
-AC_INIT(signup-scripts-frontend.c)
+AC_INIT(signup-scripts-backend.in)
 
 AC_PROG_CC
 

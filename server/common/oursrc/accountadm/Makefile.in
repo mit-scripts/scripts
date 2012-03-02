@@ -7,7 +7,7 @@ sbindir = @sbindir@
 bindir = @bindir@
 sysconfdir = @sysconfdir@
 
-all-local: admof signup-scripts-frontend
+all-local: admof
 
 admof: LDLIBS = -lafsauthent_pic -lafsrpc_pic -lresolv -lkrb5 -lpthread
 admof: admof.o
@@ -17,7 +17,6 @@ install:
 	install -p -m755 -D mbash $(DESTDIR)$(bindir)/mbash
 	install -p -m755 -D admof $(DESTDIR)$(bindir)/admof
 	install -p -m755 -D admof $(DESTDIR)$(sbindir)/ssh-admof
-	install -p -m755 -D signup-scripts-frontend $(DESTDIR)$(sbindir)/signup-scripts-frontend
 	install -p -m755 -D signup-scripts-backend $(DESTDIR)$(sbindir)/signup-scripts-backend
 	install -p -m755 -D cronload $(DESTDIR)$(bindir)/cronload
 	install -p -m755 -D vhostadd $(DESTDIR)$(sbindir)/vhostadd
@@ -25,7 +24,7 @@ install:
 	install -p -m755 -D ldap-backup $(DESTDIR)$(sbindir)/ldap-backup
 
 clean:
-	rm -f admof admof.o signup-scripts-frontend
+	rm -f admof admof.o
 
 distclean: clean
 	rm -f mbash signup-scripts-backend
