@@ -69,8 +69,8 @@ class BetterMousetrapFS(fuse.Fuse):
                       for l in open('/proc/%d/status' % pid).readlines())
 
         syslog.syslog(
-            syslog.LOG_WARNING,
-            'caught process %d, uid=%s, gid=%s, exe=%r, cmdline=%r' %
+            syslog.LOG_WARNING | syslog.LOG_AUTH,
+            'mousetrap caught process %d, uid=%s, gid=%s, exe=%r, cmdline=%r' %
             (pid, user, group, exe, cmdline))
 
         try:
