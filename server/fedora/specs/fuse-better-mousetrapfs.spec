@@ -26,14 +26,14 @@ filesystem scans.
 
 %install
 rm -rf %{buildroot}
-install -D better-mousetrapfs %{buildroot}/usr/local/sbin/better-mousetrapfs
+install -D better-mousetrapfs %{buildroot}/usr/sbin/better-mousetrapfs
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-/usr/local/sbin/better-mousetrapfs
+/usr/sbin/better-mousetrapfs
 
 %changelog
 * Mon Mar 26 2012 Edward Z. Yang <ezyang@mit.edu> - 0-1.2150
