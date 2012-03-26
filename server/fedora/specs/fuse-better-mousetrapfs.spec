@@ -7,6 +7,9 @@ Vendor:         The scripts.mit.edu Team (scripts@mit.edu)
 URL:            http://scripts.mit.edu
 License:        BSD
 Source0:        %{name}.tar.gz
+BuildArch:	noarch
+
+%define debug_package %{nil}
 
 Requires:       fuse >= 2.2
 Requires:       fuse-python
