@@ -2,7 +2,9 @@
 Description=FUSE better mousetrap filesystem
 After=remote-fs.target
 [Mount]
-What=/usr/local/sbin/better-mousetrapfs
+What=/usr/sbin/better-mousetrapfs
 Where=/afs/000
 Type=fuse
 Options=defaults,nonempty
+[Install]
+WantedBy=multi-user.target
