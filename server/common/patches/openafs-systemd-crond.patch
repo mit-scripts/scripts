@@ -13,5 +13,5 @@ index bc95057..9627280 100644
  KillMode=none
  
  [Install]
--WantedBy=multi-user.target
-+WantedBy=multi-user.target crond.service
+-WantedBy=multi-user.target remote-fs.target
++WantedBy=multi-user.target remote-fs.target crond.service
