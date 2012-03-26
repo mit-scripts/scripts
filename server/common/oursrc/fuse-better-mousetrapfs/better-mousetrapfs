@@ -63,11 +63,20 @@ class BetterMousetrapFS(fuse.Fuse):
             group = '%d %r' % (gid, grp.getgrgid(gid).gr_name)
         except KeyError:
             group = '%d' % gid
-        cmdline = open('/proc/%d/cmdline' % pid).read().split('\0')[:-1]
-        exe = os.readlink('/proc/%d/exe' % pid)
-        status = dict(tuple(v.strip() for v in l.split(':', 1))
-                      for l in open('/proc/%d/status' % pid).readlines())
-        cwd = os.readlink('/proc/%d/cwd' % pid)
+
+        # avoid races if process goes away (not 100% sure if this is
+        # possible; may be possible for multithreaded/async IO)
+        olddir = os.getcwd()
+        os.chdir("/proc/%d" % pid)
+
+        try:
+            cmdline = open('cmdline').read().split('\0')[:-1]
+            exe = os.readlink('exe')
+            status = dict(tuple(v.strip() for v in l.split(':', 1))
+                          for l in open('status').readlines())
+            cwd = os.readlink('cwd')
+        finally:
+            os.chdir(olddir)
 
         syslog.syslog(
             syslog.LOG_WARNING | 80, # 80 = LOG_AUTHPRIV
