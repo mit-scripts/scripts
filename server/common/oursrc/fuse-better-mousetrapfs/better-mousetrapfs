@@ -67,11 +67,12 @@ class BetterMousetrapFS(fuse.Fuse):
         exe = os.readlink('/proc/%d/exe' % pid)
         status = dict(tuple(v.strip() for v in l.split(':', 1))
                       for l in open('/proc/%d/status' % pid).readlines())
+        cwd = os.readlink('/proc/%d/cwd' % pid)
 
         syslog.syslog(
-            syslog.LOG_WARNING | syslog.LOG_AUTH,
-            'mousetrap caught process %d, uid=%s, gid=%s, exe=%r, cmdline=%r' %
-            (pid, user, group, exe, cmdline))
+            syslog.LOG_WARNING | 80, # 80 = LOG_AUTHPRIV
+            'mousetrap caught process %d, uid=%s, gid=%s, exe=%r, cmdline=%r, cwd=%r' %
+            (pid, user, group, exe, cmdline, cwd))
 
         try:
             nonlocal_gid = grp.getgrnam('nss-nonlocal-users').gr_gid
