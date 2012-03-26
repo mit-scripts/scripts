@@ -1,6 +1,6 @@
 [Unit]
 Description=FUSE better mousetrap filesystem
-After=remote-fs.target
+After=openafs-client.service
 [Mount]
 What=/usr/sbin/better-mousetrapfs
 Where=/afs/000
