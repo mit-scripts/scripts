@@ -1,0 +1,89 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# better-mousetrapfs: Filesystem that logs and kills any accessors
+# version 1.0, released 2010-03-31
+# Copyright © 2010 Anders Kaseorg <andersk@mit.edu>
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation files
+# (the “Software”), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+import errno
+import fuse
+import grp
+import os
+import pwd
+import signal
+import stat
+import syslog
+
+fuse.fuse_python_api = (0, 2)
+
+class BetterMousetrapFS(fuse.Fuse):
+    def __init__(self, *args, **kwargs):
+        syslog.openlog('better-mousetrapfs')
+        fuse.Fuse.__init__(self, *args, **kwargs)
+
+    def getattr(self, path):
+        if path == '/':
+            return fuse.Stat(st_mode = stat.S_IFDIR | 0755, st_nlink = 2)
+        else:
+            return -errno.EACCES
+
+    def opendir(self, path):
+        self.spring(fuse.FuseGetContext())
+        return -errno.EACCES
+
+    def spring(self, context):
+        pid = context['pid']
+        uid = context['uid']
+        gid = context['gid']
+        try:
+            user = '%d %r' % (uid, pwd.getpwuid(uid).pw_name)
+        except KeyError:
+            user = '%d' % uid
+        try:
+            group = '%d %r' % (gid, grp.getgrgid(gid).gr_name)
+        except KeyError:
+            group = '%d' % gid
+        cmdline = open('/proc/%d/cmdline' % pid).read().split('\0')[:-1]
+        exe = os.readlink('/proc/%d/exe' % pid)
+        status = dict(tuple(v.strip() for v in l.split(':', 1))
+                      for l in open('/proc/%d/status' % pid).readlines())
+
+        syslog.syslog(
+            syslog.LOG_WARNING,
+            'caught process %d, uid=%s, gid=%s, exe=%r, cmdline=%r' %
+            (pid, user, group, exe, cmdline))
+
+        try:
+            nonlocal_gid = grp.getgrnam('nss-nonlocal-users').gr_gid
+        except KeyError:
+            nonlocal_gid = None
+        if str(nonlocal_gid) in status['Groups'].split():
+            os.kill(pid, signal.SIGKILL)
+            pass
+
+if __name__ == '__main__':
+    fs = BetterMousetrapFS()
+    fs.parse(errex=1)
+    fs.fuse_args.add('allow_other')
+    fs.fuse_args.add('ro')
+    fs.main()
