@@ -11,8 +11,6 @@
 /usr/libexec/pt_chown
 /usr/libexec/utempter/utempter
 /usr/local/bin/logview
-/usr/sbin/fping
-/usr/sbin/fping6
 /usr/sbin/lockdev
 /usr/sbin/mtr
 /usr/sbin/postdrop
