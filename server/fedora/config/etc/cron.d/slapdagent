@@ -1,3 +1,0 @@
-KRB5CCNAME=/var/run/dirsrv/krb5cc
-MAILTO=scripts-root@mit.edu
-0 */3 * * * fedora-ds /usr/bin/kinit -k -t /etc/dirsrv/keytab ldap/$(hostname)
