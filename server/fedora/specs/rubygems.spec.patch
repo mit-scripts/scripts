@@ -1,17 +1,17 @@
---- rubygems.spec.~1~	2012-01-26 05:30:19.000000000 -0500
-+++ rubygems.spec	2012-02-10 16:01:12.137685657 -0500
+--- rubygems.spec.~1~	2012-04-20 14:46:27.000000000 -0400
++++ rubygems.spec	2012-05-03 14:12:52.421863447 -0400
 @@ -15,7 +15,7 @@
  Summary:	The Ruby standard for packaging ruby libraries
  Name:		rubygems
  Version:	1.7.2
--Release:	4%{?dist}
-+Release:	4%{?dist}.scripts.%{scriptsversion}
+-Release:	5%{?dist}
++Release:	5%{?dist}.scripts.%{scriptsversion}
  Group:		Development/Libraries
  # No GPL version is specified.
  License:	Ruby or GPL+
-@@ -40,6 +40,9 @@
- # ... and spec_file is not supported yet
- Patch7:		rubygems-1.7.2-escape-string-skip-test.patch
+@@ -42,6 +42,9 @@
+ # Insecure connection to SSL repository fix
+ Patch10:	rubygems-1.x.x-ssl-connection-don_t-revert.patch
  
 +Provides: scripts-rubygems = %{version}-%{release}
 +Patch1000: rubygems-rails-require-thread.patch
@@ -19,9 +19,9 @@
  Requires:	ruby(abi) = 1.8
  Requires:	ruby >= 1.8.7
  Requires:	ruby-rdoc
-@@ -79,6 +82,8 @@
- %patch6 -p1 -b .esc
+@@ -83,6 +86,8 @@
  %patch7 -p1 -b .esc.skip
+ %patch10 -p1 -b .ssl
  
 +%patch1000 -p1 -b .thread
 +
