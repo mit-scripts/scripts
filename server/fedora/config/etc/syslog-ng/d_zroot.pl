@@ -133,6 +133,7 @@ while (my $line = <>) {
 	} elsif ($message =~ m|^ *nrpe .* COMMAND=/etc/nagios/check_ldap_mmr.real$|) {
 	} elsif ($message =~ m|^ *root : TTY=|) {
 	} elsif ($message =~ m|^Set /proc/self/oom_adj to |) {
+	} elsif ($message =~ m|^Set /proc/self/oom_score_adj to |) {
 	} elsif ($message =~ m|^fatal: mm_request_receive: read: Connection reset by peer$|) {
 	} else {
 	    sendmsg($message, "scripts-spew");
