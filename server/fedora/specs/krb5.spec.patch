@@ -1,15 +1,15 @@
---- krb5.spec.~1~	2012-01-30 19:33:39.000000000 -0500
-+++ krb5.spec	2012-02-19 23:56:19.514562799 -0500
+--- krb5.spec.~1~	2012-03-08 16:20:41.000000000 -0500
++++ krb5.spec	2012-04-01 22:07:14.834013302 -0400
 @@ -6,7 +6,7 @@
  Summary: The Kerberos network authentication system
  Name: krb5
- Version: 1.9.2
--Release: 6%{?dist}
-+Release: 6%{?dist}.scripts.%{scriptsversion}
+ Version: 1.9.3
+-Release: 1%{?dist}
++Release: 1%{?dist}.scripts.%{scriptsversion}
  # Maybe we should explode from the now-available-to-everybody tarball instead?
- # http://web.mit.edu/kerberos/dist/krb5/1.9/krb5-1.9.1-signed.tar
+ # http://web.mit.edu/kerberos/dist/krb5/1.9/krb5-1.9.3-signed.tar
  Source0: krb5-%{version}.tar.gz
-@@ -66,6 +66,8 @@
+@@ -64,6 +64,8 @@
  Patch102: krb5-1.9-7048.patch
  Patch103: krb5-kvno-230379.patch
  
@@ -18,7 +18,7 @@
  License: MIT
  URL: http://web.mit.edu/kerberos/www/
  Group: System Environment/Libraries
-@@ -115,6 +117,7 @@
+@@ -113,6 +115,7 @@
  %package libs
  Summary: The shared libraries used by Kerberos 5
  Group: System Environment/Libraries
@@ -26,7 +26,7 @@
  
  %description libs
  Kerberos is a network authentication system. The krb5-libs package
-@@ -223,6 +226,7 @@
+@@ -219,6 +222,7 @@
  %patch101 -p1 -b .7047
  %patch102 -p1 -b .7048
  %patch103 -p1 -b .kvno
