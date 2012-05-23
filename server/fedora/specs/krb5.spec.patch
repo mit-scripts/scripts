@@ -1,24 +1,24 @@
---- krb5.spec.~1~	2012-03-08 16:20:41.000000000 -0500
-+++ krb5.spec	2012-04-01 22:07:14.834013302 -0400
-@@ -6,7 +6,7 @@
+--- krb5.spec.~1~	2012-03-08 16:26:28.000000000 -0500
++++ krb5.spec	2012-05-22 23:34:03.312147899 -0400
+@@ -15,7 +15,7 @@
  Summary: The Kerberos network authentication system
  Name: krb5
- Version: 1.9.3
--Release: 1%{?dist}
-+Release: 1%{?dist}.scripts.%{scriptsversion}
+ Version: 1.10
+-Release: 5%{?dist}
++Release: 5%{?dist}.scripts.%{scriptsversion}
  # Maybe we should explode from the now-available-to-everybody tarball instead?
- # http://web.mit.edu/kerberos/dist/krb5/1.9/krb5-1.9.3-signed.tar
+ # http://web.mit.edu/kerberos/dist/krb5/1.10/krb5-1.10-signed.tar
  Source0: krb5-%{version}.tar.gz
-@@ -64,6 +64,8 @@
- Patch102: krb5-1.9-7048.patch
- Patch103: krb5-kvno-230379.patch
+@@ -66,6 +66,8 @@
+ Patch106: krb5-1.10-lookaside.patch
+ Patch107: krb5-1.10-string-rpc-acl-fix.patch
  
 +Patch1000: krb5-kuserok-scripts.patch
 +
  License: MIT
  URL: http://web.mit.edu/kerberos/www/
  Group: System Environment/Libraries
-@@ -113,6 +115,7 @@
+@@ -119,6 +121,7 @@
  %package libs
  Summary: The shared libraries used by Kerberos 5
  Group: System Environment/Libraries
@@ -26,11 +26,11 @@
  
  %description libs
  Kerberos is a network authentication system. The krb5-libs package
-@@ -219,6 +222,7 @@
- %patch101 -p1 -b .7047
- %patch102 -p1 -b .7048
- %patch103 -p1 -b .kvno
+@@ -238,6 +241,7 @@
+ %patch105 -p1 -b .kvno
+ %patch106 -p1 -b .7082
+ %patch107 -p1 -b .7093
 +%patch1000 -p1 -b .kuserok
- gzip doc/*.ps
+ rm src/lib/krb5/krb/deltat.c
  
- sed -i -e '1s!\[twoside\]!!;s!%\(\\usepackage{hyperref}\)!\1!' doc/api/library.tex
+ gzip doc/*.ps
