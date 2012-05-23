@@ -31,7 +31,7 @@ open BANNEDUSERS, "</afs/athena.mit.edu/contrib/scripts/admin/users.banned" or
     complain("internal error");
 while (<BANNEDUSERS>) {
     chomp;
-    complain("banned username") if ($_ eq $username);
+    complain("banned username") if (lc eq lc $username);
 }
 close(BANNEDUSERS);
 

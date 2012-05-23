@@ -1,0 +1,14 @@
+CellServDB maintains a mapping of cell names to IP addresses of servers
+serving them.
+
+Under normal operation, CellServDB.dist (which is distributed by the
+OpenAFS package) and CellServDB.local (which is normally empty, but can
+be used to add local AFS cells.)
+
+However, we patch OpenAFS's systemd unit file to instead concatenate
+CellServDB.local (which is Athena Ops provided database) and
+CellServDB.mousetrap (which is a bogus entry for better-mousetrapfs,
+which catches and kills 'find /afs').
+
+CellServDB.mousetrap must be concatenated at the end, as readdir on
+/afs returns cells in reverse order they are in CellServDB.

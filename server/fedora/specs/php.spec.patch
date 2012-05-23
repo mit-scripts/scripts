@@ -1,0 +1,30 @@
+--- php.spec.~1~	2012-02-02 17:13:59.000000000 -0500
++++ php.spec	2012-05-03 14:18:22.234721036 -0400
+@@ -37,7 +37,7 @@
+ Summary: PHP scripting language for creating dynamic web sites
+ Name: php
+ Version: 5.3.10
+-Release: 1%{?dist}
++Release: 1%{?dist}.scripts.%{scriptsversion}
+ License: PHP
+ Group: Development/Languages
+ URL: http://www.php.net/
+@@ -76,6 +76,9 @@
+ # Fixes for tests
+ Patch61: php-5.0.4-tests-wddx.patch
+ 
++Provides: scripts-php
++Patch100: php-cve-2012-1823.patch
++
+ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+ 
+ BuildRequires: bzip2-devel, curl-devel >= 7.9, db4-devel, gmp-devel
+@@ -544,6 +547,8 @@
+ 
+ %patch61 -p1 -b .tests-wddx
+ 
++%patch100 -p0 -b .cve-2012-1823
++
+ # Prevent %%doc confusion over LICENSE files
+ cp Zend/LICENSE Zend/ZEND_LICENSE
+ cp TSRM/LICENSE TSRM_LICENSE

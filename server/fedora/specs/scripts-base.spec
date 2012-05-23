@@ -26,6 +26,7 @@ Requires: sql-signup
 Requires: tokensys
 Requires: whoisd
 Requires: logview
+Requires: fuse-better-mousetrapfs
 Requires: %{all_archs nss-pam-ldapd}
 Requires: php_scripts
 Requires: zephyr

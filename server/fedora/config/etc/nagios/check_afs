@@ -1,7 +1,12 @@
 #!/bin/sh
 . /usr/lib64/nagios/plugins/utils.sh
 
-CHECKS=`/usr/bin/fs checks -all -fast`
+if [ $# -ge 1 ]; then
+    CHECKS=`/usr/bin/fs checks -cell "$1" -fast`
+else
+    CHECKS=`/usr/bin/fs checks -all -fast`
+fi
+
 STATUS=$?
 
 $ECHO "$CHECKS"

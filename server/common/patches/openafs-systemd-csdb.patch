@@ -1,0 +1,11 @@
+--- a/src/packaging/RedHat/openafs-client.service	2012-03-26 17:04:18.177919348 -0400
++++ b/src/packaging/RedHat/openafs-client.service	2012-03-26 17:15:17.206630779 -0400
+@@ -6,7 +6,7 @@
+ [Service]
+ Type=forking
+ EnvironmentFile=/etc/sysconfig/openafs
+-ExecStartPre=/bin/sed -n 'w/usr/vice/etc/CellServDB' /usr/vice/etc/CellServDB.local /usr/vice/etc/CellServDB.dist
++ExecStartPre=-/bin/sed -n 'w/usr/vice/etc/CellServDB' /usr/vice/etc/CellServDB.local /usr/vice/etc/CellServDB.mousetrap
+ ExecStartPre=/bin/chmod 0644 /usr/vice/etc/CellServDB
+ ExecStartPre=/sbin/modprobe openafs
+ ExecStart=/usr/vice/etc/afsd $AFSD_ARGS

@@ -1,5 +1,5 @@
---- rpmbuild/SPECS/openafs.spec
-+++ rpmbuild/SPECS/openafs.spec.~3~	2011-11-20 20:13:52.211673609 -0500
+--- openafs.spec	2012-02-13 15:41:02.757592190 -0500
++++ openafs.spec.~3~	2012-02-13 15:48:25.366294629 -0500
 @@ -4,7 +4,7 @@
  %define pkgvers 1.6.0
  # for beta/rc releases make pkgrel 0.<tag>
@@ -9,22 +9,23 @@
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -237,6 +237,14 @@
+@@ -237,6 +237,15 @@
  
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
 +Patch1000: openafs-scripts.patch
-+Patch1001: openafs-localcsdb.patch
-+Patch1002: openafs-systemd.patch
-+Patch1003: openafs-systemd-crond.patch
++Patch1001: openafs-systemd.patch
++Patch1002: openafs-systemd-crond.patch
++Patch1003: openafs-systemd-csdb.patch
 +Patch1004: openafs-linux-3.1-rcu.patch
 +Patch1005: openafs-linux-3.1-fsync.patch
 +Patch1006: openafs-linux-3.1-zalloc.patch
++Patch1007: openafs-linux-3.2-nlink.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -316,6 +324,7 @@
+@@ -316,6 +325,7 @@
  %if %{build_userspace}
  
  %package client
@@ -32,7 +33,7 @@
  Requires: binutils, openafs = %{version}
  
  %if %{fedorakmod}
-@@ -376,6 +385,7 @@
+@@ -376,6 +386,7 @@
  
  %if %{build_authlibs}
  %package authlibs
@@ -40,7 +41,7 @@
  Summary: OpenAFS authentication shared libraries
  Group: Networking/Filesystems
  
-@@ -392,6 +402,7 @@
+@@ -392,6 +403,7 @@
  %endif
  
  %package authlibs-devel
@@ -48,7 +49,7 @@
  %if %{build_authlibs}
  Requires: openafs-authlibs = %{version}-%{release}
  %endif
-@@ -410,6 +421,7 @@
+@@ -410,6 +422,7 @@
  libraries.
  
  %package devel
@@ -56,7 +57,7 @@
  Summary: OpenAFS Development Libraries and Headers
  Group: Development/Filesystems
  Requires: openafs = %{version}-%{release}
-@@ -439,6 +451,7 @@
+@@ -439,6 +452,7 @@
  administrators.
  
  %package kernel-source
@@ -64,7 +65,7 @@
  Summary: OpenAFS Kernel Module source tree
  Group: Networking/Filesystems
  Provides: openafs-kernel = %{version}
-@@ -488,6 +501,7 @@
+@@ -488,6 +502,7 @@
  
  %if %{krb5support}
  %package krb5
@@ -72,7 +73,7 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{version}
  Group: Networking/Filesystems
-@@ -514,7 +528,7 @@
+@@ -514,7 +529,7 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
@@ -81,23 +82,24 @@
  
  %else
  
-@@ -671,6 +685,15 @@
+@@ -671,6 +686,16 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
 +# Apply the Scripts patch
 +%patch1000 -p1 -b .scripts
-+%patch1001 -p1 -b .localcsdb
-+%patch1002 -p1 -b .systemd
-+%patch1003 -p1 -b .systemd-crond
++%patch1001 -p1 -b .systemd
++%patch1002 -p1 -b .systemd-crond
++%patch1003 -p1 -b .systemd-csdb
 +%patch1004 -p1 -b .rcu
 +%patch1005 -p1 -b .fsync
 +%patch1006 -p1 -b .zalloc
++%patch1007 -p1 -b .nlink
 +
  ##############################################################################
  #
  # building
-@@ -1212,6 +1235,13 @@
+@@ -1212,6 +1237,13 @@
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*

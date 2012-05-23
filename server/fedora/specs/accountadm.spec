@@ -8,7 +8,7 @@ URL: http://scripts.mit.edu
 License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
-BuildRequires: scripts-openafs-devel
+BuildRequires: scripts-openafs-devel, scripts-openafs-authlibs-devel
 BuildRequires: hesinfo
 BuildRequires: openldap-clients
 BuildRequires: krb5-devel
@@ -24,7 +24,6 @@ Prereq: /usr/bin/fs, /usr/bin/pts
 scripts.mit.edu locker administration system
 Contains:
  - Perl script for checking whether a user is a locker admin <admof>
- - setuid C program used to start a signup request <signup-scripts-frontend>
  - Perl script that handles signup requests <signup-scripts-backend>
  - vhostadd,vhostedit: admin tools for adding and editing virtualhosts
  - cronload: userspace tool for setting crontab from Athena
@@ -56,8 +55,6 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 /usr/local/sbin/vhostadd
 /usr/local/sbin/vhostedit
 /usr/local/sbin/ldap-backup
-%defattr(4755, signup, signup)
-/usr/local/sbin/signup-scripts-frontend
 
 %pre
 groupadd -g 102 signup || [ $? -eq 9 ]

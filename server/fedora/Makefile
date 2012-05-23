@@ -18,11 +18,11 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 krb5.i686 httpd openssh redland-bindings rubygems
+upstream_yum	= krb5 krb5.i686 httpd openssh redland-bindings rubygems php
 hackage		= MonadCatchIO-mtl-0.3.0.2 cgi-3001.1.8.2 unix-handle-0.0.0
 upstream_hackage = ghc-MonadCatchIO-mtl ghc-cgi ghc-unix-handle
-upstream	= openafs $(upstream_yum) $(upstream_hackage) moira zephyr zephyr.i686 python-zephyr athena-aclocal discuss
-oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat
+upstream	= openafs $(upstream_yum) $(upstream_hackage) moira zephyr zephyr.i686 python-zephyr python-afs athena-aclocal discuss
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat fuse-better-mousetrapfs
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
@@ -47,9 +47,9 @@ PKG		= $(patsubst %.i686,%,$@)
 .PHONY: minimal-clean
 
 info:
-	@echo "The following packages are available:"; \
-	echo "$(allsrc)"; \
-	echo "Run 'make all' to build all packages."
+	@echo "The following packages are available:"
+	@echo "$(allsrc)"
+	@echo "Run 'make all' to build all packages."
 
 minimal-clean:
 	rm -rf $(topdir) $(dload)
@@ -59,13 +59,13 @@ clean: minimal-clean
 	rm -f download_stamp
 
 mkdir-tree:
-	@rpmdev-setuptree
+	rpmdev-setuptree
 	mkdir -p $(out_sbin)
 	ln -sTf $(topdir) rpmbuild
 
 download: download_stamp
 download_stamp:
-	@mkdir -p $(dload); \
+	mkdir -p $(dload)
 	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
 	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
 	wget -P $(dload) $(openafs_url)
@@ -75,6 +75,7 @@ download_stamp:
 	cabal fetch $(hackage)
 	cp -a $(hackage:%=~/.cabal/packages/*/*/*/%.tar.gz) $(tmp_src)
 	spectool -g -R $(specs)/python-zephyr.spec
+	spectool -g -R $(specs)/python-afs.spec
 	touch download_stamp
 
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-aclocal/
@@ -84,18 +85,18 @@ download_stamp:
 	wget -q -nv -N -B $(server_url) -nd -nH -P $(dload) $(server_url)/$*.src.rpm
 
 copy-patches: mkdir-tree
-	@cp $(patches)/*.patch $(tmp_src); \
-	cd $(tmp_src);
+	cp $(patches)/*.patch $(tmp_src)
 
 install-srpms: mkdir-tree download
-	rpm $(rpm_args) -i $(dload)/*.src.rpm 2>/dev/null;
+	rpm $(rpm_args) -i $(dload)/*.src.rpm 2>/dev/null
 
 copy-specs: mkdir-tree
 	cp ${specs}/*.spec $(tmp_specs)
 
 # Remove old .orig files so we're not mislead
 patch-specs: install-srpms
-	@cd ${tmp_specs}; \
+	@set -ex; \
+	cd ${tmp_specs}; \
 	list=`ls ${specs}/*.spec.patch`; \
 	rm -f *.orig; \
 	rm -f *.spec.~*~; \
@@ -105,28 +106,32 @@ patch-specs: install-srpms
 	list2=`svn ls ${oursrcdir}`; \
 	for i in $$list2; do \
 		base=`basename $$i`; \
+		[ -e ${tmp_specs}/$$base.spec ] || continue; \
 		version=`svnversion ${oursrcdir}/$$i`; \
 		version=$${version//:/_}; \
 		echo "$$i version $$version"; \
 		sed --in-place \
 			-e "s/SVNVERSION_TO_UPDATE/$${version}/" \
 		${tmp_specs}/$$base.spec; \
-	done;
+	done
 
 # 1. use the package's Makefile to delete leftover files and run autoconf
 # 2. create a tarball (we want it to contain the autoconf output)
 tarballs: mkdir-tree
-	@cd ${oursrcdir}; \
+	@set -ex; \
+	cd ${oursrcdir}; \
 	list=`find -mindepth 1 -maxdepth 1 -type d | grep -v ".svn"`; \
 	for i in $$list; do \
 		pushd $$i; \
 		if [ -x ./mrproper ]; then \
 			./mrproper; \
-			autoconf; \
+			if [ -e configure.in ] || [ -e configure.ac ]; then \
+				autoconf; \
+			fi; \
 		fi; \
 		popd; \
 		tar -czf $(tmp_src)/$$i.tar.gz $$i; \
-	done;
+	done
 
 #setup: install-srpms copy-patches copy-specs patch-specs tarballs
 setup: copy-patches copy-specs patch-specs tarballs
@@ -176,7 +181,8 @@ openafs: rpmbuild_args += $(openafs_rpmbuild_args)
 openafs-kernel: rpmbuild_args += $(openafs_rpmbuild_args) --define "build_userspace 0" --define "build_modules 1"
 
 frob-openafs:
-	@if [ ! -d "/etc/openafs/" ]; then \
+	@set -ex; \
+	if [ ! -d "/etc/openafs/" ]; then \
 	echo "/etc/openafs does not exist"; \
 	exit 1; \
 	else \

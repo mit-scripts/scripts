@@ -9,5 +9,4 @@ account    required   pam_access.so
 account    include    system-auth
 session    required   pam_loginuid.so
 session    [default=1 success=ignore] pam_succeed_if.so user notin root quiet
-session    required   pam_env.so envfile=/etc/environment.cron
 session    include    system-auth

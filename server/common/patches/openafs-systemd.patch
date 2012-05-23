@@ -31,7 +31,7 @@ index 0000000..bc95057
 +KillMode=none
 +
 +[Install]
-+WantedBy=multi-user.target
++WantedBy=multi-user.target remote-fs.target
 diff --git a/src/packaging/RedHat/openafs-server.service b/src/packaging/RedHat/openafs-server.service
 new file mode 100644
 index 0000000..2d34bb0
