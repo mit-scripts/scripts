@@ -39,7 +39,7 @@ out_sbin	= $(topdir)/sbin
 dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
-openafs_url	= "http://dl.openafs.org/dl/openafs/1.6.0/openafs-1.6.0-1.src.rpm"
+openafs_url	= "http://dl.openafs.org/dl/openafs/1.6.1/openafs-1.6.1-1.src.rpm"
 zephyr_url	= "http://zephyr.1ts.org/export/HEAD/distribution/zephyr-3.0.1.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
@@ -72,7 +72,7 @@ download_stamp:
 	wget -P $(dload) $(zephyr_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 	cabal update
-	cabal fetch $(hackage)
+	cabal fetch --no-dependencies $(hackage)
 	cp -a $(hackage:%=~/.cabal/packages/*/*/*/%.tar.gz) $(tmp_src)
 	spectool -g -R $(specs)/python-zephyr.spec
 	spectool -g -R $(specs)/python-afs.spec

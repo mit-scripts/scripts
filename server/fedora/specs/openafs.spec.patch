@@ -9,18 +9,14 @@
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -237,6 +237,15 @@
+@@ -237,6 +237,11 @@
  
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
 +Patch1000: openafs-scripts.patch
-+Patch1001: openafs-systemd.patch
++Patch1001: openafs-systemd-remote-fs.patch
 +Patch1002: openafs-systemd-crond.patch
 +Patch1003: openafs-systemd-csdb.patch
-+Patch1004: openafs-linux-3.1-rcu.patch
-+Patch1005: openafs-linux-3.1-fsync.patch
-+Patch1006: openafs-linux-3.1-zalloc.patch
-+Patch1007: openafs-linux-3.2-nlink.patch
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
@@ -82,19 +78,15 @@
  
  %else
  
-@@ -671,6 +686,16 @@
+@@ -671,6 +686,12 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
 +# Apply the Scripts patch
 +%patch1000 -p1 -b .scripts
-+%patch1001 -p1 -b .systemd
++%patch1001 -p1 -b .systemd-remote-fs
 +%patch1002 -p1 -b .systemd-crond
 +%patch1003 -p1 -b .systemd-csdb
-+%patch1004 -p1 -b .rcu
-+%patch1005 -p1 -b .fsync
-+%patch1006 -p1 -b .zalloc
-+%patch1007 -p1 -b .nlink
 +
  ##############################################################################
  #
