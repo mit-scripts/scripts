@@ -1,0 +1,25 @@
+commit 1ad0974334feb0a46c8f806654a0592e91011da5
+Author: Edward Z. Yang <ezyang@mit.edu>
+Date:   Sun Nov 20 15:48:33 2011 -0500
+
+    Add OpenAFS to the dependencies of remote-fs.
+    
+    Signed-off-by: Edward Z. Yang <ezyang@mit.edu>
+    
+    Reviewed-on: http://gerrit.openafs.org/6093
+    Tested-by: BuildBot <buildbot@rampaginggeek.com>
+    Reviewed-by: Derrick Brashear <shadow@dementix.org>
+    (cherry picked from commit 3328770612b7205abb92df5b5f4737eb3349c910)
+    
+    Change-Id: I16b7b0ac6e68bf91c48652faab339871f18549a5
+
+diff --git a/src/packaging/RedHat/openafs-client.service b/src/packaging/RedHat/openafs-client.service
+index bc95057..936762e 100644
+--- a/src/packaging/RedHat/openafs-client.service
++++ b/src/packaging/RedHat/openafs-client.service
+@@ -15,4 +15,4 @@ ExecStop=/sbin/rmmod openafs
+ KillMode=none
+ 
+ [Install]
+-WantedBy=multi-user.target
++WantedBy=multi-user.target remote-fs.target
