@@ -72,7 +72,7 @@ download_stamp:
 	wget -P $(dload) $(zephyr_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 	cabal update
-	cabal fetch $(hackage)
+	cabal fetch --no-dependencies $(hackage)
 	cp -a $(hackage:%=~/.cabal/packages/*/*/*/%.tar.gz) $(tmp_src)
 	spectool -g -R $(specs)/python-zephyr.spec
 	spectool -g -R $(specs)/python-afs.spec
