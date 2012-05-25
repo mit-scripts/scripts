@@ -70,7 +70,7 @@ MACHINE_PROD_CREDS = [
     ]
 
 def drop_caches():
-    with open("/proc/sys/vm/drop_caches") as f:
+    with open("/proc/sys/vm/drop_caches", 'w') as f:
         f.write("1")
 
 def mkdir_p(path): # it's like mkdir -p
