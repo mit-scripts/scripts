@@ -9,7 +9,7 @@
  URL: http://httpd.apache.org/
  Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
  Source1: index.html
-@@ -58,6 +58,15 @@
+@@ -58,6 +58,14 @@
  Requires(postun): systemd-units
  Requires(post): systemd-units
  
@@ -20,7 +20,6 @@
 +Patch1005: httpd-2.2.x-mod_ssl-sessioncaching.patch
 +Patch1006: httpd-suexec-cloexec.patch
 +Patch1007: httpd-fixup-vhost.patch
-+Patch1008: httpd-sysv-deps.patch
 +
  %description
  The Apache HTTP Server is a powerful, efficient, and extensible
@@ -41,19 +40,7 @@
  Obsoletes: stronghold-mod_ssl
  
  %description -n mod_ssl
-@@ -114,6 +125,11 @@
- Security (TLS) protocols.
- 
- %prep
-+
-+# Horrible hack to patch the httpd.init file
-+cd $RPM_SOURCE_DIR
-+%patch1008 -p1 -b .sysv-deps
-+
- %setup -q
- %patch1 -p1 -b .apctl
- %patch2 -p1 -b .apxs
-@@ -133,6 +149,14 @@
+@@ -133,6 +149,13 @@
  # Patch in vendor/release string
  sed "s/@RELEASE@/%{vstring}/" < %{PATCH20} | patch -p1
  
@@ -63,7 +50,6 @@
 +%patch1005 -p1 -b .ssl-sessioncache
 +%patch1006 -p1 -b .cloexec
 +%patch1007 -p1 -b .fixup-vhost
-+# Note that patch1008 is not here, as it patches the initscript elsewhere in this .spec
 +
  # Safety check: prevent build if defined MMN does not equal upstream MMN.
  vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
