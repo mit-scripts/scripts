@@ -69,6 +69,10 @@ MACHINE_PROD_CREDS = [
     ('fedora-ds', 0o600, 'etc/dirsrv/keytab')
     ]
 
+def drop_caches():
+    with open("/proc/sys/vm/drop_caches") as f:
+        f.write("1")
+
 def mkdir_p(path): # it's like mkdir -p
     try:
         os.makedirs(path)
@@ -97,6 +101,7 @@ class WithMount(object):
         self.guest = guest
         self.types = types
     def __enter__(self):
+        drop_caches()
         self.dev = "/dev/%s/%s-root" % (HOST, self.guest)
 
         mapper_name = shell.eval("kpartx", "-l", self.dev).split()[0]
@@ -120,6 +125,7 @@ class WithMount(object):
         shell.call("umount", self.mount)
         os.rmdir(self.mount)
         shell.call("kpartx", "-d", self.dev)
+        drop_caches()
 
 def main():
     usage = """usage: %prog [push|pull|pull-common] GUEST"""
