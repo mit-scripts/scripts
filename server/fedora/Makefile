@@ -19,8 +19,8 @@
 # See /COPYRIGHT in this repository for more information.
 
 upstream_yum	= krb5 krb5.i686 httpd openssh rubygems
-hackage		= MonadCatchIO-mtl-0.3.0.2 cgi-3001.1.8.2 unix-handle-0.0.0
-upstream_hackage = ghc-MonadCatchIO-mtl ghc-cgi ghc-unix-handle
+hackage		= cgi-3001.1.8.2 unix-handle-0.0.0
+upstream_hackage = ghc-cgi ghc-unix-handle
 upstream	= openafs $(upstream_yum) $(upstream_hackage) moira zephyr zephyr.i686 python-zephyr python-afs athena-aclocal discuss
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat fuse-better-mousetrapfs
 allsrc		= $(upstream) $(oursrc)
