@@ -1,5 +1,5 @@
 Name:           zephyr
-Version:        3.0.1
+Version:        3.0.2
 Release:        0.%{scriptsversion}%{?dist}
 Summary:        Client programs for the Zephyr real-time messaging system
 
