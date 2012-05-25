@@ -40,7 +40,7 @@ dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
 openafs_url	= "http://dl.openafs.org/dl/openafs/1.6.1/openafs-1.6.1-1.src.rpm"
-zephyr_url	= "http://zephyr.1ts.org/export/HEAD/distribution/zephyr-3.0.2.tar.gz"
+zephyr_url	= "http://zephyr.1ts.org/files/zephyr-3.0.2.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
 

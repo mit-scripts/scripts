@@ -296,7 +296,7 @@ pecl list | tail -n +4 | cut -f 1 -d " " > pecl.txt
 #                       INFINITE CONFIGURATION
 
 # [PROD] Create fedora-ds user (needed for credit-card)
-useradd -u 103 -r -d /var/lib/dirsrv fedora-ds
+useradd -r -d /var/lib/dirsrv fedora-ds
 
 # Run credit-card to clone in credentials and make things runabble
 # NOTE: You may be tempted to run credit-card earlier in the install
