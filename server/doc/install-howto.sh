@@ -95,6 +95,7 @@ EOF
     cd /root
     \cp -a etc /
     chmod 0440 /etc/sudoers
+    grub2-mkconfig -o /boot/grub2/grub.cfg
 
 # [TEST] You'll need to fix some config now.  See bottom of document.
 
