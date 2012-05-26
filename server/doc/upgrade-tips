@@ -171,11 +171,20 @@ version.
 5. Update fs sysname
 --------------------
 
+XXX out of date
 Update /etc/sysconfig/openafs with an extra amd64_fedoraX_scripts and
 amd64_fedoraX sysname.  The format should be evident from the existing
 entries.  [XXX There might be other things you want]
 
-6. Testing critical infrastructure
+6. Bind to scripts-test
+-----------------------
+
+First, make sure no other servers are bound to scripts-test (try ping).
+Then, create /etc/sysconfig/network-scripts/ifcfg-eth0:0 based off of
+/etc/sysconfig/network-scripts/ifcfg-eth0 but with the scripts-test
+IP address 18.181.0.229.  Run `ifup eth0:0` to complete the change.
+
+7. Testing critical infrastructure
 ----------------------------------
 
 There are some important Scripts maintained applications you should test
@@ -187,7 +196,7 @@ and ensure run on the new platform.  They include:
     - http://scripts.mit.edu/whois/
     - http://pony.scripts.mit.edu
 
-7. Extra stuff
+8. Extra stuff
 --------------
 
 Fedora occasionally updates the architecture name for 32-bit; the last
@@ -201,7 +210,7 @@ Until we decide that the performance impact is negligible, any new PHP
 extensions other than the few we’ve whitelisted should be disabled by
 emptying their .ini files in /etc/php.d.
 
-8. Sending announcements
+9. Sending announcements
 ------------------------
 
 Once development work has finished, we need to allow users to test

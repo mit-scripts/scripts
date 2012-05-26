@@ -359,8 +359,7 @@ python host.py push $server
 # Note about OpenAFS: Check that fs sysname is correct.  You should see,
 # among others, 'amd64_fedoraX_scripts' (vary X) and 'scripts'. If it's
 # not, you probably did a distro upgrade and should update
-# /etc/sysconfig/openafs (XXX this is wrong: figuring out new
-# systemd world order).
+# tokensys (server/common/oursrc/tokensys/scripts-afsagent-startup.in)
     fs sysname
 
 # Postfix doesn't actually deliver mail; fix this
