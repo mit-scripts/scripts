@@ -1,5 +1,5 @@
-/sbin/pam_timestamp_check
-/sbin/unix_chkpwd
+/usr/sbin/pam_timestamp_check
+/usr/sbin/unix_chkpwd
 /usr/bin/at
 /usr/bin/crontab
 /usr/bin/locate
