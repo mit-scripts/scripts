@@ -340,13 +340,13 @@ python host.py push $server
     ls -l /etc/dirsrv/keytab
     cat install-ldap
 
-# Enable lots of services
+# Enable lots of services (currently in /etc checkout)
     systemctl enable openafs-client.service
     systemctl enable dirsrv.service
     systemctl enable nslcd.service
     systemctl enable nscd.service
     systemctl enable postfix.service
-    systemctl enable nrpe.service
+    systemctl enable nrpe.service # chkconfig'd
     systemctl enable httpd.service # not for [WIZARD]
 
     systemctl start openafs-client.service

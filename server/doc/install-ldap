@@ -16,8 +16,11 @@ mv /etc/dirsrv/slapd-scripts{,.bak}
 cp -R /etc/dirsrv/slapd-scripts.bak/{.svn,*} /etc/dirsrv/slapd-scripts
 rm -Rf /etc/dirsrv/slapd-scripts.bak
 
+# Check and make sure the sysconfig references the correct keytab
+/etc/sysconfig/dirsrv-scripts
+
 # Turn dirsrv off:
-systemctl stop dirsrv.service
+systemctl stop dirsrv@scripts.service
 
 # Apply the following configuration changes.  If you're editing
 # dse.ldif, you don't want dirsrv to be on, otherwise it will
@@ -51,7 +54,7 @@ nsSaslMapFilterTemplate: (objectClass=posixAccount)
 
 EOF;
 
-systemctl start dirsrv.service
+systemctl start dirsrv@scripts.service
 
 ldapvi -b cn=config
 # Add these indexes (8 of them):
