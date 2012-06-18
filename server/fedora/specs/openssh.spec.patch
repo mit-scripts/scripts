@@ -1,5 +1,5 @@
---- openssh.spec.~1~	2012-04-06 15:22:23.000000000 -0400
-+++ openssh.spec	2012-05-22 23:36:52.700142966 -0400
+--- openssh.spec.orig	2012-06-18 18:16:43.764813595 -0400
++++ openssh.spec	2012-06-18 18:24:40.478720527 -0400
 @@ -82,7 +82,7 @@
  Summary: An open source implementation of SSH protocol versions 1 and 2
  Name: openssh
@@ -25,7 +25,20 @@
  
  %package server
  Summary: An open source SSH server daemon
-@@ -465,6 +467,8 @@
+@@ -456,15 +458,19 @@
+ %patch713 -p1 -b .ctr-cavs
+ 
+ %patch800 -p1 -b .gsskex
+-%patch801 -p1 -b .force_krb
++# Remove force_krb as it conflicts with admof
++# %patch801 -p1 -b .force_krb
+ 
+ %patch900 -p1 -b .canohost
+-%patch901 -p1 -b .kuserok
++# Remove the kuserok patch as it won't apply without patch800
++# %patch901 -p1 -b .kuserok
+ 
+ %if 0
  # Nothing here yet
  %endif
  
