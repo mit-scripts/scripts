@@ -19,6 +19,8 @@
 18.181.0.235	real-mccoy.mit.edu real-mccoy scripts8.mit.edu scripts8
 18.181.0.135	shining-armor.mit.edu shining-armor scripts9.mit.edu scripts9
 18.181.0.141	golden-egg.mit.edu golden-egg scripts10.mit.edu scripts10
+18.181.0.203	miracle-cure.mit.edu miracle-cure scripts11.mit.edu scripts11
+18.181.0.204	lucky-star.mit.edu lucky-star scripts12.mit.edu scripts12
 
 172.21.0.57	better-mousetrap.mit.edu
 172.21.0.53	old-faithful.mit.edu
@@ -30,3 +32,5 @@
 172.21.0.235	real-mccoy.mit.edu
 172.21.0.135	shining-armor.mit.edu
 172.21.0.141	golden-egg.mit.edu
+172.21.0.203	miracle-cure.mit.edu
+127.21.0.204	lucky-star.mit.edu
