@@ -1,27 +1,26 @@
---- rubygems.spec.~1~	2012-04-20 14:46:27.000000000 -0400
-+++ rubygems.spec	2012-05-03 14:12:52.421863447 -0400
-@@ -15,7 +15,7 @@
+--- rubygems.spec.~1~	2012-04-28 04:01:50.000000000 -0400
++++ rubygems.spec	2012-05-22 23:47:16.001145101 -0400
+@@ -18,7 +18,7 @@
  Summary:	The Ruby standard for packaging ruby libraries
  Name:		rubygems
- Version:	1.7.2
--Release:	5%{?dist}
-+Release:	5%{?dist}.scripts.%{scriptsversion}
+ Version:	1.8.24
+-Release:	1%{?dist}
++Release:	1%{?dist}.scripts.%{scriptsversion}
  Group:		Development/Libraries
- # No GPL version is specified.
- License:	Ruby or GPL+
-@@ -42,6 +42,9 @@
- # Insecure connection to SSL repository fix
- Patch10:	rubygems-1.x.x-ssl-connection-don_t-revert.patch
+ License:	Ruby or MIT
+ 
+@@ -52,6 +52,8 @@
+ # https://github.com/rubygems/rubygems/issues/210
+ Patch109:	rubygems-1.8.11-binary-extensions.patch
  
 +Provides: scripts-rubygems = %{version}-%{release}
 +Patch1000: rubygems-rails-require-thread.patch
-+
- Requires:	ruby(abi) = 1.8
- Requires:	ruby >= 1.8.7
- Requires:	ruby-rdoc
-@@ -83,6 +86,8 @@
- %patch7 -p1 -b .esc.skip
- %patch10 -p1 -b .ssl
+ 
+ Requires:	ruby(abi) = 1.9.1
+ Requires:	rubygem(rdoc) >= 3.9.4
+@@ -97,6 +99,8 @@
+ %patch105 -p1 -b .uninst
+ %patch109 -p1 -b .bindir
  
 +%patch1000 -p1 -b .thread
 +

@@ -1,6 +1,6 @@
-# For Haskell Packaging Guidelines see:
-# - https://fedoraproject.org/wiki/Packaging:Haskell
-# - https://fedoraproject.org/wiki/PackagingDrafts/Haskell
+# cabal2spec-0.25
+# https://fedoraproject.org/wiki/Packaging:Haskell
+# https://fedoraproject.org/wiki/PackagingDrafts/Haskell
 
 # Link Haskell libs statically for 3x faster startup speed.
 %define ghc_without_dynamic 1
@@ -12,14 +12,22 @@ Summary:        static-cat for scripts.mit.edu
 
 Group:          Applications/System
 License:        GPL
+# BEGIN cabal2spec
 URL:            http://scripts.mit.edu/
 Source0:        %{name}.tar.gz
-# fedora ghc archs:
-ExclusiveArch:  %{ix86} x86_64 ppc alpha sparcv9
-BuildRequires:  ghc-devel
-# macros for building haskell packages
-BuildRequires:  ghc-rpm-macros >= 0.7.0
-BuildRequires:  ghc-cgi-devel >= 3001.1.8, ghc-MonadCatchIO-mtl-devel, ghc-unix-handle-devel
+ExclusiveArch:  %{ghc_arches}
+BuildRequires:  ghc-Cabal-devel
+BuildRequires:  ghc-rpm-macros
+# END cabal2spec
+BuildRequires:  ghc-bytestring-devel
+BuildRequires:  ghc-cgi-devel >= 3001.1.8
+BuildRequires:  ghc-containers-devel
+BuildRequires:  ghc-filepath-devel
+BuildRequires:  ghc-MonadCatchIO-mtl-devel
+BuildRequires:  ghc-old-locale-devel
+BuildRequires:  ghc-time-devel
+BuildRequires:  ghc-unix-devel
+BuildRequires:  ghc-unix-handle-devel
 
 %description
 static-cat is a binary for serving static content on scripts.mit.edu.
@@ -38,11 +46,13 @@ static-cat is a binary for serving static content on scripts.mit.edu.
 
 
 %files
-%defattr(-,root,root,-)
 %attr(755,root,root) %{_bindir}/static-cat
 
 
 %changelog
+* Fri May 25 2012 Anders Kaseorg <andersk@mit.edu> - 0.0-0
+- regenerated packaging with cabal2spec-0.25.5
+
 * Mon May  2 2011 Alexander Chernyakhovsky <achernya@mit.edu> - 0.0-0
 - regenerated packaging with cabal2spec-0.22.5
 

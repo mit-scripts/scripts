@@ -1,4 +1,4 @@
-/bin/ping
-/bin/ping6
+/usr/bin/ping
+/usr/bin/ping6
 /usr/sbin/fping
 /usr/sbin/fping6

@@ -27,7 +27,7 @@ void (*old_error_cb)(int type, const char *error_filename, const uint error_line
 void (*new_error_cb)(int type, const char *error_filename, const uint error_lineno, const char *format, va_list args);
 void scripts_error_cb(int type, const char *error_filename, const uint error_lineno, const char *format, va_list args);
 
-static function_entry scripts_functions[] = {
+static zend_function_entry scripts_functions[] = {
     {NULL, NULL, NULL}
 };
 

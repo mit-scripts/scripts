@@ -5,12 +5,17 @@
 # is the name of your directory server instance e.g.
 # dirsrv-localhost for the slapd-localhost instance.
 
+# This file is in systemd EnvironmentFile format - see man systemd.exec
+
 # In order to make more file descriptors available
 # to the directory server, first make sure the system
 # hard limits are raised, then use ulimit - uncomment
 # out the following line and change the value to the
 # desired value
 # ulimit -n 8192
+# note - if using systemd, ulimit won't work -  you must edit
+# the systemd unit file for directory server to add the 
+# LimitNOFILE option - see man systemd.exec for more info
 
 # A per instance keytab does not make much sense for servers.
 # Kerberos clients use the machine FQDN to obtain a ticket like ldap/FQDN, there
@@ -26,24 +31,14 @@
 # server needs to know where to find its keytab
 # file - uncomment the following line and set
 # the path and filename appropriately
-KRB5_KTNAME=/etc/dirsrv/keytab ; export KRB5_KTNAME
-
-# other environment settings can be added here too
-OS=`uname -s`
-# use the new mt slab memory allocator on Solaris
-# this requires Solaris 9 update 3 or later
-if [ "$OS" = "SunOS" -a -f /usr/lib/libumem.so ] ; then
-    LD_PRELOAD=/usr/lib/libumem.so
-    export LD_PRELOAD
-fi
-if [ "$OS" = "SunOS" -a -f /usr/lib/64/libumem.so ] ; then
-    LD_PRELOAD_64=/usr/lib/64/libumem.so
-    export LD_PRELOAD_64
-fi
+# if using systemd, omit the "; export VARNAME" at the end
+# KRB5_KTNAME=/etc/dirsrv/myname.keytab ; export KRB5_KTNAME
 
 # how many seconds to wait for the startpid file to show
 # up before we assume there is a problem and fail to start
+# if using systemd, omit the "; export VARNAME" at the end
 #STARTPID_TIME=10 ; export STARTPID_TIME
 # how many seconds to wait for the pid file to show
 # up before we assume there is a problem and fail to start
+# if using systemd, omit the "; export VARNAME" at the end
 #PID_TIME=600 ; export PID_TIME

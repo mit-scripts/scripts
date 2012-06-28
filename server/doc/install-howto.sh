@@ -76,6 +76,9 @@ server=YOUR-SERVER-NAME-HERE
 # network.)
 #   XXX We should make Kickstart work for test servers too
 
+# Make sure selinux is disabled
+    selinuxenabled || echo "selinux not enabled"
+
 # Take updates, reboot if there's a kernel update.
     yum update -y
 
@@ -95,8 +98,14 @@ EOF
     cd /root
     \cp -a etc /
     chmod 0440 /etc/sudoers
+    grub2-mkconfig -o /boot/grub2/grub.cfg
 
 # [TEST] You'll need to fix some config now.  See bottom of document.
+
+# Stop /etc/resolv.conf from getting repeatedly overwritten by
+# purging DNS servers from ifcfg-eth0 and ifcfg-eth1
+    vim /etc/sysconfig/network-scripts/ifcfg-eth0
+    vim /etc/sysconfig/network-scripts/ifcfg-eth1
 
 # Make sure network is working.  Kickstart should have
 # configured eth0 and eth1 correctly; use service network restart
@@ -245,7 +254,7 @@ gem list --no-version > gem.txt
     # Package list contains distro gems too
     gem install $(gem list --no-version | grep -Fxvf - gem.txt)
     # Also, we need to install the old rails version
-    gem install -v=2.3.5 rails
+    gem install -v=2.3.14 rails
 # These are in /usr
 
 # UPGRADE:  You can either upgrade out-of-date gems, or leave them at
@@ -339,17 +348,17 @@ python host.py push $server
     ls -l /etc/dirsrv/keytab
     cat install-ldap
 
-# Enable lots of services
+# Enable lots of services (currently in /etc checkout)
     systemctl enable openafs-client.service
-    systemctl enable dirsrv.service
+    systemctl enable dirsrv.target
     systemctl enable nslcd.service
     systemctl enable nscd.service
     systemctl enable postfix.service
-    systemctl enable nrpe.service
+    systemctl enable nrpe.service # chkconfig'd
     systemctl enable httpd.service # not for [WIZARD]
 
     systemctl start openafs-client.service
-    systemctl start dirsrv.service
+    systemctl start dirsrv.target
     systemctl start nslcd.service
     systemctl start nscd.service
     systemctl start postfix.service
@@ -359,8 +368,7 @@ python host.py push $server
 # Note about OpenAFS: Check that fs sysname is correct.  You should see,
 # among others, 'amd64_fedoraX_scripts' (vary X) and 'scripts'. If it's
 # not, you probably did a distro upgrade and should update
-# /etc/sysconfig/openafs (XXX this is wrong: figuring out new
-# systemd world order).
+# tokensys (server/common/oursrc/tokensys/scripts-afsagent-startup.in)
     fs sysname
 
 # Postfix doesn't actually deliver mail; fix this
@@ -373,6 +381,9 @@ python host.py push $server
 # Run fmtutil-sys --all, which does something that makes TeX work.
 # (Note: this errors on XeTeX which is ok.)
     fmtutil-sys --all
+
+# Check for unwanted setuid/setgid binaries
+    find / -xdev -not -perm -o=x -prune -o -type f -perm /ug=s -print | grep -Fxvf /etc/scripts/allowed-setugid.list 
 
 # Fix etc by making sure none of our config files got overwritten
     cd /etc
