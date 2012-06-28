@@ -76,6 +76,9 @@ server=YOUR-SERVER-NAME-HERE
 # network.)
 #   XXX We should make Kickstart work for test servers too
 
+# Make sure selinux is disabled
+    selinuxenabled || echo "selinux not enabled"
+
 # Take updates, reboot if there's a kernel update.
     yum update -y
 
@@ -98,6 +101,11 @@ EOF
     grub2-mkconfig -o /boot/grub2/grub.cfg
 
 # [TEST] You'll need to fix some config now.  See bottom of document.
+
+# Stop /etc/resolv.conf from getting repeatedly overwritten by
+# purging DNS servers from ifcfg-eth0 and ifcfg-eth1
+    vim /etc/sysconfig/network-scripts/ifcfg-eth0
+    vim /etc/sysconfig/network-scripts/ifcfg-eth1
 
 # Make sure network is working.  Kickstart should have
 # configured eth0 and eth1 correctly; use service network restart
@@ -376,11 +384,6 @@ python host.py push $server
 
 # Check for unwanted setuid/setgid binaries
     find / -xdev -not -perm -o=x -prune -o -type f -perm /ug=s -print | grep -Fxvf /etc/scripts/allowed-setugid.list 
-
-# Stop /etc/resolv.conf from getting repeatedly overwritten by
-# purging DNS servers from ifcfg-eth0 and ifcfg-eth1
-    vim /etc/sysconfig/network-scripts/ifcfg-eth0
-    vim /etc/sysconfig/network-scripts/ifcfg-eth1
 
 # Fix etc by making sure none of our config files got overwritten
     cd /etc
