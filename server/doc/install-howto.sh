@@ -246,7 +246,7 @@ gem list --no-version > gem.txt
     # Package list contains distro gems too
     gem install $(gem list --no-version | grep -Fxvf - gem.txt)
     # Also, we need to install the old rails version
-    gem install -v=2.3.5 rails
+    gem install -v=2.3.14 rails
 # These are in /usr
 
 # UPGRADE:  You can either upgrade out-of-date gems, or leave them at
@@ -342,7 +342,7 @@ python host.py push $server
 
 # Enable lots of services (currently in /etc checkout)
     systemctl enable openafs-client.service
-    systemctl enable dirsrv.service
+    systemctl enable dirsrv.target
     systemctl enable nslcd.service
     systemctl enable nscd.service
     systemctl enable postfix.service
@@ -350,7 +350,7 @@ python host.py push $server
     systemctl enable httpd.service # not for [WIZARD]
 
     systemctl start openafs-client.service
-    systemctl start dirsrv.service
+    systemctl start dirsrv.target
     systemctl start nslcd.service
     systemctl start nscd.service
     systemctl start postfix.service
@@ -373,6 +373,14 @@ python host.py push $server
 # Run fmtutil-sys --all, which does something that makes TeX work.
 # (Note: this errors on XeTeX which is ok.)
     fmtutil-sys --all
+
+# Check for unwanted setuid/setgid binaries
+    find / -xdev -not -perm -o=x -prune -o -type f -perm /ug=s -print | grep -Fxvf /etc/scripts/allowed-setugid.list 
+
+# Stop /etc/resolv.conf from getting repeatedly overwritten by
+# purging DNS servers from ifcfg-eth0 and ifcfg-eth1
+    vim /etc/sysconfig/network-scripts/ifcfg-eth0
+    vim /etc/sysconfig/network-scripts/ifcfg-eth1
 
 # Fix etc by making sure none of our config files got overwritten
     cd /etc

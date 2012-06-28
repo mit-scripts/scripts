@@ -1,3 +1,4 @@
+# b
 # To set up a new LDAP server:
 
 # Temporarily move away the existing slapd-scripts folder
@@ -13,11 +14,11 @@ mv /etc/dirsrv/slapd-scripts{,.bak}
 #     (this can be found in  ~/.ldapvirc)
 
 # Move the schema back
-cp -R /etc/dirsrv/slapd-scripts.bak/{.svn,*} /etc/dirsrv/slapd-scripts
+cp -R /etc/dirsrv/slapd-scripts.bak/* /etc/dirsrv/slapd-scripts
 rm -Rf /etc/dirsrv/slapd-scripts.bak
 
 # Check and make sure the sysconfig references the correct keytab
-/etc/sysconfig/dirsrv-scripts
+svn revert /etc/sysconfig/dirsrv-scripts
 
 # Turn dirsrv off:
 systemctl stop dirsrv@scripts.service
@@ -223,6 +224,8 @@ nsDS5ReplicaBindDN: uid=ldap/better-mousetrap.mit.edu,ou=People,dc=scripts,dc=mi
 nsDS5ReplicaBindDN: uid=ldap/old-faithful.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
 nsDS5ReplicaBindDN: uid=ldap/shining-armor.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
 nsDS5ReplicaBindDN: uid=ldap/golden-egg.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindDN: uid=ldap/miracle-cure.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
+nsDS5ReplicaBindDN: uid=ldap/lucky-star.mit.edu,ou=People,dc=scripts,dc=mit,dc=edu
 nsds5ReplicaPurgeDelay: 604800
 nsds5ReplicaLegacyConsumer: off
 nsDS5ReplicaType: 3
