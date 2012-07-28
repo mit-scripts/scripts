@@ -13,10 +13,12 @@ Scripts Fedora Transition Cutover Documentation
 
 6. List all new servers in ldirectord.
 
-7. Migrate cron (remove reboot flag so they get run).
+7. Migrate cron (remove reboot flag /var/run/cron.reboot so they get run).
 
 8. Edit heartbeat.php (the actual cutover.)
 
 9. Nologin the old servers.
 
 10. Update Nagios
+
+11. Clean up LDAP
