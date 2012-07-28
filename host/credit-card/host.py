@@ -59,7 +59,8 @@ COMMON_PROD_CREDS = [ # important: no leading slashes!
     ('root', 0o644, 'etc/ssh/ssh_host_key.pub'),
     ('root', 0o644, 'etc/ssh/ssh_host_rsa_key.pub'),
 
-    ('sql', 0o600, 'etc/sql-mit-edu.cfg.php'),
+    ('sql', 0o600, 'etc/sql-mit-edu.cfg.php'), # technically doesn't have to be secret anymore
+    ('sql', 0o600, 'etc/sql-password'),
     ('signup', 0o600, 'etc/signup-ldap-pw'),
     ]
 
