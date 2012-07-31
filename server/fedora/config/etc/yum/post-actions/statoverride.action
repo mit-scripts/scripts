@@ -3,8 +3,8 @@
 /usr/bin/mount:install:chmod ug-s /bin/mount
 /usr/bin/su:install:chmod ug-s /bin/su
 /usr/bin/umount:install:chmod ug-s /bin/umount
-/sbin/mount.nfs:install:chmod ug-s /sbin/mount.nfs
-/sbin/netreport:install:chmod ug-s /sbin/netreport
+/usr/sbin/mount.nfs:install:chmod ug-s /sbin/mount.nfs
+/usr/sbin/netreport:install:chmod ug-s /sbin/netreport
 /usr/bin/chage:install:chmod ug-s /usr/bin/chage
 /usr/bin/chfn:install:chmod ug-s /usr/bin/chfn
 /usr/bin/chsh:install:chmod ug-s /usr/bin/chsh
