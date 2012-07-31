@@ -1,8 +1,8 @@
-/bin/cgexec:install:chmod ug-s /bin/cgexec
-/bin/fusermount:install:chmod ug-s /bin/fusermount
-/bin/mount:install:chmod ug-s /bin/mount
-/bin/su:install:chmod ug-s /bin/su
-/bin/umount:install:chmod ug-s /bin/umount
+/usr/bin/cgexec:install:chmod ug-s /bin/cgexec
+/usr/bin/fusermount:install:chmod ug-s /bin/fusermount
+/usr/bin/mount:install:chmod ug-s /bin/mount
+/usr/bin/su:install:chmod ug-s /bin/su
+/usr/bin/umount:install:chmod ug-s /bin/umount
 /sbin/mount.nfs:install:chmod ug-s /sbin/mount.nfs
 /sbin/netreport:install:chmod ug-s /sbin/netreport
 /usr/bin/chage:install:chmod ug-s /usr/bin/chage
