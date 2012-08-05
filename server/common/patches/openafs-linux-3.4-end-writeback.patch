@@ -1,0 +1,29 @@
+commit cc63cbbc138f60d6b5964fa859dcd778717b24c2
+Author: Marc Dionne <marc.c.dionne@gmail.com>
+Date:   Mon May 28 21:43:12 2012 -0400
+
+    Linux 3.4: replace end_writeback with clear_inode
+    
+    end_writeback() is renamed to clear_inode().  Add a configure test
+    and cope.
+    
+    Change-Id: Icaf5b6b54d0ee377fabcf0b295d690eaa6b4be5e
+    Reviewed-on: http://gerrit.openafs.org/7503
+    Reviewed-by: Derrick Brashear <shadow@dementix.org>
+    Tested-by: BuildBot <buildbot@rampaginggeek.com>
+    (cherry picked from commit 2b33384a4a7b88842281021129ffccc837d91d36)
+    Reviewed-on: http://gerrit.openafs.org/7578
+
+diff --git a/src/afs/LINUX/osi_vfsops.c b/src/afs/LINUX/osi_vfsops.c
+index a6be1b3..bc951a2 100644
+--- a/src/afs/LINUX/osi_vfsops.c
++++ b/src/afs/LINUX/osi_vfsops.c
+@@ -284,7 +284,7 @@ afs_evict_inode(struct inode *ip)
+        osi_Panic("inode freed while still hashed");
+ 
+     truncate_inode_pages(&ip->i_data, 0);
++    clear_inode(ip);
+-    end_writeback(ip);
+ 
+ #if !defined(STRUCT_SUPER_OPERATIONS_HAS_ALLOC_INODE)
+     afs_osi_Free(ip->u.generic_ip, sizeof(struct vcache));
