@@ -134,7 +134,6 @@ while (my $line = <>) {
 	} elsif ($message =~ m|^ *root : TTY=|) {
 	} elsif ($message =~ m|^Set /proc/self/oom_adj to |) {
 	} elsif ($message =~ m|^Set /proc/self/oom_score_adj to |) {
-	} elsif ($message =~ m|^fatal: mm_request_receive: read: Connection reset by peer$|) {
 	} elsif ($message =~ m|^selinux sandbox not useful \[preauth\]$|) {
 	} else {
 	    sendmsg($message, "scripts-spew");
