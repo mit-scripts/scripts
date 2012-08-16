@@ -315,8 +315,8 @@ useradd -r -d /var/lib/dirsrv fedora-ds
 # spheroids objects process.  So don't move this step earlier!
 python host.py push $server
 
-# This is superseded by credit-card, but only for [PRODUCTION]
-# Don't use credit-card on [WIZARD]: it will put in the wrong creds!
+# This is superseded by credit-card, which works for [PRODUCTION] and
+# [WIZARD].  We don't have an easy way of running credit-card for XVM...
 #
 #   # All types of servers will have an /etc/daemon.keytab file, however,
 #   # different types of server will have different credentials in this
@@ -383,7 +383,9 @@ python host.py push $server
     fmtutil-sys --all
 
 # Check for unwanted setuid/setgid binaries
-    find / -xdev -not -perm -o=x -prune -o -type f -perm /ug=s -print | grep -Fxvf /etc/scripts/allowed-setugid.list 
+    find / -xdev -not -perm -o=x -prune -o -type f -perm /ug=s -print | grep -Fxvf /etc/scripts/allowed-setugid.list
+    find / -xdev -not -perm -o=x -prune -o -type f -print0 | xargs -0r /usr/sbin/getcap | cut -d' ' -f1 | grep -Fxvf /etc/scripts/allowed-filecaps.list
+    # You can prune binaries using 'chmod u-s' and 'chmod g-s'
 
 # Fix etc by making sure none of our config files got overwritten
     cd /etc
@@ -424,6 +426,7 @@ python host.py push $server
 # make it talk to a real server instead.  In particular:
 #   - We don't serve the web, so don't bind scripts.mit.edu
 #   - We don't serve LDAP, so use another server
+# XXX: Someone should write sed scripts to do this
 # This involves editing the following files:
         \rm /etc/sysconfig/network-scripts/ifcfg-lo:{0,1,2,3}
         \rm /etc/sysconfig/network-scripts/route-eth1 # [TESTSERVER] only
@@ -441,14 +444,13 @@ python host.py push $server
 #       replace: server_host ldapi://%2fvar%2frun%2fdirsrv%2fslapd-scripts.socket/
 #       with: server_host = ldap://scripts.mit.edu
 # to use scripts.mit.edu instead of localhost.
-# XXX: someone should write sed scripts to do this
 
 # [WIZARD/TESTSERVER] If you are setting up a non-production server,
 # afsagent's cronjob will attempt to be renewing with the wrong
 # credentials (daemon.scripts). Change this:
     vim /home/afsagent/renew # replace all mentions of daemon.scripts.mit.edu
 
-# [TESTERVER]
+# [TESTSERVER]
 #   - You need a self-signed SSL cert or Apache will refuse to start
 #     or do SSL.  Generate with:
     openssl req -new -x509 -keyout /etc/pki/tls/private/scripts.key -out /etc/pki/tls/certs/scripts.cert -nodes
