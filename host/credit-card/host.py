@@ -10,42 +10,40 @@ import shell
 
 HOST = socket.gethostname()
 
-# XXX test server and wizard server
+PROD_GUESTS = frozenset([
+    'bees-knees',
+    'cats-whiskers',
+    'busy-beaver',
+    'pancake-bunny',
+    'whole-enchilada',
+    'real-mccoy',
+    'old-faithful',
+    'better-mousetrap',
+    'shining-armor',
+    'golden-egg',
+    'miracle-cure',
+    'lucky-star',
+    ])
+WIZARD_GUESTS = frozenset([
+    'not-backward',
+    ])
 
-# UIDs (sketchy):
-#   signup 102
-#   fedora-ds 103 (sketchy, not true for b-b)
-#   logview 501 (really sketchy, since it's in the dynamic range)
+COMMON_CREDS = {}
 
-# Works for passwd and group, but be careful! They're different things!
-def lookup(filename):
-    # Super-safe to assume and volume IDs (expensive to check)
-    r = {
-        'root': 0,
-        'sql': 537704221,
-    }
-    with open(filename, 'rb') as f:
-        reader = csv.reader(f, delimiter=':', quoting=csv.QUOTE_NONE)
-        for row in reader:
-            r[row[0]] = int(row[2])
-    return r
-
-# Format here assumes that we always chmod $USER:$USER ...
+# Format here assumes that we always chmod $USER:$USER,
 # but note the latter refers to group...
-COMMON_CREDS = [
+#
+# Important: no leading slashes!
+COMMON_CREDS['all'] = [
     ('root', 0o600, 'root/.bashrc'),
     ('root', 0o600, 'root/.screenrc'),
     ('root', 0o600, 'root/.ssh/authorized_keys'),
     ('root', 0o600, 'root/.ssh/authorized_keys2'),
     ('root', 0o600, 'root/.vimrc'),
     ('root', 0o600, 'root/.k5login'),
-    # punted /root/.ssh/known_hosts
-
-    # XXX user must be created in Kickstart
-    ('logview', 0o600, 'home/logview/.k5login'),
     ]
 
-COMMON_PROD_CREDS = [ # important: no leading slashes!
+COMMON_CREDS['prod'] = [
     ('root', 0o600, 'root/.ldapvirc'),
     ('root', 0o600, 'etc/ssh/ssh_host_dsa_key'),
     ('root', 0o600, 'etc/ssh/ssh_host_key'),
@@ -62,13 +60,47 @@ COMMON_PROD_CREDS = [ # important: no leading slashes!
     ('sql', 0o600, 'etc/sql-mit-edu.cfg.php'), # technically doesn't have to be secret anymore
     ('sql', 0o600, 'etc/sql-password'),
     ('signup', 0o600, 'etc/signup-ldap-pw'),
+    ('logview', 0o600, 'home/logview/.k5login'), # XXX user must be created in Kickstart
     ]
 
-MACHINE_PROD_CREDS = [
-    # XXX NEED TO CHECK THAT THESE ARE SENSIBLE
-    ('root', 0o600, 'etc/krb5.keytab'),
-    ('fedora-ds', 0o600, 'etc/dirsrv/keytab')
+# note that these are duplicates with 'prod', but the difference
+# is that the files DIFFER between wizard and prod
+COMMON_CREDS['wizard'] = [
+    ('root', 0o600, 'etc/ssh/ssh_host_dsa_key'),
+    ('root', 0o600, 'etc/ssh/ssh_host_key'),
+    ('root', 0o600, 'etc/ssh/ssh_host_rsa_key'),
+    ('afsagent', 0o600, 'etc/daemon.keytab'),
+
+    ('root', 0o644, 'etc/ssh/ssh_host_dsa_key.pub'),
+    ('root', 0o644, 'etc/ssh/ssh_host_key.pub'),
+    ('root', 0o644, 'etc/ssh/ssh_host_rsa_key.pub'),
     ]
+
+MACHINE_CREDS = {}
+
+MACHINE_CREDS['all'] = [
+    # XXX NEED TO CHECK THAT THE CONTENTS ARE SENSIBLE
+    ('root', 0o600, 'etc/krb5.keytab'),
+    ]
+
+MACHINE_CREDS['prod'] = [
+    ('fedora-ds', 0o600, 'etc/dirsrv/keytab'),
+    ]
+
+MACHINE_CREDS['wizard'] = []
+
+# Works for passwd and group, but be careful! They're different things!
+def lookup(filename):
+    # Super-safe to assume and volume IDs (expensive to check)
+    r = {
+        'root': 0,
+        'sql': 537704221,
+    }
+    with open(filename, 'rb') as f:
+        reader = csv.reader(f, delimiter=':', quoting=csv.QUOTE_NONE)
+        for row in reader:
+            r[row[0]] = int(row[2])
+    return r
 
 def drop_caches():
     with open("/proc/sys/vm/drop_caches", 'w') as f:
@@ -129,29 +161,37 @@ class WithMount(object):
         drop_caches()
 
 def main():
-    usage = """usage: %prog [push|pull|pull-common] GUEST"""
+    usage = """usage: %prog [push|pull] [common|machine] GUEST"""
 
     parser = optparse.OptionParser(usage)
     # ext3 will probably supported for a while yet and a pretty
     # reasonable thing to always try
     parser.add_option('-t', '--types', dest="types", default="ext4,ext3",
-            help="filesystem type(s)")
+            help="filesystem type(s)") # same arg as 'mount'
     parser.add_option('--creds-dir', dest="creds_dir", default="/root/creds",
             help="directory to store/fetch credentials in")
     options, args = parser.parse_args()
 
     if not os.path.isdir(options.creds_dir):
-        raise Exception("/root/creds does not exist") # XXX STRING
+        raise Exception("%s does not exist" % options.creds_dir)
     # XXX check owned by root and appropriately chmodded
 
     os.umask(0o077) # overly restrictive
 
-    if len(args) != 2:
+    if len(args) != 3:
         parser.print_help()
         raise Exception("Wrong number of arguments")
 
     command = args[0]
-    guest   = args[1]
+    files   = args[1]
+    guest   = args[2]
+
+    if guest in PROD_GUESTS:
+        mode = 'prod'
+    elif guest in WIZARD_GUESTS:
+        mode = 'wizard'
+    else:
+        raise Exception("Unrecognized guest %s" % guest)
 
     with WithMount(guest, options.types) as tmp_mount:
         uid_lookup = lookup("%s/etc/passwd" % tmp_mount)
@@ -177,15 +217,23 @@ def main():
                 # error if doesn't exist
                 shutil.copyfile("%s/%s" % (tmp_mount, f), dest)
 
+        # XXX ideally we should check these *before* we mount, but Python
+        # makes that pretty annoying to do
         if command == "push":
-            push_files(COMMON_CREDS, 'common')
-            push_files(COMMON_PROD_CREDS,  'common')
-            push_files(MACHINE_PROD_CREDS, 'machine/%s' % guest)
+            run = push_files
         elif command == "pull":
-            pull_files(MACHINE_PROD_CREDS, 'machine/%s' % guest)
-        elif command == "pull-common":
-            pull_files(COMMON_CREDS, 'common')
-            pull_files(COMMON_PROD_CREDS,  'common')
+            run = pull_files
+        else:
+            raise Exception("Unknown command %s, valid values are 'push' and 'pull'" % command)
+
+        if files == 'common':
+            run(COMMON_CREDS['all'], 'all')
+            run(COMMON_CREDS[mode], mode)
+        elif files == 'machine':
+            run(MACHINE_CREDS['all'], 'machine/%s' % guest)
+            run(MACHINE_CREDS[mode], 'machine/%s' % guest)
+        else:
+            raise Exception("Unknown file set %s, valid values are 'common' and 'machine'" % files)
 
 if __name__ == "__main__":
     main()
