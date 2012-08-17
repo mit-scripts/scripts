@@ -22,6 +22,7 @@ install:
 	install -p -m755 -D vhostadd $(DESTDIR)$(sbindir)/vhostadd
 	install -p -m755 -D vhostedit $(DESTDIR)$(sbindir)/vhostedit
 	install -p -m755 -D ldap-backup $(DESTDIR)$(sbindir)/ldap-backup
+	install -p -m755 -D get-homedirs $(DESTDIR)$(sbindir)/get-homedirs
 
 clean:
 	rm -f admof admof.o
