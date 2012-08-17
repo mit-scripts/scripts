@@ -372,6 +372,8 @@ python host.py push $server
     fs sysname
 
 # Postfix doesn't actually deliver mail; fix this
+    # XXX We should ask people to *delete* the entirety of the mailqueue
+    # before running this, but I don't know what command that is.
     cd /etc/postfix
     postmap virtual
 
