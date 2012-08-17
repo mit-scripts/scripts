@@ -55,6 +55,7 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 /usr/local/sbin/vhostadd
 /usr/local/sbin/vhostedit
 /usr/local/sbin/ldap-backup
+/usr/local/sbin/get-homedirs
 
 %pre
 groupadd -g 102 signup || [ $? -eq 9 ]
