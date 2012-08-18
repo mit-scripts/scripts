@@ -72,10 +72,11 @@ oldVersion base =
     -- XXX empty file is an error condition, should say something
     last . lines <$> readFile (base </> ".scripts-version")
 
-writeOut cn base r = do
-    let line = base ++ ":" ++ r ++ "\n"
-    putStr line
-    appendFile (destdir </> cn) line
+writeOut handle_mvar base r =
+    withMVar handle_mvar $ \handle -> do
+        let line = base ++ ":" ++ r ++ "\n"
+        putStr line
+        hPutStr handle line
 
 exec :: TVar Int -> String -> [String] -> IO String
 exec pool bin args = do
@@ -102,7 +103,8 @@ prepare = do
     createDirectory destdir
 
 parfind = do
-    pool <- newTVarIO 40 -- number of child subprocesses to spawn simultaneously
+    findpool <- newTVarIO 50
+    pool <- newTVarIO 10 -- git/fs gets its own pool so they don't starve
     children <- newMVar []
     userlines <- lines <$> readFile "/mit/scripts/admin/backup/userlist"
     let userdirs = filter ((/= "dn:") . fst) -- XXX should be done by generator of userlist
@@ -112,12 +114,16 @@ parfind = do
                           <$> elemIndex ' ' s)
                  $  userlines
     forM_ userdirs $ \(cn, homedir) -> forkChild children $ do
+        subchildren <- newMVar []
         let scriptsdir = homedir </> "web_scripts"
-        matches <- lines <$> exec pool "find" [scriptsdir, "-xdev", "-name", ".scripts-version", "-o", "-name", ".scripts"]
-        forM_ matches $ \dir -> forkIO . handle (\(SomeException e) -> putStrLn (dir ++ ": " ++ show e)) $ do
-            let base = takeDirectory dir
-            whenM (checkPerm pool base) $ do
-            if ".scripts" `isSuffixOf` dir
-                then newVersion pool cn base >>= writeOut cn base
-                else whenM (not <$> doesDirectoryExist (base </> ".scripts")) $ oldVersion base >>= writeOut cn base
+        matches <- lines <$> exec findpool "find" [scriptsdir, "-xdev", "-name", ".scripts-version", "-o", "-name", ".scripts"]
+        withFile (destdir </> cn) WriteMode $ \h -> do
+            mh <- newMVar h
+            forM_ matches $ \dir -> forkChild subchildren . handle (\(SomeException e) -> putStrLn (dir ++ ": " ++ show e)) $ do
+                let base = takeDirectory dir
+                whenM (checkPerm pool base) $ do
+                if ".scripts" `isSuffixOf` dir
+                    then newVersion pool cn base >>= writeOut mh base
+                    else whenM (not <$> doesDirectoryExist (base </> ".scripts")) $ oldVersion base >>= writeOut mh base
+            waitForChildren subchildren
     waitForChildren children
