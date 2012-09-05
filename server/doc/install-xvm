@@ -60,4 +60,4 @@ lines since the kernel image still needs to know how to boot up.
 
 The install process will ask you for a password.  Do NOT use the
 scripts-root password.  We have a password in
-/mit/scripts/Private/scripts-f9-test-passwd which we tend to use.
+/mit/scripts/Private/scripts-test-passwd which we tend to use.
