@@ -87,7 +87,7 @@ server=YOUR-SERVER-NAME-HERE
     yum remove NetworkManager
 
 # Make sure sendmail isn't installed, replace it with postfix
-    yum shell <<EOF
+    yum shell -y <<EOF
 remove sendmail
 install postfix
 run
@@ -128,13 +128,14 @@ EOF
     # you probably forgot to turn off selinux
 
 # Replace rsyslog with syslog-ng by doing:
-    yum shell <<EOF
+    yum shell -y <<EOF
 remove rsyslog
 install syslog-ng
 run
 exit
 EOF
     systemctl enable syslog-ng.service
+    systemctl start syslog-ng.service
 
 # Install the full list of RPMs that users expect to be on the
 # scripts.mit.edu servers.
