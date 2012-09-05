@@ -23,26 +23,41 @@ you should be able to assign ownership to scripts.
 
 [XXX: there should be a way to do this with remctl too]
 
-2. Spin up
-----------
+2. Configure
+------------
 
-These instructions are mostly the same as the latter part of
-install-fedora, with the following changes:
+Lest you be tempted to skimp on RAM:  you must have more than 700MBish
+to install Fedora; 1024MB is a good amount is a good amount to give to
+the server.  Disk space on order of 40G is probably good enough.
 
-VNC
----
+While it is best to use the install CD from the most recent version
+of Fedora, any kernel which supports Kickstarting can be used.  A good
+bet is to use the Netboot CD from the latest version of Fedora that
+XVM has (since XVM is sort of bad about keeping their boot CDs up to
+date.)
 
-You will not need to sketchily forward VNC, because XVM has a built
-in VNC console.
+You will need VNC access to perform the installation process.  If you have
+Java, just go to the Console page for the VM; if you do not, you can use
+the following set of incants to setup a local VNC server which can talk
+to the console:
 
-Password
---------
+    athrun xvm invirt-vnc-client -a $AUTHTOKEN
+    vncviewer localhost
 
-Do NOT use the scripts-root password.  Pick something else.
+where AUTHTOKEN is the contents of the AUTHTOKEN param on the console page
+(which would have had the Java applet.)
 
-Disks
------
+On the bootloader screen (usually it gives you a bunch of options
+such as "Install" or "Advanced"), press TAB and edit the kernel boot
+line to append the text:
 
-The standard Scripts setup has separate LVM partitions for root and
-swap, as well as a non-LVM partition for boot.  You will not have this
-for XVM, so the Fedora defaults mostly work.  Don't use ext4 though.
+    ks=http://ezyang.scripts.mit.edu/kickstart/scripts.php?type=xvm&release=$RELEASE_NO&hostname=scripts-f$RELEASE_NO-test.xvm.mit.edu
+
+with $RELEASE_NO interpolated properly.  You should keep around any initrd
+lines since the kernel image still needs to know how to boot up.
+
+    XXX the kickstart file needs to live in a less sketchy place
+
+The install process will ask you for a password.  Do NOT use the
+scripts-root password.  We have a password in
+/mit/scripts/Private/scripts-f9-test-passwd which we tend to use.
