@@ -34,7 +34,7 @@ While it is best to use the install CD from the most recent version
 of Fedora, any kernel which supports Kickstarting can be used.  A good
 bet is to use the Netboot CD from the latest version of Fedora that
 XVM has (since XVM is sort of bad about keeping their boot CDs up to
-date.)
+date.)  Since you're doing an install CD, it's going to be an HVM.
 
 You will need VNC access to perform the installation process.  If you have
 Java, just go to the Console page for the VM; if you do not, you can use
@@ -61,3 +61,13 @@ lines since the kernel image still needs to know how to boot up.
 The install process will ask you for a password.  Do NOT use the
 scripts-root password.  We have a password in
 /mit/scripts/Private/scripts-test-passwd which we tend to use.
+
+We don't know how to convert to ParaVM yet, because latest Fedora
+uses Grub2 but XVM's bootloader doesn't understand how to read it
+(see also the Scripts patches we manually applied to our hosts.)
+
+3. Debugging
+------------
+
+Get dropped into dracut:#/ ?  Check for 'Warn' in dmesg (dmesg | grep Warn)
+and fix any problems that are stopping Dracut from proceeding.

@@ -306,6 +306,7 @@ pecl list | tail -n +4 | cut -f 1 -d " " > pecl.txt
 #                       INFINITE CONFIGURATION
 
 # [PROD] Create fedora-ds user (needed for credit-card)
+# [TEST] too if you want to run a local dirsrv instance
 useradd -r -d /var/lib/dirsrv fedora-ds
 
 # Run credit-card to clone in credentials and make things runabble
@@ -318,6 +319,7 @@ python host.py push $server
 
 # This is superseded by credit-card, which works for [PRODUCTION] and
 # [WIZARD].  We don't have an easy way of running credit-card for XVM...
+#b
 #
 #   # All types of servers will have an /etc/daemon.keytab file, however,
 #   # different types of server will have different credentials in this
@@ -386,7 +388,10 @@ python host.py push $server
 # Check for unwanted setuid/setgid binaries
     find / -xdev -not -perm -o=x -prune -o -type f -perm /ug=s -print | grep -Fxvf /etc/scripts/allowed-setugid.list
     find / -xdev -not -perm -o=x -prune -o -type f -print0 | xargs -0r /usr/sbin/getcap | cut -d' ' -f1 | grep -Fxvf /etc/scripts/allowed-filecaps.list
-    # You can prune binaries using 'chmod u-s' and 'chmod g-s'
+    # You can prune the first set of binaries using 'chmod u-s' and 'chmod g-s'
+    # and remove capabilities using 'setcap -r'
+
+# XXX check for selinux gunk
 
 # Fix etc by making sure none of our config files got overwritten
     cd /etc
@@ -429,8 +434,8 @@ python host.py push $server
 #   - We don't serve LDAP, so use another server
 # XXX: Someone should write sed scripts to do this
 # This involves editing the following files:
-        \rm /etc/sysconfig/network-scripts/ifcfg-lo:{0,1,2,3}
-        \rm /etc/sysconfig/network-scripts/route-eth1 # [TESTSERVER] only
+        svn rm /etc/sysconfig/network-scripts/ifcfg-lo:{0,1,2,3}
+        svn rm /etc/sysconfig/network-scripts/route-eth1 # [TESTSERVER] only
 #   o /etc/nslcd.conf
 #       replace: uri ldapi://%2fvar%2frun%2fdirsrv%2fslapd-scripts.socket/
 #       with: uri ldap://scripts.mit.edu/
@@ -453,11 +458,20 @@ python host.py push $server
 
 # [TESTSERVER]
 #   - You need a self-signed SSL cert or Apache will refuse to start
-#     or do SSL.  Generate with:
-    openssl req -new -x509 -keyout /etc/pki/tls/private/scripts.key -out /etc/pki/tls/certs/scripts.cert -nodes
+#     or do SSL.  Generate with: (XXX recommended CN?)
+    openssl req -new -x509 -keyout /etc/pki/tls/private/scripts.key -out /etc/pki/tls/certs/scripts-cert.pem -nodes
     ln -s /etc/pki/tls/private/scripts.key /etc/pki/tls/private/scripts-1024.key
-#     Also make /etc/pki/tls/certs/ca.pem match up
-    openssl rsa -in /etc/pki/tls/private/scripts.key -pubout > /etc/pki/tls/certs/ca.pem
+#     Also make the various public keys match up
+    openssl rsa -in /etc/pki/tls/private/scripts.key -pubout > /etc/pki/tls/certs/star.scripts.pem
+    openssl rsa -in /etc/pki/tls/private/scripts.key -pubout > /etc/pki/tls/certs/scripts.pem
+    openssl rsa -in /etc/pki/tls/private/scripts.key -pubout > /etc/pki/tls/certs/scripts-cert.pem
+#     Nuke the CSRs since they will all mismatch
+#     XXX alternate strategy replace all the pem's as above
+    cd /etc/httpd/vhosts.d
+    svn rm *.conf
+
+# [TESTSERVER]
+#   Remove vhosts.d which we don't have rights for XXX
 
 # [TESTSERVER] More stuff for test servers
 #   - Make (/etc/aliases) root mail go to /dev/null, so we don't spam people
