@@ -1,0 +1,121 @@
+Description: mod_ssl: Add new directive SSLCompression to disable TLS-level compression.
+Origin: http://svn.apache.org/viewvc?view=revision&revision=1369585
+
+diff -Naur httpd-2.2.22/modules/ssl/mod_ssl.c httpd-2.2.22.patched/modules/ssl/mod_ssl.c
+--- httpd-2.2.22/modules/ssl/mod_ssl.c	2010-07-12 14:47:45.000000000 -0400
++++ httpd-2.2.22.patched/modules/ssl/mod_ssl.c	2012-09-12 17:10:57.417861707 -0400
+@@ -146,6 +146,9 @@
+                 "(`[+-][SSLv2|SSLv3|TLSv1] ...' - see manual)")
+     SSL_CMD_SRV(HonorCipherOrder, FLAG,
+                 "Use the server's cipher ordering preference")
++    SSL_CMD_SRV(Compression, FLAG,
++                "Enable SSL level compression"
++                "(`on', `off')")
+     SSL_CMD_SRV(InsecureRenegotiation, FLAG,
+                 "Enable support for insecure renegotiation")
+     SSL_CMD_ALL(UserName, TAKE1,
+diff -Naur httpd-2.2.22/modules/ssl/ssl_engine_config.c httpd-2.2.22.patched/modules/ssl/ssl_engine_config.c
+--- httpd-2.2.22/modules/ssl/ssl_engine_config.c	2011-04-14 09:56:17.000000000 -0400
++++ httpd-2.2.22.patched/modules/ssl/ssl_engine_config.c	2012-09-12 17:10:57.425862035 -0400
+@@ -178,6 +178,9 @@
+ #ifdef HAVE_FIPS
+     sc->fips                   = UNSET;
+ #endif
++#ifndef OPENSSL_NO_COMP
++    sc->compression            = UNSET;
++#endif
+ 
+     modssl_ctx_init_proxy(sc, p);
+ 
+@@ -275,6 +278,9 @@
+ #ifdef HAVE_FIPS
+     cfgMergeBool(fips);
+ #endif
++#ifndef OPENSSL_NO_COMP
++    cfgMergeBool(compression);
++#endif
+ 
+     modssl_ctx_cfg_merge_proxy(base->proxy, add->proxy, mrg->proxy);
+ 
+@@ -708,6 +714,23 @@
+ 
+ }
+ 
++const char *ssl_cmd_SSLCompression(cmd_parms *cmd, void *dcfg, int flag)
++{
++#if !defined(OPENSSL_NO_COMP)
++    SSLSrvConfigRec *sc = mySrvConfig(cmd->server);
++#ifndef SSL_OP_NO_COMPRESSION
++    const char *err = ap_check_cmd_context(cmd, GLOBAL_ONLY);
++    if (err)
++        return "This version of openssl does not support configuring "
++               "compression within <VirtualHost> sections.";
++#endif
++    sc->compression = flag ? TRUE : FALSE;
++    return NULL;
++#else
++    return "Setting Compression mode unsupported; not implemented by the SSL library";
++#endif
++}
++
+ const char *ssl_cmd_SSLHonorCipherOrder(cmd_parms *cmd, void *dcfg, int flag)
+ {
+ #ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
+diff -Naur httpd-2.2.22/modules/ssl/ssl_engine_init.c httpd-2.2.22.patched/modules/ssl/ssl_engine_init.c
+--- httpd-2.2.22/modules/ssl/ssl_engine_init.c	2011-04-14 09:56:17.000000000 -0400
++++ httpd-2.2.22.patched/modules/ssl/ssl_engine_init.c	2012-09-12 17:10:57.419861789 -0400
+@@ -503,6 +503,18 @@
+     }
+ #endif
+ 
++
++#ifndef OPENSSL_NO_COMP
++    if (sc->compression == FALSE) {
++#ifdef SSL_OP_NO_COMPRESSION
++        /* OpenSSL >= 1.0 only */
++        SSL_CTX_set_options(ctx, SSL_OP_NO_COMPRESSION);
++#elif OPENSSL_VERSION_NUMBER >= 0x00908000L
++        sk_SSL_COMP_zero(SSL_COMP_get_compression_methods());
++#endif
++    }
++#endif
++
+ #ifdef SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
+     if (sc->insecure_reneg == TRUE) {
+         SSL_CTX_set_options(ctx, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
+diff -Naur httpd-2.2.22/modules/ssl/ssl_private.h httpd-2.2.22.patched/modules/ssl/ssl_private.h
+--- httpd-2.2.22/modules/ssl/ssl_private.h	2011-04-14 09:56:17.000000000 -0400
++++ httpd-2.2.22.patched/modules/ssl/ssl_private.h	2012-09-12 18:11:48.762900287 -0400
+@@ -486,6 +486,9 @@
+ #ifdef HAVE_FIPS
+     BOOL             fips;
+ #endif
++#ifndef OPENSSL_NO_COMP
++    BOOL             compression;
++#endif
+ };
+ 
+ /**
+@@ -542,6 +545,7 @@
+ const char  *ssl_cmd_SSLCARevocationPath(cmd_parms *, void *, const char *);
+ const char  *ssl_cmd_SSLCARevocationFile(cmd_parms *, void *, const char *);
+ const char  *ssl_cmd_SSLHonorCipherOrder(cmd_parms *cmd, void *dcfg, int flag);
++const char  *ssl_cmd_SSLCompression(cmd_parms *, void *, int flag);
+ const char  *ssl_cmd_SSLVerifyClient(cmd_parms *, void *, const char *);
+ const char  *ssl_cmd_SSLVerifyDepth(cmd_parms *, void *, const char *);
+ const char  *ssl_cmd_SSLSessionCache(cmd_parms *, void *, const char *);
+diff -Naur httpd-2.2.22/modules/ssl/ssl_toolkit_compat.h httpd-2.2.22.patched/modules/ssl/ssl_toolkit_compat.h
+--- httpd-2.2.22/modules/ssl/ssl_toolkit_compat.h	2010-07-12 14:47:45.000000000 -0400
++++ httpd-2.2.22.patched/modules/ssl/ssl_toolkit_compat.h	2012-09-12 18:12:09.982772267 -0400
+@@ -276,6 +276,11 @@
+ #endif
+ #endif
+ 
++#if !defined(OPENSSL_NO_COMP) && !defined(SSL_OP_NO_COMPRESSION) \
++    && OPENSSL_VERSION_NUMBER < 0x00908000L
++#define OPENSSL_NO_COMP
++#endif
++
+ #endif /* SSL_TOOLKIT_COMPAT_H */
+ 
+ /** @} */
