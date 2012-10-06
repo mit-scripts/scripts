@@ -32,4 +32,6 @@ virtual_alias_domains = hash:/etc/postfix/virtual, regexp:/etc/postfix/virtual_r
 virtual_alias_maps = hash:/etc/postfix/virtual, regexp:/etc/postfix/virtual_re, ldap:/etc/postfix/virtual-alias-maps-ldap.cf
 data_directory = /var/lib/postfix
 authorized_submit_users = !/etc/postfix/blocked_users, static:all
-inet_protocols = ipv4
+# "all" is the default, but if we do not specify it, Fedora's packaging
+# will add the wrong value here.
+inet_protocols = all
