@@ -1,7 +1,11 @@
---- openafs.spec.~1~	2012-03-29 12:45:12.000000000 -0400
-+++ openafs.spec	2012-08-05 07:35:31.292297168 -0400
-@@ -4,7 +4,7 @@
- %define pkgvers 1.6.1
+--- openafs.spec.orig	2012-11-10 05:22:28.754019405 -0500
++++ openafs.spec	2012-11-10 12:45:48.679334955 -0500
+@@ -1,10 +1,10 @@
+ # Openafs Spec $Revision$
+ 
+ %define afsvers 1.6.1
+-%define pkgvers 1.6.1
++%define pkgvers 1.6.1.1
  # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
 -%define pkgrel 1
@@ -9,16 +13,18 @@
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -252,6 +252,14 @@
+@@ -249,9 +249,16 @@
+ %if %{build_modules}
+ BuildRequires: kernel-devel
+ %endif
++BuildRequires: libtool
  
  ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
  
++Patch999:  openafs-stable-1.6.1.1.patch
 +Patch1000: openafs-scripts.patch
-+Patch1001: openafs-systemd-remote-fs.patch
-+Patch1002: openafs-systemd-crond.patch
-+Patch1003: openafs-systemd-csdb.patch
-+Patch1004: openafs-linux-3.4-end-writeback.patch
-+Patch1005: openafs-linux-3.5-encode-fh.patch
++Patch1001: openafs-systemd-crond.patch
++Patch1002: openafs-systemd-csdb.patch
 +%define _default_patch_fuzz 2
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
@@ -81,21 +87,28 @@
  
  %else
  
-@@ -698,6 +711,14 @@
+@@ -698,6 +711,12 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
 +# Apply the Scripts patch
++%patch999  -p1 -b .1.6.1.1
 +%patch1000 -p1 -b .scripts
-+%patch1001 -p1 -b .systemd-remote-fs
-+%patch1002 -p1 -b .systemd-crond
-+%patch1003 -p1 -b .systemd-csdb
-+%patch1004 -p1 -b .end-writeback
-+%patch1005 -p1 -b .encode-fh
++%patch1001 -p1 -b .systemd-crond
++%patch1002 -p1 -b .systemd-csdb
 +
  ##############################################################################
  #
  # building
+@@ -869,6 +888,8 @@
+ %endif
+ %endif
+ 
++./regen.sh
++
+ ./configure --with-afs-sysname=${sysname} \
+        --prefix=%{_prefix} \
+        --libdir=%{_libdir} \
 @@ -1278,6 +1299,13 @@
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
