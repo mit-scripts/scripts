@@ -7,11 +7,6 @@
  # Create an LV called "swap" that is the same size as the machine's physical RAM
  # Create an LV called "root" that is 50G ext4
 
-# ??? F11 will suggest ext4, DON'T USE IT.
-#   - New filesystem, so it's scary
-#   - The hosts can't mount it
-#   - Grub can't cope with it
-
 # download Debathena archive key, verify
   (aptitude install debian-keyring &&
   cd /tmp &&
@@ -28,15 +23,14 @@ deb http://debathena.mit.edu/apt squeeze debathena debathena-config debathena-sy
 deb-src http://debathena.mit.edu/apt squeeze debathena debathena-config debathena-system openafs
 EOF
 
-# (on HPs) add HP repos to etc/apt/sources.list.d
-  cat <<EOF > /etc/apt/sources.list.d/hp.list
-deb http://downloads.linux.hp.com/SDR/downloads/ProLiantSupportPack/ maverick/current non-free
+# add scripts repos to /etc/apt/sources.list.d
+  cat <<EOF > /etc/apt/sources.list.d/scripts.list 
+deb http://web.mit.edu/scripts/apt stable main
+deb-src http://web.mit.edu/scripts/apt stable main
 EOF
 
-# install host keytab
-  cp $keytab /etc/krb5.keytab
-  k5srvutil change
-  k5srvutil delold
+# add scripts apt repo key
+
 # install ~/.k5login
 # clone the xen config (/etc/xen)
     git clone -b squeeze ssh://scripts@scripts.mit.edu/mit/scripts/git/xen.git /etc/xen
@@ -45,8 +39,10 @@ EOF
   aptitude update
   aptitude install scripts-vm-host
 
-# (on HPs) install HP software
-  aptitude install hpacucli hp-health
+# install host keytab
+  cp $keytab /etc/krb5.keytab
+  k5srvutil change
+  k5srvutil delold
 
 # Configure exim4 to use smarthost (outgoing.mit.edu), no local mail
 dpkg-reconfigure exim4-config
