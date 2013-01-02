@@ -59,20 +59,20 @@ the install parameter:
 Networking and Subversion
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Our Subversion repository lives at svn://scripts.mit.edu/. Our hosts bind to
-scripts.mit.edu on localhost. Unfortunately, this means that checking out the
-subversion repository on a new server while you're in the process of setting it
-up sometimes won't work. In particular, if the server is already binding the
-scripts.mit.edu IP address, but not yet serving svn, your attempt to do the
-checkout will connect to the local machine and fail.
+Our Subversion repository lives at svn://scripts.mit.edu/. Our realservers bind
+to scripts.mit.edu on localhost. Unfortunately, this means that checking out
+the subversion repository on a new server while you're in the process of
+setting it up sometimes won't work. In particular, if the server is already
+binding the scripts.mit.edu IP address, but not yet serving svn, your attempt
+to do the checkout will connect to the local machine and fail.
 
 Any of the following should let you evade this issue:
 * Avoid doing any svn operations between your first reboot and when svn is
   working. The networking changes from the install won't take effect until you
   reboot. Ordinarily, you won't need to do any commits or updates between the
   reboot and when LDAP and svn:// serving are working.
-* Temporarily down the lo alias with the scripts.mit.edu IP address
-  (18.181.0.43; seems to be lo:3 semi-consistently)
-* Do your svn checkout from a current host, instead of scripts.mit.edu
-  (for example, use svn://whole-enchilada.mit.edu/). Don't forget to
-  svn switch --relocate to scripts.mit.edu once the server is set up.
+* Temporarily down lo:3 (the lo alias with the scripts.mit.edu IP address,
+  18.181.0.43)
+* Do your svn checkout from a current realserver, instead of scripts.mit.edu
+  (for example, use svn://whole-enchilada.mit.edu/). Don't forget to svn switch
+  --relocate to scripts.mit.edu once the server is set up.
