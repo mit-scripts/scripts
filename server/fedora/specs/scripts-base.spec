@@ -33,6 +33,7 @@ Requires: zephyr
 Requires: %{all_archs zephyr-libs}
 Requires: httpdmods
 Requires: %{all_archs nss_nonlocal}
+Requires: scripts-munin-plugins
 %define debug_package %{nil}
 
 %description 
