@@ -1,3 +1,4 @@
-/^(.*)@scripts.mit.edu$/ $1@scripts.mit.edu
+/^(.*)@scripts\.mit\.edu$/ $1@scripts.mit.edu
+/^(abuse|hostmaster|noc|postmaster|security)@/ $1@scripts.mit.edu
 /^(.*)@([^@]*)\.scripts\.mit\.edu$/ $2+$1
 /^([^@]*)\.scripts\.mit\.edu$/ true
