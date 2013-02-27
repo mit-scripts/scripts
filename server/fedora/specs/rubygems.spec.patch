@@ -3,7 +3,7 @@
 @@ -18,7 +18,7 @@
  Summary:	The Ruby standard for packaging ruby libraries
  Name:		rubygems
- Version:	1.8.24
+ Version:	1.8.25
 -Release:	1%{?dist}
 +Release:	1%{?dist}.scripts.%{scriptsversion}
  Group:		Development/Libraries
