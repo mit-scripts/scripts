@@ -33,7 +33,15 @@
  Requires: binutils, openafs = %{version}
  %if 0%{?fedora} >= 15
  Requires: systemd-units
-@@ -403,6 +410,7 @@
+@@ -382,6 +389,7 @@
+ %package -n dkms-%{name}
+ Summary:        DKMS-ready kernel source for AFS distributed filesystem
+ Group:          Development/Kernel
++Provides:       scripts-dkms-%{name}
+ Provides:       openafs-kernel = %{version}
+ %if %{fedorakmod}
+ Provides: %{name}-kmod = %{version}
+@@ -403,6 +411,7 @@
  
  %if %{build_authlibs}
  %package authlibs
@@ -41,7 +49,7 @@
  Summary: OpenAFS authentication shared libraries
  Group: Networking/Filesystems
  
-@@ -419,6 +427,7 @@
+@@ -419,6 +428,7 @@
  %endif
  
  %package authlibs-devel
@@ -49,7 +57,7 @@
  %if %{build_authlibs}
  Requires: openafs-authlibs = %{version}-%{release}
  %endif
-@@ -437,6 +446,7 @@
+@@ -437,6 +447,7 @@
  libraries.
  
  %package devel
@@ -57,7 +65,7 @@
  Summary: OpenAFS Development Libraries and Headers
  Group: Development/Filesystems
  Requires: openafs = %{version}-%{release}
-@@ -466,6 +476,7 @@
+@@ -466,6 +477,7 @@
  administrators.
  
  %package kernel-source
@@ -65,7 +73,7 @@
  Summary: OpenAFS Kernel Module source tree
  Group: Networking/Filesystems
  Provides: openafs-kernel = %{version}
-@@ -515,6 +526,7 @@
+@@ -515,6 +527,7 @@
  
  %if %{krb5support}
  %package krb5
@@ -73,7 +81,7 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{version}
  Group: Networking/Filesystems
-@@ -541,7 +553,7 @@
+@@ -541,7 +554,7 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
@@ -82,7 +90,7 @@
  
  %else
  
-@@ -698,6 +710,11 @@
+@@ -698,6 +711,11 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
@@ -94,7 +102,7 @@
  ##############################################################################
  #
  # building
-@@ -869,6 +886,8 @@
+@@ -869,6 +887,8 @@
  %endif
  %endif
  
@@ -103,7 +111,7 @@
  ./configure --with-afs-sysname=${sysname} \
         --prefix=%{_prefix} \
         --libdir=%{_libdir} \
-@@ -1278,6 +1297,13 @@
+@@ -1257,6 +1277,13 @@
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*

@@ -177,7 +177,7 @@ openafs-kernel: setup
 kernvers = $(shell uname -r | sed "s/\(.*\)[.].*/\1/")
 kvariants = ''
 openafs_rpmbuild_args = --define "fedorakmod 1" --define "kvariants $(kvariants)" --define "kernvers $(kernvers)"
-openafs: rpmbuild_args += $(openafs_rpmbuild_args)
+openafs: rpmbuild_args += $(openafs_rpmbuild_args) --define "build_userspace 1" --define "build_modules 0"
 openafs-kernel: rpmbuild_args += $(openafs_rpmbuild_args) --define "build_userspace 0" --define "build_modules 1"
 
 frob-openafs:
