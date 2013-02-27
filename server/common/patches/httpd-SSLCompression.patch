@@ -1,11 +1,11 @@
 Description: mod_ssl: Add new directive SSLCompression to disable TLS-level compression.
 Origin: http://svn.apache.org/viewvc?view=revision&revision=1369585
 
-diff -Naur httpd-2.2.22/modules/ssl/mod_ssl.c httpd-2.2.22.patched/modules/ssl/mod_ssl.c
---- httpd-2.2.22/modules/ssl/mod_ssl.c	2010-07-12 14:47:45.000000000 -0400
-+++ httpd-2.2.22.patched/modules/ssl/mod_ssl.c	2012-09-12 17:10:57.417861707 -0400
-@@ -146,6 +146,9 @@
-                 "(`[+-][SSLv2|SSLv3|TLSv1] ...' - see manual)")
+diff -r -U3 httpd-2.2.23/modules/ssl/mod_ssl.c httpd-2.2.23.patched/modules/ssl/mod_ssl.c
+--- httpd-2.2.23/modules/ssl/mod_ssl.c	2013-02-14 18:32:59.360289681 -0500
++++ httpd-2.2.23.patched/modules/ssl/mod_ssl.c	2013-02-14 18:34:22.670718893 -0500
+@@ -158,6 +158,9 @@
+                 "('[+-][" SSL_PROTOCOLS "] ...' - see manual)")
      SSL_CMD_SRV(HonorCipherOrder, FLAG,
                  "Use the server's cipher ordering preference")
 +    SSL_CMD_SRV(Compression, FLAG,
@@ -14,10 +14,10 @@ diff -Naur httpd-2.2.22/modules/ssl/mod_ssl.c httpd-2.2.22.patched/modules/ssl/m
      SSL_CMD_SRV(InsecureRenegotiation, FLAG,
                  "Enable support for insecure renegotiation")
      SSL_CMD_ALL(UserName, TAKE1,
-diff -Naur httpd-2.2.22/modules/ssl/ssl_engine_config.c httpd-2.2.22.patched/modules/ssl/ssl_engine_config.c
---- httpd-2.2.22/modules/ssl/ssl_engine_config.c	2011-04-14 09:56:17.000000000 -0400
-+++ httpd-2.2.22.patched/modules/ssl/ssl_engine_config.c	2012-09-12 17:10:57.425862035 -0400
-@@ -178,6 +178,9 @@
+diff -r -U3 httpd-2.2.23/modules/ssl/ssl_engine_config.c httpd-2.2.23.patched/modules/ssl/ssl_engine_config.c
+--- httpd-2.2.23/modules/ssl/ssl_engine_config.c	2013-02-14 18:32:59.358289719 -0500
++++ httpd-2.2.23.patched/modules/ssl/ssl_engine_config.c	2013-02-14 18:34:22.672718856 -0500
+@@ -183,6 +183,9 @@
  #ifdef HAVE_FIPS
      sc->fips                   = UNSET;
  #endif
@@ -27,7 +27,7 @@ diff -Naur httpd-2.2.22/modules/ssl/ssl_engine_config.c httpd-2.2.22.patched/mod
  
      modssl_ctx_init_proxy(sc, p);
  
-@@ -275,6 +278,9 @@
+@@ -281,6 +284,9 @@
  #ifdef HAVE_FIPS
      cfgMergeBool(fips);
  #endif
@@ -37,7 +37,7 @@ diff -Naur httpd-2.2.22/modules/ssl/ssl_engine_config.c httpd-2.2.22.patched/mod
  
      modssl_ctx_cfg_merge_proxy(base->proxy, add->proxy, mrg->proxy);
  
-@@ -708,6 +714,23 @@
+@@ -714,6 +720,23 @@
  
  }
  
@@ -61,10 +61,11 @@ diff -Naur httpd-2.2.22/modules/ssl/ssl_engine_config.c httpd-2.2.22.patched/mod
  const char *ssl_cmd_SSLHonorCipherOrder(cmd_parms *cmd, void *dcfg, int flag)
  {
  #ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
-diff -Naur httpd-2.2.22/modules/ssl/ssl_engine_init.c httpd-2.2.22.patched/modules/ssl/ssl_engine_init.c
---- httpd-2.2.22/modules/ssl/ssl_engine_init.c	2011-04-14 09:56:17.000000000 -0400
-+++ httpd-2.2.22.patched/modules/ssl/ssl_engine_init.c	2012-09-12 17:10:57.419861789 -0400
-@@ -503,6 +503,18 @@
+Only in httpd-2.2.23.patched/modules/ssl: ssl_engine_config.c.orig
+diff -r -U3 httpd-2.2.23/modules/ssl/ssl_engine_init.c httpd-2.2.23.patched/modules/ssl/ssl_engine_init.c
+--- httpd-2.2.23/modules/ssl/ssl_engine_init.c	2013-02-14 18:32:59.358289719 -0500
++++ httpd-2.2.23.patched/modules/ssl/ssl_engine_init.c	2013-02-14 18:34:22.672718856 -0500
+@@ -542,6 +542,18 @@
      }
  #endif
  
@@ -83,10 +84,11 @@ diff -Naur httpd-2.2.22/modules/ssl/ssl_engine_init.c httpd-2.2.22.patched/modul
  #ifdef SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
      if (sc->insecure_reneg == TRUE) {
          SSL_CTX_set_options(ctx, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
-diff -Naur httpd-2.2.22/modules/ssl/ssl_private.h httpd-2.2.22.patched/modules/ssl/ssl_private.h
---- httpd-2.2.22/modules/ssl/ssl_private.h	2011-04-14 09:56:17.000000000 -0400
-+++ httpd-2.2.22.patched/modules/ssl/ssl_private.h	2012-09-12 18:11:48.762900287 -0400
-@@ -486,6 +486,9 @@
+Only in httpd-2.2.23.patched/modules/ssl: ssl_engine_init.c.orig
+diff -r -U3 httpd-2.2.23/modules/ssl/ssl_private.h httpd-2.2.23.patched/modules/ssl/ssl_private.h
+--- httpd-2.2.23/modules/ssl/ssl_private.h	2013-02-14 18:32:59.357289737 -0500
++++ httpd-2.2.23.patched/modules/ssl/ssl_private.h	2013-02-14 18:34:22.673718837 -0500
+@@ -507,6 +507,9 @@
  #ifdef HAVE_FIPS
      BOOL             fips;
  #endif
@@ -96,7 +98,7 @@ diff -Naur httpd-2.2.22/modules/ssl/ssl_private.h httpd-2.2.22.patched/modules/s
  };
  
  /**
-@@ -542,6 +545,7 @@
+@@ -563,6 +566,7 @@
  const char  *ssl_cmd_SSLCARevocationPath(cmd_parms *, void *, const char *);
  const char  *ssl_cmd_SSLCARevocationFile(cmd_parms *, void *, const char *);
  const char  *ssl_cmd_SSLHonorCipherOrder(cmd_parms *cmd, void *dcfg, int flag);
@@ -104,10 +106,11 @@ diff -Naur httpd-2.2.22/modules/ssl/ssl_private.h httpd-2.2.22.patched/modules/s
  const char  *ssl_cmd_SSLVerifyClient(cmd_parms *, void *, const char *);
  const char  *ssl_cmd_SSLVerifyDepth(cmd_parms *, void *, const char *);
  const char  *ssl_cmd_SSLSessionCache(cmd_parms *, void *, const char *);
-diff -Naur httpd-2.2.22/modules/ssl/ssl_toolkit_compat.h httpd-2.2.22.patched/modules/ssl/ssl_toolkit_compat.h
---- httpd-2.2.22/modules/ssl/ssl_toolkit_compat.h	2010-07-12 14:47:45.000000000 -0400
-+++ httpd-2.2.22.patched/modules/ssl/ssl_toolkit_compat.h	2012-09-12 18:12:09.982772267 -0400
-@@ -276,6 +276,11 @@
+Only in httpd-2.2.23.patched/modules/ssl: ssl_private.h.orig
+diff -r -U3 httpd-2.2.23/modules/ssl/ssl_toolkit_compat.h httpd-2.2.23.patched/modules/ssl/ssl_toolkit_compat.h
+--- httpd-2.2.23/modules/ssl/ssl_toolkit_compat.h	2012-08-17 13:30:46.000000000 -0400
++++ httpd-2.2.23.patched/modules/ssl/ssl_toolkit_compat.h	2013-02-14 18:34:22.674718818 -0500
+@@ -277,6 +277,11 @@
  #endif
  #endif
  
@@ -119,3 +122,4 @@ diff -Naur httpd-2.2.22/modules/ssl/ssl_toolkit_compat.h httpd-2.2.22.patched/mo
  #endif /* SSL_TOOLKIT_COMPAT_H */
  
  /** @} */
+Only in httpd-2.2.23.patched/modules/ssl: ssl_toolkit_compat.h.orig
