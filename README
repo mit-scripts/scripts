@@ -1,11 +1,11 @@
+host:
+  files needed to set up a scripts.mit.edu hypervisor (aka VM host)
+
 locker:
   files associated with the scripts Athena locker
 
-noc:
-  configuration for a scripts monitoring NOC
-
-selinux:
-  selinux strict policy modules for a scripts.mit.edu server
+lvs:
+  files needed to set up a scripts.mit.edu director (aka load balancer)
 
 server:
-  files needed to run a scripts.mit.edu server
+  files needed to run a scripts.mit.edu server (aka realserver)
