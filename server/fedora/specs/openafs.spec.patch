@@ -4,8 +4,8 @@
  %define pkgvers 1.6.2
  # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
--%define pkgrel 0.pre3
-+%define pkgrel 0.pre3.99.scripts.%{scriptsversion}
+-%define pkgrel 1
++%define pkgrel 1.99.scripts.%{scriptsversion}
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
