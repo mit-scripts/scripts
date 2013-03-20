@@ -1,6 +1,6 @@
 # Make sure to update this to coincide with the most recent debathena-discuss
 # release from http://debathena.mit.edu/apt/pool/debathena/d/debathena-discuss/
-%define upstreamversion 10.0.13
+%define upstreamversion 10.0.15
 Name:		discuss
 Version:	%{upstreamversion}
 Release:	1.%{scriptsversion}%{?dist}
@@ -107,6 +107,9 @@ getent passwd discuss >/dev/null || \
 exit 0
 
 %changelog
+* Tue Mar 19 2013 Alexander Chernyakhovsky <achernya@mit.edu> - 10.0.15-1
+- Update to discuss 10.0.15
+
 * Sun May 29 2011 Mitchell Berger <mitchb@mit.edu> - 10.0.13-1
 - Initial packaging of Discuss on Fedora
 
