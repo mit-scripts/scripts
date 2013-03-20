@@ -1,24 +1,24 @@
---- krb5.spec.~1~	2012-08-02 11:21:27.000000000 -0400
-+++ krb5.spec	2012-08-06 03:20:37.192019648 -0400
+--- krb5.spec.orig	2013-03-19 19:35:57.185444457 -0400
++++ krb5.spec	2013-03-19 19:37:37.204566892 -0400
 @@ -20,7 +20,7 @@
  Summary: The Kerberos network authentication system
  Name: krb5
  Version: 1.10.2
--Release: 6%{?dist}
-+Release: 6%{?dist}.scripts.%{scriptsversion}
+-Release: 9%{?dist}
++Release: 9%{?dist}.scripts.%{scriptsversion}
  # Maybe we should explode from the now-available-to-everybody tarball instead?
  # http://web.mit.edu/kerberos/dist/krb5/1.10/krb5-1.10.2-signed.tar
  Source0: krb5-%{version}.tar.gz
-@@ -71,6 +71,8 @@
- Patch107: krb5-trunk-pkinit-anchorsign.patch
- Patch108: http://web.mit.edu/kerberos/advisories/2012-001-patch.txt
+@@ -74,6 +74,8 @@
+ Patch110: krb5-lookup_etypes-leak.patch
+ Patch111: krb5-1.10-pkinit-agility.patch
  
 +Patch1000: krb5-kuserok-scripts.patch
 +
  License: MIT
  URL: http://web.mit.edu/kerberos/www/
  Group: System Environment/Libraries
-@@ -128,6 +130,7 @@
+@@ -131,6 +133,7 @@
  %package libs
  Summary: The shared libraries used by Kerberos 5
  Group: System Environment/Libraries
@@ -26,10 +26,10 @@
  
  %description libs
  Kerberos is a network authentication system. The krb5-libs package
-@@ -249,6 +252,7 @@
- %patch106 -p1 -b .keytab-etype
- %patch107 -p1 -b .pkinit-anchorsign
- %patch108 -p1 -b .2012-001
+@@ -255,6 +258,7 @@
+ %patch109 -p1 -b .pkinit-null
+ %patch110 -p1 -b .lookup_etypes-leak
+ %patch111 -p1 -b .pkinit-agility
 +%patch1000 -p1 -b .kuserok
  rm src/lib/krb5/krb/deltat.c
  
