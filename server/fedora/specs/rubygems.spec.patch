@@ -1,15 +1,24 @@
---- rubygems.spec.~1~	2012-04-28 04:01:50.000000000 -0400
-+++ rubygems.spec	2012-05-22 23:47:16.001145101 -0400
-@@ -18,7 +18,7 @@
+--- rubygems.spec.orig	2013-03-19 19:40:59.590767463 -0400
++++ rubygems.spec	2013-03-19 21:13:12.458970873 -0400
+@@ -15,7 +15,7 @@
+ 
+ # Executing testsuite (enabling %%check section) will cause dependency loop.
+ # To avoid dependency loop when necessary, please set the following value to 0
+-%global	enable_check	1
++%global	enable_check	0
+ 
+ # It cannot be relied on %%{_libdir} for noarch packages. Query Ruby for
+ # the right value.
+@@ -26,7 +26,7 @@
  Summary:	The Ruby standard for packaging ruby libraries
  Name:		rubygems
  Version:	1.8.25
--Release:	1%{?dist}
-+Release:	1%{?dist}.scripts.%{scriptsversion}
+-Release:	4%{?dist}
++Release:	4%{?dist}.scripts.%{scriptsversion}
  Group:		Development/Libraries
  License:	Ruby or MIT
  
-@@ -52,6 +52,8 @@
+@@ -60,12 +60,15 @@
  # https://github.com/rubygems/rubygems/issues/210
  Patch109:	rubygems-1.8.11-binary-extensions.patch
  
@@ -18,7 +27,14 @@
  
  Requires:	ruby(abi) = 1.9.1
  Requires:	rubygem(rdoc) >= 3.9.4
-@@ -97,6 +99,8 @@
+ Requires:	rubygem(io-console) >= 0.3
+ Requires:	ca-certificates
+ BuildRequires:	ruby(abi) = 1.9.1
++BuildRequires:	ruby
+ %if %{enable_check}
+ # For mkmf.rb
+ BuildRequires:	ruby-devel
+@@ -105,6 +108,8 @@
  %patch105 -p1 -b .uninst
  %patch109 -p1 -b .bindir
  
