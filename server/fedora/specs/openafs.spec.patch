@@ -9,7 +9,7 @@
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -249,9 +249,15 @@
+@@ -249,9 +249,16 @@
  %if %{build_modules}
  BuildRequires: kernel-devel
  %endif
@@ -20,6 +20,7 @@
 +Patch1000: openafs-scripts.patch
 +Patch1002: openafs-systemd-crond.patch
 +Patch1003: openafs-systemd-csdb.patch
++Patch1004: openafs-linux-3.8-enablement.patch
 +%define _default_patch_fuzz 2
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
@@ -90,7 +91,7 @@
  
  %else
  
-@@ -698,6 +711,11 @@
+@@ -698,6 +711,12 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
@@ -98,6 +99,7 @@
 +%patch1000 -p1 -b .scripts
 +%patch1002 -p1 -b .systemd-crond
 +%patch1003 -p1 -b .systemd-csdb
++%patch1004 -p1 -b .3.8-enablement
 +
  ##############################################################################
  #
