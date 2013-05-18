@@ -1,0 +1,86 @@
+#!/bin/sh
+
+set -eu
+shopt -s failglob
+
+usage="Usage:
+    $0 list
+    $0 show-rand"
+
+show_rand() {
+    files=$(ls /var/spool/postfix/deferred/?/* | shuf | head -n 3)
+    for file in $files; do
+        echo ">>>> $file";
+        strings "$file"
+        echo;
+    done
+}
+
+tmpl_email() {
+    sender=${SSH_GSSAPI_NAME%%/*}
+    if [[ $# -eq 0 ]]; then
+        echo "Please specific a locker to generate template for." >&2
+        exit 1
+    fi
+    for locker in "$@"; do
+        echo "fs la /mit/$locker/"
+        fs la "/mit/$locker"
+        echo
+        cat <<-EOF
+The scripts.mit.edu servers currently have a large number of email
+messages destined for the *$locker* account that are not being handled by
+your account and are being queued. Sufficiently large numbers of queued
+messages can cause stability issues for the servers, so we would like
+you to ensure that your account can handle all messages it receives by
+two weeks from now.
+
+You will be able to process the incoming messages if you sign up for the
+mail scripts service (http://scripts.mit.edu/mail/). You're welcome to
+simply forward all incoming mail to another address (the default is to
+forward it to the mit.edu address of the user who signs up); otherwise,
+you can configure mail scripts to process the incoming messages in some
+suitable fashion.
+
+Frequently, large numbers of queued messages are a sign that some wiki,
+blog, forum, or other site has been spammed. If this is the case, you
+should apply some appropriate spam-blocking mechanism.
+
+If you have any questions, feel free to contact us.
+
+Thanks,
+scripts.mit.edu team
+scripts@mit.edu --- semi-private
+scripts-root@mit.edu --- service maintainers only
+EOF
+        echo;echo
+    done
+}
+
+purge() {
+    if [[ $# -eq 0 ]]; then
+        echo "Please specific a locker to purge emails for." >&2
+        exit 1
+    fi
+    for locker in "$@"; do
+        echo "$locker..."
+        mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$8 == \"$locker@scripts.mit.edu\" && \$9 == \"\") { print \$1 }" | tr -d '*!' | postsuper -d -
+        echo
+    done
+}
+
+op=${1:-}
+shift
+case $op in
+    list)
+        mailq | tail -n +2 | grep -v '^ *(' | awk 'BEGIN { RS = "" } { print $8 }' | sort | uniq -c | sort -n
+        ;;
+    show-rand) show_rand;;
+    email) tmpl_email "$@";;
+    purge) purge "$@";;
+    *)
+        echo "$usage" >&2;
+        exit 1
+        ;;
+esac
+
+# vim: set sts=4 sw=4 et:
