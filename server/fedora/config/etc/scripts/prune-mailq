@@ -5,7 +5,13 @@ shopt -s failglob
 
 usage="Usage:
     $0 list
-    $0 show-rand"
+    $0 show-rand
+    $0 email lockers...
+    $0 purge lockers..."
+
+clean_locker() {
+    echo "${1%%@scripts.mit.edu}"
+}
 
 show_rand() {
     files=$(ls /var/spool/postfix/deferred/?/* | shuf | head -n 3)
@@ -23,6 +29,7 @@ tmpl_email() {
         exit 1
     fi
     for locker in "$@"; do
+        locker=$(clean_locker "$locker")
         echo "fs la /mit/$locker/"
         fs la "/mit/$locker"
         echo
@@ -62,6 +69,7 @@ purge() {
         exit 1
     fi
     for locker in "$@"; do
+        locker=$(clean_locker "$locker")
         echo "$locker..."
         mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$8 == \"$locker@scripts.mit.edu\" && \$9 == \"\") { print \$1 }" | tr -d '*!' | postsuper -d -
         echo
