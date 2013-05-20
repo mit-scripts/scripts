@@ -13,6 +13,11 @@ clean_locker() {
     echo "${1%%@scripts.mit.edu}"
 }
 
+list() {
+    echo "Top twenty users by number of queued messages:"
+    mailq | tail -n +2 | grep -v '^ *(' | awk 'BEGIN { RS = "" } { print $8 }' | sort | uniq -c | sort -n | tail -n 20
+}
+
 show_rand() {
     files=$(ls /var/spool/postfix/deferred/?/* | shuf | head -n 3)
     for file in $files; do
@@ -79,9 +84,7 @@ purge() {
 op=${1:-}
 shift
 case $op in
-    list)
-        mailq | tail -n +2 | grep -v '^ *(' | awk 'BEGIN { RS = "" } { print $8 }' | sort | uniq -c | sort -n
-        ;;
+    list) list;;
     show-rand) show_rand;;
     email) tmpl_email "$@";;
     purge) purge "$@";;
