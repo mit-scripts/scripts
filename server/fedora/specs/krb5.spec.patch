@@ -1,24 +1,24 @@
---- krb5.spec.orig	2013-04-26 20:11:39.831850109 -0400
-+++ krb5.spec	2013-04-26 20:12:32.475790490 -0400
+--- krb5.spec.orig	2013-05-23 18:04:40.738088099 -0400
++++ krb5.spec	2013-05-23 18:08:02.592147349 -0400
 @@ -20,7 +20,7 @@
  Summary: The Kerberos network authentication system
  Name: krb5
  Version: 1.10.2
--Release: 11%{?dist}
-+Release: 11%{?dist}.scripts.%{scriptsversion}
+-Release: 12%{?dist}
++Release: 12%{?dist}.scripts.%{scriptsversion}
  # Maybe we should explode from the now-available-to-everybody tarball instead?
  # http://web.mit.edu/kerberos/dist/krb5/1.10/krb5-1.10.2-signed.tar
  Source0: krb5-%{version}.tar.gz
-@@ -76,6 +76,8 @@
- Patch112: krb5-1.10-CVE-2013-1416.patch
+@@ -77,6 +77,8 @@
  Patch113: krb5-fast-msg_type.patch
+ Patch114: krb5-1.11.2-kpasswd_pingpong.patch
  
 +Patch1000: krb5-kuserok-scripts.patch
 +
  License: MIT
  URL: http://web.mit.edu/kerberos/www/
  Group: System Environment/Libraries
-@@ -133,6 +135,7 @@
+@@ -134,6 +136,7 @@
  %package libs
  Summary: The shared libraries used by Kerberos 5
  Group: System Environment/Libraries
@@ -26,10 +26,10 @@
  
  %description libs
  Kerberos is a network authentication system. The krb5-libs package
-@@ -259,6 +262,7 @@
- %patch111 -p1 -b .pkinit-agility
+@@ -261,6 +264,7 @@
  %patch112 -p1 -b .CVE-2013-1416
  %patch113 -p1 -b .fast-msg_type
+ %patch114 -p1 -b .kpasswd_pingpong
 +%patch1000 -p1 -b .kuserok
  rm src/lib/krb5/krb/deltat.c
  
