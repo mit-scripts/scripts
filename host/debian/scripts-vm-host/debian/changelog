@@ -1,3 +1,9 @@
+scripts-vm-host (0.6) wheezy; urgency=low
+
+  * Update configuration for wheezy
+
+ -- Alexander Chernyakhovsky <achernya@mit.edu>  Sun, 26 May 2013 20:59:04 -0400
+
 scripts-vm-host (0.5) stable; urgency=low
 
   * Add useful dependencies

@@ -3,7 +3,7 @@ Section: misc
 Priority: extra
 Maintainer: scripts team <scripts-team@mit.edu>
 Build-Depends: cdbs, debhelper (>= 7.0.50~), config-package-dev, munin-node
-Standards-Version: 3.9.1
+Standards-Version: 3.9.4
 Homepage: http://scripts.mit.edu/
 
 Package: scripts-vm-host
@@ -13,7 +13,7 @@ Depends: ${misc:Depends},
  build-essential,
  bwm-ng,
  bzip2,
- emacs23-nox,
+ emacs24-nox,
  ethtool,
  git,
  htop,
