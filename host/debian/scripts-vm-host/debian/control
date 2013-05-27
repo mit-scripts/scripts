@@ -2,7 +2,7 @@ Source: scripts-vm-host
 Section: misc
 Priority: extra
 Maintainer: scripts team <scripts-team@mit.edu>
-Build-Depends: cdbs, debhelper (>= 7.0.50~), config-package-dev, munin-node
+Build-Depends: debhelper (>= 7.0.50~), config-package-dev, munin-node
 Standards-Version: 3.9.4
 Homepage: http://scripts.mit.edu/
 
@@ -13,7 +13,7 @@ Depends: ${misc:Depends},
  build-essential,
  bwm-ng,
  bzip2,
- emacs24-nox,
+ emacs23-nox,
  ethtool,
  git,
  htop,

@@ -1,3 +1,10 @@
+scripts-vm-host (0.7) wheezy; urgency=low
+
+  * emacs24-nox is a lie for now, switch back to emacs23-nox
+  * Switch to dh7
+
+ -- Alexander Chernyakhovsky <achernya@mit.edu>  Sun, 26 May 2013 21:24:31 -0400
+
 scripts-vm-host (0.6) wheezy; urgency=low
 
   * Update configuration for wheezy
