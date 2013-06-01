@@ -82,8 +82,12 @@ purge() {
 }
 
 op=${1:-}
-shift
-case $op in
+
+# We want to go ahead and show the usage message if there are no args, so
+# don't let the shift fail and end the script because of "set -e"
+shift || :
+
+case "$op" in
     list) list;;
     show-rand) show_rand;;
     email) tmpl_email "$@";;
