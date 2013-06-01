@@ -39,23 +39,11 @@ tmpl_email() {
         fs la "/mit/$locker"
         echo
         cat <<-EOF
-The scripts.mit.edu servers currently have a large number of email
-messages destined for the *$locker* account that are not being handled by
-your account and are being queued. Sufficiently large numbers of queued
-messages can cause stability issues for the servers, so we would like
-you to ensure that your account can handle all messages it receives by
-two weeks from now.
+The scripts.mit.edu servers currently have a large number of email messages destined for the *$locker* account that are not being handled by your account and are being queued. Sufficiently large numbers of queued messages can cause stability issues for the servers, so we would like you to ensure that your account can handle all messages it receives by two weeks from now.
 
-You will be able to process the incoming messages if you sign up for the
-mail scripts service (http://scripts.mit.edu/mail/). You're welcome to
-simply forward all incoming mail to another address (the default is to
-forward it to the mit.edu address of the user who signs up); otherwise,
-you can configure mail scripts to process the incoming messages in some
-suitable fashion.
+You will be able to process the incoming messages if you sign up for the mail scripts service (http://scripts.mit.edu/mail/). You're welcome to simply forward all incoming mail to another address (the default is to forward it to the mit.edu address of the user who signs up); otherwise, you can configure mail scripts to process the incoming messages in some suitable fashion.
 
-Frequently, large numbers of queued messages are a sign that some wiki,
-blog, forum, or other site has been spammed. If this is the case, you
-should apply some appropriate spam-blocking mechanism.
+Frequently, large numbers of queued messages are a sign that some wiki, blog, forum, or other site has been spammed. If this is the case, you should apply some appropriate spam-blocking mechanism.
 
 If you have any questions, feel free to contact us.
 
