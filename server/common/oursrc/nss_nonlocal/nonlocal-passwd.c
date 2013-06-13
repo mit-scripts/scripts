@@ -25,18 +25,19 @@
 
 
 #define _GNU_SOURCE
+
 #include <sys/types.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
 #include <dlfcn.h>
-#include <stdio.h>
-#include <syslog.h>
 #include <errno.h>
-#include <pwd.h>
-#include <grp.h>
 #include <nss.h>
+#include <pwd.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+#include <syslog.h>
+#include <unistd.h>
+
 #include "nsswitch-internal.h"
 #include "nonlocal.h"
 
@@ -161,6 +162,7 @@ get_nonlocal_passwd(const char *name, struct passwd *pwd, char **buffer,
 }
 
 
+static bool pwent_initialized = false;
 static service_user *pwent_startp, *pwent_nip;
 static void *pwent_fct_start;
 static union {
@@ -185,9 +187,12 @@ _nss_nonlocal_setpwent(int stayopen)
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    if (pwent_fct_start == NULL)
+    if (!pwent_initialized) {
 	__nss_passwd_nonlocal_lookup(&pwent_startp, pwent_fct_name,
 				     &pwent_fct_start);
+	__sync_synchronize();
+	pwent_initialized = true;
+    }
     pwent_nip = pwent_startp;
     pwent_fct.ptr = pwent_fct_start;
     return NSS_STATUS_SUCCESS;
@@ -199,7 +204,7 @@ _nss_nonlocal_endpwent(void)
     enum nss_status status;
     const struct walk_nss w = {
 	.lookup = &__nss_passwd_nonlocal_lookup, .fct_name = "endpwent",
-	.status = &status
+	.status = &status, .all_values = 1,
     };
     const __typeof__(&_nss_nonlocal_endpwent) self = NULL;
 

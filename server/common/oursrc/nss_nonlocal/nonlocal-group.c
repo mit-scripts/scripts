@@ -24,18 +24,20 @@
  */
 
 #define _GNU_SOURCE
+
 #include <sys/types.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
 #include <dlfcn.h>
-#include <stdio.h>
-#include <syslog.h>
 #include <errno.h>
-#include <pwd.h>
 #include <grp.h>
 #include <nss.h>
+#include <pwd.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+#include <syslog.h>
+#include <unistd.h>
+
 #include "nsswitch-internal.h"
 #include "nonlocal.h"
 
@@ -169,6 +171,7 @@ get_local_group(const char *name, struct group *grp, char **buffer, int *errnop)
     return status;
 }
 
+static bool grent_initialized = false;
 static service_user *grent_startp, *grent_nip;
 static void *grent_fct_start;
 static union {
@@ -193,9 +196,12 @@ _nss_nonlocal_setgrent(int stayopen)
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    if (grent_fct_start == NULL)
+    if (!grent_initialized) {
 	__nss_group_nonlocal_lookup(&grent_startp, grent_fct_name,
 				    &grent_fct_start);
+	__sync_synchronize();
+	grent_initialized = true;
+    }
     grent_nip = grent_startp;
     grent_fct.ptr = grent_fct_start;
     return NSS_STATUS_SUCCESS;
@@ -207,7 +213,7 @@ _nss_nonlocal_endgrent(void)
     enum nss_status status;
     const struct walk_nss w = {
 	.lookup = &__nss_group_nonlocal_lookup, .fct_name = "endgrent",
-	.status = &status
+	.status = &status, .all_values = 1,
     };
     const __typeof__(&_nss_nonlocal_endgrent) self = NULL;
 
@@ -355,7 +361,7 @@ _nss_nonlocal_initgroups_dyn(const char *user, gid_t group, long int *start,
     enum nss_status status;
     const struct walk_nss w = {
 	.lookup = &__nss_group_nonlocal_lookup, .fct_name = "initgroups_dyn",
-	.status = &status, .errnop = errnop
+	.status = &status, .all_values = 1, .errnop = errnop
     };
     const __typeof__(&_nss_nonlocal_initgroups_dyn) self = NULL;
 
@@ -444,7 +450,9 @@ _nss_nonlocal_initgroups_dyn(const char *user, gid_t group, long int *start,
 #define args (user, group, start, size, groupsp, limit, errnop)
 #include "walk_nss.h"
 #undef args
-    if (status != NSS_STATUS_SUCCESS)
+    if (status == NSS_STATUS_NOTFOUND || status == NSS_STATUS_UNAVAIL)
+	return NSS_STATUS_SUCCESS;
+    else if (status != NSS_STATUS_SUCCESS)
         return status;
 
     for (; in < *start; ++in) {

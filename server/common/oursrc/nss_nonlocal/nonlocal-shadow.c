@@ -23,17 +23,17 @@
  */
 
 #define _GNU_SOURCE
+
 #include <sys/types.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
 #include <dlfcn.h>
-#include <stdio.h>
-#include <syslog.h>
 #include <errno.h>
-#include <shadow.h>
 #include <nss.h>
+#include <shadow.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+#include <syslog.h>
 
 #include "nsswitch-internal.h"
 #include "nonlocal.h"
@@ -58,6 +58,7 @@ __nss_shadow_nonlocal_lookup(service_user **ni, const char *fct_name,
 }
 
 
+static bool spent_initialized = false;
 static service_user *spent_startp, *spent_nip;
 static void *spent_fct_start;
 static union {
@@ -82,9 +83,12 @@ _nss_nonlocal_setspent(int stayopen)
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    if (spent_fct_start == NULL)
+    if (!spent_initialized) {
 	__nss_shadow_nonlocal_lookup(&spent_startp, spent_fct_name,
 				     &spent_fct_start);
+	__sync_synchronize();
+	spent_initialized = true;
+    }
     spent_nip = spent_startp;
     spent_fct.ptr = spent_fct_start;
     return NSS_STATUS_SUCCESS;
@@ -113,6 +117,11 @@ _nss_nonlocal_getspent_r(struct spwd *pwd, char *buffer, size_t buflen,
 			 int *errnop)
 {
     enum nss_status status;
+
+    char *nonlocal_ignore = getenv(NONLOCAL_IGNORE_ENV);
+    if (nonlocal_ignore != NULL && nonlocal_ignore[0] != '\0')
+	return NSS_STATUS_UNAVAIL;
+
     if (spent_nip == NULL) {
 	status = _nss_nonlocal_setspent(0);
 	if (status != NSS_STATUS_SUCCESS)
