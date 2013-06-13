@@ -1,70 +1,11 @@
---- httpd.spec.orig	2013-05-29 00:46:07.522169507 -0400
-+++ httpd.spec	2013-05-29 00:46:37.905169507 -0400
+--- httpd.spec.orig	2013-06-09 23:29:34.233169507 -0400
++++ httpd.spec	2013-06-09 23:28:41.956169507 -0400
 @@ -14,7 +14,7 @@
  Summary: Apache HTTP Server
  Name: httpd
  Version: 2.4.4
--Release: 4%{?dist}
-+Release: 4%{?dist}.scripts.%{scriptsversion}
+-Release: 6%{?dist}
++Release: 6%{?dist}.scripts.%{scriptsversion}
  URL: http://httpd.apache.org/
  Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
  Source1: index.html
-@@ -79,6 +79,12 @@
- Requires(postun): systemd-units
- Requires(post): systemd-units
- 
-+Provides: scripts-httpd = %{version}-%{release}
-+Patch1001: httpd-suexec-scripts.patch
-+Patch1002: httpd-mod_status-security.patch
-+Patch1003: httpd-304s.patch
-+Patch1004: httpd-fixup-vhost.patch
-+
- %description
- The Apache HTTP Server is a powerful, efficient, and extensible
- web server.
-@@ -89,6 +95,7 @@
- Obsoletes: secureweb-devel, apache-devel, stronghold-apache-devel
- Requires: apr-devel, apr-util-devel, pkgconfig
- Requires: httpd = %{version}-%{release}
-+Provides: scripts-httpd-devel = %{version}-%{release}
- 
- %description devel
- The httpd-devel package contains the APXS binary and other files
-@@ -127,6 +134,7 @@
- Requires(post): openssl, /bin/cat
- Requires(pre): httpd
- Requires: httpd = 0:%{version}-%{release}, httpd-mmn = %{mmnisa}
-+Provides: scripts-mod_ssl
- Obsoletes: stronghold-mod_ssl
- 
- %description -n mod_ssl
-@@ -189,6 +197,11 @@
- # Prevent use of setcap in "install-suexec-caps" target.
- sed -i '/suexec/s,setcap ,echo Skipping setcap for ,' Makefile.in
- 
-+%patch1001 -p1 -b .suexec-scripts
-+%patch1002 -p1 -b .mod_status-security
-+%patch1003 -p1 -b .scripts-304s
-+%patch1004 -p1 -b .fixup-vhost
-+
- # Safety check: prevent build if defined MMN does not equal upstream MMN.
- vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
- if test "x${vmmn}" != "x%{mmn}"; then
-@@ -235,11 +248,13 @@
- 	--enable-suexec --with-suexec \
-         --enable-suexec-capabilities \
- 	--with-suexec-caller=%{suexec_caller} \
--	--with-suexec-docroot=%{docroot} \
--	--without-suexec-logfile \
--        --with-suexec-syslog \
-+	--with-suexec-docroot=/ \
-+	--with-suexec-userdir=web_scripts \
-+	--with-suexec-trusteddir=/usr/libexec/scripts-trusted \
-+	--with-suexec-logfile=%{_localstatedir}/log/httpd/suexec.log \
-+        --without-suexec-syslog \
- 	--with-suexec-bin=%{_sbindir}/suexec \
--	--with-suexec-uidmin=500 --with-suexec-gidmin=100 \
-+	--with-suexec-uidmin=50 --with-suexec-gidmin=50 \
-         --enable-pie \
-         --with-pcre \
-         --enable-mods-shared=all \

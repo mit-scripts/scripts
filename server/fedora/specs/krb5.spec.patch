@@ -1,36 +1,36 @@
---- krb5.spec.orig	2013-04-26 20:11:39.831850109 -0400
-+++ krb5.spec	2013-04-26 20:12:32.475790490 -0400
-@@ -20,7 +20,7 @@
+--- krb5.spec.orig	2013-06-09 23:11:12.810169507 -0400
++++ krb5.spec	2013-06-09 23:16:13.634169507 -0400
+@@ -30,7 +30,7 @@
  Summary: The Kerberos network authentication system
  Name: krb5
- Version: 1.10.2
--Release: 11%{?dist}
-+Release: 11%{?dist}.scripts.%{scriptsversion}
+ Version: 1.11.3
+-Release: 1%{?dist}
++Release: 1%{?dist}.scripts.%{scriptsversion} 
  # Maybe we should explode from the now-available-to-everybody tarball instead?
- # http://web.mit.edu/kerberos/dist/krb5/1.10/krb5-1.10.2-signed.tar
+ # http://web.mit.edu/kerberos/dist/krb5/1.11/krb5-1.11.3-signed.tar
  Source0: krb5-%{version}.tar.gz
-@@ -76,6 +76,8 @@
- Patch112: krb5-1.10-CVE-2013-1416.patch
- Patch113: krb5-fast-msg_type.patch
+@@ -89,6 +89,8 @@
+ Patch201: krb5-1.11.2-keycheck.patch
+ Patch202: krb5-1.11.2-otp.patch
  
 +Patch1000: krb5-kuserok-scripts.patch
 +
  License: MIT
  URL: http://web.mit.edu/kerberos/www/
  Group: System Environment/Libraries
-@@ -133,6 +135,7 @@
+@@ -175,6 +177,7 @@
  %package libs
  Summary: The shared libraries used by Kerberos 5
  Group: System Environment/Libraries
 +Provides: scripts-krb5-libs, scripts-krb5-libs%{?_isa}
+ %if 0%{?rhel} == 6
+ # Some of the older libsmbclient builds here incorrectly called
+ # krb5_locate_kdc(), which was mistakenly exported in 1.9.
+@@ -313,6 +316,7 @@
  
- %description libs
- Kerberos is a network authentication system. The krb5-libs package
-@@ -259,6 +262,7 @@
- %patch111 -p1 -b .pkinit-agility
- %patch112 -p1 -b .CVE-2013-1416
- %patch113 -p1 -b .fast-msg_type
-+%patch1000 -p1 -b .kuserok
- rm src/lib/krb5/krb/deltat.c
+ %patch201 -p1 -b .keycheck
+ %patch202 -p1 -b .otp
++%patch1000 -p1 -b .kuserok  
  
- gzip doc/*.ps
+ # Take the execute bit off of documentation.
+ chmod -x doc/krb5-protocol/*.txt
