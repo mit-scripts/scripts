@@ -49,6 +49,7 @@ typedef bool _Bool;
 
 struct walk_nss {
     enum nss_status *status;
+    int all_values;
     int (*lookup)(service_user **ni, const char *fct_name,
 		  void **fctp) internal_function;
     const char *fct_name;

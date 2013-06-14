@@ -1,0 +1,1 @@
+/etc/munin/munin-node.conf.scripts debian/transform_munin-node.conf.scripts

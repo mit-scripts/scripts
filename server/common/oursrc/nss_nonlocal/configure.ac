@@ -1,4 +1,4 @@
-AC_INIT([nss_nonlocal], [2.0], [andersk@mit.edu])
+AC_INIT([nss_nonlocal], [2.1], [andersk@mit.edu])
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
@@ -6,7 +6,7 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 AC_PREFIX_DEFAULT([/])
 AC_DISABLE_STATIC
 AC_PROG_CC
-AC_PROG_INSTALL
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_PROG_LIBTOOL
 
 AC_HEADER_STDBOOL

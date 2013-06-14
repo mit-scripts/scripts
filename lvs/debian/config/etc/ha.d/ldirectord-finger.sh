@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ulimit -v 10240
+ulimit -v 102400
 
 read line
 line=${line%[:blank:]}

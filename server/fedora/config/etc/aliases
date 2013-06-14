@@ -88,7 +88,7 @@ hostmaster:	root
 decode:		root
 
 # Person who should get root's mail
-root:		andersk@mit.edu, quentin@mit.edu, geofft+root@mit.edu, mitchb@mit.edu, ezyang@mit.edu, xavid@mit.edu, adehnert-sipb@mit.edu, achernya@mit.edu, glasgall@mit.edu
+root:		andersk@mit.edu, quentin@mit.edu, geofft+root@mit.edu, mitchb@mit.edu, ezyang@mit.edu, xavid@mit.edu, adehnert-sipb@mit.edu, achernya@mit.edu, glasgall@mit.edu, tboning@mit.edu
 
 scripts:	root
 signup:		root
@@ -104,6 +104,8 @@ srimano:	/dev/null
 dbriggs:	/dev/null
 # ro21531: spam to rosmosis.net: added 2011-06-25, see mail to -root 2011-06-03
 ro21531:	/dev/null
+# buechley: not responsive to mail sent by -root on 2013-05-14, added 2013-07-04
+buechley:   	 /dev/null
 
 # Temporary to clear the queue
 # Should be deleted if left uncommitted

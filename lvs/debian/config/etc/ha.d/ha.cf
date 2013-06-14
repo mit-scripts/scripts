@@ -9,4 +9,5 @@ warntime 3
 
 node        rack-forward
 node        rack-backward
+node	    stanley-kubrick
 crm respawn
