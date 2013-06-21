@@ -1,4 +1,4 @@
-From 0c2aac95f8df4e7c243ea00d54d4050e32f7868b Mon Sep 17 00:00:00 2001
+From 6fc43320aab74560a5aad10f6602309f9de9b762 Mon Sep 17 00:00:00 2001
 From: Alexander Chernyakhovsky <achernya@mit.edu>
 Date: Fri, 3 May 2013 21:39:17 -0400
 Subject: [PATCH 2/4] Prevent mod_status from taking effect in .htaccess files
@@ -10,44 +10,20 @@ prevent users from enabling mod_status from their .htaccess files.
 Signed-off-by: Quentin Smith <quentin@mit.edu>
 Signed-off-by: Geoffrey Thomas <geofft@mit.edu>
 ---
- modules/generators/mod_status.c |   60 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 57 insertions(+), 3 deletions(-)
+ modules/generators/mod_status.c |   33 +++++++++++++++++++++++++++++----
+ 1 file changed, 29 insertions(+), 4 deletions(-)
 
 diff --git a/modules/generators/mod_status.c b/modules/generators/mod_status.c
-index 0237f1d..c7fd0e0 100644
+index 0237f1d..5a9ea7b 100644
 --- a/modules/generators/mod_status.c
 +++ b/modules/generators/mod_status.c
-@@ -103,6 +103,56 @@ APR_IMPLEMENT_OPTIONAL_HOOK_RUN_ALL(ap, STATUS, int, status_hook,
+@@ -103,6 +103,27 @@ APR_IMPLEMENT_OPTIONAL_HOOK_RUN_ALL(ap, STATUS, int, status_hook,
  static pid_t child_pid;
  #endif
  
 +typedef struct {
 +  int permit_status_handler;
 +} status_config_rec;
-+
-+/*
-+ * command-related code. This is here to prevent use of ExtendedStatus
-+ * without status_module included.
-+ */
-+static const char *set_extended_status(cmd_parms *cmd, void *dummy, int arg)
-+{
-+    const char *err = ap_check_cmd_context(cmd, GLOBAL_ONLY);
-+    if (err != NULL) {
-+        return err;
-+    }
-+    ap_extended_status = arg;
-+    return NULL;
-+}
-+
-+static const char *set_reqtail(cmd_parms *cmd, void *dummy, int arg)
-+{
-+    const char *err = ap_check_cmd_context(cmd, GLOBAL_ONLY);
-+    if (err != NULL) {
-+        return err;
-+    }
-+    ap_mod_status_reqtail = arg;
-+    return NULL;
-+}
 +
 +static void *create_status_dir_config(apr_pool_t *p, char *d)
 +{
@@ -58,11 +34,6 @@ index 0237f1d..c7fd0e0 100644
 +
 +static const command_rec status_module_cmds[] =
 +{
-+    AP_INIT_FLAG("ExtendedStatus", set_extended_status, NULL, RSRC_CONF,
-+      "\"On\" to enable extended status information, \"Off\" to disable"),
-+    AP_INIT_FLAG("SeeRequestTail", set_reqtail, NULL, RSRC_CONF,
-+      "For verbose requests, \"On\" to see the last 63 chars of the request, "
-+      "\"Off\" (default) to see the first 63 in extended status display"),
 +    AP_INIT_FLAG("PermitStatusHandler", ap_set_flag_slot,
 +		 (void *)APR_OFFSETOF(status_config_rec, permit_status_handler),
 +		 ACCESS_CONF,
@@ -74,7 +45,7 @@ index 0237f1d..c7fd0e0 100644
  /* Format the number of bytes nicely */
  static void format_byte_out(request_rec *r, apr_off_t bytes)
  {
-@@ -207,8 +257,12 @@ static int status_handler(request_rec *r)
+@@ -207,8 +228,12 @@ static int status_handler(request_rec *r)
      int times_per_thread;
  #endif
  
@@ -89,7 +60,7 @@ index 0237f1d..c7fd0e0 100644
          return DECLINED;
      }
  
-@@ -974,7 +1028,7 @@ static void register_hooks(apr_pool_t *p)
+@@ -974,11 +999,11 @@ static void register_hooks(apr_pool_t *p)
  AP_DECLARE_MODULE(status) =
  {
      STANDARD20_MODULE_STUFF,
@@ -98,6 +69,11 @@ index 0237f1d..c7fd0e0 100644
      NULL,                       /* dir merger --- default is to override */
      NULL,                       /* server config */
      NULL,                       /* merge server config */
+-    NULL,                       /* command table */
++    status_module_cmds,         /* command table */
+     register_hooks              /* register_hooks */
+ };
+ 
 -- 
 1.7.9.6 (Apple Git-31.1)
 

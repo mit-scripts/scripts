@@ -1,4 +1,4 @@
-From 1ee367569729f9cf153cd1df87e15e05e00d7645 Mon Sep 17 00:00:00 2001
+From 8211f350ce390b8b426b817e0fb7892c91c12c63 Mon Sep 17 00:00:00 2001
 From: Alexander Chernyakhovsky <achernya@mit.edu>
 Date: Fri, 3 May 2013 21:40:07 -0400
 Subject: [PATCH 3/4] Fix "the-bug" (non-empty content in 304s)

@@ -1,4 +1,4 @@
-From 2e62dad3d91280032b2130f02553c968d306edf5 Mon Sep 17 00:00:00 2001
+From 373eb8f72153417173d8ecdf11223fba0a740c19 Mon Sep 17 00:00:00 2001
 From: Alexander Chernyakhovsky <achernya@mit.edu>
 Date: Fri, 3 May 2013 22:43:28 -0400
 Subject: [PATCH 4/4] Export method to fixup a single virtual host
@@ -36,7 +36,7 @@ index 7ee3760..e3657ea 100644
  /**
   * Reserve some modules slots for modules loaded by other means than
 diff --git a/server/config.c b/server/config.c
-index bc0804a..488954d 100644
+index bc0804a..22a131e 100644
 --- a/server/config.c
 +++ b/server/config.c
 @@ -2246,46 +2246,52 @@ AP_DECLARE(void) ap_merge_log_config(const struct ap_logconf *old_conf,
