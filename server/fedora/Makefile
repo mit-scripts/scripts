@@ -39,7 +39,7 @@ out_sbin	= $(topdir)/sbin
 dload		= ${PWD}/.dload
 server_url	= "http://web.mit.edu/scripts/src"
 server_arch	= "fedora.stable"
-openafs_url	= "http://www.openafs.org/dl/openafs/1.6.4/openafs-1.6.4-1.src.rpm"
+openafs_url	= "http://www.openafs.org/dl/openafs/1.6.5/openafs-1.6.5-1.src.rpm"
 zephyr_url	= "http://zephyr.1ts.org/files/zephyr-3.0.2.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
