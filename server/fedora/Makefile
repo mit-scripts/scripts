@@ -37,9 +37,7 @@ out_srpms	= $(topdir)/SRPMS
 out_sbin	= $(topdir)/sbin
 
 dload		= ${PWD}/.dload
-server_url	= "http://web.mit.edu/scripts/src"
-server_arch	= "fedora.stable"
-openafs_url	= "http://www.openafs.org/dl/openafs/1.6.5/openafs-1.6.5-1.src.rpm"
+openafs_url	= "https://www.openafs.org/dl/openafs/1.6.5/openafs-1.6.5-1.src.rpm"
 zephyr_url	= "http://zephyr.1ts.org/files/zephyr-3.0.2.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
@@ -66,11 +64,10 @@ mkdir-tree:
 download: download_stamp
 download_stamp:
 	mkdir -p $(dload)
-	#wget -qO- -nv $(server_url)/$(server_arch) | xargs make
 	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
 	wget -P $(dload) $(openafs_url)
 	wget -P $(dload) $(zephyr_url)
-	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
+	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 	cabal update
 	cabal fetch --no-dependencies $(hackage)
 	cp -a $(hackage:%=~/.cabal/packages/*/*/*/%.tar.gz) $(tmp_src)
@@ -78,11 +75,9 @@ download_stamp:
 	spectool -g -R $(specs)/python-afs.spec
 	touch download_stamp
 
-	cd $(tmp_src) && wget -nd -r -l1 -np -A.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-aclocal/
-	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz http://debathena.mit.edu/apt/pool/debathena/d/debathena-discuss/
+	cd $(tmp_src) && wget -nd -r -l1 -np -A.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-aclocal/
+	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-discuss/
 	cp $(oursrcdir)/discuss/* $(tmp_src)
-%.src.rpm:
-	wget -q -nv -N -B $(server_url) -nd -nH -P $(dload) $(server_url)/$*.src.rpm
 
 copy-patches: mkdir-tree
 	cp $(patches)/*.patch $(tmp_src)
@@ -188,10 +183,6 @@ frob-openafs:
 	else \
 	ln -nfs /etc/openafs/* /usr/vice/etc/; \
 	fi
-
-# XXX: We need to figure out what's going on with compat-readline43
-#	rpm -ivh http://kojipkgs.fedoraproject.org/packages/compat-readline43/4.3/3/i386/compat-readline43-4.3-3.i386.rpm
-#	rpm -ivh http://download.fedora.redhat.com/pub/fedora/linux/core/6/i386/os/Fedora/RPMS/compat-readline43-4.3-3.i386.rpm
 
 fedora:
 	make upstream
