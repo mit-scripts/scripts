@@ -1,5 +1,5 @@
---- openssh.spec.orig	2012-06-18 18:16:43.764813595 -0400
-+++ openssh.spec	2012-06-18 18:24:40.478720527 -0400
+--- openssh.spec.orig	2013-07-15 21:14:52.452894092 -0400
++++ openssh.spec	2013-07-15 21:18:59.494168115 -0400
 @@ -74,7 +74,7 @@
  Summary: An open source implementation of SSH protocol versions 1 and 2
  Name: openssh
@@ -9,15 +9,18 @@
  URL: http://www.openssh.com/portable.html
  #URL1: http://pamsshagentauth.sourceforge.net
  #Source0: ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz
-@@ -221,6 +221,7 @@
- #https://bugzilla.mindrot.org/show_bug.cgi?id=1604
- # sctp
- #https://bugzilla.mindrot.org/show_bug.cgi?id=1873 => https://bugzilla.redhat.com/show_bug.cgi?id=668993
+@@ -220,7 +220,9 @@
+ Patch904: openssh-5.9p1-change-max-startups.patch
+ # make sftp's libedit interface marginally multibyte aware (#841771)
+ Patch908: openssh-5.9p1-sftp-multibyte.patch
+-
++# sctp
++#https://bugzilla.mindrot.org/show_bug.cgi?id=1873 => https://bugzilla.redhat.com/show_bug.cgi?id=668993 
 +Patch1001: openssh-4.7p1-gssapi-name-in-env.patch
  
  License: BSD
  Group: Applications/Internet
-@@ -271,6 +272,7 @@
+@@ -271,6 +273,7 @@
  Group: Applications/Internet
  Requires: openssh = %{version}-%{release}
  Requires: fipscheck-lib%{_isa} >= 1.3.0
@@ -25,7 +28,7 @@
  
  %package server
  Summary: An open source SSH server daemon
-@@ -458,10 +460,12 @@
+@@ -458,10 +461,12 @@
  %patch714 -p0 -b .null-xcrypt
  
  %patch800 -p1 -b .gsskex
@@ -39,8 +42,8 @@
 +# %patch901 -p1 -b .kuserok
  %patch902 -p1 -b .man-moduli
  %patch903 -p1 -b .ipqos
- 
-@@ -469,6 +473,8 @@
+ %patch904 -p1 -b .max-startups
+@@ -471,6 +476,8 @@
  # Nothing here yet
  %endif
  
