@@ -31,3 +31,4 @@
 /usr/bin/pkexec:install:chmod ug-s /usr/bin/pkexec
 /usr/sbin/mount.nfs:install:chmod ug-s /usr/sbin/mount.nfs
 /usr/sbin/netreport:install:chmod ug-s /usr/sbin/netreport
+/usr/bin/ssh-agent:install:chmod ug-s /usr/bin/ssh-agent
