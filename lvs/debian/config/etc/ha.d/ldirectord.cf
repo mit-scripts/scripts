@@ -18,12 +18,17 @@ virtual=3
 	#real=18.181.0.141:25 gate 4096 # golden-egg
 	real=18.181.0.203:25 gate 4096 # miracle-cure
 	real=18.181.0.204:25 gate 4096 # lucky-star
-        service=smtp
+	service=http
+	request="heartbeat/smtp"
+	virtualhost="scripts.mit.edu"
+	receive="1"
+	checktype=negotiate
+	checkport=80
         scheduler=wlc
         persistent=600
         protocol=fwm
         checktype=negotiate
-	checkport=25
+	checkport=80
 
 # Apache (80, 443, and 444) uses FWM 2
 virtual=2
