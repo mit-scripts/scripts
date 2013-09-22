@@ -1,7 +1,7 @@
-From 6fc43320aab74560a5aad10f6602309f9de9b762 Mon Sep 17 00:00:00 2001
+From c9e5769ec7163cadd44a1b1a75a12a75a5a1db58 Mon Sep 17 00:00:00 2001
 From: Alexander Chernyakhovsky <achernya@mit.edu>
 Date: Fri, 3 May 2013 21:39:17 -0400
-Subject: [PATCH 2/4] Prevent mod_status from taking effect in .htaccess files
+Subject: [PATCH] Prevent mod_status from taking effect in .htaccess files
 
 Introduce a directive to the Apache configuration that is only
 permitted in a directory context, called "PermitStatusHandler", to
@@ -10,11 +10,11 @@ prevent users from enabling mod_status from their .htaccess files.
 Signed-off-by: Quentin Smith <quentin@mit.edu>
 Signed-off-by: Geoffrey Thomas <geofft@mit.edu>
 ---
- modules/generators/mod_status.c |   33 +++++++++++++++++++++++++++++----
+ modules/generators/mod_status.c | 33 +++++++++++++++++++++++++++++----
  1 file changed, 29 insertions(+), 4 deletions(-)
 
 diff --git a/modules/generators/mod_status.c b/modules/generators/mod_status.c
-index 0237f1d..5a9ea7b 100644
+index fe832b3..92a6f69 100644
 --- a/modules/generators/mod_status.c
 +++ b/modules/generators/mod_status.c
 @@ -103,6 +103,27 @@ APR_IMPLEMENT_OPTIONAL_HOOK_RUN_ALL(ap, STATUS, int, status_hook,
@@ -60,7 +60,7 @@ index 0237f1d..5a9ea7b 100644
          return DECLINED;
      }
  
-@@ -974,11 +999,11 @@ static void register_hooks(apr_pool_t *p)
+@@ -948,10 +973,10 @@ static void register_hooks(apr_pool_t *p)
  AP_DECLARE_MODULE(status) =
  {
      STANDARD20_MODULE_STUFF,
@@ -73,7 +73,6 @@ index 0237f1d..5a9ea7b 100644
 +    status_module_cmds,         /* command table */
      register_hooks              /* register_hooks */
  };
- 
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.8.1.2
 

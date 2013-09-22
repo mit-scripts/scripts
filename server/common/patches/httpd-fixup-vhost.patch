@@ -1,7 +1,7 @@
-From 373eb8f72153417173d8ecdf11223fba0a740c19 Mon Sep 17 00:00:00 2001
+From e90c8e59a93e5dde747e6dec7b960d2a6f2523ab Mon Sep 17 00:00:00 2001
 From: Alexander Chernyakhovsky <achernya@mit.edu>
 Date: Fri, 3 May 2013 22:43:28 -0400
-Subject: [PATCH 4/4] Export method to fixup a single virtual host
+Subject: [PATCH] Export method to fixup a single virtual host
 
 Apache normally provides ap_fixup_virtual_hosts, which merges the
 configuration from the main server into each virtual host.  Refactor
@@ -11,8 +11,8 @@ host, and export this method for use in mod_vhost_ldap.
 Additionally, call the newly created method in the loop in
 ap_fixup_virtual_hosts.
 ---
- include/http_config.h |    9 ++++++++
- server/config.c       |   58 +++++++++++++++++++++++++++----------------------
+ include/http_config.h |  9 ++++++++
+ server/config.c       | 58 ++++++++++++++++++++++++++++-----------------------
  2 files changed, 41 insertions(+), 26 deletions(-)
 
 diff --git a/include/http_config.h b/include/http_config.h
@@ -36,10 +36,10 @@ index 7ee3760..e3657ea 100644
  /**
   * Reserve some modules slots for modules loaded by other means than
 diff --git a/server/config.c b/server/config.c
-index bc0804a..22a131e 100644
+index c1aae17..254c5d2 100644
 --- a/server/config.c
 +++ b/server/config.c
-@@ -2246,46 +2246,52 @@ AP_DECLARE(void) ap_merge_log_config(const struct ap_logconf *old_conf,
+@@ -2245,46 +2245,52 @@ AP_DECLARE(void) ap_merge_log_config(const struct ap_logconf *old_conf,
      }
  }
  
@@ -119,5 +119,5 @@ index bc0804a..22a131e 100644
      ap_core_reorder_directories(p, main_server);
  }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.8.1.2
 

@@ -1,7 +1,7 @@
-From 8211f350ce390b8b426b817e0fb7892c91c12c63 Mon Sep 17 00:00:00 2001
+From f4d66a13e385c6fa2026e2da1119ad080928c1f5 Mon Sep 17 00:00:00 2001
 From: Alexander Chernyakhovsky <achernya@mit.edu>
 Date: Fri, 3 May 2013 21:40:07 -0400
-Subject: [PATCH 3/4] Fix "the-bug" (non-empty content in 304s)
+Subject: [PATCH] Fix "the-bug" (non-empty content in 304s)
 
 PHP should not produce any output, even if zlib.output_compression is
 on, if the HTTP response code is 204 or 304 (no content or not modified).
@@ -20,11 +20,11 @@ Solves scripts.mit.edu support issue #773060, see:
 https://help.mit.edu/Ticket/UpdateCallCenter.html?id=773060
 https://diswww.mit.edu/charon/scripts/24018
 ---
- server/util_script.c |    5 +++++
+ server/util_script.c | 5 +++++
  1 file changed, 5 insertions(+)
 
 diff --git a/server/util_script.c b/server/util_script.c
-index 5708c08..187e30f 100644
+index 12a056f..dd83337 100644
 --- a/server/util_script.c
 +++ b/server/util_script.c
 @@ -503,6 +503,11 @@ AP_DECLARE(int) ap_scan_script_header_err_core_ex(request_rec *r, char *buffer,
@@ -40,5 +40,5 @@ index 5708c08..187e30f 100644
                  APR_OVERLAP_TABLES_MERGE);
              if (!apr_is_empty_table(cookie_table)) {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.8.1.2
 
