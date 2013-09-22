@@ -89,6 +89,8 @@ decode:		root
 
 # Person who should get root's mail
 root:		andersk@mit.edu, quentin@mit.edu, geofft+root@mit.edu, mitchb@mit.edu, ezyang@mit.edu, xavid@mit.edu, adehnert-sipb@mit.edu, achernya@mit.edu, glasgall@mit.edu, tboning@mit.edu
+scripts-reserved-mail-test-foo: anders+scripts-reserved-mail-test-foo@kaseorg.com
+scripts-reserved-mail-test-bar: anders+scripts-reserved-mail-test-bar@kaseorg.com
 
 scripts:	root
 signup:		root
