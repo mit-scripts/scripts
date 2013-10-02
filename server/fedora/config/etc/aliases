@@ -109,4 +109,3 @@ buechley:   	 /dev/null
 
 # Temporary to clear the queue
 # Should be deleted if left uncommitted
-asa:	    	/dev/null
