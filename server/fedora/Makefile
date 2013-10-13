@@ -21,7 +21,7 @@
 upstream_yum	= krb5 krb5.i686 httpd openssh rubygems
 hackage		= cgi-3001.1.8.2 unix-handle-0.0.0
 upstream_hackage = ghc-cgi ghc-unix-handle
-upstream	= openafs $(upstream_yum) $(upstream_hackage) moira zephyr zephyr.i686 python-zephyr python-afs python-moira athena-aclocal discuss
+upstream	= openafs $(upstream_yum) $(upstream_hackage) moira zephyr zephyr.i686 python-zephyr python-afs python-moira python-hesiod athena-aclocal discuss
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat fuse-better-mousetrapfs scripts-munin-plugins
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
@@ -74,6 +74,7 @@ download_stamp:
 	spectool -g -R $(specs)/python-zephyr.spec
 	spectool -g -R $(specs)/python-afs.spec
 	spectool -g -R $(specs)/python-moira.spec
+	spectool -g -R $(specs)/python-hesiod.spec
 	touch download_stamp
 
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-aclocal/
