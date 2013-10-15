@@ -2,7 +2,7 @@ Name:           python-zephyr
 Version:        0.2.0
 %define commit dc5ba9ee52d53e7bfd9d95a885e25c3a1889b8a7
 %define shortcommit %(c=%{commit}; echo ${c:0:7})
-Release:        0.20131014.%{scriptsversion}%{?dist}
+Release:        1.20131014.%{scriptsversion}%{?dist}
 Summary:        Python access to zephyr library
 
 Group:          Development/Languages
