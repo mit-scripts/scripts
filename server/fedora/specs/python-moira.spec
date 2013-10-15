@@ -1,14 +1,14 @@
 Name:           python-moira
 Version:        4.3.0
-%define commit_hash dd03ce70d348d6f569729fcc9173429a5ec8a84d
-%define tag_hash f62c0db
+%define commit dd03ce70d348d6f569729fcc9173429a5ec8a84d
+%define shortcommit %(c=%{commit}; echo ${c:0:7})
 Release:        0.%{scriptsversion}%{?dist}
 Summary:        Python access to zephyr library
 
 Group:          Development/Languages
 License:        MIT
-URL:            http://github.com/ebroder/python-moira
-Source0:        http://github.com/ebroder/python-moira/tarball/%{version}/ebroder-%{name}-%{version}-0-g%{commit_hash}.tar.gz
+URL:            https://github.com/ebroder/python-moira
+Source0:        https://github.com/ebroder/python-moira/archive/%{commit}/%{name}-%{version}-%{shortcommit}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  python2-devel, python-setuptools, Pyrex, libmoira-devel, libmrclient-devel
@@ -18,7 +18,7 @@ Moira bindings for Python.
 
 
 %prep
-%setup -q -n ebroder-%{name}-%{tag_hash}
+%setup -q -n %{name}-%{commit}
 
 
 %build
