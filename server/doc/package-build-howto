@@ -46,7 +46,10 @@ Directions
     # you're building several packages in succession, copy the results
     # somewhere safe after each build to preserve them)
     # Add the packages to the repository by using a trusted machine and
-    krootscp root@[BUILD-SERVER]:/var/lib/mock/fedora-[RELEASE]-{x86_64|i386}/result /mit/scripts/rpm-fc[RELEASE]
+    krootscp root@[BUILD-SERVER]:/var/lib/mock/fedora-[RELEASE]-{x86_64|i386}/result /mit/scripts/yum-repos/rpm-fc[RELEASE]
+
+    # There has been some historic discussion about whether SRPMs should be
+    # added to the repository. At this point, the standard is to include them.
 
   * # Rebuild the repo metadata to include the new packages.
     cd /mit/scripts/yum-repos/rpm-fc[RELEASE]
@@ -56,7 +59,7 @@ Directions
     mkdir /root/repodata-YYYYMMDD # Or any suitable temp directory
     createrepo -d -o /root/repodata-YYYYMMDD .
     # Then from your trusted machine
-    krootscp -r root@[BUILD-SERVER]:/root/repodata-YYYYMMDD /mit/scripts/rpm-fc[RELEASE]
+    krootscp -r root@[BUILD-SERVER]:/root/repodata-YYYYMMDD /mit/scripts/yum-repos/rpm-fc[RELEASE]
     # Sanity check the files, and then replace the current repodata directory
     # with the one in repodata-YYYYMMDD.
 
