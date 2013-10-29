@@ -338,7 +338,7 @@ python host.py push $server
     \cp -a etc /usr/vice
 # [TESTSERVER] If you're installing a test server, this needs to be
 # much smaller; the max filesize on XVM is 10GB.  Pick something like
-# 500000. Also, some of the AFS parameters are kind of retarded (and if
+# 500000. Also, some of the AFS parameters are kind of silly (and if
 # you're low on disk space, will actually exhaust our inodes).  Edit
 # these parameters in /etc/sysconfig/openafs (I just chopped a zero
 # off of all of our parameters)
