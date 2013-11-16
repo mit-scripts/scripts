@@ -7,4 +7,3 @@
 /usr/libexec/pt_chown:install:setcap -r /usr/libexec/pt_chown
 /usr/sbin/arping:install:setcap -r /usr/sbin/arping
 /usr/sbin/clockdiff:install:setcap -r /usr/sbin/clockdiff
-
