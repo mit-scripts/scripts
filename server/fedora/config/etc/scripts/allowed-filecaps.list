@@ -2,3 +2,4 @@
 /usr/bin/ping6
 /usr/sbin/fping
 /usr/sbin/fping6
+/usr/bin/systemd-detect-virt

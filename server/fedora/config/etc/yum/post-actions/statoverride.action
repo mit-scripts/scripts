@@ -32,3 +32,9 @@
 /usr/sbin/mount.nfs:install:chmod ug-s /usr/sbin/mount.nfs
 /usr/sbin/netreport:install:chmod ug-s /usr/sbin/netreport
 /usr/bin/ssh-agent:install:chmod ug-s /usr/bin/ssh-agent
+/usr/bin/uustat:install:chmod ug-s /usr/bin/uustat
+/usr/bin/uucp:install:chmod ug-s /usr/bin/uucp
+/usr/bin/uux:install:chmod ug-s /usr/bin/uux
+/usr/bin/cu:install:chmod ug-s /usr/bin/cu
+/usr/bin/uucico:install:chmod ug-s /usr/bin/uucico
+/usr/libexec/qemu-bridge-helper:install:chmod ug-s /usr/libexec/qemu-bridge-helper
