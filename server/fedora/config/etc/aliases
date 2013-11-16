@@ -88,7 +88,7 @@ hostmaster:	root
 decode:		root
 
 # Person who should get root's mail
-root:		andersk@mit.edu, quentin@mit.edu, geofft+root@mit.edu, mitchb@mit.edu, ezyang@mit.edu, xavid@mit.edu, adehnert-sipb@mit.edu, achernya@mit.edu, glasgall@mit.edu, tboning@mit.edu
+root:		andersk@mit.edu, quentin@mit.edu, geofft+root@mit.edu, mitchb@mit.edu, ezyang@mit.edu, xavid@mit.edu, adehnert-sipb@mit.edu, achernya@mit.edu, glasgall@mit.edu, tboning@mit.edu, cereslee@mit.edu, btidor-scripts@mit.edu
 
 scripts:	root
 signup:		root

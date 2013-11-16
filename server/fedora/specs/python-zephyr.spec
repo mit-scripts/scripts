@@ -1,28 +1,24 @@
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-
 Name:           python-zephyr
 Version:        0.2.0
-%define commit_hash c9a7f05
-%define tag_hash ed65206
-Release:        0.%{scriptsversion}%{?dist}
+%define commit dc5ba9ee52d53e7bfd9d95a885e25c3a1889b8a7
+%define shortcommit %(c=%{commit}; echo ${c:0:7})
+Release:        1.20131014.%{scriptsversion}%{?dist}
 Summary:        Python access to zephyr library
 
 Group:          Development/Languages
 License:        MIT
 URL:            http://github.com/ebroder/python-zephyr
-Source0:        http://github.com/ebroder/python-zephyr/tarball/%{version}/ebroder-%{name}-%{version}-0-g%{commit_hash}.tar.gz
-Patch1:         http://github.com/ebroder/python-zephyr/commit/944b3c3a2a2476758268d4b75b65c2ec38fa46e7.patch
+Source0:        https://github.com/ebroder/python-zephyr/archive/%{commit}/%{name}-%{version}-%{shortcommit}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  python-devel, python-setuptools, Pyrex, zephyr-devel, libcom_err-devel
+BuildRequires:  python-devel, python-setuptools, Cython, zephyr-devel, libcom_err-devel
 
 %description
-Get at the zephyr library from Python.  Woo.
+Zephyr bindings for Python.
 
 
 %prep
-%setup -q -n ebroder-%{name}-%{tag_hash}
-%patch1 -p1
+%setup -q -n %{name}-%{commit}
 
 
 %build
@@ -45,6 +41,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Oct 14 2013 Alex Dehnert <adehnert@mit.edu> - 0.2.0-1.20131014
+- Updated snapshot (Scripts-#384)
+
 * Sun Sep 19 2010 Anders Kaseorg <andersk@mit.edu> - 0.2.0-0
 - Initial RPM release
 

@@ -29,7 +29,7 @@ mailq_path = /usr/bin/mailq
 queue_directory = /var/spool/postfix
 mail_owner = postfix
 virtual_alias_domains = hash:/etc/postfix/virtual, regexp:/etc/postfix/virtual_re, ldap:/etc/postfix/virtual-alias-domains-ldap.cf
-virtual_alias_maps = hash:/etc/postfix/virtual, regexp:/etc/postfix/virtual_re, ldap:/etc/postfix/virtual-alias-maps-ldap.cf
+virtual_alias_maps = hash:/etc/postfix/virtual, regexp:/etc/postfix/virtual_re, ldap:/etc/postfix/virtual-alias-maps-ldap-reserved.cf, ldap:/etc/postfix/virtual-alias-maps-ldap.cf
 data_directory = /var/lib/postfix
 authorized_submit_users = !/etc/postfix/blocked_users, static:all
 # "all" is the default, but if we do not specify it, Fedora's packaging
