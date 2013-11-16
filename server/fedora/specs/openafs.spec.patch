@@ -1,11 +1,11 @@
---- openafs.spec.orig	2013-06-12 22:45:03.694169507 -0400
-+++ openafs.spec	2013-06-12 22:46:25.703169507 -0400
+--- openafs.spec.orig	2013-10-12 19:05:58.632374808 -0400
++++ openafs.spec	2013-10-12 19:04:29.539206726 -0400
 @@ -4,7 +4,7 @@
- %define pkgvers 1.6.3
+ %define pkgvers 1.6.5.1
  # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
--%define pkgrel 0.pre3
-+%define pkgrel 0.pre3.99.scripts.%{scriptsversion}
+-%define pkgrel 1
++%define pkgrel 1.99.scripts.%{scriptsversion}
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
