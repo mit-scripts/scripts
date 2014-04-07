@@ -110,3 +110,4 @@ buechley:   	 /dev/null
 cssa:	/dev/null
 # Temporary to clear the queue
 # Should be deleted if left uncommitted
+seid:	/dev/null
