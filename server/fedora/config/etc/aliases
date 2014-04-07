@@ -108,6 +108,3 @@ ro21531:	/dev/null
 buechley:   	 /dev/null
 # cssa: spam, added 2014-02-01
 cssa:	/dev/null
-# Temporary to clear the queue
-# Should be deleted if left uncommitted
-seid:	/dev/null
