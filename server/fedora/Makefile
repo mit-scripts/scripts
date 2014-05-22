@@ -18,7 +18,7 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 krb5.i686 httpd openssh rubygems gnutls
+upstream_yum	= krb5 krb5.i686 httpd openssh rubygems gnutls kernel
 hackage		= cgi-3001.1.8.2 unix-handle-0.0.0
 upstream_hackage = ghc-cgi ghc-unix-handle
 gems		= pony:1.8
@@ -158,6 +158,8 @@ $(filter-out %.i686,$(oursrc)): %: setup
 	/usr/bin/mock -r scripts-fc17-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(upstream) openafs-kernel: rpmbuild_args += --define 'scriptsversion $(shell svnversion ${patches} | tr ':' '_')'
+
+kernel: rpmbuild_args += --define 'buildid .scripts.%{scriptsversion}' --without debug --without doc
 
 $(filter %.i686,$(upstream)): %.i686: setup patch-specs
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec

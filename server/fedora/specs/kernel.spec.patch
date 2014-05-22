@@ -1,0 +1,22 @@
+--- kernel.spec.orig	2014-05-13 21:12:04.076585365 -0400
++++ kernel.spec	2014-05-13 21:16:17.885587650 -0400
+@@ -783,6 +783,9 @@
+ #rhbz 976837
+ Patch25065: fix-ext4-overflows.patch
+ 
++# CVE-2014-0196 (FEDORA-2014-6122)
++Patch30000: cve-2014-0196.patch
++
+ # END OF PATCH DEFINITIONS
+ 
+ %endif
+@@ -1516,6 +1519,9 @@
+ #rhbz 976837
+ ApplyPatch fix-ext4-overflows.patch
+ 
++# CVE-2014-0196 (FEDORA-2014-6122)
++ApplyPatch cve-2014-0196.patch
++
+ # END OF PATCH APPLICATIONS
+ 
+ %endif
