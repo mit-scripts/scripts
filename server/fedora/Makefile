@@ -21,7 +21,9 @@
 upstream_yum	= krb5 krb5.i686 httpd openssh
 hackage		= cgi-3001.1.8.2 unix-handle-0.0.0
 upstream_hackage = ghc-cgi ghc-unix-handle
-upstream	= openafs $(upstream_yum) $(upstream_hackage) moira zephyr zephyr.i686 python-zephyr python-afs python-moira python-hesiod athena-aclocal discuss
+gems		= pony:1.8
+upstream_gems	= rubygem-pony
+upstream	= openafs $(upstream_yum) $(upstream_hackage) $(upstream_gems) moira zephyr zephyr.i686 python-zephyr python-afs python-moira python-hesiod athena-aclocal discuss
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat fuse-better-mousetrapfs scripts-munin-plugins
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
@@ -71,6 +73,7 @@ download_stamp:
 	cabal update
 	cabal fetch --no-dependencies $(hackage)
 	cp -a $(hackage:%=~/.cabal/packages/*/*/*/%.tar.gz) $(tmp_src)
+	$(foreach gem, $(gems), gem fetch $(firstword $(subst :, ,$(gem))) -v $(lastword $(subst :, ,$(gem)));)
 	spectool -g -R $(specs)/python-zephyr.spec
 	spectool -g -R $(specs)/python-afs.spec
 	spectool -g -R $(specs)/python-moira.spec
@@ -90,7 +93,7 @@ install-srpms: mkdir-tree download
 copy-specs: mkdir-tree
 	cp ${specs}/*.spec $(tmp_specs)
 
-# Remove old .orig files so we're not mislead
+# Remove old .orig files so we're not misled
 patch-specs: install-srpms
 	@set -ex; \
 	cd ${tmp_specs}; \
@@ -155,6 +158,8 @@ $(filter-out %.i686,$(oursrc)): %: setup
 	/usr/bin/mock -r scripts-fc19-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(upstream) openafs-kernel: rpmbuild_args += --define 'scriptsversion $(shell svnversion ${patches} | tr ':' '_')'
+
+kernel: rpmbuild_args += --define 'buildid .scripts.%{scriptsversion}' --without debug --without doc
 
 $(filter %.i686,$(upstream)): %.i686: setup patch-specs
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec

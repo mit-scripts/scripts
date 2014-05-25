@@ -74,3 +74,14 @@ virtual=1
         protocol=fwm
         checktype=negotiate
 	checkport=80
+
+# sipb.mit.edu needs an FTP server
+virtual=4
+	real=18.181.2.75 gate 1
+        service=ftp
+        scheduler=wlc
+        protocol=fwm
+        checktype=ping
+        checkport=21
+	persistent=600
+	

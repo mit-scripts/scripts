@@ -106,6 +106,5 @@ dbriggs:	/dev/null
 ro21531:	/dev/null
 # buechley: not responsive to mail sent by -root on 2013-05-14, added 2013-07-04
 buechley:   	 /dev/null
-
-# Temporary to clear the queue
-# Should be deleted if left uncommitted
+# cssa: spam, added 2014-02-01
+cssa:	/dev/null

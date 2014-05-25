@@ -14,6 +14,7 @@ relayhost =
 mynetworks_style = host
 mailbox_command = /usr/bin/procmail -t -a "${EXTENSION}" ~/mail_scripts/procmailrc
 mailbox_size_limit = 0
+message_size_limit = 41943040
 recipient_delimiter = +
 inet_interfaces = all
 readme_directory = /usr/share/doc/postfix-2.10.2/README_FILES
