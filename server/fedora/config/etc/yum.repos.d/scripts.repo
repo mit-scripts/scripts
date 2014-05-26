@@ -1,11 +1,11 @@
 [scripts]
 name=Scripts
-baseurl=http://web.mit.edu/scripts/yum-repos/rpm-fc19/
+baseurl=http://web.mit.edu/scripts/yum-repos/rpm-fc20/
 enabled=1
 gpgcheck=0
 
 [scripts-testing]
 name=Scripts Testing
-baseurl=http://web.mit.edu/scripts/yum-repos/rpm-fc19-testing/
+baseurl=http://web.mit.edu/scripts/yum-repos/rpm-fc20-testing/
 enabled=0
 gpgcheck=0
