@@ -1,5 +1,6 @@
 /usr/bin/ping
 /usr/bin/ping6
+/usr/bin/systemd-detect-virt
 /usr/sbin/fping
 /usr/sbin/fping6
-/usr/bin/systemd-detect-virt
+/usr/sbin/mtr
