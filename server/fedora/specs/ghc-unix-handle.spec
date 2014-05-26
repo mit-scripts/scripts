@@ -1,30 +1,39 @@
-# cabal2spec-0.25
 # https://fedoraproject.org/wiki/Packaging:Haskell
-# https://fedoraproject.org/wiki/PackagingDrafts/Haskell
 
 %global pkg_name unix-handle
-
-%global common_summary Haskell %{pkg_name} library
-
-%global common_description A %{pkg_name} library for Haskell.
 
 Name:           ghc-%{pkg_name}
 Version:        0.0.0
 Release:        0.%{scriptsversion}%{?dist}
-Summary:        %{common_summary}
+Summary:        POSIX operations on Handles
 
-Group:          System Environment/Libraries
 License:        BSD
-# BEGIN cabal2spec
 URL:            http://hackage.haskell.org/package/%{pkg_name}
 Source0:        http://hackage.haskell.org/packages/archive/%{pkg_name}/%{version}/%{pkg_name}-%{version}.tar.gz
-ExclusiveArch:  %{ghc_arches}
+
 BuildRequires:  ghc-Cabal-devel
 BuildRequires:  ghc-rpm-macros %{!?without_hscolour:hscolour}
-# END cabal2spec
+# Begin cabal-rpm deps:
+BuildRequires:  ghc-unix-devel
+# End cabal-rpm deps
 
 %description
-%{common_description}
+This package provides versions of functions from "System.Posix.Files" that
+operate on 'System.IO.Handle' instead of 'System.IO.FilePath' or
+'System.Posix.Fd'. This is useful to prevent race conditions that may arise
+from looking up the same path twice.
+
+
+%package devel
+Summary:        Haskell %{pkg_name} library development files
+Provides:       %{name}-static = %{version}-%{release}
+Requires:       ghc-compiler = %{ghc_version}
+Requires(post): ghc-compiler = %{ghc_version}
+Requires(postun): ghc-compiler = %{ghc_version}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+
+%description devel
+This package provides the Haskell %{pkg_name} library development files.
 
 
 %prep
@@ -39,19 +48,25 @@ BuildRequires:  ghc-rpm-macros %{!?without_hscolour:hscolour}
 %ghc_lib_install
 
 
-# devel subpackage
-%ghc_devel_package
-
-%ghc_devel_description
+%post devel
+%ghc_pkg_recache
 
 
-%ghc_devel_post_postun
+%postun devel
+%ghc_pkg_recache
 
 
-%ghc_files LICENSE
+%files -f %{name}.files
+%doc LICENSE
+
+
+%files devel -f %{name}-devel.files
 
 
 %changelog
+* Mon May 26 2014 Alex Chernyakhovsky <achernya@mit.edu> - 0.0.0-0
+- Updated packaging for F20 with cabal-rpm
+
 * Fri May 25 2012 Anders Kaseorg <andersk@mit.edu> - 0.0.0-0
 - regenerated packaging with cabal2spec-0.25.5
 

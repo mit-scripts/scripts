@@ -1,24 +1,24 @@
---- krb5.spec.orig	2013-07-31 21:02:28.141225784 -0400
-+++ krb5.spec	2013-07-31 21:02:49.548225784 -0400
-@@ -30,7 +30,7 @@
+--- krb5.spec.orig	2014-05-25 19:01:13.701141912 -0400
++++ krb5.spec	2014-05-25 19:02:11.438816630 -0400
+@@ -41,7 +41,7 @@
  Summary: The Kerberos network authentication system
  Name: krb5
- Version: 1.11.3
--Release: 2%{?dist}
-+Release: 2%{?dist}.scripts.%{scriptsversion} 
+ Version: 1.11.5
+-Release: 5%{?dist}
++Release: 5%{?dist}.scripts.%{scriptsversion} 
  # Maybe we should explode from the now-available-to-everybody tarball instead?
- # http://web.mit.edu/kerberos/dist/krb5/1.11/krb5-1.11.3-signed.tar
+ # http://web.mit.edu/kerberos/dist/krb5/1.11/krb5-1.11.5-signed.tar
  Source0: krb5-%{version}.tar.gz
-@@ -90,6 +90,8 @@
- Patch201: krb5-1.11.2-keycheck.patch
- Patch202: krb5-1.11.2-otp.patch
+@@ -143,6 +143,8 @@
+ Patch405: 0005-Be-more-careful-of-target-ccache-collections.patch
+ Patch406: 0006-Copy-config-entries-to-the-target-ccache.patch
  
 +Patch1000: krb5-kuserok-scripts.patch
 +
  License: MIT
  URL: http://web.mit.edu/kerberos/www/
  Group: System Environment/Libraries
-@@ -176,6 +178,7 @@
+@@ -232,6 +234,7 @@
  %package libs
  Summary: The shared libraries used by Kerberos 5
  Group: System Environment/Libraries
@@ -26,11 +26,12 @@
  %if 0%{?rhel} == 6
  # Some of the older libsmbclient builds here incorrectly called
  # krb5_locate_kdc(), which was mistakenly exported in 1.9.
-@@ -315,6 +318,7 @@
+@@ -410,6 +413,8 @@
+ %patch203 -p1 -b .otp2
+ %patch204 -p1 -b .move-otp-sockets
  
- %patch201 -p1 -b .keycheck
- %patch202 -p1 -b .otp
-+%patch1000 -p1 -b .kuserok  
- 
++%patch1000 -p1 -b .kuserok
++
  # Take the execute bit off of documentation.
  chmod -x doc/krb5-protocol/*.txt
+ 

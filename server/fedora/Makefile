@@ -19,7 +19,7 @@
 # See /COPYRIGHT in this repository for more information.
 
 upstream_yum	= krb5 krb5.i686 httpd openssh
-hackage		= cgi-3001.1.8.2 unix-handle-0.0.0
+hackage		= cgi-3001.1.8.5 unix-handle-0.0.0
 upstream_hackage = ghc-cgi ghc-unix-handle
 gems		= pony:1.8
 upstream_gems	= rubygem-pony
@@ -39,8 +39,8 @@ out_srpms	= $(topdir)/SRPMS
 out_sbin	= $(topdir)/sbin
 
 dload		= ${PWD}/.dload
-openafs_url	= "https://www.openafs.org/dl/openafs/1.6.5.1/openafs-1.6.5.1-1.src.rpm"
-zephyr_url	= "http://zephyr.1ts.org/files/zephyr-3.0.2.tar.gz"
+openafs_url	= "https://www.openafs.org/dl/openafs/1.6.8/openafs-1.6.8-1.src.rpm"
+#zephyr_url	= "http://zephyr.1ts.org/files/zephyr-3.0.2.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
 
@@ -68,12 +68,13 @@ download_stamp:
 	mkdir -p $(dload)
 	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
 	wget -P $(dload) $(openafs_url)
-	wget -P $(dload) $(zephyr_url)
+	#wget -P $(dload) $(zephyr_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 	cabal update
 	cabal fetch --no-dependencies $(hackage)
 	cp -a $(hackage:%=~/.cabal/packages/*/*/*/%.tar.gz) $(tmp_src)
 	$(foreach gem, $(gems), gem fetch $(firstword $(subst :, ,$(gem))) -v $(lastword $(subst :, ,$(gem)));)
+	spectool -g -R $(specs)/zephyr.spec
 	spectool -g -R $(specs)/python-zephyr.spec
 	spectool -g -R $(specs)/python-afs.spec
 	spectool -g -R $(specs)/python-moira.spec
@@ -150,12 +151,12 @@ $(oursrc): rpmbuild_args += --define 'scriptsversion $(shell svnversion ${oursrc
 $(filter %.i686,$(oursrc)): %.i686: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc19-i386 --arch=i686 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc20-i386 --arch=i686 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(filter-out %.i686,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc19-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc20-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(upstream) openafs-kernel: rpmbuild_args += --define 'scriptsversion $(shell svnversion ${patches} | tr ':' '_')'
 
@@ -163,16 +164,16 @@ kernel: rpmbuild_args += --define 'buildid .scripts.%{scriptsversion}' --without
 
 $(filter %.i686,$(upstream)): %.i686: setup patch-specs
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc19-i386 --arch=i686 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc20-i386 --arch=i686 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(filter-out %.i686,$(upstream)): %: setup patch-specs
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc19-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc20-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/openafs*.spec
-	/usr/bin/mock -r scripts-fc19-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc20-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
 
 #sort -n sorts "2.6.25-1" later than "2.6.25.1-1", so it's Wrong
 #kernvers = $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)
