@@ -401,6 +401,9 @@ python host.py push $server
     # [WIZARD/TEST] Remember that changes you made should not get
     # reverted!
 
+# Make sure the suexec logging directory is owned by Apache and can be written to
+    chown apache:root /var/log/httpd/
+
 # Reboot the machine to restore a consistent state, in case you
 # changed anything. (Note: Starting kdump fails (this is ok))
 
