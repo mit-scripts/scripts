@@ -62,7 +62,6 @@ if len(r) != 0:
 		SuExecUserGroup %(uname)s %(uname)s
 		Include conf.d/vhosts-common-ssl.conf
 		SSLCertificateFile /etc/pki/tls/certs/%(hname)s.pem
-		SSLCertificateChainFile /etc/pki/tls/certs/%(hname)s.pem
 		SSLCertificateKeyFile /etc/pki/tls/private/scripts.key
 	</VirtualHost>
 	<VirtualHost *:444>
