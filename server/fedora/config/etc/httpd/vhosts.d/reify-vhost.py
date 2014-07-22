@@ -73,7 +73,6 @@ if len(r) != 0:
 		Include conf.d/vhosts-common-ssl.conf
 		Include conf.d/vhosts-common-ssl-cert.conf
 		SSLCertificateFile /etc/pki/tls/certs/%(hname)s.pem
-		SSLCertificateChainFile /etc/pki/tls/certs/%(hname)s.pem
 		SSLCertificateKeyFile /etc/pki/tls/private/scripts.key
 	</VirtualHost>
 </IfModule>""" % {
