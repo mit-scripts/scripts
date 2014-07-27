@@ -351,6 +351,9 @@ python host.py push $server
     ls -l /etc/dirsrv/keytab
     cat install-ldap
 
+# Allow Apache to write the suexec log
+    chown apache:apache /var/log/httpd
+
 # Enable lots of services (currently in /etc checkout)
     systemctl enable openafs-client.service
     systemctl enable dirsrv.target
