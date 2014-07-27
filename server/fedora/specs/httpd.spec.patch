@@ -1,5 +1,5 @@
---- httpd.spec.orig	2014-05-25 18:59:21.318657218 -0400
-+++ httpd.spec	2014-05-25 19:00:15.324430542 -0400
+--- httpd.spec.orig	2014-07-23 06:24:15.000000000 -0400
++++ httpd.spec	2014-07-27 17:38:45.622914152 -0400
 @@ -15,7 +15,7 @@
  Summary: Apache HTTP Server
  Name: httpd
@@ -9,7 +9,7 @@
  URL: http://httpd.apache.org/
  Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
  Source1: index.html
-@@ -86,6 +86,12 @@
+@@ -84,6 +84,12 @@
  Requires(post): systemd-units
  Conflicts: apr < 1.5.0-1
  
@@ -22,7 +22,7 @@
  %description
  The Apache HTTP Server is a powerful, efficient, and extensible
  web server.
-@@ -96,6 +102,7 @@
+@@ -94,6 +100,7 @@
  Obsoletes: secureweb-devel, apache-devel, stronghold-apache-devel
  Requires: apr-devel, apr-util-devel, pkgconfig
  Requires: httpd = %{version}-%{release}
@@ -30,7 +30,7 @@
  
  %description devel
  The httpd-devel package contains the APXS binary and other files
-@@ -134,6 +141,7 @@
+@@ -132,6 +139,7 @@
  Requires(post): openssl, /bin/cat
  Requires(pre): httpd
  Requires: httpd = 0:%{version}-%{release}, httpd-mmn = %{mmnisa}
@@ -38,7 +38,7 @@
  Obsoletes: stronghold-mod_ssl
  
  %description -n mod_ssl
-@@ -200,6 +208,11 @@
+@@ -196,6 +204,11 @@
  # Prevent use of setcap in "install-suexec-caps" target.
  sed -i '/suexec/s,setcap ,echo Skipping setcap for ,' Makefile.in
  
@@ -50,7 +50,7 @@
  # Safety check: prevent build if defined MMN does not equal upstream MMN.
  vmmn=`echo MODULE_MAGIC_NUMBER_MAJOR | cpp -include include/ap_mmn.h | sed -n '/^2/p'`
  if test "x${vmmn}" != "x%{mmn}"; then
-@@ -246,11 +259,13 @@
+@@ -242,11 +255,13 @@
  	--enable-suexec --with-suexec \
          --enable-suexec-capabilities \
  	--with-suexec-caller=%{suexec_caller} \
@@ -68,3 +68,13 @@
          --enable-pie \
          --with-pcre \
          --enable-mods-shared=all \
+@@ -542,7 +557,8 @@
+ %{_sbindir}/fcgistarter
+ %{_sbindir}/apachectl
+ %{_sbindir}/rotatelogs
+-%caps(cap_setuid,cap_setgid+pe) %attr(510,root,%{suexec_caller}) %{_sbindir}/suexec
++# cap_dac_override needed to write to /var/log/httpd
++%caps(cap_setuid,cap_setgid,cap_dac_override+pe) %attr(510,root,%{suexec_caller}) %{_sbindir}/suexec
+ 
+ %dir %{_libdir}/httpd
+ %dir %{_libdir}/httpd/modules
