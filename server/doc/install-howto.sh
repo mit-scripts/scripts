@@ -351,9 +351,6 @@ python host.py push $server
     ls -l /etc/dirsrv/keytab
     cat install-ldap
 
-# Allow Apache to write the suexec log
-    chown apache:apache /var/log/httpd
-
 # Enable lots of services (currently in /etc checkout)
     systemctl enable openafs-client.service
     systemctl enable dirsrv.target
@@ -403,9 +400,6 @@ python host.py push $server
     # resolv.conf and sysconfig/openafs
     # [WIZARD/TEST] Remember that changes you made should not get
     # reverted!
-
-# Make sure the suexec logging directory is owned by Apache and can be written to
-    chown apache:root /var/log/httpd/
 
 # Reboot the machine to restore a consistent state, in case you
 # changed anything. (Note: Starting kdump fails (this is ok))
