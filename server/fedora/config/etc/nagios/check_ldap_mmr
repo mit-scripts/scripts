@@ -1,3 +1,4 @@
 #!/bin/sh
 
+export USE_NEWLINES=1
 exec /usr/bin/sudo -u signup /etc/nagios/check_ldap_mmr.real
