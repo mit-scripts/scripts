@@ -1,0 +1,112 @@
+--- openssl-1.0.0-beta5-cipher-change.patch	2013-02-19 16:06:15.000000000 -0500
++++ openssl-1.0.0n-cipher-change.patch	2014-08-06 21:07:44.382050554 -0400
+@@ -9,7 +9,7 @@
+ +#define SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG		0x00000008L /* no effect since 1.0.0c due to CVE-2010-4180 */
+  #define SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG		0x00000010L
+  #define SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER		0x00000020L
+- #define SSL_OP_MSIE_SSLV2_RSA_PADDING			0x00000040L /* no effect since 0.9.7h and 0.9.8b */
++ #define SSL_OP_SAFARI_ECDHE_ECDSA_BUG			0x00000040L
+ @@ -530,7 +530,7 @@ typedef struct ssl_session_st
+  
+  /* SSL_OP_ALL: various bug workarounds that should be rather harmless.
+--- openssl-1.0.0b-ipv6-apps.patch	2013-02-19 16:06:15.000000000 -0500
++++ openssl-1.0.0n-ipv6-apps.patch	2014-08-06 21:07:44.383050535 -0400
+@@ -179,7 +179,7 @@
+  		{
+ -		i=0;
+ -		i=setsockopt(s,SOL_SOCKET,SO_KEEPALIVE,(char *)&i,sizeof(i));
+--		if (i < 0) { perror("keepalive"); return(0); }
++-		if (i < 0) { closesocket(s); perror("keepalive"); return(0); }
+ +			int i=0;
+ +			i=setsockopt(s,SOL_SOCKET,SO_KEEPALIVE,
+ +				(char *)&i,sizeof(i));
+@@ -335,7 +335,7 @@
+  	int len;
+  /*	struct linger ling; */
+  
+-@@ -432,135 +451,58 @@ redoit:
++@@ -432,138 +451,59 @@ redoit:
+  */
+  
+  	if (host == NULL) goto end;
+@@ -364,6 +364,7 @@
+ +		if ((*host=(char *)OPENSSL_malloc(strlen(buffer)+1)) == NULL)
+  			{
+  			perror("OPENSSL_malloc");
++ 			closesocket(ret);
+  			return(0);
+  			}
+ -		BUF_strlcpy(*host,h1->h_name,strlen(h1->h_name)+1);
+@@ -372,11 +373,13 @@
+ -		if (h2 == NULL)
+ -			{
+ -			BIO_printf(bio_err,"gethostbyname failure\n");
++-			closesocket(ret);
+ -			return(0);
+ -			}
+ -		if (h2->h_addrtype != AF_INET)
+ -			{
+ -			BIO_printf(bio_err,"gethostbyname addr is not AF_INET\n");
++-			closesocket(ret);
+ -			return(0);
+ -			}
+ +		strcpy(*host, buffer);
+--- openssl-1.0.0k-fips.patch	2013-02-19 16:06:15.000000000 -0500
++++ openssl-1.0.0n-fips.patch	2014-08-06 21:07:44.383050535 -0400
+@@ -10646,7 +10646,7 @@
+  
+  
+  static int pkcs12_add_bag(STACK_OF(PKCS12_SAFEBAG) **pbags, PKCS12_SAFEBAG *bag);
+-@@ -90,7 +94,14 @@ PKCS12 *PKCS12_create(char *pass, char *
++@@ -90,11 +94,18 @@ PKCS12 *PKCS12_create(char *pass, char *
+  
+  	/* Set defaults */
+  	if (!nid_cert)
+@@ -10656,7 +10656,11 @@
+ +			nid_cert = NID_pbe_WithSHA1And3_Key_TripleDES_CBC;
+ +		else
+ +#endif
++ #ifdef OPENSSL_NO_RC2
++ 		nid_cert = NID_pbe_WithSHA1And3_Key_TripleDES_CBC;
++ #else
+  		nid_cert = NID_pbe_WithSHA1And40BitRC2_CBC;
++ #endif
+ +		}
+  	if (!nid_key)
+  		nid_key = NID_pbe_WithSHA1And3_Key_TripleDES_CBC;
+--- openssl-1.0.1a-algo-doc.patch	2013-02-19 16:06:15.000000000 -0500
++++ openssl-1.0.0n-algo-doc.patch	2014-08-06 21:07:44.382050554 -0400
+@@ -11,8 +11,8 @@
+  
+  EVP_DigestUpdate() hashes B<cnt> bytes of data at B<d> into the
+ @@ -165,7 +165,8 @@ EVP_MD_size(), EVP_MD_block_size(), EVP_
+- EVP_MD_CTX_block_size()	and EVP_MD_block_size() return the digest or block
+- size in bytes.
++ EVP_MD_size(), EVP_MD_block_size(), EVP_MD_CTX_size() and
++ EVP_MD_CTX_block_size() return the digest or block size in bytes.
+  
+ -EVP_md_null(), EVP_md2(), EVP_md5(), EVP_sha(), EVP_sha1(), EVP_dss(),
+ +EVP_md_null(), EVP_md2(), EVP_md5(), EVP_sha(), EVP_sha1(),
+--- openssl-1.0.0k-version.patch	2013-02-19 16:06:15.000000000 -0500
++++ openssl-1.0.0n-version.patch	2014-08-06 21:07:44.383050535 -0400
+@@ -5,17 +5,17 @@
+   * (Prior to 0.9.5a beta1, a different scheme was used: MMNNFFRBB for
+   *  major minor fix final patch/beta)
+   */
+--#define OPENSSL_VERSION_NUMBER	0x100000bfL
++-#define OPENSSL_VERSION_NUMBER	0x100000efL
+ +#define OPENSSL_VERSION_NUMBER	0x10000003L
+  #ifdef OPENSSL_FIPS
+- #define OPENSSL_VERSION_TEXT	"OpenSSL 1.0.0k-fips 5 Feb 2013"
++ #define OPENSSL_VERSION_TEXT	"OpenSSL 1.0.0n-fips 6 Aug 2014"
+  #else
+ @@ -83,7 +83,7 @@
+   * should only keep the versions that are binary compatible with the current.
+   */
+  #define SHLIB_VERSION_HISTORY ""
+ -#define SHLIB_VERSION_NUMBER "1.0.0"
+-+#define SHLIB_VERSION_NUMBER "1.0.0k"
+++#define SHLIB_VERSION_NUMBER "1.0.0n"
+  
+  
+  #endif /* HEADER_OPENSSLV_H */

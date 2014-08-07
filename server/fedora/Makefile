@@ -18,7 +18,7 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 krb5.i686 httpd openssh rubygems gnutls kernel
+upstream_yum	= krb5 krb5.i686 httpd openssh rubygems gnutls kernel openssl openssl.i686
 hackage		= cgi-3001.1.8.2 unix-handle-0.0.0
 upstream_hackage = ghc-cgi ghc-unix-handle
 gems		= pony:1.8
@@ -41,6 +41,7 @@ out_sbin	= $(topdir)/sbin
 dload		= ${PWD}/.dload
 openafs_url	= "https://www.openafs.org/dl/openafs/1.6.5/openafs-1.6.5-1.src.rpm"
 zephyr_url	= "http://zephyr.1ts.org/files/zephyr-3.0.2.tar.gz"
+openssl_url	= "https://www.openssl.org/source/openssl-1.0.0n.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
 
@@ -69,6 +70,7 @@ download_stamp:
 	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
 	wget -P $(dload) $(openafs_url)
 	wget -P $(dload) $(zephyr_url)
+	wget -P $(tmp_src) $(openssl_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 	cabal update
 	cabal fetch --no-dependencies $(hackage)

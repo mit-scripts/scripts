@@ -1,0 +1,84 @@
+--- openssl.spec.orig	2013-02-19 16:06:27.000000000 -0500
++++ openssl.spec	2014-08-06 20:57:41.043801219 -0400
+@@ -20,13 +20,13 @@
+ 
+ Summary: A general purpose cryptography library with TLS implementation
+ Name: openssl
+-Version: 1.0.0k
+-Release: 1%{?dist}
++Version: 1.0.0n
++Release: 0%{?dist}.scripts.%{scriptsversion}
+ Epoch: 1
+ # We have to remove certain patented algorithms from the openssl source
+ # tarball with the hobble-openssl script which is included below.
+ # The original openssl upstream tarball cannot be shipped in the .src.rpm.
+-Source: openssl-%{version}-usa.tar.xz
++Source: https://www.openssl.org/source/openssl-%{version}.tar.gz
+ Source1: hobble-openssl
+ Source2: Makefile.certificate
+ Source6: make-dummy-cert
+@@ -44,23 +44,22 @@
+ Patch7: openssl-1.0.0-timezone.patch
+ # Bug fixes
+ Patch23: openssl-1.0.0-beta4-default-paths.patch
+-Patch25: openssl-1.0.0a-manfix.patch
+ # Functionality changes
+ Patch32: openssl-0.9.8g-ia64.patch
+ Patch33: openssl-1.0.0-beta4-ca-dir.patch
+ Patch34: openssl-0.9.6-x509.patch
+ Patch35: openssl-0.9.8j-version-add-engines.patch
+-Patch38: openssl-1.0.0-beta5-cipher-change.patch
+-Patch39: openssl-1.0.0b-ipv6-apps.patch
+-Patch40: openssl-1.0.0k-fips.patch
++Patch38: openssl-1.0.0n-cipher-change.patch
++Patch39: openssl-1.0.0n-ipv6-apps.patch
++Patch40: openssl-1.0.0n-fips.patch
+ Patch41: openssl-1.0.0-beta3-fipscheck.patch
+ Patch43: openssl-1.0.0a-fipsmode.patch
+ Patch44: openssl-1.0.0-beta3-fipsrng.patch
+ Patch45: openssl-1.0.1e-env-zlib.patch
+ Patch47: openssl-1.0.0-beta5-readme-warning.patch
+-Patch49: openssl-1.0.1a-algo-doc.patch
++Patch49: openssl-1.0.0n-algo-doc.patch
+ Patch50: openssl-1.0.0-beta4-dtls1-abi.patch
+-Patch51: openssl-1.0.0k-version.patch
++Patch51: openssl-1.0.0n-version.patch
+ Patch52: openssl-1.0.0b-aesni.patch
+ Patch53: openssl-1.0.0-name-hash.patch
+ Patch54: openssl-1.0.0c-speed-fips.patch
+@@ -73,13 +72,11 @@
+ Patch61: openssl-1.0.0d-cavs.patch
+ Patch62: openssl-1.0.0-fips-aesni.patch
+ Patch63: openssl-1.0.0d-xmpp-starttls.patch
+-Patch64: openssl-1.0.0k-intelopts.patch
+ Patch65: openssl-1.0.0e-chil-fixes.patch
+ Patch66: openssl-1.0.0-sha2test.patch
+ Patch67: openssl-1.0.0k-secure-getenv.patch
+ # Backported fixes including security fixes
+ Patch81: openssl-1.0.0d-padlock64.patch
+-Patch82: openssl-1.0.0k-backports.patch
+ 
+ License: OpenSSL
+ Group: System Environment/Libraries
+@@ -143,7 +140,6 @@
+ %patch7 -p1 -b .timezone
+ 
+ %patch23 -p1 -b .default-paths
+-%patch25 -p1 -b .manfix
+ 
+ %patch32 -p1 -b .ia64
+ %patch33 -p1 -b .ca-dir
+@@ -172,13 +168,11 @@
+ %patch61 -p1 -b .cavs
+ %patch62 -p1 -b .fips-aesni
+ %patch63 -p1 -b .starttls
+-%patch64 -p1 -b .intelopts
+ %patch65 -p1 -b .chil
+ %patch66 -p1 -b .sha2test
+ %patch67 -p1 -b .secure-getenv
+ 
+ %patch81 -p1 -b .padlock64
+-%patch82 -p1 -b .backports
+ 
+ # Modify the various perl scripts to reference perl in the right location.
+ perl util/perlpath.pl `dirname %{__perl}`
