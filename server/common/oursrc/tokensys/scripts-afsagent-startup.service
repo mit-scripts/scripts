@@ -1,7 +1,7 @@
 [Unit]
 Description=Scripts AFS Configuration Service
 After=syslog.target openafs-client.service
-Before=remote-fs.target
+Before=crond.service
 Requires=openafs-client.service
 
 [Service]
@@ -9,4 +9,4 @@ Type=oneshot
 ExecStart=/usr/local/libexec/scripts-afsagent-startup
 
 [Install]
-WantedBy=multi-user.target remote-fs.target
+WantedBy=multi-user.target remote-fs.target crond.service
