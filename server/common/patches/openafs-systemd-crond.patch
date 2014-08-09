@@ -1,17 +1,13 @@
 diff --git a/src/packaging/RedHat/openafs-client.service b/src/packaging/RedHat/openafs-client.service
-index bc95057..9627280 100644
+index 936762e..c0558b2 100644
 --- a/src/packaging/RedHat/openafs-client.service
 +++ b/src/packaging/RedHat/openafs-client.service
-@@ -1,5 +1,6 @@
+@@ -1,6 +1,7 @@
  [Unit]
  Description=OpenAFS Client Service
-+Before=crond.service
- After=syslog.target network.target
+-After=syslog.target network.target
++After=syslog.target network-online.target
++Before=remote-fs.target
  
  [Service]
-@@ -15,4 +16,4 @@ ExecStop=/sbin/rmmod openafs
- KillMode=none
- 
- [Install]
--WantedBy=multi-user.target remote-fs.target
-+WantedBy=multi-user.target remote-fs.target crond.service
+ Type=forking
