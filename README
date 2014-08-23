@@ -9,3 +9,16 @@ lvs:
 
 server:
   files needed to run a scripts.mit.edu server (aka realserver)
+
+ldap:
+  files needed to run a scripts.mit.edu ldap server (aka scripts-ldap)
+
+  ldap servers were previously run on realservers. However, 16-way MMR
+  turns out to be difficult to manage. By splitting the LDAP cluster
+  into its own servers, Scripts migrations across version boundaries
+  are easier since there is not a cutover period to two different
+  versions of LDAP in the pool. However, this is still true when
+  upgrading the LDAP cluster itself.
+
+  The LDAP cluster should be run on a variant of EL to reduce
+  maintenance burden.
