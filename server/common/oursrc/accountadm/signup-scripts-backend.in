@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 use strict;
+use File::Temp qw/ :POSIX /;
 
 # signup-scripts-backend
 # Copyright (C) 2006  Jeff Arnold <jbarnold@mit.edu>
@@ -101,12 +102,21 @@ elsif(-e "/etc/nosignup") {
 	complain($disabledmsg);
 }
 
+# Get credentials
+my $ccache = tmpnam();
+$ENV{'KRB5CCNAME'} = $ccache;
+my $exit_status = system("/usr/bin/kinit", "-k", "-t", "/etc/signup.keytab", "daemon/scripts-signup.mit.edu");
+if (($exit_status >> 8) != 0) {
+    die "Couldn't get Kerberos credentials for account creation!";
+}
 my $pid;
+my @ldap_servers = ('doppelganger', 'alter-ego', 'body-double');
+my $selected_server = $ldap_servers[int(rand(3))];
 defined ($pid = open LDAP, '|-') or complain("internal error");
 if (!$pid) {
 	close STDOUT;
 	open STDOUT, '>/dev/null';
-	exec '@ldapadd_path@', '-c', '-x', '-D', 'cn=Directory Manager', '-y', '/etc/signup-ldap-pw';
+	exec '@ldapadd_path@', '-c', '-Y', 'gssapi', '-H', "ldap://$selected_server.mit.edu";
 	exit 1;
 }
 print LDAP <<EOF;
@@ -143,6 +153,8 @@ EOF
 close LDAP or complain("internal error");
 # Add disk quota for user
 #system('@sudo_path@', '-u', 'root', '/usr/sbin/setquota', $username, '0', '25000', '0', '10000', '-a');
+
+system("kdestroy");
 
 printexit("done", 0);
 
