@@ -17,13 +17,13 @@ Requires:       net-tools
 Requires:       open-vm-tools
 Requires:       openssh-clients
 Requires:       openssh-server
+Requires:       perl-LDAP
 Requires:       rpmdevtools
 Requires:       screen
 Requires:       strace
 Requires:       subversion
 Requires:       vim-enhanced
 Requires:       yum-utils
-Requires:       perl-LDAP
 
 %description
 Base package for scripts.mit.edu LDAP servers. Installing this package
