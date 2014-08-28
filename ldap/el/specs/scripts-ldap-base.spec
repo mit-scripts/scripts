@@ -1,5 +1,5 @@
 Name:           scripts-ldap-base
-Version:        1.2
+Version:        1.3
 Release:        1%{?dist}
 Summary:        Scripts LDAP Server metapackage
 
@@ -35,6 +35,9 @@ cluster member.
 
 
 %changelog
+* Thu Aug 28 2014 Adam Glasgall <glasgall@mit.edu> 1.3-1
+- Add perl-LDAP
+
 * Sat Aug 23 2014 Alex Chernyakhovsky <achernya@mit.edu> 1.2-1
 - Add ldapvi, vim-enhanced, strace, and open-vm-tools
 
