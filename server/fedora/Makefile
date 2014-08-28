@@ -23,7 +23,8 @@ hackage		= cgi-3001.1.8.5 unix-handle-0.0.0
 upstream_hackage = ghc-cgi ghc-unix-handle
 gems		= pony:1.8 fcgi:0.9.2.1
 upstream_gems	= rubygem-pony rubygem-fcgi
-upstream	= openafs $(upstream_yum) $(upstream_hackage) $(upstream_gems) moira zephyr zephyr.i686 python-zephyr python-afs python-moira python-hesiod athena-aclocal discuss
+upstream_eggs   = python-authkit
+upstream	= openafs $(upstream_yum) $(upstream_hackage) $(upstream_gems) $(upstream_eggs) moira zephyr zephyr.i686 python-zephyr python-afs python-moira python-hesiod athena-aclocal discuss
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat fuse-better-mousetrapfs scripts-munin-plugins
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
@@ -79,6 +80,7 @@ download_stamp:
 	spectool -g -R $(specs)/python-afs.spec
 	spectool -g -R $(specs)/python-moira.spec
 	spectool -g -R $(specs)/python-hesiod.spec
+	spectool -g -R $(specs)/python-authkit.spec
 	touch download_stamp
 
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-aclocal/
