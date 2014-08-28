@@ -1,0 +1,19 @@
+--- libgsasl.spec.orig	2014-08-28 09:54:06.625463829 -0400
++++ libgsasl.spec	2014-08-28 09:59:04.356538990 -0400
+@@ -1,6 +1,6 @@
+ Name:           libgsasl
+ Version:        1.8.0 
+-Release:        3%{?dist}
++Release:        3%{?dist}.scripts.%{scriptsversion}
+ Summary:        GNU SASL library 
+ Group:          System Environment/Libraries
+ License:        LGPLv2+ 
+@@ -31,7 +31,7 @@
+ %setup -q
+ 
+ %build
+-%configure --disable-static --disable-rpath
++%configure --disable-static --disable-rpath --with-gssapi-impl=mit
+ make %{?_smp_mflags}
+ 
+ %install
