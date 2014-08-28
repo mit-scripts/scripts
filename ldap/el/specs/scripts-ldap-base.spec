@@ -23,6 +23,7 @@ Requires:       strace
 Requires:       subversion
 Requires:       vim-enhanced
 Requires:       yum-utils
+Requires:       perl-LDAP
 
 %description
 Base package for scripts.mit.edu LDAP servers. Installing this package
