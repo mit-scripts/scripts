@@ -1,6 +1,4 @@
-# cabal2spec-0.25
 # https://fedoraproject.org/wiki/Packaging:Haskell
-# https://fedoraproject.org/wiki/PackagingDrafts/Haskell
 
 # Link Haskell libs statically for 3x faster startup speed.
 %define ghc_without_dynamic 1
@@ -10,24 +8,23 @@ Version:        0.0
 Release:        0.%{scriptsversion}%{?dist}
 Summary:        static-cat for scripts.mit.edu
 
-Group:          Applications/System
-License:        GPL
-# BEGIN cabal2spec
+License:        GPL+
 URL:            http://scripts.mit.edu/
 Source0:        %{name}.tar.gz
-ExclusiveArch:  %{ghc_arches}
+
 BuildRequires:  ghc-Cabal-devel
 BuildRequires:  ghc-rpm-macros
-# END cabal2spec
+# Begin cabal-rpm deps:
+BuildRequires:  ghc-MonadCatchIO-mtl-devel
 BuildRequires:  ghc-bytestring-devel
-BuildRequires:  ghc-cgi-devel >= 3001.1.8
+BuildRequires:  ghc-cgi-devel
 BuildRequires:  ghc-containers-devel
 BuildRequires:  ghc-filepath-devel
-BuildRequires:  ghc-MonadCatchIO-mtl-devel
 BuildRequires:  ghc-old-locale-devel
 BuildRequires:  ghc-time-devel
 BuildRequires:  ghc-unix-devel
 BuildRequires:  ghc-unix-handle-devel
+# End cabal-rpm deps
 
 %description
 static-cat is a binary for serving static content on scripts.mit.edu.
@@ -50,6 +47,9 @@ static-cat is a binary for serving static content on scripts.mit.edu.
 
 
 %changelog
+* Mon May 26 2014 Alexander Chernyakhovsky <achernya@mit.edu> - 0.0-0
+- Updated for F20 with cabal-rpm
+
 * Fri May 25 2012 Anders Kaseorg <andersk@mit.edu> - 0.0-0
 - regenerated packaging with cabal2spec-0.25.5
 

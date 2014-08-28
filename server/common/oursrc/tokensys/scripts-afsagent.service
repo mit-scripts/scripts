@@ -1,7 +1,7 @@
 [Unit]
 Description=Scripts afsagent Service
 After=syslog.target openafs-client.service
-Before=crond.service
+Before=remote-fs.target
 Requires=openafs-client.service
 
 [Service]
@@ -10,4 +10,4 @@ ExecStart=/home/afsagent/renew
 User=afsagent
 
 [Install]
-WantedBy=multi-user.target remote-fs.target crond.service
+WantedBy=multi-user.target remote-fs.target

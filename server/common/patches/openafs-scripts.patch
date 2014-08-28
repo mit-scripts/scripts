@@ -45,10 +45,10 @@
 # See /COPYRIGHT in this repository for more information.
 #
 diff --git a/src/afs/LINUX/osi_vnodeops.c b/src/afs/LINUX/osi_vnodeops.c
-index 7c7705e..0d0e94f 100644
+index 03caf1c..699b2ce 100644
 --- a/src/afs/LINUX/osi_vnodeops.c
 +++ b/src/afs/LINUX/osi_vnodeops.c
-@@ -904,6 +904,28 @@ afs_linux_dentry_revalidate(struct dentry *dp, int flags)
+@@ -1207,6 +1207,28 @@ afs_linux_dentry_revalidate(struct dentry *dp, int flags)
  	/* should we always update the attributes at this point? */
  	/* unlikely--the vcache entry hasn't changed */
  
@@ -78,7 +78,7 @@ index 7c7705e..0d0e94f 100644
      } else {
  #ifdef notyet
 diff --git a/src/afs/VNOPS/afs_vnop_access.c b/src/afs/VNOPS/afs_vnop_access.c
-index eabcfeb..6390850 100644
+index feb0ca7..ba818c7 100644
 --- a/src/afs/VNOPS/afs_vnop_access.c
 +++ b/src/afs/VNOPS/afs_vnop_access.c
 @@ -130,6 +130,15 @@ afs_AccessOK(struct vcache *avc, afs_int32 arights, struct vrequest *areq,
@@ -118,7 +118,7 @@ index eabcfeb..6390850 100644
      }
  }
 diff --git a/src/afs/VNOPS/afs_vnop_attrs.c b/src/afs/VNOPS/afs_vnop_attrs.c
-index b3931e5..71ef05c 100644
+index d01aff2..0a38c1c 100644
 --- a/src/afs/VNOPS/afs_vnop_attrs.c
 +++ b/src/afs/VNOPS/afs_vnop_attrs.c
 @@ -88,8 +88,8 @@ afs_CopyOutAttrs(struct vcache *avc, struct vattr *attrs)
@@ -133,10 +133,10 @@ index b3931e5..71ef05c 100644
      attrs->va_fsid = avc->v.v_vfsp->vfs_fsid.val[0];
  #elif defined(AFS_DARWIN80_ENV)
 diff --git a/src/afs/VNOPS/afs_vnop_lookup.c b/src/afs/VNOPS/afs_vnop_lookup.c
-index 8e7af1c..7e984e9 100644
+index 5d96f75..7957eee 100644
 --- a/src/afs/VNOPS/afs_vnop_lookup.c
 +++ b/src/afs/VNOPS/afs_vnop_lookup.c
-@@ -1877,6 +1877,12 @@ afs_lookup(OSI_VC_DECL(adp), char *aname, struct vcache **avcp, afs_ucred_t *acr
+@@ -1915,6 +1915,12 @@ afs_lookup(OSI_VC_DECL(adp), char *aname, struct vcache **avcp, afs_ucred_t *acr
      }
  
    done:
@@ -150,7 +150,7 @@ index 8e7af1c..7e984e9 100644
      if (tname != aname && tname)
  	osi_FreeLargeSpace(tname);
 diff --git a/src/afs/afs.h b/src/afs/afs.h
-index fcc4c70..0d53af6 100644
+index 88d5f77..61d3ee9 100644
 --- a/src/afs/afs.h
 +++ b/src/afs/afs.h
 @@ -233,8 +233,16 @@ struct afs_slotlist {
@@ -170,19 +170,19 @@ index fcc4c70..0d53af6 100644
      afs_int32 busyCount;	/* how many busies we've seen so far */
      afs_int32 flags;		/* things like O_SYNC, O_NONBLOCK go here */
      char initd;			/* if non-zero, Error fields meaningful */
-@@ -887,6 +895,7 @@ struct vcache {
- #ifdef AFS_SUN5_ENV
+@@ -896,6 +904,7 @@ struct vcache {
      struct afs_q multiPage;	/* list of multiPage_range structs */
  #endif
+     afs_uint32 lastBRLWarnTime; /* last time we warned about byte-range locks */
 +    int apache_access;		/* whether or not Apache has access to a file */
  };
  
  #define	DONT_CHECK_MODE_BITS	0
 diff --git a/src/afs/afs_analyze.c b/src/afs/afs_analyze.c
-index 1834e6d..673a8e6 100644
+index 2ecd38e..95aafcd 100644
 --- a/src/afs/afs_analyze.c
 +++ b/src/afs/afs_analyze.c
-@@ -368,7 +368,7 @@ afs_Analyze(struct afs_conn *aconn, afs_int32 acode,
+@@ -478,7 +478,7 @@ afs_Analyze(struct afs_conn *aconn, struct rx_connection *rxconn,
  			 (afid ? afid->Fid.Volume : 0));
  	}
  
@@ -192,7 +192,7 @@ index 1834e6d..673a8e6 100644
  		(aerrP->err_Volume)++;
  	    areq->volumeError = VOLBUSY;
 diff --git a/src/afs/afs_osi_pag.c b/src/afs/afs_osi_pag.c
-index c888605..ff5cf2d 100644
+index efce229..c1c1871 100644
 --- a/src/afs/afs_osi_pag.c
 +++ b/src/afs/afs_osi_pag.c
 @@ -49,6 +49,8 @@ afs_uint32 pagCounter = 0;
@@ -205,7 +205,7 @@ index c888605..ff5cf2d 100644
   * Pags are implemented as follows: the set of groups whose long
   * representation is '41XXXXXX' hex are used to represent the pags.
 @@ -484,6 +486,15 @@ afs_InitReq(struct vrequest *av, afs_ucred_t *acred)
- 	av->uid = afs_cr_uid(acred);	/* default when no pag is set */
+ 	av->uid = afs_cr_ruid(acred);	/* default when no pag is set */
  #endif
      }
 +
@@ -221,10 +221,10 @@ index c888605..ff5cf2d 100644
  }
  
 diff --git a/src/afs/afs_pioctl.c b/src/afs/afs_pioctl.c
-index f282510..00f1360 100644
+index e0a744d..c1c8c8c 100644
 --- a/src/afs/afs_pioctl.c
 +++ b/src/afs/afs_pioctl.c
-@@ -1406,6 +1406,10 @@ DECL_PIOCTL(PSetAcl)
+@@ -1420,6 +1420,10 @@ DECL_PIOCTL(PSetAcl)
      struct rx_connection *rxconn;
      XSTATS_DECLS;
  
@@ -235,7 +235,7 @@ index f282510..00f1360 100644
      AFS_STATCNT(PSetAcl);
      if (!avc)
  	return EINVAL;
-@@ -1790,6 +1794,10 @@ DECL_PIOCTL(PSetTokens)
+@@ -1806,6 +1810,10 @@ DECL_PIOCTL(PSetTokens)
      struct vrequest treq;
      afs_int32 flag, set_parent_pag = 0;
  
@@ -246,7 +246,7 @@ index f282510..00f1360 100644
      AFS_STATCNT(PSetTokens);
      if (!afs_resourceinit_flag) {
  	return EIO;
-@@ -2231,6 +2239,11 @@ DECL_PIOCTL(PGetTokens)
+@@ -2266,6 +2274,11 @@ DECL_PIOCTL(PGetTokens)
      int newStyle;
      int code = E2BIG;
  
@@ -258,7 +258,7 @@ index f282510..00f1360 100644
      AFS_STATCNT(PGetTokens);
      if (!afs_resourceinit_flag)	/* afs daemons haven't started yet */
  	return EIO;		/* Inappropriate ioctl for device */
-@@ -2341,6 +2354,10 @@ DECL_PIOCTL(PUnlog)
+@@ -2376,6 +2389,10 @@ DECL_PIOCTL(PUnlog)
      afs_int32 i;
      struct unixuser *tu;
  

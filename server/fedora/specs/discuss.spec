@@ -1,6 +1,6 @@
 # Make sure to update this to coincide with the most recent debathena-discuss
 # release from http://debathena.mit.edu/apt/pool/debathena/d/debathena-discuss/
-%define upstreamversion 10.0.15
+%define upstreamversion 10.0.17
 Name:		discuss
 Version:	%{upstreamversion}
 Release:	1.%{scriptsversion}%{?dist}
@@ -20,7 +20,7 @@ Discuss is a user-interface front end to a networked conferencing system.
 This is a clone of Debathena's debathena-discuss package.
 
 %prep
-%setup -q -n debathena-%{name}-%{upstreamversion}
+%setup -q -n %{name}-%{upstreamversion}
 
 %build
 autoreconf -fi
@@ -29,7 +29,8 @@ autoreconf -fi
 # want the error return code to cause rpmbuild to bomb out.
 automake --add-missing --foreign || :
 %configure --without-krb4 --with-krb5 --with-zephyr --with-pager=/usr/bin/less
-make %{?_smp_mflags}
+#make %{?_smp_mflags}
+make
 
 %install
 rm -rf %{buildroot}
@@ -55,7 +56,6 @@ rm -rf %{buildroot}
 %{_bindir}/dsmail
 %{_bindir}/dspipe
 %{_bindir}/mkds
-%{_bindir}/pmtg
 %{_bindir}/rmds
 %{_libexecdir}/edsc
 %defattr(-,root,root,-)
@@ -98,6 +98,9 @@ This package contains the discuss server.
 %attr(4755,discuss,discuss) %{_sbindir}/disserve
 %attr(755,discuss,discuss) %{_localstatedir}/spool/discuss
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/xinetd.d/%{name}
+%{_libexecdir}/disdebug
+%{_libexecdir}/expunge
+%{_libexecdir}/recover
 
 %pre server
 getent group discuss >/dev/null || groupadd -r discuss
@@ -107,6 +110,9 @@ getent passwd discuss >/dev/null || \
 exit 0
 
 %changelog
+* Mon May 26 2014 Alexander Chernyakhovsky <achernya@mit.edu> - 10.0.17-1
+- Update to discuss 10.0.17
+
 * Tue Mar 19 2013 Alexander Chernyakhovsky <achernya@mit.edu> - 10.0.15-1
 - Update to discuss 10.0.15
 

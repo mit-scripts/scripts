@@ -1,0 +1,44 @@
+From f4d66a13e385c6fa2026e2da1119ad080928c1f5 Mon Sep 17 00:00:00 2001
+From: Alexander Chernyakhovsky <achernya@mit.edu>
+Date: Fri, 3 May 2013 21:40:07 -0400
+Subject: [PATCH] Fix "the-bug" (non-empty content in 304s)
+
+PHP should not produce any output, even if zlib.output_compression is
+on, if the HTTP response code is 204 or 304 (no content or not modified).
+
+ixes PHP bug #42362 with php.cvs #56693, see:
+http://bugs.php.net/bug.php?id=42362
+http://news.php.net/php.cvs/56693
+http://cvs.php.net/viewvc.cgi/php-src/ext/zlib/zlib.c?r1=1.183.2.6.2.5.2.9&r2=1.183.2.6.2.5.2.10
+
+Apache should discard any body provided by a script (in any language, not
+just PHP) when the status is "no content" or "not modified".
+Addresses part of Apache bug #40953, see:
+https://issues.apache.org/bugzilla/show_bug.cgi?id=40953#c7
+
+Solves scripts.mit.edu support issue #773060, see:
+https://help.mit.edu/Ticket/UpdateCallCenter.html?id=773060
+https://diswww.mit.edu/charon/scripts/24018
+---
+ server/util_script.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/server/util_script.c b/server/util_script.c
+index 12a056f..dd83337 100644
+--- a/server/util_script.c
++++ b/server/util_script.c
+@@ -503,6 +503,11 @@ AP_DECLARE(int) ap_scan_script_header_err_core_ex(request_rec *r, char *buffer,
+             if ((cgi_status == HTTP_UNSET) && (r->method_number == M_GET)) {
+                 cond_status = ap_meets_conditions(r);
+             }
++            else if ((cgi_status == HTTP_NO_CONTENT) ||
++                     (cgi_status == HTTP_NOT_MODIFIED) ||
++                     ap_is_HTTP_INFO(cgi_status)) {
++                r->header_only = 1; /* discard any body */
++            }
+             apr_table_overlap(r->err_headers_out, merge,
+                 APR_OVERLAP_TABLES_MERGE);
+             if (!apr_is_empty_table(cookie_table)) {
+-- 
+1.8.1.2
+

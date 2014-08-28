@@ -2,7 +2,7 @@
 name=Fedora $releasever - $basearch - Updates
 failovermethod=priority
 #baseurl=http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/
-baseurl=http://archives.fedoraproject.org/pub/archive/fedora/linux/updates/$releasever/$basearch/
+baseurl=http://dl.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/
 #mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=updates-released-f$releasever&arch=$basearch
 enabled=1
 gpgcheck=1
@@ -12,7 +12,7 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$basearch
 name=Fedora $releasever - $basearch - Updates - Debug
 failovermethod=priority
 #baseurl=http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/debug/
-baseurl=http://archives.fedoraproject.org/pub/archive/fedora/linux/updates/$releasever/$basearch/debug/
+baseurl=http://dl.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/debug/
 #mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=updates-released-debug-f$releasever&arch=$basearch
 enabled=0
 gpgcheck=1
@@ -22,7 +22,7 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$basearch
 name=Fedora $releasever - Updates Source
 failovermethod=priority
 #baseurl=http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/SRPMS/
-baseurl=http://archives.fedoraproject.org/pub/archive/fedora/linux/updates/$releasever/SRPMS/
+baseurl=http://dl.fedoraproject.org/pub/fedora/linux/updates/$releasever/SRPMS/
 #mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=updates-released-source-f$releasever&arch=$basearch
 enabled=0
 gpgcheck=1

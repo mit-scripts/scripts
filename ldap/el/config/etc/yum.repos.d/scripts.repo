@@ -1,0 +1,11 @@
+[scripts]
+name=Scripts
+baseurl=http://web.mit.edu/scripts/yum-repos/rpm-el7/
+enabled=1
+gpgcheck=0
+
+[scripts-testing]
+name=Scripts Testing
+baseurl=http://web.mit.edu/scripts/yum-repos/rpm-el7-testing/
+enabled=0
+gpgcheck=0

@@ -1,12 +1,14 @@
 Name:           zephyr
-Version:        3.0.2
+Version:        3.1.2
+%define commit 54c6b84a81301a1691f9bec10c63c1e36166df9d
+%define shortcommit %(c=%{commit}; echo ${c:0:7})
 Release:        0.%{scriptsversion}%{?dist}
 Summary:        Client programs for the Zephyr real-time messaging system
 
 Group:          Applications/Communications
 License:        MIT
 URL:            http://zephyr.1ts.org/
-Source0:        http://zephyr.1ts.org/export/HEAD/distribution/%{name}-%{version}.tar.gz
+Source0:        https://github.com/zephyr-im/zephyr/archive/%{commit}/%{name}-%{version}-%{shortcommit}.tar.gz
 Source1:        zhm.init
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -58,7 +60,7 @@ developing applications that use %{name}.
 
 
 %prep
-%setup -q
+%setup -q -n %{name}-%{commit}
 cp -p %{SOURCE1} .
 
 
@@ -141,9 +143,12 @@ rm -rf $RPM_BUILD_ROOT
 %files          devel
 %{_libdir}/*.so
 %{_includedir}/*
-
+%{_libdir}/pkgconfig/zephyr.pc
 
 %changelog
+* Mon May 26 2014 Alexander Chernyakhovsky <achernya@mit.edu> - 3.1.2-0
+- Update to Zephyr 3.1.2, fix packaging for F20
+
 * Sat Apr 16 2011 Alexander Chernyakhovsky <achernya@mit.edu> 3.0.1-0
 - Zephyr 3.0.1
 

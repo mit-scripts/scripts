@@ -1,6 +1,6 @@
---- openssh.spec.orig	2013-07-15 21:14:52.452894092 -0400
-+++ openssh.spec	2013-07-15 21:18:59.494168115 -0400
-@@ -74,7 +74,7 @@
+--- openssh.spec.orig	2014-05-25 19:03:45.308703615 -0400
++++ openssh.spec	2014-05-25 19:05:57.593843283 -0400
+@@ -71,7 +71,7 @@
  Summary: An open source implementation of SSH protocol versions 1 and 2
  Name: openssh
  Version: %{openssh_ver}
@@ -8,26 +8,25 @@
 +Release: %{openssh_rel}%{?dist}%{?rescue_rel}.scripts.%{scriptsversion}
  URL: http://www.openssh.com/portable.html
  #URL1: http://pamsshagentauth.sourceforge.net
- #Source0: ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz
-@@ -220,7 +220,7 @@
- Patch904: openssh-5.9p1-change-max-startups.patch
- # make sftp's libedit interface marginally multibyte aware (#841771)
- Patch908: openssh-5.9p1-sftp-multibyte.patch
--
+ Source0: ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz
+@@ -196,6 +196,7 @@
+ # ignore environment variables with embedded '=' or '\0' characters (#1077843)
+ Patch909: openssh-6.4p1-ignore-bad-env-var.patch
+ 
 +Patch1001: openssh-4.7p1-gssapi-name-in-env.patch
  
  License: BSD
  Group: Applications/Internet
-@@ -271,6 +273,7 @@
- Group: Applications/Internet
- Requires: openssh = %{version}-%{release}
+@@ -254,6 +255,7 @@
+ Requires(pre): /usr/sbin/useradd
+ Requires: pam >= 1.0.1-3
  Requires: fipscheck-lib%{_isa} >= 1.3.0
 +Provides: scripts-openssh-server
- 
- %package server
- Summary: An open source SSH server daemon
-@@ -458,10 +461,12 @@
- %patch714 -p0 -b .null-xcrypt
+ Requires(post): systemd-units
+ Requires(preun): systemd-units
+ Requires(postun): systemd-units
+@@ -411,10 +413,12 @@
+ %patch713 -p1 -b .ctr-cavs
  
  %patch800 -p1 -b .gsskex
 -%patch801 -p1 -b .force_krb
@@ -38,10 +37,10 @@
 -%patch901 -p1 -b .kuserok
 +# Remove the kuserok patch as it won't apply without patch800
 +# %patch901 -p1 -b .kuserok
- %patch902 -p1 -b .man-moduli
- %patch903 -p1 -b .ipqos
- %patch904 -p1 -b .max-startups
-@@ -471,6 +476,8 @@
+ %patch902 -p1 -b .ccache_name
+ %patch903 -p1 -b .dh
+ %patch904 -p1 -b .SP800-131A
+@@ -428,6 +432,8 @@
  # Nothing here yet
  %endif
  

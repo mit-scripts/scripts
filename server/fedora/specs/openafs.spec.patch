@@ -1,7 +1,7 @@
---- openafs.spec.orig	2013-06-24 04:40:31.000000000 -0400
-+++ openafs.spec	2013-07-18 22:43:10.631044261 -0400
+--- openafs.spec.orig	2014-05-25 21:15:54.539027644 -0400
++++ openafs.spec	2014-05-25 21:16:27.836268275 -0400
 @@ -4,7 +4,7 @@
- %define pkgvers 1.6.4
+ %define pkgvers 1.6.8
  # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
 -%define pkgrel 1
@@ -9,7 +9,7 @@
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -249,9 +249,16 @@
+@@ -249,9 +249,15 @@
  %if %{build_modules}
  BuildRequires: kernel-devel
  %endif
@@ -20,7 +20,6 @@
 +Patch1000: openafs-scripts.patch
 +Patch1002: openafs-systemd-crond.patch
 +Patch1003: openafs-systemd-csdb.patch
-+Patch1004: openafs-d_drop.patch
 +%define _default_patch_fuzz 2
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
@@ -32,7 +31,7 @@
  %package client
 +Provides: scripts-openafs-client
  Requires: binutils, openafs = %{version}
- %if 0%{?fedora} >= 15
+ %if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
  Requires: systemd-units
 @@ -382,6 +389,7 @@
  %package -n dkms-%{name}
@@ -91,7 +90,7 @@
  
  %else
  
-@@ -698,6 +711,12 @@
+@@ -698,6 +711,11 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
@@ -99,12 +98,11 @@
 +%patch1000 -p1 -b .scripts
 +%patch1002 -p1 -b .systemd-crond
 +%patch1003 -p1 -b .systemd-csdb
-+%patch1004 -p1 -b .d_drop
 +
  ##############################################################################
  #
  # building
-@@ -869,6 +887,8 @@
+@@ -871,6 +889,8 @@
  %endif
  %endif
  
@@ -113,7 +111,7 @@
  ./configure --with-afs-sysname=${sysname} \
         --prefix=%{_prefix} \
         --libdir=%{_libdir} \
-@@ -1257,6 +1277,13 @@
+@@ -1267,6 +1287,13 @@
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*

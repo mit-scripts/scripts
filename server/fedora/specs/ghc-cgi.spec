@@ -1,35 +1,44 @@
-# cabal2spec-0.25
+# Generated with cabal-rpm
 # https://fedoraproject.org/wiki/Packaging:Haskell
-# https://fedoraproject.org/wiki/PackagingDrafts/Haskell
 
 %global pkg_name cgi
 
-%global common_summary Haskell %{pkg_name} library
-
-%global common_description A %{pkg_name} library for Haskell.
-
 Name:           ghc-%{pkg_name}
-Version:        3001.1.8.2
+Version:        3001.1.8.5
 Release:        0.%{scriptsversion}%{?dist}
-Summary:        %{common_summary}
+Summary:        A library for writing CGI programs
 
-Group:          System Environment/Libraries
 License:        BSD
-# BEGIN cabal2spec
 URL:            http://hackage.haskell.org/package/%{pkg_name}
 Source0:        http://hackage.haskell.org/packages/archive/%{pkg_name}/%{version}/%{pkg_name}-%{version}.tar.gz
-ExclusiveArch:  %{ghc_arches}
+
 BuildRequires:  ghc-Cabal-devel
 BuildRequires:  ghc-rpm-macros %{!?without_hscolour:hscolour}
-# END cabal2spec
-BuildRequires:  ghc-network-prof
-BuildRequires:  ghc-parsec-prof
-BuildRequires:  ghc-mtl-prof
-BuildRequires:  ghc-MonadCatchIO-mtl-prof
-BuildRequires:  ghc-xhtml-prof
+# Begin cabal-rpm deps:
+BuildRequires:  ghc-MonadCatchIO-mtl-devel
+BuildRequires:  ghc-containers-devel
+BuildRequires:  ghc-mtl-devel
+BuildRequires:  ghc-network-devel
+BuildRequires:  ghc-old-locale-devel
+BuildRequires:  ghc-old-time-devel
+BuildRequires:  ghc-parsec-devel
+BuildRequires:  ghc-xhtml-devel
+# End cabal-rpm deps
 
 %description
-%{common_description}
+This is a Haskell library for writing CGI programs.
+
+
+%package devel
+Summary:        Haskell %{pkg_name} library development files
+Provides:       %{name}-static = %{version}-%{release}
+Requires:       ghc-compiler = %{ghc_version}
+Requires(post): ghc-compiler = %{ghc_version}
+Requires(postun): ghc-compiler = %{ghc_version}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+
+%description devel
+This package provides the Haskell %{pkg_name} library development files.
 
 
 %prep
@@ -44,19 +53,25 @@ BuildRequires:  ghc-xhtml-prof
 %ghc_lib_install
 
 
-# devel subpackage
-%ghc_devel_package
-
-%ghc_devel_description
+%post devel
+%ghc_pkg_recache
 
 
-%ghc_devel_post_postun
+%postun devel
+%ghc_pkg_recache
 
 
-%ghc_files LICENSE
+%files -f %{name}.files
+%doc LICENSE
+
+
+%files devel -f %{name}-devel.files
 
 
 %changelog
+* Mon May 26 2014 Alexander Chernyakhovsky <achernya@mit.edu> - 3001.1.8.5-0
+- Updated packaging for F20, with cabal-rpm
+
 * Fri May 25 2012 Anders Kaseorg <andersk@mit.edu> - 3001.1.8.2-0
 - regenerated packaging with cabal2spec-0.25.5
 

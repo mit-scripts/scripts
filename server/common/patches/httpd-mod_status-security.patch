@@ -1,0 +1,78 @@
+From c9e5769ec7163cadd44a1b1a75a12a75a5a1db58 Mon Sep 17 00:00:00 2001
+From: Alexander Chernyakhovsky <achernya@mit.edu>
+Date: Fri, 3 May 2013 21:39:17 -0400
+Subject: [PATCH] Prevent mod_status from taking effect in .htaccess files
+
+Introduce a directive to the Apache configuration that is only
+permitted in a directory context, called "PermitStatusHandler", to
+prevent users from enabling mod_status from their .htaccess files.
+
+Signed-off-by: Quentin Smith <quentin@mit.edu>
+Signed-off-by: Geoffrey Thomas <geofft@mit.edu>
+---
+ modules/generators/mod_status.c | 33 +++++++++++++++++++++++++++++----
+ 1 file changed, 29 insertions(+), 4 deletions(-)
+
+diff --git a/modules/generators/mod_status.c b/modules/generators/mod_status.c
+index fe832b3..92a6f69 100644
+--- a/modules/generators/mod_status.c
++++ b/modules/generators/mod_status.c
+@@ -103,6 +103,27 @@ APR_IMPLEMENT_OPTIONAL_HOOK_RUN_ALL(ap, STATUS, int, status_hook,
+ static pid_t child_pid;
+ #endif
+ 
++typedef struct {
++  int permit_status_handler;
++} status_config_rec;
++
++static void *create_status_dir_config(apr_pool_t *p, char *d)
++{
++  status_config_rec *conf = apr_pcalloc(p, sizeof(*conf));
++  conf->permit_status_handler = 0;
++  return conf;
++}
++
++static const command_rec status_module_cmds[] =
++{
++    AP_INIT_FLAG("PermitStatusHandler", ap_set_flag_slot,
++		 (void *)APR_OFFSETOF(status_config_rec, permit_status_handler),
++		 ACCESS_CONF,
++      "As a security measure, only permit status handlers where this flag "
++      "is set. Only legal in directory context, not .htaccess."),
++    {NULL}
++};
++
+ /* Format the number of bytes nicely */
+ static void format_byte_out(request_rec *r, apr_off_t bytes)
+ {
+@@ -207,8 +228,12 @@ static int status_handler(request_rec *r)
+     int times_per_thread;
+ #endif
+ 
+-    if (strcmp(r->handler, STATUS_MAGIC_TYPE) && strcmp(r->handler,
+-            "server-status")) {
++    status_config_rec *conf = ap_get_module_config(r->per_dir_config,
++						   &status_module);
++
++    if ((strcmp(r->handler, STATUS_MAGIC_TYPE) &&
++         strcmp(r->handler, "server-status")) ||
++	!conf->permit_status_handler) {
+         return DECLINED;
+     }
+ 
+@@ -948,10 +973,10 @@ static void register_hooks(apr_pool_t *p)
+ AP_DECLARE_MODULE(status) =
+ {
+     STANDARD20_MODULE_STUFF,
+-    NULL,                       /* dir config creater */
++    create_status_dir_config,   /* dir config creater */
+     NULL,                       /* dir merger --- default is to override */
+     NULL,                       /* server config */
+     NULL,                       /* merge server config */
+-    NULL,                       /* command table */
++    status_module_cmds,         /* command table */
+     register_hooks              /* register_hooks */
+ };
+-- 
+1.8.1.2
+

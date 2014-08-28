@@ -15,10 +15,13 @@
 
 #include "ap_config.h"
 #include "ap_listen.h"
+#include "apr_portable.h"
 #include "http_config.h"
 #include "http_log.h"
 #include "httpd.h"
-#include "mpm.h"
+#include "unixd.h"
+
+#define MPM_ACCEPT_FUNC ap_unixd_accept
 
 extern void apr_sockaddr_vars_set(apr_sockaddr_t *, int, apr_port_t);
 

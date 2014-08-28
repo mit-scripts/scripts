@@ -1,19 +1,18 @@
 # Generated from pony-1.8.gem by gem2rpm -*- rpm-spec -*-
 %global gem_name pony
-%global rubyabi 1.9.1
 
 Name: rubygem-%{gem_name}
 Version: 1.8
-Release: 1%{?dist}.scripts.%{scriptsversion}
+Release: 2%{?dist}.scripts.%{scriptsversion}
 Summary: Send email in one command: Pony.mail(:to => 'someone@example.com', :body => 'hello')
 Group: Development/Languages
 License: MIT
 URL: http://github.com/benprew/pony
 Source0: http://rubygems.org/gems/%{gem_name}-%{version}.gem
-Requires: ruby(abi) = %{rubyabi}
+Requires: ruby(release)
 Requires: ruby(rubygems) 
 Requires: rubygem(mail) >= 2.0
-BuildRequires: ruby(abi) = %{rubyabi}
+BuildRequires: ruby(release)
 BuildRequires: rubygems-devel 
 BuildRequires: ruby 
 BuildArch: noarch
@@ -71,5 +70,8 @@ rm -rf %{buildroot}%{gem_instdir}/spec
 %doc %{gem_instdir}/README.rdoc
 
 %changelog
+* Mon May 26 2014 Alexander Chernyakhovsky <achernya@mit.edu> - 1.8-2
+- Update for Fedora 20
+
 * Sun Mar 09 2014 Benjamin Tidor <btidor@mit.edu> - 1.8-1
 - Initial package
