@@ -4,7 +4,7 @@
 
 Name:		python-authkit
 Version:	0.4.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	An authentication and authorization toolkit for WSGI applications and frameworks
 
 License:	MIT
@@ -15,6 +15,17 @@ BuildArch:	noarch
 
 BuildRequires:	python-setuptools
 BuildRequires:	python2-devel
+
+Requires:	python-beaker
+Requires:	python-decorator
+Requires:	python-nose
+Requires:	python-openid
+Requires:	python-paste
+Requires:	python-paste-deploy
+Requires:	python-paste-script
+Requires:	python-webob
+
+Patch0:		python-authkit.patch
 
 %description
 * Built for WSGI applications and middleware
@@ -29,6 +40,7 @@ BuildRequires:	python2-devel
 
 %prep
 %setup -q -n AuthKit-%{version}
+%patch0 -p1
 
 
 %build
@@ -48,5 +60,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Aug 28 2014 Alex Chernyakhovsky <achernya@mit.edu> - 0.4.5-2
+- Correct ElementTree import.
+
 * Thu Aug 28 2014 Alex Chernyakhovsky <achernya@mit.edu> - 0.4.5-1
 - Initial packaging.
