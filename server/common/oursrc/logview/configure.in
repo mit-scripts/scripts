@@ -1,5 +1,0 @@
-AC_INIT()
-
-AC_PROG_CC
-
-AC_OUTPUT(Makefile)

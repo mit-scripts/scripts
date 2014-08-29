@@ -1,17 +1,18 @@
 Summary: scripts.mit.edu logview program
 Group: Applications/System
 Name: logview
-Version: 0.%{scriptsversion}
+Version: 1.%{scriptsversion}
 Release: 0
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
 License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
+BuildArch: noarch
+
 %define debug_package %{nil}
 
 %description 
-
 scripts.mit.edu logview program
 See http://scripts.mit.edu/wiki for more information.
 
@@ -19,12 +20,11 @@ See http://scripts.mit.edu/wiki for more information.
 %setup -q -n %{name}
 
 %build
-./configure
-make
 
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
+mkdir -p %{buildroot}/%{_bindir}/
+cp logview %{buildroot}/%{_bindir}/logview
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
@@ -39,12 +39,12 @@ if [ "$1" = "0" ] ; then
 fi
 
 %files
-%defattr(0755, root, root)
-/usr/local/bin/logview.pl
-%defattr(2755, root, logview)
-/usr/local/bin/logview
+%{_bindir}/logview
 
 %changelog
+* Fri Aug 29 2014 Alexander Chernyakhovsky <achernya@mit.eduu> - 1.2601-0
+- logview is now journalctl
+
 * Wed Dec 31 2008  Quentin Smith <quentin@mit.edu>
 - ignore preexisting user
 

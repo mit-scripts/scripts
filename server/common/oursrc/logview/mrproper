@@ -1,5 +1,0 @@
-#!/bin/sh
-
-rm -f logview
-rm -f configure config.* Makefile
-rm -rf auto*.cache
