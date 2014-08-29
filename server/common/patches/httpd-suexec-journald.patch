@@ -1,0 +1,87 @@
+From 7eefa90ac1422825db6f1bbbe4e66f1336fca531 Mon Sep 17 00:00:00 2001
+From: Alexander Chernyakhovsky <achernya@mit.edu>
+Date: Thu, 28 Aug 2014 22:51:21 -0400
+Subject: [PATCH] Redirect stderr to systemd-journald
+
+Scripts provides the "logview" facility for users to be able to see
+the error logs from their applications. However, this facility
+requires running the moral equivalent of grep $USER error_log. Not all
+error messages contain the username, and therefore, the logview
+facility is unreliable at best.
+
+Additionally, the error_log contains an interleaving of all errors,
+which makes it difficult for system administrators to help withs
+upport requests in which an Internal Server Error has been
+experienced.
+
+Since systemd-journald supports per-user journals, replace stderr,
+which is provided by Apache, with a file descriptor pointing to the
+journal. Assuming that journald is configured to split the log on
+UIDs, this will allow journalctl --user to show each individual user
+their error logs.
+---
+ support/Makefile.in |  7 ++++++-
+ support/suexec.c    | 21 +++++++++++++++++++++
+ 2 files changed, 27 insertions(+), 1 deletion(-)
+
+diff --git a/support/Makefile.in b/support/Makefile.in
+index 745d86c..4014c1f 100644
+--- a/support/Makefile.in
++++ b/support/Makefile.in
+@@ -73,8 +73,13 @@ checkgid: $(checkgid_OBJECTS)
+ 	$(LINK) $(checkgid_LTFLAGS) $(checkgid_OBJECTS) $(PROGRAM_LDADD)
+ 
+ suexec_OBJECTS = suexec.lo
++suexec_LDADD = "-lsystemd-journal -lsystemd-id128"
++suexec.lo: suexec.c
++	$(LIBTOOL) --mode=compile $(CC) $(ab_CFLAGS) $(ALL_CFLAGS) $(ALL_CPPFLAGS) \
++	    $(ALL_INCLUDES) $(PICFLAGS) $(LTCFLAGS) -DSCRIPTS_HAVE_SYSTEMD_JOURNAL \
++	    -c $< && touch $@
+ suexec: $(suexec_OBJECTS)
+-	$(LINK) $(suexec_OBJECTS)
++	$(LINK) $(suexec_OBJECTS) $(suexec_LDADD)
+ 
+ htcacheclean_OBJECTS = htcacheclean.lo
+ htcacheclean: $(htcacheclean_OBJECTS)
+diff --git a/support/suexec.c b/support/suexec.c
+index 3a4d802..4fe4c44 100644
+--- a/support/suexec.c
++++ b/support/suexec.c
+@@ -61,6 +61,11 @@
+ #include <grp.h>
+ #endif
+ 
++#ifdef SCRIPTS_HAVE_SYSTEMD_JOURNAL
++#include <systemd/sd-journal.h>
++#include <systemd/sd-daemon.h>
++#endif
++
+ #ifdef AP_LOG_SYSLOG
+ #include <syslog.h>
+ #endif
+@@ -769,6 +774,22 @@ TRUSTED_DIRECTORY:
+     umask(AP_SUEXEC_UMASK);
+ #endif /* AP_SUEXEC_UMASK */
+ 
++#ifdef SCRIPTS_HAVE_SYSTEMD_JOURNAL
++    int fd = sd_journal_stream_fd("CGI Script", LOG_NOTICE, 0);
++    if (fd < 0) {
++	log_err("unable to open systemd-journald file descriptor\n");
++	exit(254);
++    }
++    if (dup2(fd, STDERR_FILENO) < 0) {
++	log_err("unable to make journald file descriptor available as stderr\n");
++	exit(253);
++    }
++    if (close(fd) < 0) {
++	log_err("unable to close journald file descriptor copy\n");
++	exit(252);
++    }
++#endif /* SCRIPTS_HAVE_SYSTEMD_JOURNAL */
++
+     /* Be sure to close the log file so the CGI can't mess with it. */
+ #ifdef AP_LOG_SYSLOG
+     if (log_open) {
+-- 
+1.8.5.2 (Apple Git-48)
+
