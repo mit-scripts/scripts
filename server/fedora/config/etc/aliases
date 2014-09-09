@@ -111,3 +111,5 @@ cssa:	/dev/null
 # mitlti: added 2014-07-26, causing way too much queued mail and not
 # yet responded to mail by -root
 mitlti:		/dev/null
+# paxters: so much spam, added 2014-09-09
+paxters:      	   /dev/null
