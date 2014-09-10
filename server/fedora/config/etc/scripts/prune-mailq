@@ -4,17 +4,24 @@ set -eu
 shopt -s failglob
 
 usage="Usage:
-    $0 list
+    $0 list-from
+    $0 list-to
     $0 show-rand
     $0 email lockers...
-    $0 purge lockers..."
+    $0 purge-from lockers...
+    $0 purge-to lockers..."
 
 clean_locker() {
     echo "${1%%@scripts.mit.edu}"
 }
 
-list() {
-    echo "Top twenty users by number of queued messages:"
+list_from() {
+    echo "Top twenty senders by number of queued messages:"
+    mailq | tail -n +2 | grep -v '^ *(' | awk 'BEGIN { RS = "" } { print $7 }' | sort | uniq -c | sort -n | tail -n 20
+}
+
+list_to() {
+    echo "Top twenty recipients by number of queued messages:"
     mailq | tail -n +2 | grep -v '^ *(' | awk 'BEGIN { RS = "" } { print $8 }' | sort | uniq -c | sort -n | tail -n 20
 }
 
@@ -30,7 +37,7 @@ show_rand() {
 tmpl_email() {
     sender=${SSH_GSSAPI_NAME%%/*}
     if [[ $# -eq 0 ]]; then
-        echo "Please specific a locker to generate template for." >&2
+        echo "Please specify a locker to generate template for." >&2
         exit 1
     fi
     for locker in "$@"; do
@@ -56,9 +63,22 @@ EOF
     done
 }
 
-purge() {
+purge_from() {
     if [[ $# -eq 0 ]]; then
-        echo "Please specific a locker to purge emails for." >&2
+        echo "Please specify a locker to purge emails from" >&2
+        exit 1
+    fi
+    for locker in "$@"; do
+        locker=$(clean_locker "$locker")
+        echo "$locker..."
+        mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$7 == \"$locker@scripts.mit.edu\") { print \$1 }" | tr -d '*!' | postsuper -d -
+        echo
+    done
+}
+
+purge_to() {
+    if [[ $# -eq 0 ]]; then
+        echo "Please specify a locker to purge emails to" >&2
         exit 1
     fi
     for locker in "$@"; do
@@ -76,10 +96,12 @@ op=${1:-}
 shift || :
 
 case "$op" in
-    list) list;;
+    list-from) list_from;;
+    list-to) list_to;;
     show-rand) show_rand;;
     email) tmpl_email "$@";;
-    purge) purge "$@";;
+    purge-from) purge_from "$@";;
+    purge-to) purge_to "$@";;
     *)
         echo "$usage" >&2;
         exit 1
