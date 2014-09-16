@@ -1,11 +1,11 @@
 --- openafs.spec.orig	2014-05-25 21:15:54.539027644 -0400
 +++ openafs.spec	2014-05-25 21:16:27.836268275 -0400
 @@ -4,7 +4,7 @@
- %define pkgvers 1.6.8
+ %define pkgvers 1.6.10
  # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
--%define pkgrel 1
-+%define pkgrel 1.99.scripts.%{scriptsversion}
+-%define pkgrel 0.pre1
++%define pkgrel 0.pre1.99.scripts.%{scriptsversion}
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
@@ -85,8 +85,8 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
--%{expand:%(%{kmodtool} rpmtemplate %{kmod_name} %{kverrel} %{kvariants} 2>/dev/null)}
-+%{expand:%(%{kmodtool} rpmtemplate %{kmod_name} %{kverrel} %{kvariants} | sed '/^%package/ aProvides: scripts-kmod-openafs' 2>/dev/null)}
+-%{expand:%(%{kmodtool} rpmtemplate %{kmod_name} %{kverrel} %{depmod} %{kvariants} 2>/dev/null)}
++%{expand:%(%{kmodtool} rpmtemplate %{kmod_name} %{kverrel} %{depmod} %{kvariants} | sed '/^%package/ aProvides: scripts-kmod-openafs' 2>/dev/null)}
  
  %else
  
