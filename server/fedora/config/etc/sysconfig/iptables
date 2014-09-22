@@ -5,7 +5,7 @@
 :log-smtp - [0:0]
 -A INPUT -p udp -m udp --dport 161 ! -s 18.0.0.0/8 -j REJECT
 -A OUTPUT -p tcp -m tcp --dport 25 --tcp-flags FIN,SYN,RST,ACK SYN -j log-smtp
--A log-smtp -i lo -j RETURN
+-A log-smtp -o lo -j RETURN
 -A log-smtp -m owner --uid-owner postfix -j RETURN
 -A log-smtp -m owner --uid-owner nrpe -j RETURN
 -A log-smtp -m owner --uid-owner 537644531 -j RETURN
