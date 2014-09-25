@@ -1,0 +1,30 @@
+--- bash.spec.old	2014-07-21 07:48:05.000000000 -0400
++++ bash.spec	2014-09-24 20:59:58.416349649 -0400
+@@ -7,7 +7,8 @@
+ Version: %{baseversion}%{patchleveltag}
+ Name: bash
+ Summary: The GNU Bourne Again shell
+-Release: 3%{?dist}
++Release: 3%{?dist}.scripts.%{scriptsversion}
++Provides: scripts-bash
+ Group: System Environment/Shells
+ License: GPLv3+
+ Url: http://www.gnu.org/software/bash
+@@ -124,6 +125,9 @@
+ # 1112710 - mention ulimit -c and -f POSIX block size
+ Patch128: bash-4.2-man-ulimit.patch
+ 
++# Disable function imports
++Patch9000: bash-4.2-disable-function-imports.patch
++
+ BuildRequires: texinfo bison
+ BuildRequires: ncurses-devel
+ BuildRequires: autoconf, gettext
+@@ -226,6 +230,7 @@
+ %patch125 -p1 -b .size_type
+ %patch126 -p1 -b .missing_closes
+ %patch128 -p1 -b .ulimit
++%patch9000 -p1 -b .disable_function_imports
+ 
+ echo %{version} > _distribution
+ echo %{release} > _patchlevel
