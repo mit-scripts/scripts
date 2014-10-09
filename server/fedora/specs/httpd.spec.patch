@@ -1,5 +1,5 @@
---- rpmbuild/SPECS/httpd.spec.~1~	2014-07-23 06:24:15.000000000 -0400
-+++ httpd.spec	2014-08-26 21:10:34.994027237 -0400
+--- httpd.spec.~1~	2014-07-23 06:24:15.000000000 -0400
++++ httpd.spec	2014-10-09 03:26:23.922059553 -0400
 @@ -15,7 +15,7 @@
  Summary: Apache HTTP Server
  Name: httpd
@@ -9,7 +9,7 @@
  URL: http://httpd.apache.org/
  Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
  Source1: index.html
-@@ -65,6 +65,14 @@
+@@ -65,6 +65,15 @@
  # Bug fixes
  Patch55: httpd-2.4.4-malformed-host.patch
  Patch56: httpd-2.4.4-mod_unique_id.patch
@@ -20,11 +20,12 @@
 +Patch1004: httpd-fixup-vhost.patch
 +Patch1005: httpd-allow-null-user.patch
 +Patch1006: httpd-suexec-journald.patch
++Patch1007: httpd-bug57070.patch
 +
  License: ASL 2.0
  Group: System Environment/Daemons
  BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-@@ -77,6 +84,7 @@
+@@ -77,6 +86,7 @@
  Provides: webserver
  Provides: mod_dav = %{version}-%{release}, httpd-suexec = %{version}-%{release}
  Provides: httpd-mmn = %{mmn}, httpd-mmn = %{mmnisa}, httpd-mmn = %{oldmmnisa}
@@ -32,7 +33,7 @@
  Requires: httpd-tools = %{version}-%{release}
  Requires(pre): /usr/sbin/useradd
  Requires(preun): systemd-units
-@@ -94,6 +102,7 @@
+@@ -94,6 +104,7 @@
  Obsoletes: secureweb-devel, apache-devel, stronghold-apache-devel
  Requires: apr-devel, apr-util-devel, pkgconfig
  Requires: httpd = %{version}-%{release}
@@ -40,7 +41,7 @@
  
  %description devel
  The httpd-devel package contains the APXS binary and other files
-@@ -132,6 +141,7 @@
+@@ -132,6 +143,7 @@
  Requires(post): openssl, /bin/cat
  Requires(pre): httpd
  Requires: httpd = 0:%{version}-%{release}, httpd-mmn = %{mmnisa}
@@ -48,7 +49,7 @@
  Obsoletes: stronghold-mod_ssl
  
  %description -n mod_ssl
-@@ -190,6 +200,13 @@
+@@ -190,6 +202,14 @@
  %patch55 -p1 -b .malformedhost
  %patch56 -p1 -b .uniqueid
  
@@ -58,11 +59,12 @@
 +%patch1004 -p1 -b .fixup-vhost
 +%patch1005 -p1 -b .allow-null-user
 +%patch1006 -p1 -b .journald
++%patch1007 -p0 -b .bug57070
 +
  # Patch in the vendor string
  sed -i '/^#define PLATFORM/s/Unix/%{vstring}/' os/unix/os.h
  
-@@ -242,11 +258,13 @@
+@@ -242,11 +262,13 @@
  	--enable-suexec --with-suexec \
          --enable-suexec-capabilities \
  	--with-suexec-caller=%{suexec_caller} \
@@ -80,7 +82,7 @@
          --enable-pie \
          --with-pcre \
          --enable-mods-shared=all \
-@@ -542,7 +560,8 @@
+@@ -542,7 +564,8 @@
  %{_sbindir}/fcgistarter
  %{_sbindir}/apachectl
  %{_sbindir}/rotatelogs
