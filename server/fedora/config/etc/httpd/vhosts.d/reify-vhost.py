@@ -62,7 +62,7 @@ if len(r) != 0:
 		SuExecUserGroup %(uname)s %(uname)s
 		Include conf.d/vhosts-common-ssl.conf
 		SSLCertificateFile /etc/pki/tls/certs/%(hname)s.pem
-		SSLCertificateKeyFile /etc/pki/tls/private/scripts.key
+		SSLCertificateKeyFile /etc/pki/tls/private/scripts-2048.key
 	</VirtualHost>
 	<VirtualHost *:444>
 		ServerName %(servername)s
@@ -73,7 +73,7 @@ if len(r) != 0:
 		Include conf.d/vhosts-common-ssl.conf
 		Include conf.d/vhosts-common-ssl-cert.conf
 		SSLCertificateFile /etc/pki/tls/certs/%(hname)s.pem
-		SSLCertificateKeyFile /etc/pki/tls/private/scripts.key
+		SSLCertificateKeyFile /etc/pki/tls/private/scripts-2048.key
 	</VirtualHost>
 </IfModule>""" % {
     'servername': r[0][1]['apacheServerName'][0],
