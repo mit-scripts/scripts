@@ -1,0 +1,51 @@
+From 097b5d31bcc325c7e33b1dcdf586c7b77bd00cbe Mon Sep 17 00:00:00 2001
+From: Anders Kaseorg <andersk@mit.edu>
+Date: Sun, 12 Oct 2014 22:21:40 -0400
+Subject: [PATCH] Revert "LINUX: Drop dentry if lookup returns new file" and
+ log differences
+
+This reverts commit 81f1814b566cb3b1cda97be4c48b9788cd7addd0, and adds
+a warning message whenever it would have taken effect on a directory.
+
+Change-Id: I60e3a5feb49329b07c07b09edeb4b3c416faaac1
+---
+ src/afs/LINUX/osi_vnodeops.c | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/src/afs/LINUX/osi_vnodeops.c b/src/afs/LINUX/osi_vnodeops.c
+index 2a8253e..6f0bbfb 100644
+--- a/src/afs/LINUX/osi_vnodeops.c
++++ b/src/afs/LINUX/osi_vnodeops.c
+@@ -1245,14 +1245,22 @@ afs_linux_dentry_revalidate(struct dentry *dp, int flags)
+ 	    code = afs_lookup(pvcp, (char *)dp->d_name.name, &tvc, credp);
+ 	    if (!tvc || tvc != vcp) {
+ 		dput(parent);
+-		/* Force unhash; the name doesn't point to this file
+-		 * anymore. */
+-		force_drop = 1;
+-		if (code && code != ENOENT) {
+-		    /* ...except if we couldn't perform the actual lookup,
+-		     * we don't know if the name points to this file or not. */
+-		    force_drop = 0;
++		/* Force unhash if name is known not to exist. */
++		if (code == ENOENT)
++		    force_drop = 1;
++
++		if (code == 0) {
++		    /* As of http://gerrit.openafs.org/11358, upstream
++		     * also sets force_drop = 1 in the code == 0 case,
++		     * but that seems to exacerbate the getcwd()
++		     * ENOENT problem. */
++		    if (dp->d_inode && S_ISDIR(dp->d_inode->i_mode)) {
++			char buf[256];
++			char *path = dentry_path_raw(dp, buf, sizeof(buf));
++			pr_warn("openafs: Rescued directory /afs/%s from force_drop\n", IS_ERR(path) ? "(error)" : path);
++		    }
+ 		}
++
+ 		goto bad_dentry;
+ 	    }
+ 
+-- 
+2.1.2
+
