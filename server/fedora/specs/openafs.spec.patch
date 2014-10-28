@@ -4,12 +4,12 @@
  %define pkgvers 1.6.10
  # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
--%define pkgrel 0.pre1
-+%define pkgrel 0.pre1.99.scripts.%{scriptsversion}
+-%define pkgrel 2
++%define pkgrel 2.99.scripts.%{scriptsversion}
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -249,9 +249,16 @@
+@@ -249,9 +249,17 @@
  %if %{build_modules}
  BuildRequires: kernel-devel
  %endif
@@ -20,7 +20,8 @@
 +Patch1000: openafs-scripts.patch
 +Patch1002: openafs-systemd-crond.patch
 +Patch1003: openafs-systemd-csdb.patch
-+Patch1004: openafs-revert-d_drop-new-file.patch
++Patch1004: openafs-afs_lookup-return.patch
++Patch1005: openafs-d_revalidate-mtpt.patch
 +%define _default_patch_fuzz 2
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
@@ -91,7 +92,7 @@
  
  %else
  
-@@ -698,6 +712,12 @@
+@@ -698,6 +712,13 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
@@ -99,7 +100,8 @@
 +%patch1000 -p1 -b .scripts
 +%patch1002 -p1 -b .systemd-crond
 +%patch1003 -p1 -b .systemd-csdb
-+%patch1004 -p1 -b .revert-d_drop-new-file
++%patch1004 -p1 -b .afs_lookup-return
++%patch1005 -p1 -b ._revalidate-mtpt
 +
  ##############################################################################
  #
