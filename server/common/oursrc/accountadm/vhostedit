@@ -5,4 +5,4 @@ if [ ! "$1" ]; then
     exit 2
 fi
 
-exec ldapvi -b dc=scripts,dc=mit,dc=edu "(|(&(objectClass=apacheConfig)(|(apacheServerName=$1)(apacheServerAlias=$1)))(&(objectClass=scriptsVhost)(|(scriptsVhostName=$1)(scriptsVhostAlias=$1))))"
+exec ldapvi -b dc=scripts,dc=mit,dc=edu "(|(&(objectClass=apacheConfig)(|$(printf '(apacheServerName=%s)' "$@")$(printf '(apacheServerAlias=%s)' "$@")))(&(objectClass=scriptsVhost)(|$(printf '(scriptsVhostName=%s)' "$@")$(printf '(scriptsVhostAlias=%s)' "$@"))))"
