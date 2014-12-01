@@ -1,0 +1,51 @@
+From 97ca2bad9577380b10e7179ebecfc2dfa3fe4626 Mon Sep 17 00:00:00 2001
+From: Andrew Deason <adeason@sinenomine.net>
+Date: Mon, 1 Dec 2014 10:23:23 -0600
+Subject: [PATCH] Do not submit: LINUX: Avoid mvid NULL deref in
+ check_bad_parent
+
+check_bad_parent dereferences vcp->mvid, assuming it is not NULL (vcp
+is a root vcache here, so mvid refers to the parent fid). However, in
+some situations, vcp->mvid can be NULL.
+
+When we first afs_GetVCache the fid, we try to set mvid by setting
+mvid to the 'dotdot' structure in the volume struct. But we get that
+volume struct from afs_GetVolume, which can fail (at the very least,
+this can fail on network failure when looking up vldb information). If
+it fails, then we do not set the mvid parent. On future lookups for
+the fid, afs_GetVCache will return early for a fastpath, if the vcache
+is already in memory. So, mvid will never get set in such a situation.
+
+We also set the mvid parent fid in afs_lookup if we resolved a
+mountpoint to the root vcache. However, this is skipped if CMValid is
+not set on the vcache, so if CMValid is cleared right after resolving
+the mountpoint (say, perhaps done by some other thread e.g. a callback
+break or other reasons), then the mvid parent fid will not be set.
+
+To avoid crashing in these situations, if vcp->mvid is NULL in
+check_bad_parent, don't check the mvid, and assume it does not match
+(since we don't know what it is).
+
+FIXES 131967
+
+Change-Id: I3550cf5a01811ede17d74770161326667a6e8628
+---
+ src/afs/LINUX/osi_vnodeops.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/afs/LINUX/osi_vnodeops.c b/src/afs/LINUX/osi_vnodeops.c
+index 9a164ea..959e320 100644
+--- a/src/afs/LINUX/osi_vnodeops.c
++++ b/src/afs/LINUX/osi_vnodeops.c
+@@ -949,7 +949,7 @@ check_bad_parent(struct dentry *dp)
+     parent = dget_parent(dp);
+     pvc = VTOAFS(parent->d_inode);
+ 
+-    if (vcp->mvid->Fid.Volume != pvc->f.fid.Fid.Volume) {	/* bad parent */
++    if (!vcp->mvid || vcp->mvid->Fid.Volume != pvc->f.fid.Fid.Volume) {	/* bad parent */
+ 	credp = crref();
+ 
+ 	/* force a lookup, so vcp->mvid is fixed up */
+-- 
+2.2.0
+
