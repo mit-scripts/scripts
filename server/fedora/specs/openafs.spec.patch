@@ -9,7 +9,7 @@
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -249,9 +249,19 @@
+@@ -249,9 +249,20 @@
  %if %{build_modules}
  BuildRequires: kernel-devel
  %endif
@@ -24,6 +24,7 @@
 +Patch1005: openafs-d_revalidate-mtpt.patch
 +Patch1006: openafs-linux-3.17.patch
 +Patch1007: openafs-mvid-NULL-deref.patch
++Patch1008: openafs-afs_conn-overcounts.patch
 +%define _default_patch_fuzz 2
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
@@ -94,7 +95,7 @@
  
  %else
  
-@@ -698,6 +712,15 @@
+@@ -698,6 +712,16 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
@@ -106,6 +107,7 @@
 +%patch1005 -p1 -b .d_revalidate-mtpt
 +%patch1006 -p1 -b .linux-3.17
 +%patch1007 -p1 -b .mvid-NULL-deref.patch
++%patch1008 -p1 -b .afs_conn-overcounts.patch
 +
  ##############################################################################
  #
