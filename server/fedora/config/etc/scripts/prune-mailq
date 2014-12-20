@@ -6,7 +6,7 @@ shopt -s failglob
 usage="Usage:
     $0 list-from
     $0 list-to
-    $0 show-rand [from|to] [regex]
+    $0 show-rand [from regex|to regex]
     $0 email lockers...
     $0 purge-from lockers...
     $0 purge-to lockers..."
@@ -15,6 +15,7 @@ usage() {
     echo "$usage" >&2;
     exit 1
 }
+
 clean_locker() {
     echo "${1%%@scripts.mit.edu}"
 }
@@ -32,7 +33,7 @@ list_to() {
 show_rand() {
     if [[ $# -eq 0 ]]; then
 	files=$(ls /var/spool/postfix/deferred/?/* | shuf | head -n 3)
-    else
+    elif [[ $# -eq 2 ]]; then
 	match=$2
 	case "$1" in
 	    from) dir=7;;
@@ -41,10 +42,12 @@ show_rand() {
 	esac
 	msgids=$(mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$$dir ~ /$match/) { print \$1 }" | shuf | head -n 3)
 	files=$(for msgid in $msgids; do echo /var/spool/postfix/deferred/${msgid:0:1}/$msgid; done)
+    else
+	usage
     fi
     for file in $files; do
         echo ">>>> $file";
-        strings "$file"
+        postcat "$file"
         echo;
     done
 }
