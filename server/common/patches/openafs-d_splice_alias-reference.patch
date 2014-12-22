@@ -1,4 +1,4 @@
-From 1c576fdf9f05c6af7b5b029ba010a76bed48488e Mon Sep 17 00:00:00 2001
+From b1f23baecb2de72b44cda8bba27615c012a445f1 Mon Sep 17 00:00:00 2001
 From: Marc Dionne <marc.dionne@your-file-system.com>
 Date: Thu, 18 Dec 2014 08:43:22 -0500
 Subject: [PATCH] Linux: d_splice_alias may drop inode reference on error
@@ -17,14 +17,29 @@ return errors here.
 
 Change-Id: Id1786ac2227b4d8e0ae801fe59c15a0ecd975bed
 ---
- src/afs/LINUX/osi_vnodeops.c | 25 ++++++++++++++++++++++---
- 1 file changed, 22 insertions(+), 3 deletions(-)
+ acinclude.m4                 |  3 +++
+ src/afs/LINUX/osi_vnodeops.c | 29 ++++++++++++++++++++++++++---
+ 2 files changed, 29 insertions(+), 3 deletions(-)
 
+diff --git a/acinclude.m4 b/acinclude.m4
+index 96adde0..19f7092 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -984,6 +984,9 @@ case $AFS_SYSNAME in *_linux* | *_umlinux*)
+ 		 AC_CHECK_LINUX_FUNC([hlist_unhashed],
+ 				     [#include <linux/list.h>],
+ 				     [hlist_unhashed(0);])
++		 AC_CHECK_LINUX_FUNC([ihold],
++				     [#include <linux/fs.h>],
++				     [ihold(NULL);])
+ 		 AC_CHECK_LINUX_FUNC([i_size_read],
+ 				     [#include <linux/fs.h>],
+ 				     [i_size_read(NULL);])
 diff --git a/src/afs/LINUX/osi_vnodeops.c b/src/afs/LINUX/osi_vnodeops.c
-index b2ab9d5..3723cf8 100644
+index b2ab9d5..cedfef6 100644
 --- a/src/afs/LINUX/osi_vnodeops.c
 +++ b/src/afs/LINUX/osi_vnodeops.c
-@@ -1612,6 +1612,13 @@ afs_linux_lookup(struct inode *dip, struct dentry *dp)
+@@ -1612,6 +1612,17 @@ afs_linux_lookup(struct inode *dip, struct dentry *dp)
  	ip->i_flags |= S_AUTOMOUNT;
  #endif
      }
@@ -33,12 +48,16 @@ index b2ab9d5..3723cf8 100644
 +     * d_splice_alias drops our reference on error.
 +     */
 +    if (ip)
++#ifdef HAVE_LINUX_IHOLD
++	ihold(ip);
++#else
 +	igrab(ip);
++#endif
 +
      newdp = d_splice_alias(ip, dp);
  
   done:
-@@ -1625,14 +1632,26 @@ afs_linux_lookup(struct inode *dip, struct dentry *dp)
+@@ -1625,14 +1636,26 @@ afs_linux_lookup(struct inode *dip, struct dentry *dp)
  	 * d_splice_alias can return an error (EIO) if there is an existing
  	 * connected directory alias for this dentry.
  	 */

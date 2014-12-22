@@ -1,4 +1,4 @@
-From 368fff3b2fef5b559ed6da016e1e9f0413b55552 Mon Sep 17 00:00:00 2001
+From 54c0ee608f4afd2b178c9b60eabfc3564293d996 Mon Sep 17 00:00:00 2001
 From: Andrew Deason <adeason@sinenomine.net>
 Date: Sun, 14 Sep 2014 14:10:11 -0500
 Subject: [PATCH] afs: Fix some afs_conn overcounts
@@ -36,16 +36,21 @@ fix the problem with the least amount of impact possible.
 FIXES 131885
 
 Change-Id: I3a52f8ccef24f01d04c02db0a4b711405360e323
+Reviewed-on: http://gerrit.openafs.org/11464
+Reviewed-by: Benjamin Kaduk <kaduk@mit.edu>
+Reviewed-by: Daria Brashear <shadow@your-file-system.com>
+Tested-by: Benjamin Kaduk <kaduk@mit.edu>
+Reviewed-by: Jeffrey Altman <jaltman@your-file-system.com>
 ---
  src/afs/afs_bypasscache.c | 1 +
  src/afs/afs_dcache.c      | 7 +++++++
  2 files changed, 8 insertions(+)
 
 diff --git a/src/afs/afs_bypasscache.c b/src/afs/afs_bypasscache.c
-index 744feb2..8fc6009 100644
+index f452638..4c6fb9a 100644
 --- a/src/afs/afs_bypasscache.c
 +++ b/src/afs/afs_bypasscache.c
-@@ -637,6 +637,7 @@ afs_PrefetchNoCache(struct vcache *avc,
+@@ -621,6 +621,7 @@ afs_PrefetchNoCache(struct vcache *avc,
  	    } else {
  		afs_warn("BYPASS: StartRXAFS_FetchData failed: %d\n", code);
  		unlock_and_release_pages(auio);
@@ -54,10 +59,10 @@ index 744feb2..8fc6009 100644
  	    }
  	    if (code == 0) {
 diff --git a/src/afs/afs_dcache.c b/src/afs/afs_dcache.c
-index dc1e039..a156e22 100644
+index 4a9edbd..338e8db 100644
 --- a/src/afs/afs_dcache.c
 +++ b/src/afs/afs_dcache.c
-@@ -2399,6 +2399,13 @@ afs_GetDCache(struct vcache *avc, afs_size_t abyte,
+@@ -2398,6 +2398,13 @@ afs_GetDCache(struct vcache *avc, afs_size_t abyte,
  			afs_PutDCache(tdc);
  			tdc = 0;
  			ReleaseReadLock(&avc->lock);
@@ -72,5 +77,5 @@ index dc1e039..a156e22 100644
  			goto RetryGetDCache;
  		    }
 -- 
-2.2.0
+2.2.1
 
