@@ -2,7 +2,11 @@
 . /usr/lib64/nagios/plugins/utils.sh
 
 if [ $# -ge 1 ]; then
-    CHECKS=`/usr/bin/fs checks -cell "$1" -fast`
+    CHECKS="$(
+	/usr/bin/fs checks -cell "$1" -fast &&
+	cd "/afs/$1" &&
+	/bin/dash -c '[ "$(pwd -P)" ]' 2>&1
+    )"
 else
     CHECKS=`/usr/bin/fs checks -all -fast`
 fi
