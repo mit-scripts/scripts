@@ -16,7 +16,7 @@ STATUS=$?
 $ECHO "$CHECKS"
 
 if [ $STATUS -gt 0 ]; then
-    if $ECHO "$CHECKS" | grep -i COCYTUS >/dev/null; then
+    if $ECHO "$CHECKS" | grep -i STYX >/dev/null; then
 	exit $STATE_CRITICAL;
     else
 	exit $STATE_WARNING;
