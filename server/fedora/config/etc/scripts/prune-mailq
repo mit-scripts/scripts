@@ -20,6 +20,14 @@ clean_locker() {
     echo "${1%%@scripts.mit.edu}"
 }
 
+canonicalize_address() {
+    if [[ "$1" == *@* ]]; then
+	echo "$1"
+    else
+	echo "$1@scripts.mit.edu"
+    fi
+}
+
 list_from() {
     echo "Top twenty senders by number of queued messages:"
     mailq | tail -n +2 | grep -v '^ *(' | awk 'BEGIN { RS = "" } { print $7 }' | sort | uniq -c | sort -n | tail -n 20
@@ -87,9 +95,9 @@ purge_from() {
         exit 1
     fi
     for locker in "$@"; do
-        locker=$(clean_locker "$locker")
-        echo "$locker..."
-        mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$7 == \"$locker@scripts.mit.edu\") { print \$1 }" | tr -d '*!' | postsuper -d -
+        address=$(canonicalize_address "$locker")
+        echo "$address..."
+        mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$7 == \"$address\") { print \$1 }" | tr -d '*!' | postsuper -d -
         echo
     done
 }
@@ -100,9 +108,9 @@ purge_to() {
         exit 1
     fi
     for locker in "$@"; do
-        locker=$(clean_locker "$locker")
-        echo "$locker..."
-        mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$8 == \"$locker@scripts.mit.edu\" && \$9 == \"\") { print \$1 }" | tr -d '*!' | postsuper -d -
+        address=$(canonicalize_address "$locker")
+        echo "$address..."
+        mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$8 == \"$address\" && \$9 == \"\") { print \$1 }" | tr -d '*!' | postsuper -d -
         echo
     done
 }
