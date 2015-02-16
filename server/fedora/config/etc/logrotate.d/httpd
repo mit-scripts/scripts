@@ -10,7 +10,7 @@
     endscript
 }
 
-/var/log/httpd/suexec.log {
+/var/log/httpd/suexec_log {
     rotate 0
     daily
     missingok
