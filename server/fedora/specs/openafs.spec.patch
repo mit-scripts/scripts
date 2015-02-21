@@ -4,12 +4,12 @@
  %define pkgvers 1.6.11
  # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
--%define pkgrel 0.pre1
-+%define pkgrel 0.pre1.99.scripts.%{scriptsversion}
+-%define pkgrel 0.pre2
++%define pkgrel 0.pre2.99.scripts.%{scriptsversion}
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -249,9 +249,18 @@
+@@ -249,9 +249,14 @@
  %if %{build_modules}
  BuildRequires: kernel-devel
  %endif
@@ -19,10 +19,6 @@
  
 +Patch1000: openafs-scripts.patch
 +Patch1003: openafs-systemd-csdb.patch
-+Patch1007: openafs-mvid-NULL-deref.patch
-+Patch1008: openafs-afs_conn-overcounts.patch
-+Patch1009: openafs-d_splice_alias-reference.patch
-+Patch1010: openafs-d_u.d_alias.patch
 +%define _default_patch_fuzz 2
 +
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
@@ -93,17 +89,13 @@
  
  %else
  
-@@ -698,6 +712,14 @@
+@@ -698,6 +712,10 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
 +# Apply the Scripts patch
 +%patch1000 -p1 -b .scripts
 +%patch1003 -p1 -b .systemd-csdb
-+%patch1007 -p1 -b .mvid-NULL-deref.patch
-+%patch1008 -p1 -b .afs_conn-overcounts.patch
-+%patch1009 -p1 -b .d_splice_alias-reference
-+%patch1010 -p1 -b .d_u.d_alias
 +
  ##############################################################################
  #
