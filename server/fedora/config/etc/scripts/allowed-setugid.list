@@ -5,14 +5,10 @@
 /usr/bin/locate
 /usr/bin/screen
 /usr/bin/sudo
-/usr/bin/sudoedit
 /usr/libexec/openssh/ssh-keysign
-/usr/libexec/polkit-1/polkit-agent-helper-1
-/usr/libexec/pt_chown
+/usr/lib/polkit-1/polkit-agent-helper-1
 /usr/libexec/utempter/utempter
-/usr/local/bin/logview
 /usr/sbin/lockdev
-/usr/sbin/mtr
 /usr/sbin/postdrop
 /usr/sbin/postqueue
 /usr/sbin/userhelper
