@@ -4,15 +4,15 @@
  Summary: Apache HTTP Server
  Name: httpd
  Version: 2.4.10
--Release: 1%{?dist}
-+Release: 1%{?dist}.scripts.%{scriptsversion}
+-Release: 2%{?dist}
++Release: 2%{?dist}.scripts.%{scriptsversion}
  URL: http://httpd.apache.org/
  Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
  Source1: index.html
 @@ -65,6 +65,15 @@
- # Bug fixes
- Patch55: httpd-2.4.4-malformed-host.patch
- Patch56: httpd-2.4.4-mod_unique_id.patch
+ Patch101: httpd-2.4.6-CVE-2014-3581.patch
+ Patch102: httpd-2.4.10-CVE-2014-3583.patch
+ Patch103: httpd-2.4.10-CVE-2014-8109.patch
 +
 +Patch1001: httpd-suexec-scripts.patch
 +Patch1002: httpd-mod_status-security.patch
