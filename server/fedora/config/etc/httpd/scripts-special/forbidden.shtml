@@ -1,0 +1,16 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>403 Forbidden</title>
+</head><body>
+<!--#if expr="-U reqenv('REDIRECT_URL')"
+--><h1>Directory listing forbidden</h1>
+<p>The directory at <!--#echo var="REDIRECT_URL" -->
+has no index document, and directory listing is not enabled for this directory.<br />
+</p>
+<!--#else
+--><h1>Forbidden</h1>
+<p>You don't have permission to access <!--#echo var="REDIRECT_URL" -->
+on this server.<br />
+</p>
+<!--#endif
+--></body></html>
