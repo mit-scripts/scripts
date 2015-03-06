@@ -2,15 +2,20 @@
 <html><head>
 <title>403 Forbidden</title>
 </head><body>
-<!--#if expr="-U reqenv('REDIRECT_URL')"
+<!--#if expr="! -U reqenv('REDIRECT_URL')"
+--><h1>Forbidden</h1>
+<p>You don't have permission to access <!--#echo var="REDIRECT_URL" -->
+on this server.<br />
+</p>
+<!--#elif expr="reqenv('REDIRECT_URL') =~ m,/$,"
 --><h1>Directory listing forbidden</h1>
 <p>The directory at <!--#echo var="REDIRECT_URL" -->
 has no index document, and directory listing is not enabled for this directory.<br />
 </p>
 <!--#else
---><h1>Forbidden</h1>
-<p>You don't have permission to access <!--#echo var="REDIRECT_URL" -->
-on this server.<br />
+--><h1>Document not readable</h1>
+<p>The document at <!--#echo var="REDIRECT_URL" -->
+cannot be read by the server.  (<a href="https://scripts.mit.edu/faq/48">More information</a>)<br />
 </p>
 <!--#endif
 --></body></html>
