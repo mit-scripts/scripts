@@ -12,13 +12,6 @@
 # 
 # Geoffrey Thomas <geofft@mit.edu>, 2008, public domain.
 
-# Note: As of 1/2011 we are inserting SSLCertificateKeyFile into reified
-# hosts, because previously-acqured certificates were signed with an
-# older (1024-bit) key. Sometime around 2014 when our last cert with
-# this key expires, we can update /etc/httpd/conf/httpd.conf to point to
-# the current key instead of the old one, and stop inserting this into
-# individual vhost records. -geofft
-
 import ldap
 import ldap.filter
 import pwd
