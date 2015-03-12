@@ -319,8 +319,8 @@ python host.py push $server
 # [TESTSERVER]
 #   - You need a self-signed SSL cert or Apache will refuse to start
 #     or do SSL.  Generate with: (XXX recommended CN?)
-    openssl req -new -x509 -keyout /etc/pki/tls/private/scripts.key -out /etc/pki/tls/certs/scripts-cert.pem -nodes
-    ln -s /etc/pki/tls/private/scripts.key /etc/pki/tls/private/scripts-1024.key
+    openssl req -new -x509 -sha256 -newkey rsa:2048 -keyout /etc/pki/tls/private/scripts.key -out /etc/pki/tls/certs/scripts-cert.pem -nodes
+    ln -s /etc/pki/tls/private/scripts.key /etc/pki/tls/private/scripts-2048.key
 #     Also make the various public keys match up
     openssl rsa -in /etc/pki/tls/private/scripts.key -pubout > /etc/pki/tls/certs/star.scripts.pem
     openssl rsa -in /etc/pki/tls/private/scripts.key -pubout > /etc/pki/tls/certs/scripts.pem
