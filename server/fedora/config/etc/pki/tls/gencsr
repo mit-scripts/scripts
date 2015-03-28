@@ -1,0 +1,80 @@
+#!/usr/bin/env python2
+
+from OpenSSL import *
+
+PRIVATE_KEY = "/etc/pki/tls/private/scripts-2048.key"
+# PEM format with no passphrase
+
+SUBJECT_ATTRIBUTES = [
+    ("countryName", "US"),
+    ("stateOrProvinceName", "Massachusetts"),
+    ("localityName", "Cambridge"),
+    ("organizationName", "Massachusetts Institute of Technology"),
+    ("organizationalUnitName", "scripts.mit.edu web hosting service"),
+    ("CN", None),  # to be filled in below
+    ("emailAddress", "scripts@mit.edu"),
+]
+
+EXTENSIONS = [
+    # apparently OpenSSL marks CSR extensions as non-critical; it's not our
+    # fault if the CA messes up and forgets CA:FALSE, right?
+    ("basicConstraints", False, "CA:FALSE"),
+    ("keyUsage", False, "nonRepudiation, digitalSignature, keyEncipherment"),
+]
+
+def generate_csr(cn, alt_names=None):
+    """
+    Generate a CSR for the given Common Name (a hostname) with the provided
+    subjectAltName's (a list of hostnames) using the above settings.
+
+    Returns a PEM string.
+    """
+    req = crypto.X509Req()
+
+    # set the subject fields (in the same order as OpenSSL XD)
+    subject = req.get_subject()
+    for attr, val in SUBJECT_ATTRIBUTES:
+        if attr == "CN":  # fills in the CN in the right place
+            val = cn
+        setattr(subject, attr, val)  # subject.attr = val
+
+    # initialize the extensions
+    extensions = []
+    for type_name, critical, value in EXTENSIONS:
+        ext = crypto.X509Extension(type_name, critical, value)
+        extensions.append(ext)
+
+    # ...including subjectAltName
+    san_string = ", ".join("DNS:"+name for name in alt_names)
+    ext = crypto.X509Extension("subjectAltName", False, san_string)
+    extensions.append(ext)
+
+    # and add them to the CSR
+    req.add_extensions(extensions)
+
+    # load the private key
+    with open(PRIVATE_KEY) as f:
+        pk_pem = f.read()
+    private_key = crypto.load_privatekey(crypto.FILETYPE_PEM, pk_pem)
+
+    # do the bit with the key!
+    req.set_pubkey(private_key)  # yeah...I know
+    req.sign(private_key, "sha256")
+
+    # dump the CSR to PEM
+    return crypto.dump_certificate_request(crypto.FILETYPE_PEM, req)
+
+if __name__=="__main__":
+    import sys
+    if len(sys.argv) != 2:
+        print "usage: %s HOSTNAME" % sys.argv[0]
+        exit(1)
+
+    hostname = sys.argv[1].lower()
+    if not hostname.endswith(".mit.edu"):
+        hostname += ".mit.edu"
+
+    print generate_csr(hostname, [hostname]),  # with subjectAltName
+    print >> sys.stderr, "Generated a CSR for %s using %s" % (
+        hostname, PRIVATE_KEY)
+    exit(0)
