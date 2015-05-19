@@ -10,5 +10,4 @@ warntime 3
 node        rack-forward
 node        rack-backward
 node	    stanley-kubrick
-node	    joss-whedon
 crm respawn

@@ -32,9 +32,9 @@ iptables -A PREROUTING -t mangle -m mark --mark 0 -d 18.181.0.49 -j MARK --set-m
 # scripts-primary.mit.edu goes to the primary (FWM 1) on all ports
 iptables -A PREROUTING -t mangle -d 18.181.0.182 -j MARK --set-mark 1
 
-# sipb.mit.edu acts like regular scripts, except ftp goes to i-hate-penguins.xvm.mit.edu (FWM 4)
+# sipb.mit.edu acts like regular scripts for the web ports, everything else goes to i-hate-penguins.xvm.mit.edu (FWM 4)
 iptables -A PREROUTING -t mangle -m tcp -m multiport -p tcp -d 18.181.0.29 --dports 80,443,444 -j MARK --set-mark 2
 # Also send port 25 there too because the IP is shared with rtfm.mit.edu (fix this after renaming the machine)
-iptables -A PREROUTING -t mangle -m tcp -m multiport -p tcp -d 18.181.0.29 --dports 20,21,25 -j MARK --set-mark 4
-# All else to the primary
-iptables -A PREROUTING -t mangle -m mark --mark 0 -d 18.181.0.29 -j MARK --set-mark 1
+#iptables -A PREROUTING -t mangle -m tcp -m multiport -p tcp -d 18.181.0.29 --dports 20,21,25 -j MARK --set-mark 4
+# All else to i-hate-penguins
+iptables -A PREROUTING -t mangle -m mark --mark 0 -d 18.181.0.29 -j MARK --set-mark 4
