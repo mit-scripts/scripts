@@ -4,10 +4,13 @@
 :OUTPUT ACCEPT [0:0]
 :log-smtp - [0:0]
 -A INPUT -p udp -m udp --dport 161 ! -s 18.0.0.0/8 -j REJECT
--A OUTPUT -p tcp -m tcp --dport 25 --tcp-flags FIN,SYN,RST,ACK SYN -j log-smtp
+-A OUTPUT -p tcp -m tcp --dport 25 --syn -j log-smtp
 -A log-smtp -o lo -j RETURN
 -A log-smtp -m owner --uid-owner postfix -j RETURN
--A log-smtp -m owner --uid-owner nrpe -j RETURN
--A log-smtp -m owner --uid-owner 537644531 -j RETURN
 -A log-smtp -j LOG --log-prefix "SMTP " --log-uid
+# 18.9.28.100=outgoing.mit.edu
+-A log-smtp -d 18.9.28.100 -j RETURN
+# 536957056=cssa (temporary exception)
+-A log-smtp -m owner --uid-owner 536957056 -j RETURN
+-A log-smtp -j REJECT --reject-with icmp-admin-prohibited
 COMMIT

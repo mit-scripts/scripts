@@ -4,7 +4,10 @@
 :OUTPUT ACCEPT [0:0]
 :log-smtp - [0:0]
 -A log-smtp -o lo -j RETURN
--A OUTPUT -p tcp -m tcp --dport 25 --tcp-flags FIN,SYN,RST,ACK SYN -j log-smtp
+-A OUTPUT -p tcp -m tcp --dport 25 --syn -j log-smtp
 -A log-smtp -m owner --uid-owner postfix -j RETURN
 -A log-smtp -j LOG --log-prefix "SMTP " --log-uid
+# 536957056=cssa (temporary exception)
+-A log-smtp -m owner --uid-owner 536957056 -j RETURN
+-A log-smtp -j REJECT --reject-with icmp6-adm-prohibited
 COMMIT
