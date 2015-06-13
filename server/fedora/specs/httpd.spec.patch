@@ -88,7 +88,7 @@
  %{_sbindir}/rotatelogs
 -%caps(cap_setuid,cap_setgid+pe) %attr(510,root,%{suexec_caller}) %{_sbindir}/suexec
 +# cap_dac_override needed to write to /var/log/httpd
-+%caps(cap_setuid,cap_setgid,cap_dac_override+pe) %attr(510,root,%{suexec_caller}) %{_sbindir}/suexec
++%caps(cap_setuid,cap_setgid,cap_dac_override+pe) %attr(555,root,%{suexec_caller}) %{_sbindir}/suexec
  
  %dir %{_libdir}/httpd
  %dir %{_libdir}/httpd/modules
