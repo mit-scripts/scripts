@@ -10,7 +10,5 @@
 -A log-smtp -m owner --uid-owner 537644531 -o lo -j RETURN
 -A log-smtp -j LOG --log-prefix "SMTP " --log-uid
 -A log-smtp -o lo -j RETURN
-# 536957056=cssa (temporary exception)
--A log-smtp -m owner --uid-owner 536957056 -j RETURN
 -A log-smtp -j REJECT --reject-with icmp6-adm-prohibited
 COMMIT
