@@ -133,4 +133,5 @@ asme:	 /dev/null
 alisono:	 /dev/null
 # laublab: compromised account sourcing spam. Added 2014-12-24
 laublab:	 /dev/null
-
+# eltahirgroup: compromised account sourcing spam. Added 2015-07-07
+eltahirgroup:	/dev/null
