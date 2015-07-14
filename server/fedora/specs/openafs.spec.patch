@@ -1,15 +1,15 @@
---- openafs.spec.orig	2014-05-25 21:15:54.539027644 -0400
-+++ openafs.spec	2014-05-25 21:16:27.836268275 -0400
+--- openafs.spec.orig	2015-06-25 05:18:38.000000000 -0400
++++ openafs.spec	2015-07-13 21:41:31.196173273 -0400
 @@ -4,7 +4,7 @@
- %define pkgvers 1.6.11
+ %define pkgvers 1.6.12
  # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
--%define pkgrel 0.pre2
-+%define pkgrel 0.pre2.99.scripts.%{scriptsversion}
+-%define pkgrel 1
++%define pkgrel 1.99.scripts.%{scriptsversion}
  
  %{!?fedorakmod: %define fedorakmod 1}
  %{!?build_dkmspkg: %define build_dkmspkg 1}
-@@ -249,9 +249,14 @@
+@@ -255,9 +255,14 @@
  %if %{build_modules}
  BuildRequires: kernel-devel
  %endif
@@ -24,7 +24,7 @@
  #    http://dl.openafs.org/dl/openafs/candidate/%{afsvers}/...
  Source0: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-src.tar.bz2
  Source1: http://www.openafs.org/dl/openafs/%{afsvers}/openafs-%{afsvers}-doc.tar.bz2
-@@ -331,6 +338,7 @@
+@@ -337,6 +342,7 @@
  %if %{build_userspace}
  
  %package client
@@ -32,7 +32,7 @@
  Requires: binutils, openafs = %{version}
  %if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
  Requires: systemd-units
-@@ -382,6 +390,7 @@
+@@ -388,6 +394,7 @@
  %package -n dkms-%{name}
  Summary:        DKMS-ready kernel source for AFS distributed filesystem
  Group:          Development/Kernel
@@ -40,7 +40,7 @@
  Provides:       openafs-kernel = %{version}
  %if %{fedorakmod}
  Provides: %{name}-kmod = %{version}
-@@ -403,6 +412,7 @@
+@@ -409,6 +416,7 @@
  
  %if %{build_authlibs}
  %package authlibs
@@ -48,7 +48,7 @@
  Summary: OpenAFS authentication shared libraries
  Group: Networking/Filesystems
  
-@@ -419,6 +429,7 @@
+@@ -425,6 +433,7 @@
  %endif
  
  %package authlibs-devel
@@ -56,7 +56,7 @@
  %if %{build_authlibs}
  Requires: openafs-authlibs = %{version}-%{release}
  %endif
-@@ -437,6 +448,7 @@
+@@ -443,6 +452,7 @@
  libraries.
  
  %package devel
@@ -64,7 +64,7 @@
  Summary: OpenAFS Development Libraries and Headers
  Group: Development/Filesystems
  Requires: openafs = %{version}-%{release}
-@@ -466,6 +478,7 @@
+@@ -472,6 +482,7 @@
  administrators.
  
  %package kernel-source
@@ -72,7 +72,7 @@
  Summary: OpenAFS Kernel Module source tree
  Group: Networking/Filesystems
  Provides: openafs-kernel = %{version}
-@@ -515,6 +528,7 @@
+@@ -521,6 +532,7 @@
  
  %if %{krb5support}
  %package krb5
@@ -80,7 +80,7 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{version}
  Group: Networking/Filesystems
-@@ -541,7 +555,7 @@
+@@ -547,7 +559,7 @@
  %if %{build_modules}
  
  %if %{fedorakmod}
@@ -89,7 +89,7 @@
  
  %else
  
-@@ -698,6 +712,10 @@
+@@ -704,6 +716,10 @@
  #%setup -q -n %{srcdir}
  %setup -q -b 1 -n %{srcdir}
  
@@ -100,7 +100,7 @@
  ##############################################################################
  #
  # building
-@@ -871,6 +891,8 @@
+@@ -877,6 +893,8 @@
  %endif
  %endif
  
@@ -109,7 +109,7 @@
  ./configure --with-afs-sysname=${sysname} \
         --prefix=%{_prefix} \
         --libdir=%{_libdir} \
-@@ -1267,6 +1289,13 @@
+@@ -1273,6 +1291,13 @@
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
  rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*
