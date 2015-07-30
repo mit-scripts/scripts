@@ -40,7 +40,7 @@ out_srpms	= $(topdir)/SRPMS
 out_sbin	= $(topdir)/sbin
 
 dload		= ${PWD}/.dload
-openafs_url	= "http://www.openafs.org/dl/openafs/1.6.12/openafs-1.6.12-1.src.rpm"
+openafs_url	= "http://www.openafs.org/dl/openafs/1.6.13/openafs-1.6.13-1.src.rpm"
 #zephyr_url	= "http://zephyr.1ts.org/files/zephyr-3.0.2.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
