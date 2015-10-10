@@ -139,3 +139,11 @@ eltahirgroup:	/dev/null
 strategic:	/dev/null
 # je18337: cron spam. Added 2015-10-09
 je18337:	/dev/null 
+# gsc: backscatter. Added 2015-10-09
+gsc:		/dev/null
+# rwf: backscatter. Added 2015-10-09
+rwf:		/dev/null
+# saxelab: spam. Added 2015-10-09
+saxelab:	/dev/null
+# qeg: spam. Added 2015-10-09
+qeg:		/dev/null
