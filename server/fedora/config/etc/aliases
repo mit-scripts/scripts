@@ -135,3 +135,7 @@ alisono:	 /dev/null
 laublab:	 /dev/null
 # eltahirgroup: compromised account sourcing spam. Added 2015-07-07
 eltahirgroup:	/dev/null
+# strategic: backscatter. Added 2015-10-09
+strategic:	/dev/null
+# je18337: cron spam. Added 2015-10-09
+je18337:	/dev/null 
