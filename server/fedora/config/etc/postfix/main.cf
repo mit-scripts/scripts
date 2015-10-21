@@ -38,3 +38,4 @@ authorized_submit_users = !/etc/postfix/blocked_users, static:all
 # "all" is the default, but if we do not specify it, Fedora's packaging
 # will add the wrong value here.
 inet_protocols = all
+smtp_address_preference = ipv4
