@@ -38,4 +38,5 @@ authorized_submit_users = !/etc/postfix/blocked_users, static:all
 # "all" is the default, but if we do not specify it, Fedora's packaging
 # will add the wrong value here.
 inet_protocols = all
+# note: as of 21 Oct 2015, our IPv6 addresses do not have rDNS and are rejected by Gmail
 smtp_address_preference = ipv4
