@@ -37,4 +37,6 @@ authorized_mailq_users = /etc/postfix/mailq_users
 authorized_submit_users = !/etc/postfix/blocked_users, static:all
 # "all" is the default, but if we do not specify it, Fedora's packaging
 # will add the wrong value here.
-inet_protocols = all
+# 21 Oct 2015: switching to ipv4 only, since our ipv6 addresses don't
+# have rDNS records
+inet_protocols = ipv4
