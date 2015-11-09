@@ -34,10 +34,6 @@ vim /etc/dirsrv/slapd-scripts/dse.ldif
 
 # Inside cn=config.  These changes definitely require a restart.
 nsslapd-ldapilisten: on
-nsslapd-syntaxcheck: off
-
-# We need to turn off syntax check because our schema is wrong and too
-# restrictive on some value. This should get fixed.
 
 # Add these blocks
 
