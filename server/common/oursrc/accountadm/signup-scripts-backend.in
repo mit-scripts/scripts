@@ -147,7 +147,7 @@ objectClass: scriptsVhost
 scriptsVhostName: $username.scripts.mit.edu
 scriptsVhostAlias: $username.scripts
 scriptsVhostAccount: uid=$username,ou=People,dc=scripts,dc=mit,dc=edu
-scriptsVhostDirectory: 
+scriptsVhostDirectory: .
 
 EOF
 close LDAP or complain("internal error");

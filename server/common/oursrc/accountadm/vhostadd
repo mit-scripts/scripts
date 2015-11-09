@@ -32,6 +32,10 @@ done < <(ldapsearch -LLL -x -b ou=People,dc=scripts,dc=mit,dc=edu "(uid=$user)" 
 
 printf "Docroot: $home/web_scripts" >&2
 read subdir
+subdir=${subdir%/}
+docroot=$home/web_scripts$subdir
+path=${subdir#/}
+path=${path:-.}
 
 tmpfile=$(mktemp -t vhostadd.XXXXXX) || exit $?
 trap 'rm -f "$tmpfile"' EXIT
@@ -50,7 +54,7 @@ EOF
 fi
 
 cat <<EOF >> "$tmpfile"
-apacheDocumentRoot: $home/web_scripts$subdir
+apacheDocumentRoot: $docroot
 apacheSuexecUid: $uid
 apacheSuexecGid: $gid
 
@@ -68,7 +72,7 @@ fi
 
 cat <<EOF >> "$tmpfile"
 scriptsVhostAccount: $user_dn
-scriptsVhostDirectory: ${subdir#/}
+scriptsVhostDirectory: $path
 EOF
 
 exec ldapvi --add --in "$tmpfile"
