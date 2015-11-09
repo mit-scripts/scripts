@@ -31,28 +31,15 @@ r = ll.search_s(
             "(apacheServerAlias=%s)))",
            [host, host]))
 if len(r) != 0:
-    user = pwd.getpwuid(int(r[0][1]['apacheSuexecUid'][0]))
     serveralias = ""
     if 'apacheServerAlias' in r[0][1]:
         serveralias = "ServerAlias "+" ".join(r[0][1]['apacheServerAlias'])
-    print """# do not trailing-slash DocumentRoot
-
-<VirtualHost *:80>
-	ServerName %(servername)s
-	%(serveralias)s
-	DocumentRoot %(docroot)s
-	Alias /~%(uname)s %(homedir)s/web_scripts
-	SuExecUserGroup %(uname)s %(uname)s
-	Include conf.d/vhosts-common.conf
-</VirtualHost>
-
+    print """\
 <IfModule ssl_module>
 	<VirtualHost *:443>
 		ServerName %(servername)s
 		%(serveralias)s
-		DocumentRoot %(docroot)s
-		Alias /~%(uname)s %(homedir)s/web_scripts
-		SuExecUserGroup %(uname)s %(uname)s
+		Include conf.d/vhost_ldap.conf
 		Include conf.d/vhosts-common-ssl.conf
 		SSLCertificateFile /etc/pki/tls/certs/%(hname)s.pem
 		SSLCertificateKeyFile /etc/pki/tls/private/scripts-2048.key
@@ -60,9 +47,7 @@ if len(r) != 0:
 	<VirtualHost *:444>
 		ServerName %(servername)s
 		%(serveralias)s
-		DocumentRoot %(docroot)s
-		Alias /~%(uname)s %(homedir)s/web_scripts
-		SuExecUserGroup %(uname)s %(uname)s
+		Include conf.d/vhost_ldap.conf
 		Include conf.d/vhosts-common-ssl.conf
 		Include conf.d/vhosts-common-ssl-cert.conf
 		SSLCertificateFile /etc/pki/tls/certs/%(hname)s.pem
@@ -71,9 +56,6 @@ if len(r) != 0:
 </IfModule>""" % {
     'servername': r[0][1]['apacheServerName'][0],
     'serveralias': serveralias,
-    'docroot': r[0][1]['apacheDocumentRoot'][0],
-    'uname': user[0],
-    'homedir': user[5],
     'hname': host
 }
 
