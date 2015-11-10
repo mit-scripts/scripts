@@ -40,7 +40,7 @@ out_srpms	= $(topdir)/SRPMS
 out_sbin	= $(topdir)/sbin
 
 dload		= ${PWD}/.dload
-openafs_url	= "http://www.openafs.org/dl/openafs/1.6.13/openafs-1.6.13-1.src.rpm"
+openafs_url	= "https://www.openafs.org/dl/openafs/1.6.15/openafs-1.6.15-1.src.rpm.el5"
 #zephyr_url	= "http://zephyr.1ts.org/files/zephyr-3.0.2.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
@@ -91,7 +91,7 @@ copy-patches: mkdir-tree
 	cp $(patches)/*.patch $(tmp_src)
 
 install-srpms: mkdir-tree download
-	rpm $(rpm_args) -i $(dload)/*.src.rpm 2>/dev/null
+	rpm $(rpm_args) -i $(dload)/*.src.rpm $(dload)/openafs*.src.rpm.el5 2>/dev/null
 
 copy-specs: mkdir-tree
 	cp ${specs}/*.spec $(tmp_specs)
@@ -175,7 +175,7 @@ $(filter-out %.i686,$(upstream)): %: setup patch-specs
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/openafs*.spec
-	/usr/bin/mock -r scripts-fc20-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc20-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm.el5 | head -1`
 
 #sort -n sorts "2.6.25-1" later than "2.6.25.1-1", so it's Wrong
 #kernvers = $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)
