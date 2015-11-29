@@ -147,5 +147,3 @@ rwf:		/dev/null
 saxelab:	/dev/null
 # qeg: spam. Added 2015-10-09
 qeg:		/dev/null
-# early-warning: compromised account sourcing spam. Added 2015-11-29
-early-warning:  /dev/null
