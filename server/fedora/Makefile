@@ -18,7 +18,7 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 krb5.i686 httpd openssh libgsasl
+upstream_yum	= krb5 krb5.i686 httpd openssh libgsasl openssl openssl.i686
 hackage		= cgi-3001.1.8.5 unix-handle-0.0.0
 upstream_hackage = ghc-cgi ghc-unix-handle
 gems		= pony:1.8 fcgi:0.9.2.1
