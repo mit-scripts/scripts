@@ -2,7 +2,7 @@ from twisted.application import internet, service
 from twisted.internet import protocol, reactor, defer
 from twisted.protocols import basic
 import ldap, ldap.filter
-import pwd
+import posixpath
 
 class WhoisProtocol(basic.LineReceiver):
     def lineReceived(self, hostname):
@@ -31,20 +31,16 @@ class WhoisFactory(protocol.ServerFactory):
 #        else:
 #            return vhost + ".mit.edu"
     def searchLDAP(self, vhost):
+        attrlist = ('scriptsVhostName', 'homeDirectory', 'scriptsVhostDirectory', 'uid')
         results = self.ldap.search_st(self.ldap_base, ldap.SCOPE_SUBTREE,
             ldap.filter.filter_format(
-                '(|(apacheServername=%s)(apacheServerAlias=%s))', (vhost,)*2),
-                timeout=5)
+                '(|(scriptsVhostName=%s)(scriptsVhostAlias=%s))', (vhost,)*2),
+                attrlist=attrlist, timeout=5)
         if len(results) >= 1:
             result = results[0]
             attrs = result[1]
-            for attr in ('apacheServerName','apacheDocumentRoot', 'apacheSuexecUid', 'apacheSuexecGid'):
+            for attr in attrlist:
                 attrs[attr] = attrs[attr][0]
-            user = pwd.getpwuid(int(attrs['apacheSuexecUid']))
-            if user:
-                attrs['locker'] = user.pw_name
-            else:
-                attrs['locker'] = None
             return attrs
         else:
             return None
@@ -62,7 +58,8 @@ class WhoisFactory(protocol.ServerFactory):
                 self.ldap = ldap.initialize(self.ldap_URL)
         if info:
             ret = "Hostname: %s\nAlias: %s\nLocker: %s\nDocument Root: %s" % \
-                (info['apacheServerName'], vhost, info['locker'], info['apacheDocumentRoot'])
+                (info['scriptsVhostName'], vhost, info['uid'],
+                 posixpath.join(info['homeDirectory'], 'web_scripts', info['scriptsVhostDirectory']))
         elif tries == 3:
             ret = "The whois server is experiencing problems looking up LDAP records.\nPlease contact scripts@mit.edu for help if this problem persists."
         else:
