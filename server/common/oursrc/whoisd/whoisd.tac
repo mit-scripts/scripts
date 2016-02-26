@@ -2,7 +2,7 @@ from twisted.application import internet, service
 from twisted.internet import protocol, reactor, defer
 from twisted.protocols import basic
 import ldap, ldap.filter
-import os, sys, pwd, glob
+import pwd
 
 class WhoisProtocol(basic.LineReceiver):
     def lineReceived(self, hostname):
@@ -18,44 +18,11 @@ class WhoisProtocol(basic.LineReceiver):
                            self.transport.loseConnection()))
 class WhoisFactory(protocol.ServerFactory):
     protocol = WhoisProtocol
-    def __init__(self, vhostDir, ldap_URL, ldap_base, keyFile):
-        self.vhostDir = vhostDir
+    def __init__(self, ldap_URL, ldap_base, keyFile):
         self.ldap_URL = ldap_URL
         self.ldap = ldap.initialize(self.ldap_URL)
         self.ldap_base = ldap_base
-        self.vhosts = {}
-        if vhostDir:
-            self.rescanVhosts()
         self.key = file(keyFile).read()
-    def rescanVhosts(self):
-        newVhosts = {}
-        for f in glob.iglob(os.path.join(self.vhostDir, "*.conf")):
-            locker = os.path.splitext(os.path.basename(f))[0]
-            newVhosts.update(self.parseApacheConf(file(f)))
-        self.vhosts = newVhosts
-        self.vhostTime = os.stat(self.vhostDir).st_mtime
-    def parseApacheConf(self, f):
-        vhosts = {}
-        hostnames = []
-        locker = None
-        docroot = None
-        for l in f:
-            parts = l.split()
-            if not parts: continue
-            command = parts.pop(0)
-            if command in ("ServerName", "ServerAlias"):
-                hostnames.extend(parts)
-            elif command in ("SuExecUserGroup",):
-                locker = parts[0]
-            elif command in ("DocumentRoot",):
-                docroot = parts[0]
-            elif command == "</VirtualHost>":
-                d = {'locker': locker, 'apacheDocumentRoot': docroot, 'apacheServerName': hostnames[0]}
-                for h in hostnames: vhosts[h] = d
-                hostnames = []
-                locker = None
-                docroot = None
-        return vhosts
     def canonicalize(self, vhost):
         vhost = vhost.lower().rstrip(".")
         return vhost
@@ -83,7 +50,7 @@ class WhoisFactory(protocol.ServerFactory):
             return None
     def getWhois(self, vhost):
         vhost = self.canonicalize(vhost)
-        info = self.vhosts.get(vhost)
+        info = None
         tries = 0
         while (tries < 3) and not info:
             tries += 1
@@ -103,7 +70,7 @@ class WhoisFactory(protocol.ServerFactory):
         return defer.succeed(ret)
 
 application = service.Application('whois', uid=99, gid=99)
-factory = WhoisFactory(None,
+factory = WhoisFactory(
     "ldap://localhost", "ou=VirtualHosts,dc=scripts,dc=mit,dc=edu", "/etc/whoisd-password")
 internet.TCPServer(43, factory).setServiceParent(
     service.IServiceCollection(application))
