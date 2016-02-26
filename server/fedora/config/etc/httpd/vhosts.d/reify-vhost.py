@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Converts an apacheConfig record from LDAP, as used by mod_vhost_ldap,
+# Converts an scriptsVhost record from LDAP, as used by mod_vhost_ldap,
 # into a <VirtualHost> record as used in an Apache conf.d directory.
 # Useful for adding things like SSL server certs that mod_vhost_ldap
 # doesn't support.
@@ -26,14 +26,14 @@ r = ll.search_s(
     "ou=VirtualHosts,dc=scripts,dc=mit,dc=edu",
     ldap.SCOPE_SUBTREE,
     ldap.filter.filter_format(
-            "(&(objectClass=apacheConfig)" +
-            "(|(apacheServerName=%s)" +
-            "(apacheServerAlias=%s)))",
+            "(&(objectClass=scriptsVhost)" +
+            "(|(scriptsVhostName=%s)" +
+            "(scriptsVhostAlias=%s)))",
            [host, host]))
 if len(r) != 0:
     serveralias = ""
-    if 'apacheServerAlias' in r[0][1]:
-        serveralias = "ServerAlias "+" ".join(r[0][1]['apacheServerAlias'])
+    if 'scriptsVhostAlias' in r[0][1]:
+        serveralias = "ServerAlias "+" ".join(r[0][1]['scriptsVhostAlias'])
     print """\
 <IfModule ssl_module>
 	<VirtualHost *:443>
@@ -54,7 +54,7 @@ if len(r) != 0:
 		SSLCertificateKeyFile /etc/pki/tls/private/scripts-2048.key
 	</VirtualHost>
 </IfModule>""" % {
-    'servername': r[0][1]['apacheServerName'][0],
+    'servername': r[0][1]['scriptsVhostName'][0],
     'serveralias': serveralias,
     'hname': host
 }
