@@ -89,15 +89,14 @@ typedef struct mod_vhost_ldap_config_t {
 typedef struct mod_vhost_ldap_request_t {
     char *dn;				/* The saved dn from a successful search */
     char *name;				/* ServerName */
-    char *admin;			/* ServerAdmin */
-    char *docroot;			/* DocumentRoot */
-    char *cgiroot;			/* ScriptAlias */
+    char *home;				/* HOME */
+    char *directory;			/* DocumentRoot relative to HOME/web_scripts */
     char *uid;				/* Suexec Uid */
     char *gid;				/* Suexec Gid */
 } mod_vhost_ldap_request_t;
 
 char *attributes[] =
-  { "apacheServerName", "apacheDocumentRoot", "apacheScriptAlias", "apacheSuexecUid", "apacheSuexecGid", "apacheServerAdmin", 0 };
+  { "scriptsVhostName", "homeDirectory", "scriptsVhostDirectory", "uidNumber", "gidNumber", 0 };
 
 static int total_modules;
 
@@ -303,7 +302,7 @@ static const char *mod_vhost_ldap_parse_url(cmd_parms *cmd,
         }
     }
     else {
-        conf->filter = "objectClass=apacheConfig";
+        conf->filter = "objectClass=scriptsVhost";
     }
 
       /* "ldaps" indicates secure ldap connections desired
@@ -508,7 +507,7 @@ fallback:
     ber_str2bv(hostname, 0, 0, &hostnamebv);
     if (ldap_bv2escaped_filter_value(&hostnamebv, &shostnamebv) != 0)
 	goto null;
-    apr_snprintf(filtbuf, FILTER_LENGTH, "(&(%s)(|(apacheServerName=%s)(apacheServerAlias=%s)))", conf->filter, shostnamebv.bv_val, shostnamebv.bv_val);
+    apr_snprintf(filtbuf, FILTER_LENGTH, "(&(%s)(|(scriptsVhostName=%s)(scriptsVhostAlias=%s)))", conf->filter, shostnamebv.bv_val, shostnamebv.bv_val);
     ber_memfree(shostnamebv.bv_val);
 
     result = util_ldap_cache_getuserdn(r, ldc, conf->url, conf->basedn, conf->scope,
@@ -586,37 +585,26 @@ null:
 	    const char *directive;
 	    char *val = apr_pstrdup (r->pool, vals[i]);
 	    /* These do not correspond to any real directives */
-	    if (strcasecmp (attributes[i], "apacheSuexecUid") == 0) {
+	    if (strcasecmp (attributes[i], "uidNumber") == 0) {
 		reqc->uid = val;
 		continue;
 	    }
-	    else if (strcasecmp (attributes[i], "apacheSuexecGid") == 0) {
+	    else if (strcasecmp (attributes[i], "gidNumber") == 0) {
 		reqc->gid = val;
 		continue;
 	    }
+	    else if (strcasecmp (attributes[i], "homeDirectory") == 0) {
+		reqc->home = val;
+		continue;
+	    }
+	    else if (strcasecmp (attributes[i], "scriptsVhostDirectory") == 0) {
+		reqc->directory = val;
+		continue;
+	    }
 
-	    if (strcasecmp (attributes[i], "apacheServerName") == 0) {
+	    if (strcasecmp (attributes[i], "scriptsVhostName") == 0) {
 		reqc->name = val;
 		directive = "ServerName";
-	    }
-	    else if (strcasecmp (attributes[i], "apacheServerAdmin") == 0) {
-		reqc->admin = val;
-		directive = "ServerAdmin";
-	    }
-	    else if (strcasecmp (attributes[i], "apacheDocumentRoot") == 0) {
-		reqc->docroot = val;
-		directive = "DocumentRoot";
-	    }
-	    else if (strcasecmp (attributes[i], "apacheScriptAlias") == 0) {
-		if (val != NULL) {
-		    /* Hack to deal with current apacheScriptAlias lagout */
-		    if (strlen(val) > 0 && val[strlen(val) - 1] == '/')
-			val = apr_pstrcat(r->pool, "/cgi-bin/ ", val, (const char *)NULL);
-		    else
-			val = apr_pstrcat(r->pool, "/cgi-bin/ ", val, "/", (const char *)NULL);
-		    directive = "ScriptAlias";
-		}
-		reqc->cgiroot = val;
 	    }
 	    else {
 		/* This should not actually be reachable, but it's
@@ -636,20 +624,26 @@ null:
 
     ap_log_rerror(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, 0, r,
 		  "[mod_vhost_ldap.c]: loaded from ldap: "
-		  "apacheServerName: %s, "
-		  "apacheServerAdmin: %s, "
-		  "apacheDocumentRoot: %s, "
-		  "apacheScriptAlias: %s, "
-		  "apacheSuexecUid: %s, "
-		  "apacheSuexecGid: %s",
-		  reqc->name, reqc->admin, reqc->docroot, reqc->cgiroot, reqc->uid, reqc->gid);
+		  "scriptsVhostName: %s, "
+		  "homeDirectory: %s, "
+		  "scriptsVhostDirectory: %s, "
+		  "uidNumber: %s, "
+		  "gidNumber: %s",
+		  reqc->name, reqc->home, reqc->directory, reqc->uid, reqc->gid);
 
-    if ((reqc->name == NULL)||(reqc->docroot == NULL)) {
+    if (reqc->name == NULL || reqc->home == NULL || reqc->directory == NULL) {
         ap_log_rerror(APLOG_MARK, APLOG_ERR|APLOG_NOERRNO, 0, r, 
                       "[mod_vhost_ldap.c] translate: "
                       "translate failed; ServerName or DocumentRoot not defined");
 	return HTTP_INTERNAL_SERVER_ERROR;
     }
+
+    char *docroot =
+	strcmp(reqc->directory, ".") == 0 ?
+	apr_pstrcat(r->pool, reqc->home, "/web_scripts", (const char *)NULL) :
+	apr_pstrcat(r->pool, reqc->home, "/web_scripts/", reqc->directory, (const char *)NULL);
+    if ((code = reconfigure_directive(r->pool, server, "DocumentRoot", docroot)) != 0)
+	return code;
 
     if (reqc->uid != NULL) {
 	char *username;
