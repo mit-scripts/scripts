@@ -54,25 +54,9 @@ EOF;
 systemctl start dirsrv@scripts.service
 
 ldapvi -b cn=config
-# Add these indexes (8 of them):
+# Add these indexes (6 of them):
 
 <<<EOF
-
-add cn=apacheServerName, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
-objectClass: top
-objectClass: nsIndex
-cn: apacheServerName
-nsSystemIndex: false
-nsIndexType: eq
-nsIndexType: pres
-
-add cn=apacheServerAlias, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
-objectClass: top
-objectClass: nsIndex
-cn: apacheServerAlias
-nsSystemIndex: false
-nsIndexType: eq
-nsIndexType: pres
 
 add cn=scriptsVhostName, cn=index, cn=userRoot, cn=ldbm database, cn=plugins, cn=config
 objectClass: top

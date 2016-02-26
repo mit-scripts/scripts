@@ -41,23 +41,6 @@ tmpfile=$(mktemp -t vhostadd.XXXXXX) || exit $?
 trap 'rm -f "$tmpfile"' EXIT
 
 cat <<EOF > "$tmpfile"
-dn: apacheServerName=$host,ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
-objectClass: apacheConfig
-objectClass: top
-apacheServerName: $host
-EOF
-
-if [ "${host%mit.edu}" != "$host" ]; then
-    cat <<EOF >> "$tmpfile"
-apacheServerAlias: ${host%.mit.edu}
-EOF
-fi
-
-cat <<EOF >> "$tmpfile"
-apacheDocumentRoot: $docroot
-apacheSuexecUid: $uid
-apacheSuexecGid: $gid
-
 dn: scriptsVhostName=$host,ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
 objectClass: scriptsVhost
 objectClass: top
