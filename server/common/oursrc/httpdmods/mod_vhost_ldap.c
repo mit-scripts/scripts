@@ -398,6 +398,37 @@ static const char *mod_vhost_ldap_set_fallback(cmd_parms *cmd, void *dummy, cons
     return NULL;
 }
 
+static const char *escape(apr_pool_t *p, const char *input)
+{
+    static const char *const to_escape = "'\\";
+
+    const char *x = input + strcspn(input, to_escape);
+    if (*x == '\0')
+        return input;
+    const char *y = x;
+    size_t extra = 0;
+    while (*y != '\0') {
+        extra++;
+        size_t k = strcspn(y + 1, to_escape) + 1;
+        y += k;
+    }
+
+    char *output = apr_palloc(p, y - input + extra + 1);
+
+    memcpy(output, input, x - input);
+    char *z = output + (x - input);
+    while (*x != '\0') {
+        *z++ = '\\';
+        size_t k = strcspn(x + 1, to_escape) + 1;
+        memcpy(z, x, k);
+        x += k;
+        z += k;
+    }
+    *z = '\0';
+
+    return output;
+}
+
 static int reconfigure_directive(apr_pool_t *p,
 				 server_rec *s,
 				 const char *dir,
@@ -582,7 +613,6 @@ null:
 	int i;
 	for (i = 0; attributes[i]; i++) {
 
-	    const char *directive;
 	    char *val = apr_pstrdup (r->pool, vals[i]);
 	    /* These do not correspond to any real directives */
 	    if (strcasecmp (attributes[i], "uidNumber") == 0) {
@@ -601,10 +631,9 @@ null:
 		reqc->directory = val;
 		continue;
 	    }
-
-	    if (strcasecmp (attributes[i], "scriptsVhostName") == 0) {
+	    else if (strcasecmp (attributes[i], "scriptsVhostName") == 0) {
 		reqc->name = val;
-		directive = "ServerName";
+		continue;
 	    }
 	    else {
 		/* This should not actually be reachable, but it's
@@ -613,12 +642,6 @@ null:
                               "Unexpected attribute %s encountered", attributes[i]);
                 continue;
             }
-
-	    if (val == NULL)
-                continue;
-
-	    if ((code = reconfigure_directive(r->pool, server, directive, val)) != 0)
-		return code;
 	}
     }
 
@@ -638,11 +661,18 @@ null:
 	return HTTP_INTERNAL_SERVER_ERROR;
     }
 
+    if ((code = reconfigure_directive(
+             r->pool, server, "ServerName",
+             apr_pstrcat(r->pool, "'", escape(r->pool, reqc->name), "'", (const char *)NULL))) != 0)
+	return code;
+
     char *docroot =
 	strcmp(reqc->directory, ".") == 0 ?
 	apr_pstrcat(r->pool, reqc->home, "/web_scripts", (const char *)NULL) :
 	apr_pstrcat(r->pool, reqc->home, "/web_scripts/", reqc->directory, (const char *)NULL);
-    if ((code = reconfigure_directive(r->pool, server, "DocumentRoot", docroot)) != 0)
+    if ((code = reconfigure_directive(
+             r->pool, server, "DocumentRoot",
+             apr_pstrcat(r->pool, "'", escape(r->pool, docroot), "'", (const char *)NULL))) != 0)
 	return code;
 
     if (reqc->uid != NULL) {
@@ -650,7 +680,9 @@ null:
 	char *userdir_val;
 	uid_t uid = (uid_t) atoll(reqc->uid);
 
-	if ((code = reconfigure_directive(r->pool, server, "UserDir", USERDIR)) != 0)
+	if ((code = reconfigure_directive(
+                 r->pool, server, "UserDir",
+                 apr_pstrcat(r->pool, "'", escape(r->pool, USERDIR), "'", (const char *)NULL))) != 0)
 	    return code;
 
         /* Deal with ~ expansion */
@@ -663,7 +695,7 @@ null:
 	    return HTTP_INTERNAL_SERVER_ERROR;
 	}
 
-        userdir_val = apr_pstrcat(r->pool, "enabled ", username, (const char *)NULL);
+        userdir_val = apr_pstrcat(r->pool, "enabled '", escape(r->pool, username), "'", (const char *)NULL);
 
 	if ((code = reconfigure_directive(r->pool, server, "UserDir", userdir_val)) != 0)
 	    return code;
