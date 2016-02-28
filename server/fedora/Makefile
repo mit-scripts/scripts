@@ -18,13 +18,13 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
-upstream_yum	= krb5 krb5.i686 httpd openssh libgsasl openssl openssl.i686
+upstream_yum	= krb5 krb5.i686 httpd openssh libgsasl openssl openssl.i686 389-ds-base
 hackage		= cgi-3001.1.8.5 unix-handle-0.0.0
 upstream_hackage = ghc-cgi ghc-unix-handle
 gems		= pony:1.8 fcgi:0.9.2.1
 upstream_gems	= rubygem-pony rubygem-fcgi
 upstream_eggs   = python-authkit
-upstream	= openafs $(upstream_yum) $(upstream_hackage) $(upstream_gems) $(upstream_eggs) moira zephyr zephyr.i686 python-zephyr python-afs python-moira python-hesiod athena-aclocal discuss
+upstream	= openafs $(upstream_yum) $(upstream_hackage) $(upstream_gems) $(upstream_eggs) moira zephyr zephyr.i686 python-zephyr python-afs python-moira python-hesiod athena-aclocal discuss 
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat fuse-better-mousetrapfs scripts-munin-plugins
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
