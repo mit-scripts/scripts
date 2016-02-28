@@ -28,12 +28,3 @@
  %build
  %if %{use_openldap}
  OPENLDAP_FLAG="--with-openldap"
-@@ -176,7 +181,7 @@
-            --with-systemdsystemunitdir=%{_unitdir} \
-            --with-systemdsystemconfdir=%{_sysconfdir}/systemd/system \
-            --with-perldir=/usr/bin \
--           --with-systemdgroupname=%{groupname} $NSSARGS
-+           --with-systemdgroupname=% {groupname} $NSSARGS
- 
- # Generate symbolic info for debuggers
- export XCFLAGS=$RPM_OPT_FLAGS
