@@ -6,7 +6,7 @@ from sys import exit
 
 SQLUID = 537704221
 SQLGID = 537704221
-SQLBIN = '/afs/athena.mit.edu/contrib/sql/web_scripts/main/batch/signup.php'
+SQLBIN = '/afs/athena.mit.edu/contrib/sql/Scripts/checkout/web/main/batch/signup.php'
 
 caller = int(getenv('USERHELPER_UID'))
 if caller is None or caller == 0:
