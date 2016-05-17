@@ -12,7 +12,7 @@ my $tab = $ENV{'USE_NEWLINES'} ? "  " : "";
 # Nagios codes
 my %ERRORS=('OK'=>0, 'WARNING'=>1, 'CRITICAL'=>2, 'UNKNOWN'=>3, 'DEPENDENT'=>4);
 
-my $ldapserver = 'localhost';
+my $ldapserver = 'ldapi://%2fvar%2frun%2fslapd-scripts.socket';
 my $user = 'cn=Directory Manager';
 my $passwdfile = '/etc/signup-ldap-pw';
 my $configBase = "cn=config";
