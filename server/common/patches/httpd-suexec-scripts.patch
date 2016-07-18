@@ -51,14 +51,6 @@ index 32e7320..3a4d802 100644
  #include "apr.h"
  #include "ap_config.h"
  #include "suexec.h"
-@@ -92,6 +95,7 @@ static const char *const safe_env_lst[] =
- {
-     /* variable name starts with */
-     "HTTP_",
-+    "HTTPS_",
-     "SSL_",
- 
-     /* variable name is */
 @@ -268,9 +272,108 @@ static void clean_env(void)
      environ = cleanenv;
  }

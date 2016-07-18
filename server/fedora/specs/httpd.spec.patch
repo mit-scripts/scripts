@@ -9,7 +9,7 @@
  URL: http://httpd.apache.org/
  Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
  Source1: index.html
-@@ -65,6 +65,15 @@
+@@ -65,6 +65,16 @@
  Patch101: httpd-2.4.6-CVE-2014-3581.patch
  Patch102: httpd-2.4.10-CVE-2014-3583.patch
  Patch103: httpd-2.4.10-CVE-2014-8109.patch
@@ -21,6 +21,7 @@
 +Patch1005: httpd-allow-null-user.patch
 +Patch1006: httpd-suexec-journald.patch
 +Patch1007: httpd-bug57070.patch
++Patch1008: httpd-suexec-CVE-2016-5387.patch
 +
  License: ASL 2.0
  Group: System Environment/Daemons
@@ -49,7 +50,7 @@
  Obsoletes: stronghold-mod_ssl
  
  %description -n mod_ssl
-@@ -190,6 +202,14 @@
+@@ -190,6 +202,15 @@
  %patch55 -p1 -b .malformedhost
  %patch56 -p1 -b .uniqueid
  
@@ -60,6 +61,7 @@
 +%patch1005 -p1 -b .allow-null-user
 +%patch1006 -p1 -b .journald
 +%patch1007 -p0 -b .bug57070
++%patch1008 -p0 -b .CVE-2016-5387
 +
  # Patch in the vendor string
  sed -i '/^#define PLATFORM/s/Unix/%{vstring}/' os/unix/os.h
