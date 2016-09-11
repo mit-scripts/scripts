@@ -149,3 +149,5 @@ saxelab:	/dev/null
 qeg:		/dev/null
 # blackhistory: backscatter. Added 2016-09-03
 blackhistory:	/dev/null
+# tdc: mail loop on procmailrc. Added 2016-09-11
+tdc:		/dev/null
