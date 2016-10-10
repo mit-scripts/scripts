@@ -151,3 +151,5 @@ qeg:		/dev/null
 blackhistory:	/dev/null
 # tdc: mail loop on procmailrc. Added 2016-09-11
 tdc:		/dev/null
+# seek: spam. Added 2016-10-09.
+seek:		/dev/null
