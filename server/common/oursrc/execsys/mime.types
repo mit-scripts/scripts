@@ -38,6 +38,7 @@ application/iotp
 application/ipp
 application/isup
 application/font-tdpfr
+application/font-woff		woff
 application/java-archive	jar
 application/mac-binhex40	hqx
 application/mac-compactpro	cpt
@@ -389,6 +390,7 @@ audio/x-realaudio		ra
 audio/x-wav			wav
 chemical/x-pdb			pdb
 chemical/x-xyz			xyz
+font/woff2			woff2
 image/bmp			bmp
 image/cgm
 image/g3fax
