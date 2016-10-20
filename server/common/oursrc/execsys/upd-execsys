@@ -106,6 +106,9 @@ my @static = qw(
  odm
  ott
  oth
+ eot
+ woff
+ woff2
 );
 
 my %map;

@@ -25,6 +25,7 @@ application/dca-rft
 application/dec-dx
 application/dvcs
 application/eshop
+application/font-sfnt		otf ttf
 application/http
 application/hyperstudio
 application/iges
@@ -49,7 +50,7 @@ application/news-message-id
 application/news-transmission
 application/ocsp-request
 application/ocsp-response
-application/octet-stream	bin dms lha lzh exe class so dll img iso il ttf otf
+application/octet-stream	bin dms lha lzh exe class so dll img iso il
 application/ogg			ogg
 application/parityfec
 application/pdf			pdf
@@ -536,3 +537,4 @@ application/vnd.ms-powerpoint.presentation.macroEnabled.12	pptm
 application/vnd.ms-powerpoint.template.macroEnabled.12	potm
 application/vnd.ms-powerpoint.slideshow.macroEnabled.12	ppsm
 # End MS Office MIME types.
+application/vnd.ms-fontobject	eot

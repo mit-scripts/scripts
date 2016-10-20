@@ -51,7 +51,7 @@ index 32e7320..3a4d802 100644
  #include "apr.h"
  #include "ap_config.h"
  #include "suexec.h"
-@@ -268,9 +272,108 @@ static void clean_env(void)
+@@ -268,9 +272,111 @@ static void clean_env(void)
      environ = cleanenv;
  }
  
@@ -132,6 +132,9 @@ index 32e7320..3a4d802 100644
 +    "odm",
 +    "ott",
 +    "oth",
++    "eot",
++    "woff",
++    "woff2",
 +    NULL
 +};
 +
