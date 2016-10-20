@@ -153,3 +153,5 @@ blackhistory:	/dev/null
 tdc:		/dev/null
 # seek: spam. Added 2016-10-09.
 seek:		/dev/null
+# braintrust: spam. Added 2016-10-20.
+braintrust: /dev/null
