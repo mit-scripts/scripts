@@ -3,4 +3,4 @@ GRUB_DISTRIBUTOR="Fedora"
 GRUB_DEFAULT=saved
 GRUB_TERMINAL="serial console"
 GRUB_SERIAL_COMMAND="serial"
-GRUB_CMDLINE_LINUX="rd.md=0 rd.lvm=0 rd.dm=0 KEYTABLE=us rd.luks=0 SYSFONT=True LANG=en_US.UTF-8 net.ifnames=0"
+GRUB_CMDLINE_LINUX="rd.md=0 rd.lvm=0 rd.dm=0 KEYTABLE=us rd.luks=0 SYSFONT=True LANG=en_US.UTF-8 net.ifnames=0 crashkernel=128M"
