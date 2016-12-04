@@ -155,3 +155,5 @@ tdc:		/dev/null
 seek:		/dev/null
 # braintrust: spam. Added 2016-10-20.
 braintrust: /dev/null
+# newmanlab: spam. Added 2016-12-04.
+newmanlab:	/dev/null
