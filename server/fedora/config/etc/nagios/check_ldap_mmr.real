@@ -34,7 +34,7 @@ foreach my $entr ( @entries ) {
     my $serverlaststart=$entr->get_value($laststart);
     my $serverlastend=$entr->get_value($lastend);
     my $statuscode = $serverstatus;
-    $statuscode =~ s/(^[-0123456789]+) (.*$)/$1/;
+    $statuscode =~ s/^(?|([-0123456789]+)|Error \(([-0123456789]+)\)) (.*)$/$1/;
     $serverlaststart =~ s/(....)(..)(..)(..)(..)(..)./$1-$2-$3\ $4:$5:$6/;
     $serverlastend =~ s/(....)(..)(..)(..)(..)(..)./$1-$2-$3\ $4:$5:$6/;
     print "Replication to $servername last operation $serverlaststart $nl";
