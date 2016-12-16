@@ -18,7 +18,7 @@ GetOptions(
 
 use constant WARNING => 60*60*24*14; # Warn if a cert is expiring within 14 days
 
-foreach my $cert (glob "*.pem") {
+foreach my $cert (glob("*.pem"), glob("/var/lib/scripts-certs/*.pem")) {
   open(CERT, "<", $cert);
   my $ins = do {local $/; <CERT>};
   close(CERT);
