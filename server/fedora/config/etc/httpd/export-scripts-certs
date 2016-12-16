@@ -25,6 +25,7 @@ vhosts = ll.search_s(
 vhosts.sort(key=lambda (dn, vhost): vhost['scriptsVhostName'])
 
 cert_filenames = set()
+error = False
 
 def conf(vhost):
     name, = vhost['scriptsVhostName']
@@ -41,6 +42,13 @@ def conf(vhost):
             cert_file.write(certs)
         os.rename(cert_path + '.new', cert_path)
 
+    key_path = os.path.join('/etc/pki/tls/private', key_filename)
+    if not os.path.exists(key_path):
+        sys.stderr.write("Error: key file {} does not exist for vhost {}\n".format(key_path, name))
+        global error
+        error = True
+        return
+
     for port in 443, 444:
         yield '<VirtualHost *:{}>\n'.format(port)
         yield '\tServerName {}\n'.format(name)
@@ -51,7 +59,7 @@ def conf(vhost):
         if port == 444:
             yield '\tInclude conf.d/vhosts-common-ssl-cert.conf\n'
         yield '\tSSLCertificateFile {}\n'.format(cert_path)
-        yield '\tSSLCertificateKeyFile {}\n'.format(os.path.join('/etc/pki/tls/private', key_filename))
+        yield '\tSSLCertificateKeyFile {}\n'.format(key_path)
         yield '</VirtualHost>\n'
 
 with open(os.path.join(CERTS_DIR, 'vhosts.conf.new'), 'w') as vhosts_file:
@@ -62,3 +70,5 @@ os.rename(os.path.join(CERTS_DIR, 'vhosts.conf.new'), os.path.join(CERTS_DIR, 'v
 for filename in os.listdir(CERTS_DIR):
     if filename.endswith('.pem') and filename not in cert_filenames:
         os.remove(os.path.join(CERTS_DIR, filename))
+
+sys.exit(1 if error else 0)
