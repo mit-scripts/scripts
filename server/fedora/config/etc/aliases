@@ -157,3 +157,9 @@ seek:		/dev/null
 braintrust: /dev/null
 # newmanlab: spam. Added 2016-12-04.
 newmanlab:	/dev/null
+# game: spam. Added 2017-01-23
+game:	      /dev/null
+# lebanon: spam. Added 2017-01-23
+lebanon:      /dev/null
+# crpg: spam. Added 2017-01-23
+crpg:	      /dev/null
