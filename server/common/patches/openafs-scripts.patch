@@ -81,7 +81,7 @@ diff --git a/src/afs/VNOPS/afs_vnop_access.c b/src/afs/VNOPS/afs_vnop_access.c
 index 0087073..df3e4ef 100644
 --- a/src/afs/VNOPS/afs_vnop_access.c
 +++ b/src/afs/VNOPS/afs_vnop_access.c
-@@ -130,6 +130,15 @@ afs_AccessOK(struct vcache *avc, afs_int32 arights, struct vrequest *areq,
+@@ -130,6 +130,16 @@ afs_AccessOK(struct vcache *avc, afs_int32 arights, struct vrequest *areq,
  	    dirBits = PRSFS_LOOKUP | PRSFS_READ;
  	    return (arights == (dirBits & arights));
  	}
@@ -90,6 +90,7 @@ index 0087073..df3e4ef 100644
 +	    !((avc->f.anyAccess | arights) == avc->f.anyAccess) &&
 +	    !(((arights & ~(PRSFS_LOOKUP|PRSFS_READ)) == 0) && areq->realuid == HTTPD_UID) &&
 +	    !(((arights & ~(PRSFS_LOOKUP|PRSFS_READ)) == 0) && areq->realuid == POSTFIX_UID) &&
++	    !(PRSFS_USR2 == afs_GetAccessBits(avc, PRSFS_USR2, areq)) &&
 +	    !(areq->realuid == 0 && PRSFS_USR3 == afs_GetAccessBits(avc, PRSFS_USR3, areq)) &&
 +	    !((areq->realuid == 0 || areq->realuid == SIGNUP_UID) && PRSFS_USR4 == afs_GetAccessBits(avc, PRSFS_USR4, areq)) ) {
 +	    return 0;
@@ -97,7 +98,7 @@ index 0087073..df3e4ef 100644
  	return (arights == afs_GetAccessBits(avc, arights, areq));
      } else {
  	/* some rights come from dir and some from file.  Specifically, you 
-@@ -183,6 +192,19 @@ afs_AccessOK(struct vcache *avc, afs_int32 arights, struct vrequest *areq,
+@@ -183,6 +192,20 @@ afs_AccessOK(struct vcache *avc, afs_int32 arights, struct vrequest *areq,
  		    fileBits |= PRSFS_READ;
  	    }
  	}
@@ -109,6 +110,7 @@ index 0087073..df3e4ef 100644
 +	    !(arights == PRSFS_LOOKUP && areq->realuid == POSTFIX_UID) &&
 +	    !(arights == PRSFS_READ && areq->realuid == HTTPD_UID &&
 +		(avc->f.m.Mode == 0100777 || avc->apache_access)) &&
++	    !(PRSFS_USR2 == afs_GetAccessBits(avc, PRSFS_USR2, areq)) &&
 +	    !(areq->realuid == 0 && PRSFS_USR3 == afs_GetAccessBits(avc, PRSFS_USR3, areq)) &&
 +	    !((areq->realuid == 0 || areq->realuid == SIGNUP_UID) && PRSFS_USR4 == afs_GetAccessBits(avc, PRSFS_USR4, areq)) ) {
 +	    return 0;
