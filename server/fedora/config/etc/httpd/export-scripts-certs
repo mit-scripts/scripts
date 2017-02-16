@@ -6,6 +6,7 @@ import ldap
 import os
 import sys
 import textwrap
+from OpenSSL import crypto, SSL
 
 CERTS_DIR = '/var/lib/scripts-certs'
 
@@ -27,27 +28,61 @@ vhosts.sort(key=lambda (dn, vhost): vhost['scriptsVhostName'])
 cert_filenames = set()
 error = False
 
+def err(e):
+    global error
+    sys.stderr.write(e)
+    error = True
+
 def conf(vhost):
     name, = vhost['scriptsVhostName']
     aliases = vhost.get('scriptsVhostAlias', [])
     certs, = vhost['scriptsVhostCertificate']
-    key_filename, = vhost['scriptsVhostCertificateKeyFile']
+    try:
+        key_filename, = vhost['scriptsVhostCertificateKeyFile']
+    except KeyError:
+        err('Error: missing scriptsVhostCertificateKeyFile for vhost {}\n'.format(name))
+        return
 
-    certs = ''.join('-----BEGIN CERTIFICATE-----\n' + '\n'.join(textwrap.wrap(cert, 64)) + '\n-----END CERTIFICATE-----\n' for cert in certs.split())
-    cert_filename = base64.urlsafe_b64encode(hashlib.sha256(certs).digest()).strip() + '.pem'
+    try:
+        certs = [crypto.load_certificate(crypto.FILETYPE_ASN1, base64.b64decode(cert)) for cert in certs.split()]
+    except (TypeError, crypto.Error) as e:
+        err('Error: malformed certificate list for vhost {}: {}\n'.format(name, e))
+        return
+
+    if not certs:
+        err('Error: empty certificate list for vhost {}\n'.format(name))
+        return
+
+    key_path = os.path.join('/etc/pki/tls/private', key_filename)
+    if os.path.split(os.path.abspath(key_path)) != ('/etc/pki/tls/private', key_filename):
+        err('Error: bad key filename {} for vhost {}\n'.format(key_path, name))
+        return
+
+    ctx = SSL.Context(SSL.SSLv23_METHOD)
+    try:
+        ctx.use_privatekey_file(key_path, crypto.FILETYPE_PEM)
+    except (SSL.Error, crypto.Error) as e:
+        err('Error: could not read key {} for vhost {}: {}\n'.format(key_path, name, e))
+        return
+
+    ctx.use_certificate(certs[0])
+    for cert in certs[1:]:
+        ctx.add_extra_chain_cert(cert)
+
+    try:
+        ctx.check_privatekey()
+    except SSL.Error as e:
+        err('Error: key {} does not match certificate for vhost {}: {}\n'.format(key_path, name, e))
+        return
+
+    certs_pem = ''.join(crypto.dump_certificate(crypto.FILETYPE_PEM, cert) for cert in certs)
+    cert_filename = base64.urlsafe_b64encode(hashlib.sha256(certs_pem).digest()).strip() + '.pem'
     cert_filenames.add(cert_filename)
     cert_path = os.path.join(CERTS_DIR, cert_filename)
     if not os.path.exists(cert_path):
         with open(cert_path + '.new', 'w') as cert_file:
-            cert_file.write(certs)
+            cert_file.write(certs_pem)
         os.rename(cert_path + '.new', cert_path)
-
-    key_path = os.path.join('/etc/pki/tls/private', key_filename)
-    if not os.path.exists(key_path):
-        sys.stderr.write("Error: key file {} does not exist for vhost {}\n".format(key_path, name))
-        global error
-        error = True
-        return
 
     for port in 443, 444:
         yield '<VirtualHost *:{}>\n'.format(port)
