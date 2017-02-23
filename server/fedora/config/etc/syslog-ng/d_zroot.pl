@@ -135,6 +135,7 @@ while (my $line = <>) {
 	} elsif ($message =~ m|^Set /proc/self/oom_adj to |) {
 	} elsif ($message =~ m|^Set /proc/self/oom_score_adj to |) {
 	} elsif ($message =~ m|^selinux sandbox not useful \[preauth\]$|) {
+	} elsif ($message =~ m|^Accepted \S+ public key \S+ from \S+$|) {
 	} else {
 	    sendmsg($message, "scripts-spew");
 	}
