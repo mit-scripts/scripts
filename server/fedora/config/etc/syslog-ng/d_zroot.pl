@@ -131,6 +131,7 @@ while (my $line = <>) {
 	} elsif ($message =~ m|^Transferred: sent \d+, received \d+ bytes$|) {
 	} elsif ($message =~ m|^Setting tty modes failed: Invalid argument$|) {
 	} elsif ($message =~ m|^ *nrpe .* COMMAND=/etc/nagios/check_ldap_mmr.real$|) {
+	} elsif ($message =~ m|^ *scripts : .*; USER=root ; COMMAND=/etc/httpd/export-scripts-certs$|) {
 	} elsif ($message =~ m|^ *root : TTY=|) {
 	} elsif ($message =~ m|^Set /proc/self/oom_adj to |) {
 	} elsif ($message =~ m|^Set /proc/self/oom_score_adj to |) {
