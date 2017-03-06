@@ -165,3 +165,5 @@ lebanon:      /dev/null
 crpg:	      /dev/null
 # scioly: spam. Added 2017-02-23
 scioly:       /dev/null
+# xavid: mail loop. Added 2017-03-06
+xavid:		/dev/null
