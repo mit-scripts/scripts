@@ -1,5 +1,6 @@
-1. Update server/common/patches/httpd-suexec-scripts.patch and
-   server/common/oursrc/execsys/upd-execsys
-2. Following the directions in the package-build-howto document,
-   build a new execsys package and new httpd packages, upload them to
+1. Update server/common/patches/httpd-suexec-scripts.patch,
+   server/common/oursrc/execsys/upd-execsys, and
+   server/common/oursrc/scripts-static-cat/StaticCat.hs.
+2. Following the directions in the package-build-howto document, build
+   new httpd, execsys, and scripts-static-cat packages, upload them to
    the repo, and deploy them to the servers.
