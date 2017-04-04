@@ -1,0 +1,69 @@
+#!/usr/bin/python2
+
+from __future__ import print_function
+
+import ldap
+import ldap.filter
+from OpenSSL import crypto
+import sys
+
+# Validate arguments
+if len(sys.argv) < 3:
+    exit('usage: gencsr-pony LOCKER HOSTNAME [HOSTNAME...]')
+
+[progname, locker], hostnames = sys.argv[:2], sys.argv[2:]
+
+if any(hostname for hostname in hostnames if '.' not in hostname):
+    exit('error: Hostnames must be fully qualified')
+
+# Connect to LDAP
+ll = ldap.initialize('ldapi://%2fvar%2frun%2fslapd-scripts.socket/')
+with open('/etc/signup-ldap-pw') as pw_file:
+    ll.simple_bind_s('cn=Directory Manager', pw_file.read())
+
+# Verify hostname existence and ownership
+locker_dn = ldap.dn.dn2str([[('uid', locker, 1)], [('ou', 'People', 1)], [('dc', 'scripts', 1)], [('dc', 'mit', 1)], [('dc', 'edu', 1)]])
+search_hostnames = set(hostnames)
+while search_hostnames:
+    res = ll.search_s(
+        'ou=VirtualHosts,dc=scripts,dc=mit,dc=edu',
+        ldap.SCOPE_SUBTREE,
+        ldap.filter.filter_format(
+            '(&(objectClass=scriptsVhost)(|' +
+            '(scriptsVhostName=%s)' * len(search_hostnames) +
+            '(scriptsVhostAlias=%s)' * len(search_hostnames) +
+            '))',
+            list(search_hostnames) * 2),
+        ['scriptsVhostName', 'scriptsVhostAlias', 'scriptsVhostAccount'])
+    search_hostnames -= {h for cn, attrs in res if attrs['scriptsVhostAccount'] == [locker_dn] for h in attrs['scriptsVhostName'] + attrs.get('scriptsVhostAlias', [])}
+    if '*' in search_hostnames or search_hostnames & {h for cn, attrs in res for h in attrs['scriptsVhostName'] + attrs.get('scriptsVhostAlias', [])}:
+        exit('error: Hostnames must exist and be owned by the specified locker')
+
+    # Strip one hostname component and try again with wildcards (foo.bar.baz -> *.bar.baz -> *.baz -> *)
+    search_hostnames = {'.'.join(['*'] + hostname.split('.')[1 + hostname.startswith('*.'):]) for hostname in search_hostnames}
+
+# Create a CSR
+req = crypto.X509Req()
+
+subject = req.get_subject()
+subject.countryName = 'US'
+subject.stateOrProvinceName = 'Massachusetts'
+subject.localityName = 'Cambridge'
+subject.organizationName = 'Massachusetts Institute of Technology'
+subject.organizationalUnitName = 'scripts.mit.edu web hosting service'
+subject.CN = hostnames[0]
+
+req.add_extensions([
+    crypto.X509Extension('basicConstraints', False, 'CA:FALSE'),
+    crypto.X509Extension('keyUsage', False, 'nonRepudiation, digitalSignature, keyEncipherment'),
+    crypto.X509Extension('subjectAltName', False, ', '.join('DNS:' + hostname for hostname in hostnames)),
+])
+
+# Add the private key, and sign the CSR
+with open('/etc/pki/tls/private/scripts-2048.key') as key_file:
+    private_key = crypto.load_privatekey(crypto.FILETYPE_PEM, key_file.read())
+
+req.set_pubkey(private_key)
+req.sign(private_key, 'sha256')
+
+print(end=crypto.dump_certificate_request(crypto.FILETYPE_PEM, req))

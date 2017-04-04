@@ -132,6 +132,7 @@ while (my $line = <>) {
 	} elsif ($message =~ m|^Setting tty modes failed: Invalid argument$|) {
 	} elsif ($message =~ m|^ *nrpe .* COMMAND=/etc/nagios/check_ldap_mmr.real$|) {
 	} elsif ($message =~ m|^ *scripts : .*; USER=root ; COMMAND=/etc/httpd/export-scripts-certs$|) {
+	} elsif ($message =~ m|^ *pony : .*; USER=root ; COMMAND=/etc/pki/tls/gencsr-pony |) {
 	} elsif ($message =~ m|^ *root : TTY=|) {
 	} elsif ($message =~ m|^Set /proc/self/oom_adj to |) {
 	} elsif ($message =~ m|^Set /proc/self/oom_score_adj to |) {
