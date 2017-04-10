@@ -22,13 +22,6 @@ import System.Locale
 import System.Posix
 import System.Posix.Handle
 
-encodings :: M.Map String String
-encodings = M.fromList [
-             (".bz2", "bzip2"),
-             (".gz", "gzip"),
-             (".z", "compress")
-            ]
-
 types :: M.Map String String
 types = M.fromList [
          (".avi", "video/x-msvideo"),
@@ -48,7 +41,7 @@ types = M.fromList [
          (".jar", "application/java-archive"),
          (".jpeg", "image/jpeg"),
          (".jpg", "image/jpeg"),
-         (".js", "application/x-javascript"),
+         (".js", "application/javascript"),
          (".mid", "audio/midi"),
          (".midi", "audio/midi"),
          (".mov", "video/quicktime"),
@@ -87,7 +80,7 @@ types = M.fromList [
          (".svg", "image/svg+xml"),
          (".swf", "application/x-shockwave-flash"),
          (".tar", "application/x-tar"),
-         (".tgz", "application/x-gzip"),
+         (".tgz", "application/gzip"),
          (".tif", "image/tiff"),
          (".tiff", "image/tiff"),
          (".ttf", "application/font-sfnt"),
@@ -108,7 +101,7 @@ types = M.fromList [
          (".xltm", "application/vnd.ms-excel.template.macroEnabled.12"),
          (".xltx", "application/vnd.openxmlformats-officedocument.spreadsheetml.template"),
          (".xml", "text/xml"),
-         (".xsl", "text/xml"),
+         (".xsl", "application/xslt+xml"),
          (".zip", "application/zip")
         ]
 
@@ -125,15 +118,8 @@ outputMyError BadMethod = outputError 405 "Method Not Allowed" []
 outputMyError BadRange = outputError 416 "Requested Range Not Satisfiable" []
 
 checkExtension :: FilePath -> CGI ()
-checkExtension file = do
-  let (base, ext) = splitExtension file
-  ext' <- case M.lookup (map toLower ext) encodings of
-            Nothing -> return ext
-            Just e -> do
-              setHeader "Content-Encoding" e
-              return $ takeExtension base
-
-  case M.lookup (map toLower ext') types of
+checkExtension file =
+  case M.lookup (map toLower (takeExtension file)) types of
     Nothing -> throw Forbidden
     Just t -> setHeader "Content-Type" t
 
