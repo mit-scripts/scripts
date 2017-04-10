@@ -1,6 +1,6 @@
 1. Update server/common/patches/httpd-suexec-scripts.patch,
-   server/common/oursrc/execsys/upd-execsys, and
+   server/fedora/conf/etc/httpd/conf.d/execsys.conf, and
    server/common/oursrc/scripts-static-cat/StaticCat.hs.
 2. Following the directions in the package-build-howto document, build
-   new httpd, execsys, and scripts-static-cat packages, upload them to
+   new httpd and scripts-static-cat packages, upload them to
    the repo, and deploy them to the servers.

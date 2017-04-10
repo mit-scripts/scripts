@@ -25,20 +25,17 @@ See http://scripts.mit.edu/wiki for more information.
 
 %build
 ./configure --prefix=/usr/local --with-pl=/usr/bin/perl --with-php=/usr/bin/php-cgi --with-py=/usr/bin/python --with-exe=/usr/bin/mono
-make SYSCATDIR=/usr/local/sbin
+make
 
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT SYSCATDIR=/usr/local/sbin
+make install DESTDIR=$RPM_BUILD_ROOT
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(0644, root, root)
-/etc/httpd/conf.d/execsys.conf
 %defattr(0755, root, root)
-/usr/local/bin/static-cat
 /etc/init.d/execsys-binfmt
 /usr/local/sbin/ldapize.pl
 /usr/local/sbin/svnproxy.pl

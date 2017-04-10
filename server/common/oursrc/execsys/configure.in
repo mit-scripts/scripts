@@ -1,4 +1,4 @@
-AC_INIT(static-cat.c.pre)
+AC_INIT([Makefile.in])
 
 AC_PROG_CC
 

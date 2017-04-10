@@ -1,6 +1,4 @@
 #!/bin/sh
 
-rm -f static-cat
 rm -f configure config.* Makefile
-rm -f static-cat.c execsys.conf
 rm -rf auto*.cache
