@@ -1,0 +1,1298 @@
+zone "mit.edu" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/mit.edu.stub";
+};
+
+zone "0.4.3.0.6.2.ip6.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/0.4.3.0.6.2.ip6.arpa.stub";
+};
+
+// List of *.18.in-addr.arpa zones generated from
+// https://whois.arin.net/rest/org/MIT-2/nets (2017-04-19)
+
+zone "0.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/0.18.in-addr.arpa.stub";
+};
+
+zone "1.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/1.18.in-addr.arpa.stub";
+};
+
+zone "2.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/2.18.in-addr.arpa.stub";
+};
+
+zone "3.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/3.18.in-addr.arpa.stub";
+};
+
+zone "4.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/4.18.in-addr.arpa.stub";
+};
+
+zone "5.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/5.18.in-addr.arpa.stub";
+};
+
+zone "6.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/6.18.in-addr.arpa.stub";
+};
+
+zone "7.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/7.18.in-addr.arpa.stub";
+};
+
+zone "8.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/8.18.in-addr.arpa.stub";
+};
+
+zone "9.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/9.18.in-addr.arpa.stub";
+};
+
+zone "10.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/10.18.in-addr.arpa.stub";
+};
+
+zone "11.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/11.18.in-addr.arpa.stub";
+};
+
+zone "12.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/12.18.in-addr.arpa.stub";
+};
+
+zone "13.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/13.18.in-addr.arpa.stub";
+};
+
+zone "14.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/14.18.in-addr.arpa.stub";
+};
+
+zone "15.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/15.18.in-addr.arpa.stub";
+};
+
+zone "16.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/16.18.in-addr.arpa.stub";
+};
+
+zone "17.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/17.18.in-addr.arpa.stub";
+};
+
+zone "18.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/18.18.in-addr.arpa.stub";
+};
+
+zone "19.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/19.18.in-addr.arpa.stub";
+};
+
+zone "20.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/20.18.in-addr.arpa.stub";
+};
+
+zone "21.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/21.18.in-addr.arpa.stub";
+};
+
+zone "22.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/22.18.in-addr.arpa.stub";
+};
+
+zone "23.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/23.18.in-addr.arpa.stub";
+};
+
+zone "24.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/24.18.in-addr.arpa.stub";
+};
+
+zone "25.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/25.18.in-addr.arpa.stub";
+};
+
+zone "26.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/26.18.in-addr.arpa.stub";
+};
+
+zone "27.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/27.18.in-addr.arpa.stub";
+};
+
+zone "28.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/28.18.in-addr.arpa.stub";
+};
+
+zone "29.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/29.18.in-addr.arpa.stub";
+};
+
+zone "30.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/30.18.in-addr.arpa.stub";
+};
+
+zone "31.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/31.18.in-addr.arpa.stub";
+};
+
+zone "32.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/32.18.in-addr.arpa.stub";
+};
+
+zone "33.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/33.18.in-addr.arpa.stub";
+};
+
+zone "34.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/34.18.in-addr.arpa.stub";
+};
+
+zone "35.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/35.18.in-addr.arpa.stub";
+};
+
+zone "36.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/36.18.in-addr.arpa.stub";
+};
+
+zone "37.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/37.18.in-addr.arpa.stub";
+};
+
+zone "38.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/38.18.in-addr.arpa.stub";
+};
+
+zone "39.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/39.18.in-addr.arpa.stub";
+};
+
+zone "40.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/40.18.in-addr.arpa.stub";
+};
+
+zone "41.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/41.18.in-addr.arpa.stub";
+};
+
+zone "42.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/42.18.in-addr.arpa.stub";
+};
+
+zone "43.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/43.18.in-addr.arpa.stub";
+};
+
+zone "44.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/44.18.in-addr.arpa.stub";
+};
+
+zone "45.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/45.18.in-addr.arpa.stub";
+};
+
+zone "46.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/46.18.in-addr.arpa.stub";
+};
+
+zone "47.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/47.18.in-addr.arpa.stub";
+};
+
+zone "48.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/48.18.in-addr.arpa.stub";
+};
+
+zone "49.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/49.18.in-addr.arpa.stub";
+};
+
+zone "50.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/50.18.in-addr.arpa.stub";
+};
+
+zone "51.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/51.18.in-addr.arpa.stub";
+};
+
+zone "52.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/52.18.in-addr.arpa.stub";
+};
+
+zone "53.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/53.18.in-addr.arpa.stub";
+};
+
+zone "54.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/54.18.in-addr.arpa.stub";
+};
+
+zone "55.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/55.18.in-addr.arpa.stub";
+};
+
+zone "56.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/56.18.in-addr.arpa.stub";
+};
+
+zone "57.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/57.18.in-addr.arpa.stub";
+};
+
+zone "58.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/58.18.in-addr.arpa.stub";
+};
+
+zone "59.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/59.18.in-addr.arpa.stub";
+};
+
+zone "60.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/60.18.in-addr.arpa.stub";
+};
+
+zone "61.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/61.18.in-addr.arpa.stub";
+};
+
+zone "62.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/62.18.in-addr.arpa.stub";
+};
+
+zone "63.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/63.18.in-addr.arpa.stub";
+};
+
+zone "64.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/64.18.in-addr.arpa.stub";
+};
+
+zone "65.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/65.18.in-addr.arpa.stub";
+};
+
+zone "66.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/66.18.in-addr.arpa.stub";
+};
+
+zone "67.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/67.18.in-addr.arpa.stub";
+};
+
+zone "68.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/68.18.in-addr.arpa.stub";
+};
+
+zone "69.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/69.18.in-addr.arpa.stub";
+};
+
+zone "70.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/70.18.in-addr.arpa.stub";
+};
+
+zone "71.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/71.18.in-addr.arpa.stub";
+};
+
+zone "72.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/72.18.in-addr.arpa.stub";
+};
+
+zone "73.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/73.18.in-addr.arpa.stub";
+};
+
+zone "74.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/74.18.in-addr.arpa.stub";
+};
+
+zone "75.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/75.18.in-addr.arpa.stub";
+};
+
+zone "76.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/76.18.in-addr.arpa.stub";
+};
+
+zone "77.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/77.18.in-addr.arpa.stub";
+};
+
+zone "78.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/78.18.in-addr.arpa.stub";
+};
+
+zone "79.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/79.18.in-addr.arpa.stub";
+};
+
+zone "80.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/80.18.in-addr.arpa.stub";
+};
+
+zone "81.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/81.18.in-addr.arpa.stub";
+};
+
+zone "82.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/82.18.in-addr.arpa.stub";
+};
+
+zone "83.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/83.18.in-addr.arpa.stub";
+};
+
+zone "84.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/84.18.in-addr.arpa.stub";
+};
+
+zone "85.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/85.18.in-addr.arpa.stub";
+};
+
+zone "86.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/86.18.in-addr.arpa.stub";
+};
+
+zone "87.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/87.18.in-addr.arpa.stub";
+};
+
+zone "88.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/88.18.in-addr.arpa.stub";
+};
+
+zone "89.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/89.18.in-addr.arpa.stub";
+};
+
+zone "90.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/90.18.in-addr.arpa.stub";
+};
+
+zone "91.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/91.18.in-addr.arpa.stub";
+};
+
+zone "92.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/92.18.in-addr.arpa.stub";
+};
+
+zone "93.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/93.18.in-addr.arpa.stub";
+};
+
+zone "94.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/94.18.in-addr.arpa.stub";
+};
+
+zone "95.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/95.18.in-addr.arpa.stub";
+};
+
+zone "96.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/96.18.in-addr.arpa.stub";
+};
+
+zone "97.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/97.18.in-addr.arpa.stub";
+};
+
+zone "98.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/98.18.in-addr.arpa.stub";
+};
+
+zone "99.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/99.18.in-addr.arpa.stub";
+};
+
+zone "100.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/100.18.in-addr.arpa.stub";
+};
+
+zone "101.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/101.18.in-addr.arpa.stub";
+};
+
+zone "102.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/102.18.in-addr.arpa.stub";
+};
+
+zone "103.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/103.18.in-addr.arpa.stub";
+};
+
+zone "104.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/104.18.in-addr.arpa.stub";
+};
+
+zone "105.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/105.18.in-addr.arpa.stub";
+};
+
+zone "106.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/106.18.in-addr.arpa.stub";
+};
+
+zone "107.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/107.18.in-addr.arpa.stub";
+};
+
+zone "108.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/108.18.in-addr.arpa.stub";
+};
+
+zone "109.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/109.18.in-addr.arpa.stub";
+};
+
+zone "110.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/110.18.in-addr.arpa.stub";
+};
+
+zone "111.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/111.18.in-addr.arpa.stub";
+};
+
+zone "112.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/112.18.in-addr.arpa.stub";
+};
+
+zone "113.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/113.18.in-addr.arpa.stub";
+};
+
+zone "114.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/114.18.in-addr.arpa.stub";
+};
+
+zone "115.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/115.18.in-addr.arpa.stub";
+};
+
+zone "116.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/116.18.in-addr.arpa.stub";
+};
+
+zone "117.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/117.18.in-addr.arpa.stub";
+};
+
+zone "118.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/118.18.in-addr.arpa.stub";
+};
+
+zone "119.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/119.18.in-addr.arpa.stub";
+};
+
+zone "120.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/120.18.in-addr.arpa.stub";
+};
+
+zone "121.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/121.18.in-addr.arpa.stub";
+};
+
+zone "122.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/122.18.in-addr.arpa.stub";
+};
+
+zone "123.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/123.18.in-addr.arpa.stub";
+};
+
+zone "124.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/124.18.in-addr.arpa.stub";
+};
+
+zone "125.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/125.18.in-addr.arpa.stub";
+};
+
+zone "126.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/126.18.in-addr.arpa.stub";
+};
+
+zone "127.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/127.18.in-addr.arpa.stub";
+};
+
+zone "128.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/128.18.in-addr.arpa.stub";
+};
+
+zone "129.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/129.18.in-addr.arpa.stub";
+};
+
+zone "130.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/130.18.in-addr.arpa.stub";
+};
+
+zone "131.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/131.18.in-addr.arpa.stub";
+};
+
+zone "132.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/132.18.in-addr.arpa.stub";
+};
+
+zone "133.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/133.18.in-addr.arpa.stub";
+};
+
+zone "134.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/134.18.in-addr.arpa.stub";
+};
+
+zone "135.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/135.18.in-addr.arpa.stub";
+};
+
+zone "136.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/136.18.in-addr.arpa.stub";
+};
+
+zone "137.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/137.18.in-addr.arpa.stub";
+};
+
+zone "138.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/138.18.in-addr.arpa.stub";
+};
+
+zone "139.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/139.18.in-addr.arpa.stub";
+};
+
+zone "140.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/140.18.in-addr.arpa.stub";
+};
+
+zone "141.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/141.18.in-addr.arpa.stub";
+};
+
+zone "142.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/142.18.in-addr.arpa.stub";
+};
+
+zone "143.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/143.18.in-addr.arpa.stub";
+};
+
+zone "144.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/144.18.in-addr.arpa.stub";
+};
+
+zone "146.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/146.18.in-addr.arpa.stub";
+};
+
+zone "147.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/147.18.in-addr.arpa.stub";
+};
+
+zone "148.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/148.18.in-addr.arpa.stub";
+};
+
+zone "149.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/149.18.in-addr.arpa.stub";
+};
+
+zone "150.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/150.18.in-addr.arpa.stub";
+};
+
+zone "152.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/152.18.in-addr.arpa.stub";
+};
+
+zone "154.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/154.18.in-addr.arpa.stub";
+};
+
+zone "155.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/155.18.in-addr.arpa.stub";
+};
+
+zone "156.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/156.18.in-addr.arpa.stub";
+};
+
+zone "157.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/157.18.in-addr.arpa.stub";
+};
+
+zone "158.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/158.18.in-addr.arpa.stub";
+};
+
+zone "159.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/159.18.in-addr.arpa.stub";
+};
+
+zone "160.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/160.18.in-addr.arpa.stub";
+};
+
+zone "161.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/161.18.in-addr.arpa.stub";
+};
+
+zone "163.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/163.18.in-addr.arpa.stub";
+};
+
+zone "165.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/165.18.in-addr.arpa.stub";
+};
+
+zone "166.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/166.18.in-addr.arpa.stub";
+};
+
+zone "167.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/167.18.in-addr.arpa.stub";
+};
+
+zone "168.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/168.18.in-addr.arpa.stub";
+};
+
+zone "169.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/169.18.in-addr.arpa.stub";
+};
+
+zone "170.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/170.18.in-addr.arpa.stub";
+};
+
+zone "171.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/171.18.in-addr.arpa.stub";
+};
+
+zone "172.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/172.18.in-addr.arpa.stub";
+};
+
+zone "173.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/173.18.in-addr.arpa.stub";
+};
+
+zone "174.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/174.18.in-addr.arpa.stub";
+};
+
+zone "175.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/175.18.in-addr.arpa.stub";
+};
+
+zone "176.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/176.18.in-addr.arpa.stub";
+};
+
+zone "177.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/177.18.in-addr.arpa.stub";
+};
+
+zone "178.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/178.18.in-addr.arpa.stub";
+};
+
+zone "179.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/179.18.in-addr.arpa.stub";
+};
+
+zone "180.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/180.18.in-addr.arpa.stub";
+};
+
+zone "181.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/181.18.in-addr.arpa.stub";
+};
+
+zone "182.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/182.18.in-addr.arpa.stub";
+};
+
+zone "183.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/183.18.in-addr.arpa.stub";
+};
+
+zone "186.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/186.18.in-addr.arpa.stub";
+};
+
+zone "187.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/187.18.in-addr.arpa.stub";
+};
+
+zone "189.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/189.18.in-addr.arpa.stub";
+};
+
+zone "190.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/190.18.in-addr.arpa.stub";
+};
+
+zone "192.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/192.18.in-addr.arpa.stub";
+};
+
+zone "193.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/193.18.in-addr.arpa.stub";
+};
+
+zone "198.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/198.18.in-addr.arpa.stub";
+};
+
+zone "199.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/199.18.in-addr.arpa.stub";
+};
+
+zone "200.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/200.18.in-addr.arpa.stub";
+};
+
+zone "201.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/201.18.in-addr.arpa.stub";
+};
+
+zone "208.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/208.18.in-addr.arpa.stub";
+};
+
+zone "212.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/212.18.in-addr.arpa.stub";
+};
+
+zone "214.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/214.18.in-addr.arpa.stub";
+};
+
+zone "218.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/218.18.in-addr.arpa.stub";
+};
+
+zone "229.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/229.18.in-addr.arpa.stub";
+};
+
+zone "230.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/230.18.in-addr.arpa.stub";
+};
+
+zone "232.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/232.18.in-addr.arpa.stub";
+};
+
+zone "234.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/234.18.in-addr.arpa.stub";
+};
+
+zone "235.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/235.18.in-addr.arpa.stub";
+};
+
+zone "238.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/238.18.in-addr.arpa.stub";
+};
+
+zone "239.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/239.18.in-addr.arpa.stub";
+};
+
+zone "240.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/240.18.in-addr.arpa.stub";
+};
+
+zone "241.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/241.18.in-addr.arpa.stub";
+};
+
+zone "242.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/242.18.in-addr.arpa.stub";
+};
+
+zone "243.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/243.18.in-addr.arpa.stub";
+};
+
+zone "244.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/244.18.in-addr.arpa.stub";
+};
+
+zone "245.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/245.18.in-addr.arpa.stub";
+};
+
+zone "247.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/247.18.in-addr.arpa.stub";
+};
+
+zone "248.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/248.18.in-addr.arpa.stub";
+};
+
+zone "249.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/249.18.in-addr.arpa.stub";
+};
+
+zone "250.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/250.18.in-addr.arpa.stub";
+};
+
+zone "251.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/251.18.in-addr.arpa.stub";
+};
+
+zone "252.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/252.18.in-addr.arpa.stub";
+};
+
+zone "254.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/254.18.in-addr.arpa.stub";
+};
+
+zone "255.18.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/255.18.in-addr.arpa.stub";
+};
