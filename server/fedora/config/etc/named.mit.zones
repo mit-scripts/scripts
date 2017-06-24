@@ -10,6 +10,12 @@ zone "0.4.3.0.6.2.ip6.arpa" IN {
 	file "slaves/0.4.3.0.6.2.ip6.arpa.stub";
 };
 
+zone "10.in-addr.arpa" IN {
+	type stub;
+	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
+	file "slaves/10.in-addr.arpa.stub";
+};
+
 // List of *.18.in-addr.arpa zones generated from
 // https://whois.arin.net/rest/org/MIT-2/nets (2017-04-19)
 
