@@ -17,7 +17,7 @@ zone "10.in-addr.arpa" IN {
 };
 
 // List of *.18.in-addr.arpa zones generated from
-// https://whois.arin.net/rest/org/MIT-2/nets (2017-04-19)
+// http://kb.mit.edu/confluence/x/F4DCAg (2017-06-27)
 
 zone "0.18.in-addr.arpa" IN {
 	type stub;
@@ -799,12 +799,6 @@ zone "129.18.in-addr.arpa" IN {
 	file "slaves/129.18.in-addr.arpa.stub";
 };
 
-zone "130.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/130.18.in-addr.arpa.stub";
-};
-
 zone "131.18.in-addr.arpa" IN {
 	type stub;
 	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
@@ -833,12 +827,6 @@ zone "135.18.in-addr.arpa" IN {
 	type stub;
 	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
 	file "slaves/135.18.in-addr.arpa.stub";
-};
-
-zone "136.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/136.18.in-addr.arpa.stub";
 };
 
 zone "137.18.in-addr.arpa" IN {
@@ -883,28 +871,10 @@ zone "143.18.in-addr.arpa" IN {
 	file "slaves/143.18.in-addr.arpa.stub";
 };
 
-zone "144.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/144.18.in-addr.arpa.stub";
-};
-
 zone "146.18.in-addr.arpa" IN {
 	type stub;
 	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
 	file "slaves/146.18.in-addr.arpa.stub";
-};
-
-zone "147.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/147.18.in-addr.arpa.stub";
-};
-
-zone "148.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/148.18.in-addr.arpa.stub";
 };
 
 zone "149.18.in-addr.arpa" IN {
@@ -959,12 +929,6 @@ zone "159.18.in-addr.arpa" IN {
 	type stub;
 	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
 	file "slaves/159.18.in-addr.arpa.stub";
-};
-
-zone "160.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/160.18.in-addr.arpa.stub";
 };
 
 zone "161.18.in-addr.arpa" IN {
@@ -1039,12 +1003,6 @@ zone "174.18.in-addr.arpa" IN {
 	file "slaves/174.18.in-addr.arpa.stub";
 };
 
-zone "175.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/175.18.in-addr.arpa.stub";
-};
-
 zone "176.18.in-addr.arpa" IN {
 	type stub;
 	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
@@ -1063,12 +1021,6 @@ zone "178.18.in-addr.arpa" IN {
 	file "slaves/178.18.in-addr.arpa.stub";
 };
 
-zone "179.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/179.18.in-addr.arpa.stub";
-};
-
 zone "180.18.in-addr.arpa" IN {
 	type stub;
 	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
@@ -1079,12 +1031,6 @@ zone "181.18.in-addr.arpa" IN {
 	type stub;
 	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
 	file "slaves/181.18.in-addr.arpa.stub";
-};
-
-zone "182.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/182.18.in-addr.arpa.stub";
 };
 
 zone "183.18.in-addr.arpa" IN {
@@ -1141,42 +1087,6 @@ zone "199.18.in-addr.arpa" IN {
 	file "slaves/199.18.in-addr.arpa.stub";
 };
 
-zone "200.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/200.18.in-addr.arpa.stub";
-};
-
-zone "201.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/201.18.in-addr.arpa.stub";
-};
-
-zone "208.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/208.18.in-addr.arpa.stub";
-};
-
-zone "212.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/212.18.in-addr.arpa.stub";
-};
-
-zone "214.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/214.18.in-addr.arpa.stub";
-};
-
-zone "218.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/218.18.in-addr.arpa.stub";
-};
-
 zone "229.18.in-addr.arpa" IN {
 	type stub;
 	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
@@ -1187,24 +1097,6 @@ zone "230.18.in-addr.arpa" IN {
 	type stub;
 	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
 	file "slaves/230.18.in-addr.arpa.stub";
-};
-
-zone "232.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/232.18.in-addr.arpa.stub";
-};
-
-zone "234.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/234.18.in-addr.arpa.stub";
-};
-
-zone "235.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/235.18.in-addr.arpa.stub";
 };
 
 zone "238.18.in-addr.arpa" IN {
@@ -1265,12 +1157,6 @@ zone "248.18.in-addr.arpa" IN {
 	type stub;
 	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
 	file "slaves/248.18.in-addr.arpa.stub";
-};
-
-zone "249.18.in-addr.arpa" IN {
-	type stub;
-	masters { 18.70.0.160; 18.71.0.151; 18.72.0.3; };
-	file "slaves/249.18.in-addr.arpa.stub";
 };
 
 zone "250.18.in-addr.arpa" IN {
