@@ -1,0 +1,11 @@
+[Unit]
+DefaultDependencies=no
+Conflicts=umount.target
+Before=local-fs.target umount.target
+[Mount]
+What=/etc
+Where=/srv/scripts_config/server/fedora/config/etc
+Type=none
+Options=bind
+[Install]
+WantedBy=local-fs.target
