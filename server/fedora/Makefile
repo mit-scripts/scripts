@@ -44,6 +44,7 @@ openafs_url	= "https://www.openafs.org/dl/openafs/1.6.20.1/openafs-1.6.20.1-1.sr
 #zephyr_url	= "http://zephyr.1ts.org/files/zephyr-3.0.2.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
+scriptsversion	= $(shell git describe --dirty --match root | awk -F- '{print $$2 + 419 "." $$3 ($$4 ? "." $$4 : "")}')
 
 .PHONY: minimal-clean
 
@@ -105,17 +106,6 @@ patch-specs: install-srpms
 	rm -f *.spec.~*~; \
 	for i in $$list; do \
 		patch -bV numbered < $$i; \
-	done; \
-	list2=`svn ls ${oursrcdir}`; \
-	for i in $$list2; do \
-		base=`basename $$i`; \
-		[ -e ${tmp_specs}/$$base.spec ] || continue; \
-		version=`svnversion ${oursrcdir}/$$i`; \
-		version=$${version//:/_}; \
-		echo "$$i version $$version"; \
-		sed --in-place \
-			-e "s/SVNVERSION_TO_UPDATE/$${version}/" \
-		${tmp_specs}/$$base.spec; \
 	done
 
 # 1. use the package's Makefile to delete leftover files and run autoconf
@@ -123,7 +113,7 @@ patch-specs: install-srpms
 tarballs: mkdir-tree
 	@set -ex; \
 	cd ${oursrcdir}; \
-	list=`find -mindepth 1 -maxdepth 1 -type d | grep -v ".svn"`; \
+	list=`find -mindepth 1 -maxdepth 1 -type d`; \
 	for i in $$list; do \
 		pushd $$i; \
 		if [ -x ./mrproper ]; then \
@@ -148,7 +138,7 @@ upstream: mkdir-tree download
 all:
 	make $(allsrc)
 
-$(oursrc): rpmbuild_args += --define 'scriptsversion $(shell svnversion ${oursrcdir}/$** | tr ':' '_' | sed -e 's/-.*/0.uncommitted/')'
+$(oursrc): rpmbuild_args += --define 'scriptsversion $(scriptsversion)'
 
 $(filter %.i686,$(oursrc)): %.i686: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
@@ -160,7 +150,7 @@ $(filter-out %.i686,$(oursrc)): %: setup
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
 	/usr/bin/mock -r scripts-fc20-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
-$(upstream) openafs-kernel: rpmbuild_args += --define 'scriptsversion $(shell svnversion ${patches} | tr ':' '_')'
+$(upstream) openafs-kernel: rpmbuild_args += --define 'scriptsversion $(scriptsversion)'
 
 kernel: rpmbuild_args += --define 'buildid .scripts.%{scriptsversion}' --without debug --without doc
 
