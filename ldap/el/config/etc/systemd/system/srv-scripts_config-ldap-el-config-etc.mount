@@ -1,12 +1,8 @@
 [Unit]
-DefaultDependencies=no
-Conflicts=umount.target
-Before=local-fs.target umount.target
-After=systemd-remount-fs.service
+Before=local-fs.target
 [Mount]
 What=/etc
 Where=/srv/scripts_config/ldap/el/config/etc
-Type=none
 Options=bind
 [Install]
 WantedBy=local-fs.target
