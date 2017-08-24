@@ -2,6 +2,7 @@
 DefaultDependencies=no
 Conflicts=umount.target
 Before=local-fs.target umount.target
+After=systemd-remount-fs.service
 [Mount]
 What=/etc
 Where=/srv/scripts_config/ldap/el/config/etc
