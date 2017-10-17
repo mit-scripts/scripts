@@ -9,7 +9,9 @@ usage="Usage:
     $0 show-rand [from regex|to regex]
     $0 email lockers...
     $0 purge-from lockers...
-    $0 purge-to lockers..."
+    $0 purge-from-re regexes...
+    $0 purge-to lockers...
+    $0 purge-to-re regexes..."
 
 usage() {
     echo "$usage" >&2;
@@ -102,6 +104,18 @@ purge_from() {
     done
 }
 
+purge_from_re() {
+    if [[ $# -eq 0 ]]; then
+        echo "Please specify a regex to purge emails from" >&2
+        exit 1
+    fi
+    for re in "$@"; do
+        echo "$re"
+        mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$7 ~ \"$re\") { print \$1 }" | tr -d '*!' | postsuper -d -
+        echo
+    done
+}
+
 purge_to() {
     if [[ $# -eq 0 ]]; then
         echo "Please specify a locker to purge emails to" >&2
@@ -111,6 +125,18 @@ purge_to() {
         address=$(canonicalize_address "$locker")
         echo "$address..."
         mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$8 == \"$address\" && \$9 == \"\") { print \$1 }" | tr -d '*!' | postsuper -d -
+        echo
+    done
+}
+
+purge_to_re() {
+    if [[ $# -eq 0 ]]; then
+        echo "Please specify a regex to purge emails to" >&2
+        exit 1
+    fi
+    for re in "$@"; do
+        echo "$re"
+        mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$8 ~ \"$re\" && \$9 == \"\") { print \$1 }" | tr -d '*!' | postsuper -d -
         echo
     done
 }
@@ -127,7 +153,9 @@ case "$op" in
     show-rand) show_rand "$@";;
     email) tmpl_email "$@";;
     purge-from) purge_from "$@";;
+    purge-from-re) purge_from_re "$@";;
     purge-to) purge_to "$@";;
+    purge-to-re) purge_to_re "$@";;
     *)
 	usage
         ;;
