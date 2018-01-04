@@ -1,9 +1,9 @@
 --- a/src/packaging/RedHat/openafs-client.service	2012-03-26 17:04:18.177919348 -0400
 +++ b/src/packaging/RedHat/openafs-client.service	2012-03-26 17:15:17.206630779 -0400
-@@ -6,7 +6,7 @@
- [Service]
- Type=forking
+@@ -9,7 +9,7 @@
+ RemainAfterExit=true
  EnvironmentFile=/etc/sysconfig/openafs
+ ExecStartPre=/bin/bash -c "fs sysname > /dev/null 2>/dev/null; test $? -ne 0 || (echo AFS client appears to be running -- not starting && exit 1)"
 -ExecStartPre=/bin/sed -n 'w/usr/vice/etc/CellServDB' /usr/vice/etc/CellServDB.local /usr/vice/etc/CellServDB.dist
 +ExecStartPre=-/bin/sed -n 'w/usr/vice/etc/CellServDB' /usr/vice/etc/CellServDB.local /usr/vice/etc/CellServDB.mousetrap
  ExecStartPre=/bin/chmod 0644 /usr/vice/etc/CellServDB
