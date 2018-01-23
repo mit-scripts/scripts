@@ -165,7 +165,9 @@ $(filter-out %.i686,$(upstream)): %: setup patch-specs
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/openafs*.spec
-	/usr/bin/mock -r scripts-fc20-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-fc27-`uname -m` --clean
+	/usr/bin/mock -r scripts-fc27-`uname -m` --install elfutils-libelf-devel
+	/usr/bin/mock -r scripts-fc27-`uname -m` --no-clean ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
 
 #sort -n sorts "2.6.25-1" later than "2.6.25.1-1", so it's Wrong
 #kernvers = $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)
