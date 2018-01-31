@@ -44,6 +44,8 @@ make install DESTDIR=$RPM_BUILD_ROOT
 /usr/local/sbin/gitproxy.pl
 /usr/libexec/scripts-trusted/git
 /etc/xinetd.d/scripts-git
+/usr/local/sbin/local-smtp-proxy
+/etc/xinetd.d/scripts-local-smtp
 
 %post
 chkconfig --add execsys-binfmt

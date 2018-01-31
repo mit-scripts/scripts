@@ -1,0 +1,24 @@
+service smtp
+{
+	disable			= no
+	bind			= 127.0.0.1
+	port			= 25
+	socket_type		= stream
+	protocol		= tcp
+	wait			= no
+	user			= root
+	passenv			= PATH
+	server			= /usr/local/sbin/local-smtp-proxy
+}
+service smtp
+{
+	disable			= no
+	bind			= ::1
+	port			= 25
+	socket_type		= stream
+	protocol		= tcp
+	wait			= no
+	user			= root
+	passenv			= PATH
+	server			= /usr/local/sbin/local-smtp-proxy
+}

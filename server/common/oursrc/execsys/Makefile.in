@@ -21,6 +21,9 @@ install:
 	install -D -p -m755 git $(DESTDIR)$(trusteddir)/git
 	install -D -p -m644 scripts-git.xinetd $(DESTDIR)/etc/xinetd.d/scripts-git
 
+	install -D -p -m755 local-smtp-proxy $(DESTDIR)$(sbindir)/local-smtp-proxy
+	install -D -p -m644 scripts-local-smtp.xinetd $(DESTDIR)/etc/xinetd.d/scripts-local-smtp
+
 clean:
 	rm -f static-cat
 

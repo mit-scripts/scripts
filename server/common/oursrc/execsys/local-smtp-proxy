@@ -1,0 +1,106 @@
+#!/usr/bin/python3
+
+import grp
+import ipaddress
+import os
+import pwd
+import socket
+import struct
+
+NETLINK_INET_DIAG = 4
+TCPDIAG_GETSOCK = 18
+NLM_F_REQUEST = 1
+INET_DIAG_NOCOOKIE = ~(~0 << 32)
+
+def get_uid_nl(sock):
+    src = sock.getpeername()
+    dst = sock.getsockname()
+    src_ip = ipaddress.ip_address(src[0])
+    dst_ip = ipaddress.ip_address(dst[0])
+
+    nlsock = socket.socket(socket.AF_NETLINK, socket.SOCK_DGRAM, NETLINK_INET_DIAG)
+
+    # struct nlmsghdr + struct inet_diag_req
+    Req = struct.Struct('=IHHIIBBBBHH16s16sI2III')
+    nlsock.send(Req.pack(
+        Req.size, TCPDIAG_GETSOCK, NLM_F_REQUEST, 0, 0,
+        {4: socket.AF_INET, 6: socket.AF_INET6}[src_ip.version], 0, 0, 0,
+        socket.htons(src[1]), socket.htons(dst[1]),
+        src_ip.packed, dst_ip.packed,
+        0, INET_DIAG_NOCOOKIE, INET_DIAG_NOCOOKIE,
+        0, 0))
+
+    # struct nlmsghdr + struct inet_diag_msg
+    Res = struct.Struct('=IHHIIBBBBHH16s16sI2IIIIII')
+    _, typ, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, uid, _ = \
+        Res.unpack(nlsock.recv(Res.size))
+
+    if typ != TCPDIAG_GETSOCK:
+        print('421 local-smtp-proxy: cannot find your uid')
+        exit()
+
+    return uid
+
+def get_uid_proc(sock):
+    src = sock.getpeername()
+    src_ip = ipaddress.ip_address(src[0])
+    chunks = len(src_ip.packed)//4
+    src_hex = ('{:08X}'*chunks + ':{:04X}').format(
+        *struct.unpack('<{}I'.format(chunks), src_ip.packed) + (src[1],)).encode()  # WTF?
+
+    with open({4: '/proc/net/tcp', 6: '/proc/net/tcp6'}[src_ip.version], 'rb') as f:
+        next(f)
+        for l in f:
+            l = l.split()
+            if l[1] == src_hex:
+                return int(l[7])
+
+    print('421 local-smtp-proxy: cannot find your uid')
+    exit()
+
+def proxy(sock, uid):
+    pw = pwd.getpwuid(uid)
+    os.setresgid(pw.pw_gid, pw.pw_gid, pw.pw_gid)
+    os.initgroups(pw.pw_name, pw.pw_gid)
+    if grp.getgrnam('nss-nonlocal-users').gr_gid not in os.getgroups():
+        print('421 local-smtp-proxy: you are not in nss-nonlocal-users')
+        exit()
+    os.setresuid(uid, uid, uid)
+
+    import asyncore
+    import smtpd
+    import subprocess
+
+    peer = sock.getpeername()
+
+    class Proxy(object):
+        def process_message(self, peer, mailfrom, rcpttos, data):
+            with subprocess.Popen(
+                    ['/usr/sbin/sendmail', '-f', mailfrom] + rcpttos,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE) as p:
+                out, err = p.communicate(data.encode())
+                if p.returncode == 0:
+                    return '250 OK'
+                else:
+                    return {
+                        os.EX_DATAERR: '550',
+                        os.EX_NOPERM: '550',
+                        os.EX_OSERR: '450',
+                        os.EX_SOFTWARE: '450',
+                        os.EX_TEMPFAIL: '450',
+                        os.EX_UNAVAILABLE: '450',
+                        os.EX_USAGE: '550',
+                    }.get(p.returncode, '450') + ' ' + err.decode().replace('\n', ' ')
+
+    channel = smtpd.SMTPChannel(Proxy(), sock, peer, smtpd.DATA_SIZE_DEFAULT)
+    asyncore.loop()
+
+def main():
+    sock = socket.fromfd(0, socket.AF_INET6, socket.SOCK_STREAM)
+    uid = get_uid_proc(sock)
+    proxy(sock, uid)
+
+if __name__ == '__main__':
+    main()
