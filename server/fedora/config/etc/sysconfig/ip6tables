@@ -5,10 +5,10 @@
 :log-smtp - [0:0]
 -A OUTPUT -p tcp -m tcp --dport 25 --syn -j log-smtp
 -A log-smtp -m owner --uid-owner postfix -j RETURN
--A log-smtp -m owner --uid-owner nrpe -o lo -j RETURN
+-A log-smtp -m owner --uid-owner nrpe -o lo -d ::1 -j RETURN
 # 537644531=scripts (for heartbeat)
 -A log-smtp -m owner --uid-owner 537644531 -o lo -j RETURN
 -A log-smtp -j LOG --log-prefix "SMTP " --log-uid
--A log-smtp -o lo -j RETURN
+-A log-smtp -o lo -d ::1 -j RETURN
 -A log-smtp -j REJECT --reject-with icmp6-adm-prohibited
 COMMIT
