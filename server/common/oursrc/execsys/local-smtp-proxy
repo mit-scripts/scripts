@@ -62,8 +62,9 @@ def proxy(sock, uid):
     pw = pwd.getpwuid(uid)
     os.setresgid(pw.pw_gid, pw.pw_gid, pw.pw_gid)
     os.initgroups(pw.pw_name, pw.pw_gid)
-    if grp.getgrnam('nss-nonlocal-users').gr_gid not in os.getgroups():
-        print('421 local-smtp-proxy: you are not in nss-nonlocal-users')
+    if pw.pw_name != 'nrpe' and \
+       grp.getgrnam('nss-nonlocal-users').gr_gid not in os.getgroups():
+        print('421 local-smtp-proxy: refusing to launch sendmail as local user {}'.format(pw.pw_name))
         exit()
     os.setresuid(uid, uid, uid)
 
