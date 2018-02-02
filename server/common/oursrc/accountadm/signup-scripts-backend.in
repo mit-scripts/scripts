@@ -121,7 +121,7 @@ if (!$pid) {
 }
 print LDAP <<EOF;
 dn: uid=$username,ou=People,dc=scripts,dc=mit,dc=edu
-objectClass: posixAccount
+objectClass: scriptsAccount
 cn: $username
 uid: $username
 uidNumber: $uid1
