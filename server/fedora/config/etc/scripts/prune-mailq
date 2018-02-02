@@ -40,7 +40,7 @@ list_to() {
 
 show_rand() {
     if [[ $# -eq 0 ]]; then
-	files=$(ls /var/spool/postfix/deferred/?/* | shuf | head -n 3)
+	files=$(printf '%s\n' /var/spool/postfix/deferred/?/* | shuf -n 3)
     elif [[ $# -eq 2 ]]; then
 	match=$2
 	case "$1" in
@@ -48,7 +48,7 @@ show_rand() {
 	    to) dir=8;;
 	    *) usage;;
 	esac
-	msgids=$(mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$$dir ~ /$match/) { print \$1 }" | shuf | head -n 3)
+	msgids=$(mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$$dir ~ /$match/) { print \$1 }" | shuf -n 3)
 	files=$(for msgid in $msgids; do echo /var/spool/postfix/deferred/${msgid:0:1}/$msgid; done)
     else
 	usage
