@@ -5,10 +5,12 @@ shopt -s failglob
 
 usage="Usage:
     $0 list-from
+    $0 list-from-address
     $0 list-to
     $0 show-rand [from regex|to regex]
     $0 email lockers...
     $0 purge-from lockers...
+    $0 purge-from-address addresses...
     $0 purge-to lockers..."
 
 usage() {
@@ -30,12 +32,17 @@ canonicalize_address() {
 
 list_from() {
     echo "Top twenty senders by number of queued messages:"
+    mailq | grep -v '^ *(\|^-' | awk 'BEGIN { RS = "" } { print $1 }' | tr -d '*!' | xargs postcat -q -e | sed -n 's/sender_fullname: //p' | sort | uniq -c | sort -n | tail -n 20
+}
+
+list_from_address() {
+    echo "Top twenty sending addresses by number of queued messages:"
     mailq | tail -n +2 | grep -v '^ *(' | awk 'BEGIN { RS = "" } { print $7 }' | sort | uniq -c | sort -n | tail -n 20
 }
 
 list_to() {
     echo "Top twenty recipients by number of queued messages:"
-    mailq | tail -n +2 | grep -v '^ *(' | awk 'BEGIN { RS = "" } { print $8 }' | sort | uniq -c | sort -n | tail -n 20
+    mailq | grep -v '^ *(\|^-' | awk 'BEGIN { RS = "" } { print $8 }' | sort | uniq -c | sort -n | tail -n 20
 }
 
 show_rand() {
@@ -95,7 +102,18 @@ purge_from() {
         exit 1
     fi
     for locker in "$@"; do
-        address=$(canonicalize_address "$locker")
+        mailq | grep -v '^ *(\|^-' | awk 'BEGIN { RS = "" } { print $1 }' | tr -d '*!' | xargs postcat -q -e | awk "BEGIN { RS = \"*** ENVELOPE RECORDS \" } /\\nsender_fullname: $locker\\n/ { sub(\".*/\", \"\", \$1); print \$1 }" | postsuper -d -
+        echo
+    done
+}
+
+purge_from_address() {
+    if [[ $# -eq 0 ]]; then
+        echo "Please specify an address to purge emails from" >&2
+        exit 1
+    fi
+    for address in "$@"; do
+        address=$(canonicalize_address "$address")
         echo "$address..."
         mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$7 == \"$address\") { print \$1 }" | tr -d '*!' | postsuper -d -
         echo
@@ -123,10 +141,12 @@ shift || :
 
 case "$op" in
     list-from) list_from;;
+    list-from-address) list_from_address;;
     list-to) list_to;;
     show-rand) show_rand "$@";;
     email) tmpl_email "$@";;
     purge-from) purge_from "$@";;
+    purge-from-address) purge_from_address "$@";;
     purge-to) purge_to "$@";;
     *)
 	usage
