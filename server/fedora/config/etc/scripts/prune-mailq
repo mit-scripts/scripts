@@ -37,7 +37,7 @@ list_from() {
 
 list_from_address() {
     echo "Top twenty sending addresses by number of queued messages:"
-    mailq | tail -n +2 | grep -v '^ *(' | awk 'BEGIN { RS = "" } { print $7 }' | sort | uniq -c | sort -n | tail -n 20
+    mailq | grep -v '^ *(\|^-' | awk 'BEGIN { RS = "" } { print $7 }' | sort | uniq -c | sort -n | tail -n 20
 }
 
 list_to() {
@@ -55,7 +55,7 @@ show_rand() {
 	    to) dir=8;;
 	    *) usage;;
 	esac
-	msgids=$(mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$$dir ~ /$match/) { print \$1 }" | shuf -n 3)
+	msgids=$(mailq | grep -v '^ *(\|^-' | awk "BEGIN { RS = \"\" } (\$$dir ~ /$match/) { print \$1 }" | shuf -n 3)
 	files=$(for msgid in $msgids; do echo /var/spool/postfix/deferred/${msgid:0:1}/$msgid; done)
     else
 	usage
@@ -115,7 +115,7 @@ purge_from_address() {
     for address in "$@"; do
         address=$(canonicalize_address "$address")
         echo "$address..."
-        mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$7 == \"$address\") { print \$1 }" | tr -d '*!' | postsuper -d -
+        mailq | grep -v '^ *(\|^-' | awk "BEGIN { RS = \"\" } (\$7 == \"$address\") { print \$1 }" | tr -d '*!' | postsuper -d -
         echo
     done
 }
@@ -128,7 +128,7 @@ purge_to() {
     for locker in "$@"; do
         address=$(canonicalize_address "$locker")
         echo "$address..."
-        mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$8 == \"$address\" && \$9 == \"\") { print \$1 }" | tr -d '*!' | postsuper -d -
+        mailq | grep -v '^ *(\|^-' | awk "BEGIN { RS = \"\" } (\$8 == \"$address\" && \$9 == \"\") { print \$1 }" | tr -d '*!' | postsuper -d -
         echo
     done
 }
