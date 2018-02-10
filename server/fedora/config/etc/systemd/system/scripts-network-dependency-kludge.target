@@ -1,0 +1,4 @@
+[Unit]
+Requires=network.service
+[Install]
+WantedBy=network.target
