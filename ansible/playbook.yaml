@@ -1,0 +1,48 @@
+- hosts: scripts-directors
+  vars:
+    network_allow_service_restart: false
+    network_ether_interfaces:
+    - device: vlan181
+      hwaddr: "{{ vlan181_hwaddr }}"
+      cidr: "{{ vlan181_address }}/16"
+      dns_nameservers:
+      - 18.70.0.160
+      - 18.72.0.3
+      - 18.71.0.151
+      dns_search: mit.edu
+      options:
+      - up ip route add 18.181.0.0/16 dev vlan181 table 181
+      - up ip route add default via 18.181.0.1 table 181
+      - up ip rule add from 18.181.0.0/16 table 181
+      - up ip route add default via 18.181.0.1 metric 1
+    - device: vlan486
+      hwaddr: "{{ vlan486_hwaddr }}"
+      cidr: "{{ vlan486_address }}/24"
+      options:
+      - up ip route add 18.4.86.0/24 dev vlan181 table 486
+      - up ip route add default via 18.4.86.1 table 486
+      - up ip rule add from 18.4.86.0/24 table 486
+      - up ip route add default via 18.4.86.1 metric 2
+  roles:
+  - role: udev_rename_netiface
+  - role: network_interface
+  tasks:
+  - name: Upgrade packages
+    apt:
+      upgrade: dist
+  - name: Install packages
+    apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+    - ifrename
+    - resolvconf
+  - name: Reboot
+    when: udev_rename_netiface_config_changed.changed or ether_result.changed
+    shell: sleep 2 && reboot
+    async: 1
+    poll: 0
+    ignore_errors: true
+  - name: Wait for reboot
+    when: udev_rename_netiface_config_changed.changed or ether_result.changed
+    local_action: wait_for_connection delay=5

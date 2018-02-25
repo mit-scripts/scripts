@@ -1,0 +1,9 @@
+all:
+  children:
+    scripts-directors:
+      hosts:
+        george-lucas.mit.edu:
+          vlan181_address: 18.181.0.220
+          vlan181_hwaddr: 00:50:56:87:9b:7d
+          vlan486_address: 18.4.86.220
+          vlan486_hwaddr: 00:50:56:87:03:c5
