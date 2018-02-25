@@ -35,8 +35,14 @@
       name: "{{ item }}"
       state: present
     with_items:
-    - ifrename
+    - exim4-daemon-light
     - resolvconf
+  - name: Update /etc/aliases
+    lineinfile:
+      path: /etc/aliases
+      regexp: '^root:'
+      line: "root: {{ root_aliases|join(', ') }}"
+    notify: newaliases
   - name: Reboot
     when: udev_rename_netiface_config_changed.changed or ether_result.changed
     shell: sleep 2 && reboot
@@ -46,3 +52,6 @@
   - name: Wait for reboot
     when: udev_rename_netiface_config_changed.changed or ether_result.changed
     local_action: wait_for_connection delay=5
+  handlers:
+  - name: newaliases
+    command: newaliases
