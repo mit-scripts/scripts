@@ -1,9 +1,0 @@
-logfacility	local0
-udpport	695
-bcast	eth0
-mcast eth0 225.0.0.1 695 1 0
-auto_failback off
-node	old-faithful
-node	better-mousetrap
-respawn hacluster /usr/lib64/heartbeat/ipfail
-apiauth ipfail gid=haclient uid=hacluster
