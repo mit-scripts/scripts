@@ -1,0 +1,9 @@
+[Unit]
+Description=HTTP Socket for LDirectord Status
+
+[Socket]
+ListenStream=78
+Accept=yes
+
+[Install]
+WantedBy=sockets.target

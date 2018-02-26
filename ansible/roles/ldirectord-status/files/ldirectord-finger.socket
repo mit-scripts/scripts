@@ -1,0 +1,9 @@
+[Unit]
+Description=Finger Socket for LDirectord Status
+
+[Socket]
+ListenStream=79
+Accept=yes
+
+[Install]
+WantedBy=sockets.target
