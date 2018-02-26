@@ -5,24 +5,30 @@
     - device: vlan181
       hwaddr: "{{ vlan181_hwaddr }}"
       cidr: "{{ vlan181_address }}/16"
+      gateway: 18.181.0.1
       dns_nameservers:
       - 18.70.0.160
       - 18.72.0.3
       - 18.71.0.151
       dns_search: mit.edu
       options:
-      - up ip route add 18.181.0.0/16 dev vlan181 table 181
-      - up ip route add default via 18.181.0.1 table 181
+      - metric 1
+      - up ip route add 18.181.0.0/16 table 181 dev vlan181
+      - up ip route add default table 181 via 18.181.0.1
       - up ip rule add from 18.181.0.0/16 table 181
-      - up ip route add default via 18.181.0.1 metric 1
+      - down ip rule del table 181
+      - down ip route flush table 181
     - device: vlan486
       hwaddr: "{{ vlan486_hwaddr }}"
       cidr: "{{ vlan486_address }}/24"
+      gateway: 18.4.86.1
       options:
-      - up ip route add 18.4.86.0/24 dev vlan181 table 486
-      - up ip route add default via 18.4.86.1 table 486
+      - metric 2
+      - up ip route add 18.4.86.0/24 table 486 dev vlan486
+      - up ip route add default table 486 via 18.4.86.1
       - up ip rule add from 18.4.86.0/24 table 486
-      - up ip route add default via 18.4.86.1 metric 2
+      - down ip rule del table 486
+      - down ip route flush table 486
   roles:
   - role: udev_rename_netiface
   - role: network_interface
