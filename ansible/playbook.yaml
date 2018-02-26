@@ -26,6 +26,7 @@
   roles:
   - role: udev_rename_netiface
   - role: network_interface
+  - role: ldirectord-status
   tasks:
   - name: Upgrade packages
     apt:
