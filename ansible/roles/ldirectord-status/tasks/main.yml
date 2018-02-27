@@ -10,5 +10,8 @@
   - ldirectord-http.socket
   - ldirectord-finger@.service
   - ldirectord-http@.service
-- systemd: daemon_reload=yes name=ldirectord-finger.socket state=started enabled=yes
-- systemd: name=ldirectord-http.socket state=started enabled=yes
+  notify: reload_units
+- name: start ldirectord-finger.socket
+  systemd: daemon_reload=yes name=ldirectord-finger.socket state=started enabled=yes
+- name: start ldirectord-http.socket
+  systemd: name=ldirectord-http.socket state=started enabled=yes

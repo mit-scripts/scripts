@@ -1,0 +1,8 @@
+---
+- name: restart ldirectord-finger.socket
+  listen: reload_units
+  systemd: daemon_reload=yes name=ldirectord-finger.socket state=restarted
+- name: restart ldirectord-http.socket
+  listen: reload_units
+  systemd: name=ldirectord-http.socket state=restarted
+  
