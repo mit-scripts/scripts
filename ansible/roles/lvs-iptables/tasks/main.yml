@@ -1,0 +1,10 @@
+---
+- copy:
+    src: scripts-iptables.sh
+    dest: /etc/scripts-iptables.sh
+    mode: 0755
+- copy:
+    src: scripts-iptables.service
+    dest: /etc/systemd/system/
+- systemd: daemon_reload=yes name=scripts-iptables.service state=started enabled=yes
+  

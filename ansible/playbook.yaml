@@ -35,6 +35,7 @@
   - include_role: name=network_interface
     notify: reboot
   - include_role: name=ldirectord-status
+  - include_role: name=lvs-iptables
   - name: Upgrade packages
     apt:
       upgrade: dist
@@ -45,6 +46,7 @@
     with_items:
     - exim4-daemon-light
     - resolvconf
+    - mlocate
   - name: Update /etc/aliases
     lineinfile:
       path: /etc/aliases
