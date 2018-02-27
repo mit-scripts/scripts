@@ -29,11 +29,12 @@
       - up ip rule add from 18.4.86.0/24 table 486
       - down ip rule del table 486
       - down ip route flush table 486
-  roles:
-  - role: udev_rename_netiface
-  - role: network_interface
-  - role: ldirectord-status
   tasks:
+  - include_role: name=udev_rename_netiface
+    notify: reboot
+  - include_role: name=network_interface
+    notify: reboot
+  - include_role: name=ldirectord-status
   - name: Upgrade packages
     apt:
       upgrade: dist
@@ -50,15 +51,8 @@
       regexp: '^root:'
       line: "root: {{ root_aliases|join(', ') }}"
     notify: newaliases
-  - name: Reboot
-    when: udev_rename_netiface_config_changed.changed or ether_result.changed
-    shell: sleep 2 && reboot
-    async: 1
-    poll: 0
-    ignore_errors: true
-  - name: Wait for reboot
-    when: udev_rename_netiface_config_changed.changed or ether_result.changed
-    local_action: wait_for_connection delay=5
   handlers:
   - name: newaliases
     command: newaliases
+  - name: reboot
+    include_tasks: reboot.yaml
