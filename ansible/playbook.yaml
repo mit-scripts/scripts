@@ -51,8 +51,17 @@
       regexp: '^root:'
       line: "root: {{ root_aliases|join(', ') }}"
     notify: newaliases
+  - name: Configure sysctl
+    copy:
+      dest: /etc/sysctl.d/lvs.conf
+      content: |
+        net.ipv4.ip_forward=1
+        net.ipv4.vs.expire_quiescent_template = 1
+    notify: reload sysctl
   handlers:
   - name: newaliases
     command: newaliases
+  - name: reload sysctl
+    service: name=systemd-sysctl state=restarted
   - name: reboot
     include_tasks: reboot.yaml
