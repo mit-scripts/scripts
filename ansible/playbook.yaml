@@ -31,9 +31,13 @@
       - down ip route flush table 486
   tasks:
   - include_role: name=udev_rename_netiface
-    notify: reboot
+    notify:
+      - reboot
+      - munin reconfigure
   - include_role: name=network_interface
-    notify: reboot
+    notify:
+      - reboot
+      - munin reconfigure
   - include_role: name=ldirectord-status
   - include_role: name=lvs-iptables
   - name: Upgrade packages
@@ -47,6 +51,31 @@
     - exim4-daemon-light
     - resolvconf
     - mlocate
+    - munin-node
+  - name: Configure munin
+    blockinfile:
+      path: /etc/munin/munin-node.conf
+      block: |
+        allow ^127\.0\.0\.1$
+        allow ^18\.187\.1\.128$
+        allow ^18\.181\.0\.65$
+        allow ^18\.181\.0\.51$
+    notify: restart munin-node
+  - name: Install munin cps plugin
+    copy:
+      dest: /etc/munin/plugins/cps_1_0
+      src: files/cps_
+      mode: 0755
+    notify: restart munin-node
+  - name: Create munin cps plugin links
+    file:
+      src: /etc/munin/plugins/cps_1_0
+      dest: "/etc/munin/plugins/cps_{{ item }}_0"
+      state: link
+    with_items:
+      - 2
+      - 3
+    notify: restart munin-node
   - name: Update /etc/aliases
     lineinfile:
       path: /etc/aliases
@@ -88,3 +117,8 @@
     service: name=systemd-sysctl state=restarted
   - name: reboot
     include_tasks: reboot.yaml
+  - name: munin reconfigure
+    shell: munin-node-configure --suggest --shell --remove-also | sh
+    notify: restart munin-node
+  - name: restart munin-node
+    service: name=munin-node state=restarted
