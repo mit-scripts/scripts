@@ -1,3 +1,2 @@
 18.181.0.0/16 table 181 dev vlan181
-172.21.0.0/16 table 181 dev vlan461
-default table 181 via 18.181.0.1
+default table 181 via 18.181.0.1 dev vlan181

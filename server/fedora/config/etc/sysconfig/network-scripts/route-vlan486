@@ -1,3 +1,2 @@
 18.4.86.0/24 table 486 dev vlan486
-172.21.0.0/16 table 486 dev vlan461
-default table 486 via 18.4.86.1
+default table 486 via 18.4.86.1 dev vlan486
