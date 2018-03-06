@@ -29,7 +29,7 @@
       - down ip rule del table 486
     pacemaker_corosync_ring_interface: vlan486
     pacemaker_corosync_group: scripts-directors
-  tasks:
+  pre_tasks:
   - name: Upgrade packages
     apt:
       upgrade: dist
@@ -53,16 +53,14 @@
     - strace
   - systemd: name=ldirectord enabled=no
   - include_role: name=udev_rename_netiface
-    notify:
-      - reboot
-      - munin reconfigure
-      - setup
   - include_role: name=network_interface
+  - when: udev_rename_netiface_config_changed or ether_result.changed
+    command: "true"
     notify:
       - reboot
       - munin reconfigure
       - setup
-  - meta: flush_handlers
+  tasks:
   - include_role: name=ldirectord-status
   - include_role: name=lvs-iptables
   - name: Configure munin
