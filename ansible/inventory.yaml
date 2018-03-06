@@ -21,3 +21,13 @@ all:
           vlan181_hwaddr: 00:50:56:87:9b:7d
           vlan486_address: 18.4.86.220
           vlan486_hwaddr: 00:50:56:87:03:c5
+        joss-whedon.mit.edu:
+          vlan181_address: 18.181.0.226
+          vlan181_hwaddr: 00:50:56:87:2c:8e
+          vlan486_address: 18.4.86.226
+          vlan486_hwaddr: 00:50:56:87:c2:23
+        christopher-nolan.mit.edu:
+          vlan181_address: 18.181.0.111
+          vlan181_hwaddr: 00:50:56:87:07:a0
+          vlan486_address: 18.4.86.111
+          vlan486_hwaddr: 00:50:56:87:d4:4e
