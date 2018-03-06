@@ -46,6 +46,9 @@
     - pacemaker-cli-utils
     - crmsh
     - ldirectord
+    - tcpdump
+    - tshark
+    - strace
   - systemd: name=ldirectord enabled=no
   - include_role: name=udev_rename_netiface
     notify:
