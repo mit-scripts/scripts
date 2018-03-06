@@ -4,3 +4,6 @@
 [submodule "ansible/roles/network_interface"]
 	path = ansible/roles/network_interface
 	url = https://github.com/mit-scripts/ansible.network_interface.git
+[submodule "ansible/roles/pacemaker-corosync"]
+	path = ansible/roles/pacemaker-corosync
+	url = https://github.com/mit-scripts/ansible-pacemaker-corosync.git
