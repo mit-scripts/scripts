@@ -55,6 +55,10 @@
   - meta: flush_handlers
   - include_role: name=ldirectord-status
   - include_role: name=lvs-iptables
+  - copy:
+      src: vault/corosync-authkey
+      dest: /etc/corosync/authkey
+      mode: 0400
   - name: Configure munin
     blockinfile:
       path: /etc/munin/munin-node.conf
