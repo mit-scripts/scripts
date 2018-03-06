@@ -118,6 +118,7 @@
   - include_role: name=pacemaker-corosync
     vars:
       haveged_enabled: false
+      pacemaker_enable_nodelist: false
   handlers:
   - name: newaliases
     command: newaliases
