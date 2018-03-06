@@ -28,16 +28,6 @@
       - up ip rule add from 18.4.86.0/24 table 486
       - down ip rule del table 486
   tasks:
-  - include_role: name=udev_rename_netiface
-    notify:
-      - reboot
-      - munin reconfigure
-  - include_role: name=network_interface
-    notify:
-      - reboot
-      - munin reconfigure
-  - include_role: name=ldirectord-status
-  - include_role: name=lvs-iptables
   - name: Upgrade packages
     apt:
       upgrade: dist
@@ -50,6 +40,21 @@
     - resolvconf
     - mlocate
     - munin-node
+    - pacemaker
+    - pacemaker-cli-utils
+    - crmsh
+    - ldirectord
+  - include_role: name=udev_rename_netiface
+    notify:
+      - reboot
+      - munin reconfigure
+  - include_role: name=network_interface
+    notify:
+      - reboot
+      - munin reconfigure
+  - meta: flush_handlers
+  - include_role: name=ldirectord-status
+  - include_role: name=lvs-iptables
   - name: Configure munin
     blockinfile:
       path: /etc/munin/munin-node.conf
