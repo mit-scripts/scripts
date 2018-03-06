@@ -48,10 +48,12 @@
     notify:
       - reboot
       - munin reconfigure
+      - setup
   - include_role: name=network_interface
     notify:
       - reboot
       - munin reconfigure
+      - setup
   - meta: flush_handlers
   - include_role: name=ldirectord-status
   - include_role: name=lvs-iptables
@@ -129,3 +131,5 @@
     notify: restart munin-node
   - name: restart munin-node
     service: name=munin-node state=restarted
+  - name: setup
+    setup:
