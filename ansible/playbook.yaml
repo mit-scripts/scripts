@@ -119,6 +119,10 @@
     vars:
       haveged_enabled: false
       pacemaker_enable_nodelist: false
+  - name: Configure ldirectord
+    copy:
+      dest: /etc/ha.d/ldirectord.cf
+      src: files/ldirectord.cf
   handlers:
   - name: newaliases
     command: newaliases
