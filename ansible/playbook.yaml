@@ -46,6 +46,7 @@
     - pacemaker-cli-utils
     - crmsh
     - ldirectord
+  - systemd: name=ldirectord enabled=no
   - include_role: name=udev_rename_netiface
     notify:
       - reboot
