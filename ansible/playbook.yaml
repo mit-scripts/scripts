@@ -27,6 +27,8 @@
       - up ip route add default table 486 via 18.4.86.1 dev vlan486
       - up ip rule add from 18.4.86.0/24 table 486
       - down ip rule del table 486
+    pacemaker_corosync_ring_interface: vlan486
+    pacemaker_corosync_group: scripts-directors
   tasks:
   - name: Upgrade packages
     apt:
@@ -57,10 +59,6 @@
   - meta: flush_handlers
   - include_role: name=ldirectord-status
   - include_role: name=lvs-iptables
-  - copy:
-      src: vault/corosync-authkey
-      dest: /etc/corosync/authkey
-      mode: 0400
   - name: Configure munin
     blockinfile:
       path: /etc/munin/munin-node.conf
@@ -117,6 +115,9 @@
         net.ipv4.ip_forward=1
         net.ipv4.vs.expire_quiescent_template = 1
     notify: reload sysctl
+  - include_role: name=pacemaker-corosync
+    vars:
+      haveged_enabled: false
   handlers:
   - name: newaliases
     command: newaliases
