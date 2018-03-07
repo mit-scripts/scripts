@@ -1,2 +1,2 @@
 #!/bin/sh
-exec ansible-playbook --ask-vault-pass -i inventory.yaml playbook.yaml -u root "$@"
+exec ansible-playbook -i inventory.yaml playbook.yaml -u root "$@"
