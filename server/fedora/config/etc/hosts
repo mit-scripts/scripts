@@ -34,3 +34,34 @@
 172.21.0.141	golden-egg.mit.edu
 172.21.0.203	miracle-cure.mit.edu
 172.21.0.204	lucky-star.mit.edu
+
+18.4.86.43	scripts-new.mit.edu scripts-new
+18.4.86.46	scripts-vhosts-new.mit.edu scripts-vhosts-new
+18.4.86.50	scripts-cert-new.mit.edu scripts-cert-new
+18.4.86.229	scripts-test-new.mit.edu scripts-test-new
+
+18.4.86.57	better-mousetrap-new.mit.edu better-mousetrap-new scripts1-new.mit.edu scripts1-new
+18.4.86.53	old-faithful-new.mit.edu old-faithful-new scripts2-new.mit.edu scripts2-new
+18.4.86.167	bees-knees-new.mit.edu bees-knees-new scripts3-new.mit.edu scripts3-new
+18.4.86.228	cats-whiskers-new.mit.edu cats-whiskers-new scripts4-new.mit.edu scripts4-new
+18.4.86.236	whole-enchilada-new.mit.edu whole-enchilada-new scripts5-new.mit.edu scripts5-new
+18.4.86.237	pancake-bunny-new.mit.edu pancake-bunny-new scripts6-new.mit.edu scripts6-new
+18.4.86.234	busy-beaver-new.mit.edu busy-beaver-new scripts7-new.mit.edu scripts7-new
+18.4.86.235	real-mccoy-new.mit.edu real-mccoy-new scripts8-new.mit.edu scripts8-new
+18.4.86.135	shining-armor-new.mit.edu shining-armor-new scripts9-new.mit.edu scripts9-new
+18.4.86.141	golden-egg-new.mit.edu golden-egg-new scripts10-new.mit.edu scripts10-new
+18.4.86.203	miracle-cure-new.mit.edu miracle-cure-new scripts11-new.mit.edu scripts11-new
+18.4.86.204	lucky-star-new.mit.edu lucky-star-new scripts12-new.mit.edu scripts12-new
+
+172.21.0.57	better-mousetrap-new.mit.edu
+172.21.0.53	old-faithful-new.mit.edu
+172.21.0.167	bees-knees-new.mit.edu
+172.21.0.228	cats-whiskers-new.mit.edu
+172.21.0.236	whole-enchilada-new.mit.edu
+172.21.0.237	pancake-bunny-new.mit.edu
+172.21.0.234	busy-beaver-new.mit.edu
+172.21.0.235	real-mccoy-new.mit.edu
+172.21.0.135	shining-armor-new.mit.edu
+172.21.0.141	golden-egg-new.mit.edu
+172.21.0.203	miracle-cure-new.mit.edu
+172.21.0.204	lucky-star-new.mit.edu

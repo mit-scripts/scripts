@@ -4,5 +4,6 @@ webmaster@webzephyr.mit.edu jdaniel@mit.edu
 @webzephyr.mit.edu webzephyr
 # Domains also match here
 scripts-vhosts.mit.edu true
+scripts-vhosts-new.mit.edu true
 szs.mit.edu true
 webzephyr.mit.edu true
