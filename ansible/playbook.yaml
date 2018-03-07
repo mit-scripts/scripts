@@ -99,7 +99,17 @@
     synchronize:
       dest: /etc/lighttpd/scripts-maint/
       src: files/scripts-maint/
+      archive: no
+      checksum: yes
       delete: yes
+      recursive: yes
+      use_ssh_args: yes
+  - name: chown /etc/lighttpd/scripts-maint
+    file:
+      path: /etc/lighttpd/scripts-maint/
+      owner: root
+      group: root
+      recurse: yes
   - name: Install /etc/lighttpd/scripts-maint.lua
     copy:
       dest: /etc/lighttpd/scripts-maint.lua
