@@ -1,8 +1,0 @@
-[Unit]
-Description=iptables rules for scripts LVS
-After=network.target
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/etc/scripts-iptables.sh
