@@ -43,6 +43,8 @@
     - exim4-daemon-light
     - resolvconf
     - mlocate
+    - lighttpd
+    - lighttpd-mod-magnet
     - munin-node
     - pacemaker
     - pacemaker-cli-utils
@@ -93,6 +95,20 @@
       regexp: '^root:'
       line: "root: {{ root_aliases|join(', ') }}"
     notify: newaliases
+  - name: Install /etc/lighttpd/scripts-maint
+    synchronize:
+      dest: /etc/lighttpd/scripts-maint/
+      src: files/scripts-maint/
+      delete: yes
+  - name: Install /etc/lighttpd/scripts-maint.lua
+    copy:
+      dest: /etc/lighttpd/scripts-maint.lua
+      src: files/scripts-maint.lua
+  - name: Configure lighttpd
+    copy:
+      dest: /etc/lighttpd/lighttpd.conf
+      src: files/scripts-maint-lighttpd.conf
+    notify: restart lighttpd
   - name: Load IPVS modules
     copy:
       dest: /etc/modules-load.d/lvs.conf
@@ -130,6 +146,8 @@
   handlers:
   - name: newaliases
     command: newaliases
+  - name: restart lighttpd
+    service: name=lighttpd state=restarted
   - name: load modules
     service: name=systemd-modules-load state=restarted
   - name: reload sysctl
