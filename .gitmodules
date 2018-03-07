@@ -1,4 +1,4 @@
-[submodule "ansible/roles/ansible-udev_rename_netiface"]
+[submodule "ansible/roles/udev_rename_netiface"]
 	path = ansible/roles/udev_rename_netiface
 	url = https://github.com/jtyr/ansible-udev_rename_netiface.git
 [submodule "ansible/roles/network_interface"]
