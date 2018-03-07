@@ -56,7 +56,7 @@
   - systemd: name=ldirectord enabled=no
   - include_role: name=udev_rename_netiface
   - include_role: name=network_interface
-  - when: udev_rename_netiface_config_changed or ether_result.changed
+  - when: udev_rename_netiface_config_changed.changed or ether_result.changed
     command: "true"
     notify:
       - reboot
