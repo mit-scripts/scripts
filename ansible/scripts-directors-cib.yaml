@@ -27,6 +27,9 @@
     changed_when: False
     args:
       stdin: |
+        {% set vip_set -%}
+          ( {% for vip in vips|sort(attribute='host') %} ip_{{ vip.host }} {% endfor %} )
+        {%- endset %}
         {% for vip in vips %}
           primitive ip_{{ vip.host }} IPaddr2 \
             params ip={{ vip.ip }} cidr_netmask={{ vip.cidr_netmask }} nic={{ vip.nic }} \
@@ -37,15 +40,9 @@
           op monitor interval=15s timeout=30s \
           meta is-managed=true target-role=Started
         clone scripts_LVS_ldirectord_clone scripts_LVS_ldirectord
-        colocation colocation_scripts_LVS 1000: \
-          ( {% for vip in vips|sort(attribute='host') %} ip_{{ vip.host }} {% endfor %} ) \
-          scripts_LVS
-        colocation colocation_scripts_LVS_ldirectord inf: \
-          ( {% for vip in vips|sort(attribute='host') %} ip_{{ vip.host }} {% endfor %} ) \
-          scripts_LVS_ldirectord_clone
-        order order_scripts_LVS_ldirectord \
-          scripts_LVS_ldirectord_clone \
-          ( {% for vip in vips|sort(attribute='host') %} ip_{{ vip.host }} {% endfor %} )
+        colocation colocation_scripts_LVS 1000: {{ vip_set }} scripts_LVS
+        colocation colocation_scripts_LVS_ldirectord inf: {{ vip_set }} scripts_LVS_ldirectord_clone
+        order order_scripts_LVS_ldirectord scripts_LVS_ldirectord_clone {{ vip_set }}
         property cib-bootstrap-options: \
           {% for p in dynamic_property_names %} \
             {{ p }}={{ dynamic_properties.stdout_lines[loop.index0] }} \
