@@ -184,3 +184,5 @@
     service: name=munin-node state=restarted
   - name: setup
     setup:
+
+- import_playbook: scripts-directors-cib.yaml

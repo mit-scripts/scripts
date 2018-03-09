@@ -13,6 +13,33 @@ all:
     - cereslee@mit.edu
     - btidor-scripts@mit.edu
     - vasilvv@mit.edu
+
+    vips:
+    - host: scripts-director-new.mit.edu
+      ip: 18.4.86.132
+      cidr_netmask: 24
+      nic: vlan486
+    - host: scripts-new.mit.edu
+      ip: 18.4.86.43
+      cidr_netmask: 24
+      nic: vlan486
+    - host: scripts-cert-new.mit.edu
+      ip: 18.4.86.50
+      cidr_netmask: 24
+      nic: vlan486
+    - host: scripts-vhosts-new.mit.edu
+      ip: 18.4.86.46
+      cidr_netmask: 24
+      nic: vlan486
+    - host: scripts-test-new.mit.edu
+      ip: 18.4.86.229
+      cidr_netmask: 24
+      nic: vlan486
+    - host: sipb-new.mit.edu
+      ip: 18.4.86.29
+      cidr_netmask: 24
+      nic: vlan486
+
   children:
     scripts-directors:
       hosts:
