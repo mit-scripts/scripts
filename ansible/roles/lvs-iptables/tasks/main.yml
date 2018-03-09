@@ -3,14 +3,6 @@
   apt:
     name: iptables-persistent
     state: present
-- name: Delete old /etc/scripts-iptables.sh
-  file:
-    path: /etc/scripts-iptables.sh
-    state: absent
-- name: Delete old /etc/systemd/system/scripts-iptables.service
-  file:
-    path: /etc/systemd/system/scripts-iptables.service
-    state: absent
 - name: Install scripts-iptables.rules.v4
   copy:
     src: scripts-iptables.rules.v4
