@@ -139,6 +139,23 @@
         net.ipv4.ip_forward=1
         net.ipv4.vs.expire_quiescent_template = 1
     notify: reload sysctl
+  - name: "Install workaround for https://bugs.debian.org/808950"
+    copy:
+      dest: /usr/local/sbin/ipvsadm-hacked
+      content: |
+        #!/bin/sh
+        [ "$1" != "--syncid" ] || shift 2  # https://bugs.debian.org/808950
+        exec ipvsadm "$@"
+      mode: 0755
+  - name: Enable IPVS connection synchronization daemon
+    copy:
+      dest: /etc/default/ipvsadm
+      content: |
+        IPVSADM=/usr/local/sbin/ipvsadm-hacked  # https://bugs.debian.org/808950
+        AUTO=false
+        DAEMON=both
+        IFACE=vlan486
+    notify: restart ipvsadm
   - include_role: name=pacemaker-corosync
     vars:
       haveged_enabled: false
@@ -156,6 +173,8 @@
     service: name=systemd-modules-load state=restarted
   - name: reload sysctl
     service: name=systemd-sysctl state=restarted
+  - name: restart ipvsadm
+    service: name=ipvsadm state=restarted
   - name: reboot
     include_tasks: reboot.yaml
   - name: munin reconfigure
