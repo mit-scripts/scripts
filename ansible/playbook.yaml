@@ -50,6 +50,7 @@
     - pacemaker-cli-utils
     - crmsh
     - ldirectord
+    - aptitude
     - tcpdump
     - tshark
     - strace
