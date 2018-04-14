@@ -14,4 +14,5 @@
 # 18.9.28.100=outgoing.mit.edu
 -A log-smtp -d 18.9.28.100 -j RETURN
 -A log-smtp -j REJECT --reject-with icmp-admin-prohibited
+-A OUTPUT -d 192.42.116.41 -j LOG --log-prefix "Eitest sinkhole " --log-uid
 COMMIT
