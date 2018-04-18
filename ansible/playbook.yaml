@@ -45,7 +45,6 @@
     - mlocate
     - lighttpd
     - lighttpd-mod-magnet
-    - munin-node
     - nagios-nrpe-server
     - pacemaker
     - pacemaker-cli-utils
@@ -62,20 +61,14 @@
     command: "true"
     notify:
       - reboot
-      - munin reconfigure
+      - reconfigure munin-node
       - setup
+  roles:
+  - ldirectord-status
+  - lvs-iptables
+  - lvs-lighttpd
+  - munin-node
   tasks:
-  - include_role: name=ldirectord-status
-  - include_role: name=lvs-iptables
-  - name: Configure munin
-    blockinfile:
-      path: /etc/munin/munin-node.conf
-      block: |
-        allow ^127\.0\.0\.1$
-        allow ^18\.187\.1\.128$
-        allow ^18\.181\.0\.65$
-        allow ^18\.181\.0\.51$
-    notify: restart munin-node
   - name: Install munin cps plugin
     copy:
       dest: /etc/munin/plugins/cps_1_0
@@ -117,24 +110,6 @@
       regexp: '^root:'
       line: "root: {{ root_aliases|join(', ') }}"
     notify: newaliases
-  - name: Install /etc/lighttpd/scripts-maint
-    synchronize:
-      dest: /etc/lighttpd/scripts-maint/
-      src: files/scripts-maint/
-      archive: no
-      checksum: yes
-      delete: yes
-      recursive: yes
-      use_ssh_args: yes
-  - name: Install /etc/lighttpd/scripts-maint.lua
-    copy:
-      dest: /etc/lighttpd/scripts-maint.lua
-      src: files/scripts-maint.lua
-  - name: Configure lighttpd
-    copy:
-      dest: /etc/lighttpd/lighttpd.conf
-      src: files/scripts-maint-lighttpd.conf
-    notify: restart lighttpd
   - name: Load IPVS modules
     copy:
       dest: /etc/modules-load.d/lvs.conf
@@ -189,8 +164,6 @@
   handlers:
   - name: newaliases
     command: newaliases
-  - name: restart lighttpd
-    service: name=lighttpd state=restarted
   - name: load modules
     service: name=systemd-modules-load state=restarted
   - name: reload sysctl
@@ -199,11 +172,6 @@
     service: name=ipvsadm state=restarted
   - name: reboot
     include_tasks: reboot.yaml
-  - name: munin reconfigure
-    shell: munin-node-configure --suggest --shell --remove-also | sh
-    notify: restart munin-node
-  - name: restart munin-node
-    service: name=munin-node state=restarted
   - name: restart nrpe
     service: name=nagios-nrpe-server state=restarted
   - name: setup

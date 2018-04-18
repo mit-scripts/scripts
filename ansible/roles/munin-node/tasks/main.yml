@@ -1,0 +1,14 @@
+---
+- name: Install munin-node
+  apt:
+    name: munin-node
+    state: present
+- name: Configure munin
+  blockinfile:
+    path: /etc/munin/munin-node.conf
+    block: |
+      allow ^127\.0\.0\.1$
+      allow ^18\.187\.1\.128$
+      allow ^18\.181\.0\.65$
+      allow ^18\.181\.0\.51$
+  notify: restart munin-node
