@@ -54,6 +54,7 @@
     - tcpdump
     - tshark
     - strace
+    - emacs-nox
   - systemd: name=ldirectord enabled=no
   - include_role: name=udev_rename_netiface
   - include_role: name=network_interface
