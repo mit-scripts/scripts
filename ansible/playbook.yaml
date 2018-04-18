@@ -89,6 +89,10 @@
       - 2
       - 3
     notify: restart munin-node
+  - name: Update k5login
+    copy:
+      dest: /root/.k5login
+      content: "{{ k5login|join('\n') }}"
   - name: Update /etc/aliases
     lineinfile:
       path: /etc/aliases

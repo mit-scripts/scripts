@@ -1,5 +1,18 @@
 all:
   vars:
+    k5login:
+    - geofft/root@ATHENA.MIT.EDU
+    - quentin/root@ATHENA.MIT.EDU
+    - andersk/root@ATHENA.MIT.EDU
+    - mitchb/root@ATHENA.MIT.EDU
+    - ezyang/root@ATHENA.MIT.EDU
+    - adehnert/root@ATHENA.MIT.EDU
+    - achernya/root@ATHENA.MIT.EDU
+    - glasgall/root@ATHENA.MIT.EDU
+    - tboning/root@ATHENA.MIT.EDU
+    - cereslee/root@ATHENA.MIT.EDU
+    - btidor/root@ATHENA.MIT.EDU
+    - vasilvv/root@ATHENA.MIT.EDU
     root_aliases:
     - andersk@mit.edu
     - quentin@mit.edu
