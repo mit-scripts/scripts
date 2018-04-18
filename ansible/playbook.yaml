@@ -46,6 +46,7 @@
     - lighttpd
     - lighttpd-mod-magnet
     - munin-node
+    - nagios-nrpe-server
     - pacemaker
     - pacemaker-cli-utils
     - crmsh
