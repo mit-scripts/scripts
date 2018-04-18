@@ -90,6 +90,11 @@
       - 2
       - 3
     notify: restart munin-node
+  - name: Configure nrpe
+    copy:
+      dest: /etc/nagios/nrpe_local.cfg
+      src: files/nrpe_local.cfg
+    notify: restart nrpe
   - name: Update k5login
     copy:
       dest: /root/.k5login
@@ -187,6 +192,8 @@
     notify: restart munin-node
   - name: restart munin-node
     service: name=munin-node state=restarted
+  - name: restart nrpe
+    service: name=nagios-nrpe-server state=restarted
   - name: setup
     setup:
 
