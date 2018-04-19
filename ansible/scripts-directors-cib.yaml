@@ -8,22 +8,29 @@
     - cluster-name
 
   tasks:
+  - set_fact:
+      shadow_name: ansibleConfig{{ 999999 | random }}
+
   - name: Create shadow CIB
-    command: crm cib new ansibleConfig force
+    command: crm cib new {{ shadow_name }} force
+    check_mode: no
     changed_when: False
 
   - name: Read old CIB
-    command: crm -c ansibleConfig configure show
+    command: crm -c {{ shadow_name }} configure show
     register: old_cib
+    check_mode: no
     changed_when: False
 
   - name: Get cluster properties
-    command: crm -c ansibleConfig configure get_property {{ dynamic_property_names|join(' ') }}
+    command: crm -c {{ shadow_name }} configure get_property {{ dynamic_property_names|join(' ') }}
     register: dynamic_properties
+    check_mode: no
     changed_when: False
 
   - name: Populate shadow CIB
-    command: crm -c ansibleConfig configure load replace -
+    command: crm -c {{ shadow_name }} configure load replace -
+    check_mode: no
     changed_when: False
     args:
       stdin: |
@@ -52,14 +59,16 @@
           batch-limit=100
 
   - name: Read new CIB
-    command: crm -c ansibleConfig configure show
+    command: crm -c {{ shadow_name }} configure show
+    check_mode: no
     register: new_cib
     changed_when: False
 
   - name: Update CIB
-    command: crm cib commit ansibleConfig
+    command: crm cib commit {{ shadow_name }}
     when: old_cib.stdout_lines != new_cib.stdout_lines
 
   - name: Delete shadow CIB
-    command: crm cib delete ansibleConfig
+    command: crm cib delete {{ shadow_name }}
+    check_mode: no
     changed_when: False
