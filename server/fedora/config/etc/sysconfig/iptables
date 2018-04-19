@@ -15,4 +15,5 @@
 -A log-smtp -d 18.9.28.100 -j RETURN
 -A log-smtp -j REJECT --reject-with icmp-admin-prohibited
 -A OUTPUT -d 192.42.116.41 -j LOG --log-prefix "Eitest sinkhole " --log-uid
+-A OUTPUT -d 216.218.185.162 -j LOG --log-prefix "matsnu sinkhole " --log-uid
 COMMIT
