@@ -71,7 +71,7 @@ if __name__=="__main__":
         exit(1)
 
     hostname = sys.argv[1].lower()
-    if not hostname.endswith(".mit.edu"):
+    if not hostname.endswith(".mit.edu") and '.' not in hostname:
         hostname += ".mit.edu"
 
     print generate_csr(hostname, [hostname]),  # with subjectAltName
