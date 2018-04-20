@@ -30,9 +30,6 @@
     pacemaker_corosync_ring_interface: vlan486
     pacemaker_corosync_group: scripts-directors
   pre_tasks:
-  - name: Upgrade packages
-    apt:
-      upgrade: dist
   - name: Install packages
     apt:
       name: "{{ item }}"
