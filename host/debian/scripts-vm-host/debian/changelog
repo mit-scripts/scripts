@@ -1,3 +1,9 @@
+scripts-vm-host (0.9) UNRELEASED; urgency=medium
+
+  * Update SIPB-NOC addresses.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Wed, 25 Apr 2018 01:52:41 -0400
+
 scripts-vm-host (0.8) wheezy; urgency=low
 
   * Take into account config-package-dev now needs .transform files
