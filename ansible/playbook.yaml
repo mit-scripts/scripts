@@ -101,12 +101,18 @@
   - name: Update k5login
     copy:
       dest: /root/.k5login
-      content: "{{ k5login|join('\n') }}"
+      content: |
+        {% for maintainer in maintainers %}
+        {{ maintainer.username }}/root@ATHENA.MIT.EDU
+        {% endfor %}
   - name: Update /etc/aliases
     lineinfile:
       path: /etc/aliases
       regexp: '^root:'
-      line: "root: {{ root_aliases|join(', ') }}"
+      line: |
+        root: {% for maintainer in maintainers|rejectattr('root_mail', 'none') -%}
+        {{ maintainer.root_mail|default(maintainer.username + '@mit.edu') }}{{ '' if loop.last else ', ' }}
+        {%- endfor %}
     notify: newaliases
   - name: Load IPVS modules
     copy:

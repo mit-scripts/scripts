@@ -1,31 +1,21 @@
 all:
   vars:
-    k5login:
-    - geofft/root@ATHENA.MIT.EDU
-    - quentin/root@ATHENA.MIT.EDU
-    - andersk/root@ATHENA.MIT.EDU
-    - mitchb/root@ATHENA.MIT.EDU
-    - ezyang/root@ATHENA.MIT.EDU
-    - adehnert/root@ATHENA.MIT.EDU
-    - achernya/root@ATHENA.MIT.EDU
-    - glasgall/root@ATHENA.MIT.EDU
-    - tboning/root@ATHENA.MIT.EDU
-    - cereslee/root@ATHENA.MIT.EDU
-    - btidor/root@ATHENA.MIT.EDU
-    - vasilvv/root@ATHENA.MIT.EDU
-    root_aliases:
-    - andersk@mit.edu
-    - quentin@mit.edu
-    - mitchb@mit.edu
-    - ezyang@mit.edu
-    - xavid@mit.edu
-    - adehnert-sipb@mit.edu
-    - achernya@mit.edu
-    - glasgall@mit.edu
-    - tboning@mit.edu
-    - cereslee@mit.edu
-    - btidor-scripts@mit.edu
-    - vasilvv@mit.edu
+    maintainers:
+    - username: achernya
+    - username: adehnert
+      root_mail: adehnert-sipb@mit.edu
+    - username: andersk
+    - username: btidor
+      root_mail: btidor-scripts@mit.edu
+    - username: cereslee
+    - username: ezyang
+    - username: geofft
+      root_mail: null
+    - username: glasgall
+    - username: mitchb
+    - username: tboning
+    - username: quentin
+    - username: vasilvv
 
     vips:
     - host: scripts-director-new.mit.edu
