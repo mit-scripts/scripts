@@ -15,6 +15,7 @@ X11Forwarding no
 Banner /etc/issue.net
 Subsystem sftp /usr/libexec/openssh/sftp-server
 LogLevel VERBOSE
+MaxStartups 50:30:500
 
 # See trac #23
 HostbasedAuthentication yes
