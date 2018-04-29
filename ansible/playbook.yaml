@@ -37,6 +37,7 @@
     with_items:
     - open-vm-tools
     - open-vm-tools-dkms
+    - rsyslog-relp
     - exim4-daemon-light
     - resolvconf
     - mlocate
@@ -67,6 +68,13 @@
   - lvs-lighttpd
   - munin-node
   tasks:
+  - name: Configure rsyslog
+    copy:
+      dest: /etc/rsyslog.d/scripts-syslog-client.conf
+      content: |
+        $ModLoad omrelp
+        *.info :omrelp:18.4.86.14:2514
+    notify: restart rsyslog
   - name: Install munin cps plugin
     copy:
       dest: /etc/munin/plugins/cps_1_0
@@ -166,6 +174,8 @@
       dest: /etc/ha.d/ldirectord.cf
       src: files/ldirectord.cf
   handlers:
+  - name: restart rsyslog
+    service: name=rsyslog state=restarted
   - name: newaliases
     command: newaliases
   - name: load modules
@@ -182,3 +192,5 @@
     setup:
 
 - import_playbook: scripts-directors-cib.yaml
+
+- import_playbook: scripts-syslog.yaml

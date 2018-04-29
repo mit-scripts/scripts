@@ -1,0 +1,107 @@
+- hosts: scripts-syslogs
+  tasks:
+  - name: Configure Kerberos
+    debconf: name=krb5-config question=krb5-config/default_realm vtype=string value=ATHENA.MIT.EDU
+  - name: Configure Hesiod
+    debconf: name=libhesiod0 question=hesiod/rhs vtype=string value=.athena.mit.edu
+  - name: Install packages
+    apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+    - open-vm-tools
+    - open-vm-tools-dkms
+    - rsyslog-relp
+    - exim4-daemon-light
+    - libzephyr4-krb5
+    - zephyr-clients
+    - aptitude
+  - name: Update k5login
+    copy:
+      dest: /root/.k5login
+      content: |
+        {% for maintainer in maintainers %}
+        {{ maintainer.username }}/root@ATHENA.MIT.EDU
+        {% endfor %}
+  - name: Update /etc/aliases
+    lineinfile:
+      path: /etc/aliases
+      regexp: '^root:'
+      line: |
+        root: {% for maintainer in maintainers|rejectattr('root_mail', 'none') -%}
+        {{ maintainer.root_mail|default(maintainer.username + '@mit.edu') }}{{ '' if loop.last else ', ' }}
+        {%- endfor %}
+    notify: newaliases
+  - name: Start zhm
+    service: name=zhm state=started
+  - name: Install zephyr-syslog
+    copy: dest=/usr/local/sbin/zephyr-syslog src=files/zephyr-syslog mode=0755
+    notify:
+    - restart zephyr-syslog@public.service
+    - restart zephyr-syslog@private.service
+  - name: Configure zephyr-syslog@public
+    copy:
+      dest: /etc/zephyr-syslog-public.conf
+      content: |
+        [zwrite]
+        args=-d -c scripts-auto-beta
+    notify: restart zephyr-syslog@public.service
+  - name: Configure zephyr-syslog@private
+    copy:
+      dest: /etc/zephyr-syslog-private.conf
+      content: |
+        [zwrite]
+        args=-d -c scripts-spew-beta {{ maintainers|map(attribute='username')|join(' ') }}
+    notify: restart zephyr-syslog@private.service
+  - name: Install zephyr-syslog@.socket
+    copy:
+      dest: /etc/systemd/system/zephyr-syslog@.socket
+      content: |
+        [Socket]
+        ListenFIFO=/run/zephyr-syslog-%i
+        SocketMode=0600
+        RemoveOnStop=false
+    notify:
+    - reload systemd
+    - restart zephyr-syslog@public.socket
+    - restart zephyr-syslog@private.socket
+  - name: Install zephyr-syslog@.service
+    copy:
+      dest: /etc/systemd/system/zephyr-syslog@.service
+      content: |
+        [Unit]
+        Requires=zephyr-syslog@%i.socket
+
+        [Service]
+        StandardInput=socket
+        ExecStart=/usr/local/sbin/zephyr-syslog /etc/zephyr-syslog-%i.conf
+    notify:
+    - reload systemd
+    - restart zephyr-syslog@public.service
+    - restart zephyr-syslog@private.service
+  - name: Make /etc/systemd/system/rsyslog.service.wants
+    file: state=directory path=/etc/systemd/system/rsyslog.service.wants
+  - name: Make /etc/systemd/rsyslog.service.wants/zephyr-syslog@public.socket
+    file: state=link path=/etc/systemd/system/rsyslog.service.wants/zephyr-syslog@public.socket src=/etc/systemd/system/zephyr-syslog@.socket
+  - name: Make /etc/systemd/rsyslog.service.wants/zephyr-syslog@private.socket
+    file: state=link path=/etc/systemd/system/rsyslog.service.wants/zephyr-syslog@private.socket src=/etc/systemd/system/zephyr-syslog@.socket
+    notify: reload systemd
+  - name: Install scripts-syslog.conf
+    copy: dest=/etc/rsyslog.d/scripts-syslog.conf src=files/scripts-syslog.conf
+    notify: restart rsyslog
+
+  handlers:
+  - name: newaliases
+    command: newaliases
+  - name: reload systemd
+    systemd: daemon_reload=yes
+  - name: restart zephyr-syslog@public.service
+    systemd: name=zephyr-syslog@public.service state=restarted
+  - name: restart zephyr-syslog@public.socket
+    systemd: name=zephyr-syslog@public.socket state=restarted
+  - name: restart zephyr-syslog@private.service
+    systemd: name=zephyr-syslog@private.service state=restarted
+  - name: restart zephyr-syslog@private.socket
+    systemd: name=zephyr-syslog@private.socket state=restarted
+  - name: restart rsyslog
+    service: name=rsyslog state=restarted

@@ -65,3 +65,7 @@ all:
           vlan181_hwaddr: 00:50:56:87:07:a0
           vlan486_address: 18.4.86.111
           vlan486_hwaddr: 00:50:56:87:d4:4e
+
+    scripts-syslogs:
+      hosts:
+        log-flume.mit.edu: {}
