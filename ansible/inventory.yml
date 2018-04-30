@@ -69,3 +69,4 @@ all:
     scripts-syslogs:
       hosts:
         log-flume.mit.edu: {}
+        log-normal.mit.edu: {}
