@@ -73,7 +73,15 @@
       dest: /etc/rsyslog.d/scripts-syslog-client.conf
       content: |
         $ModLoad omrelp
-        *.info :omrelp:18.4.86.14:2514
+        {% for rsyslog in rsyslogs %}
+        {% if loop.first %}
+        *.info :omrelp:{{ rsyslog }}:2514
+        $ActionExecOnlyWhenPreviousIsSuspended on
+        {% else %}
+        & :omrelp:{{ rsyslog }}:2514
+        {% endif %}
+        {% endfor %}
+        $ActionExecOnlyWhenPreviousIsSuspended off
     notify: restart rsyslog
   - name: Install munin cps plugin
     copy:

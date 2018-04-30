@@ -47,6 +47,10 @@ all:
       cidr_netmask: 16
       nic: vlan181
 
+    rsyslogs:
+    - 18.4.86.15  # log-flume
+    - 18.4.86.16  # log-normal
+
   children:
     scripts-directors:
       hosts:
