@@ -1,0 +1,96 @@
+all:
+  vars:
+    maintainers:
+    - username: achernya
+    - username: adehnert
+      root_mail: adehnert-sipb@mit.edu
+    - username: andersk
+    - username: btidor
+      root_mail: btidor-scripts@mit.edu
+    - username: cereslee
+    - username: ezyang
+    - username: geofft
+      root_mail: null
+    - username: glasgall
+    - username: mitchb
+    - username: tboning
+    - username: quentin
+    - username: vasilvv
+
+    vips:
+    - host: scripts-director.mit.edu
+      ip: 18.181.0.132
+      cidr_netmask: 16
+      nic: vlan181
+    - host: scripts-director-new.mit.edu
+      ip: 18.4.86.132
+      cidr_netmask: 24
+      nic: vlan486
+    - host: scripts.mit.edu
+      ip: 18.181.0.43
+      cidr_netmask: 16
+      nic: vlan181
+    - host: scripts-new.mit.edu
+      ip: 18.4.86.43
+      cidr_netmask: 24
+      nic: vlan486
+    - host: scripts-cert.mit.edu
+      ip: 18.181.0.50
+      cidr_netmask: 16
+      nic: vlan181
+    - host: scripts-cert-new.mit.edu
+      ip: 18.4.86.50
+      cidr_netmask: 24
+      nic: vlan486
+    - host: scripts-vhosts.mit.edu
+      ip: 18.181.0.46
+      cidr_netmask: 16
+      nic: vlan181
+    - host: scripts-vhosts-new.mit.edu
+      ip: 18.4.86.46
+      cidr_netmask: 24
+      nic: vlan486
+    - host: scripts-test-new.mit.edu
+      ip: 18.4.86.229
+      cidr_netmask: 24
+      nic: vlan486
+    - host: sipb.mit.edu
+      ip: 18.181.0.29
+      cidr_netmask: 16
+      nic: vlan181
+    - host: sipb-new.mit.edu
+      ip: 18.4.86.29
+      cidr_netmask: 24
+      nic: vlan486
+    - host: webzephyr.mit.edu
+      ip: 18.181.0.49
+      cidr_netmask: 16
+      nic: vlan181
+
+    rsyslogs:
+    - 18.4.86.15  # log-flume
+    - 18.4.86.16  # log-normal
+
+  children:
+    scripts-directors:
+      hosts:
+        george-lucas.mit.edu:
+          vlan181_address: 18.181.0.220
+          vlan181_hwaddr: 00:50:56:87:9b:7d
+          vlan486_address: 18.4.86.220
+          vlan486_hwaddr: 00:50:56:87:03:c5
+        joss-whedon.mit.edu:
+          vlan181_address: 18.181.0.226
+          vlan181_hwaddr: 00:50:56:87:2c:8e
+          vlan486_address: 18.4.86.226
+          vlan486_hwaddr: 00:50:56:87:c2:23
+        christopher-nolan.mit.edu:
+          vlan181_address: 18.181.0.111
+          vlan181_hwaddr: 00:50:56:87:07:a0
+          vlan486_address: 18.4.86.111
+          vlan486_hwaddr: 00:50:56:87:d4:4e
+
+    scripts-syslogs:
+      hosts:
+        log-flume.mit.edu: {}
+        log-normal.mit.edu: {}

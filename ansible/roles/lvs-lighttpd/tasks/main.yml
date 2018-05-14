@@ -1,0 +1,26 @@
+---
+- name: Install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+  - lighttpd
+  - lighttpd-mod-magnet
+- name: Install /etc/lighttpd/scripts-maint
+  synchronize:
+    dest: /etc/lighttpd/scripts-maint/
+    src: scripts-maint/
+    archive: no
+    checksum: yes
+    delete: yes
+    recursive: yes
+    use_ssh_args: yes
+- name: Install /etc/lighttpd/scripts-maint.lua
+  copy:
+    dest: /etc/lighttpd/scripts-maint.lua
+    src: scripts-maint.lua
+- name: Configure lighttpd
+  copy:
+    dest: /etc/lighttpd/lighttpd.conf
+    src: scripts-maint-lighttpd.conf
+  notify: restart lighttpd

@@ -1,0 +1,74 @@
+- hosts: scripts-directors[0]
+
+  vars:
+  - dynamic_property_names:
+    - have-watchdog
+    - dc-version
+    - cluster-infrastructure
+    - cluster-name
+
+  tasks:
+  - set_fact:
+      shadow_name: ansibleConfig{{ 999999 | random }}
+
+  - name: Create shadow CIB
+    command: crm cib new {{ shadow_name }} force
+    check_mode: no
+    changed_when: False
+
+  - name: Read old CIB
+    command: crm -c {{ shadow_name }} configure show
+    register: old_cib
+    check_mode: no
+    changed_when: False
+
+  - name: Get cluster properties
+    command: crm -c {{ shadow_name }} configure get_property {{ dynamic_property_names|join(' ') }}
+    register: dynamic_properties
+    check_mode: no
+    changed_when: False
+
+  - name: Populate shadow CIB
+    command: crm -c {{ shadow_name }} configure load replace -
+    check_mode: no
+    changed_when: False
+    args:
+      stdin: |
+        {% set vip_set -%}
+          ( {% for vip in vips|sort(attribute='host') %} ip_{{ vip.host }} {% endfor %} )
+        {%- endset %}
+        {% for vip in vips %}
+          primitive ip_{{ vip.host }} IPaddr2 \
+            params ip={{ vip.ip }} cidr_netmask={{ vip.cidr_netmask }} nic={{ vip.nic }} \
+            op monitor interval=5s timeout=30s
+        {% endfor %}
+        primitive scripts_LVS Dummy
+        primitive scripts_LVS_ldirectord systemd:ldirectord \
+          op monitor interval=15s timeout=30s \
+          meta is-managed=true target-role=Started
+        clone scripts_LVS_ldirectord_clone scripts_LVS_ldirectord
+        colocation colocation_scripts_LVS 1000: {{ vip_set }} scripts_LVS
+        colocation colocation_scripts_LVS_ldirectord inf: {{ vip_set }} scripts_LVS_ldirectord_clone
+        order order_scripts_LVS_ldirectord scripts_LVS_ldirectord_clone {{ vip_set }}
+        property cib-bootstrap-options: \
+          {% for p in dynamic_property_names %} \
+            {{ p }}={{ dynamic_properties.stdout_lines[loop.index0] }} \
+          {% endfor %} \
+          stonith-enabled=false \
+          node-action-limit=8 \
+          batch-limit=100
+
+  - name: Read new CIB
+    command: crm -c {{ shadow_name }} configure show
+    check_mode: no
+    register: new_cib
+    changed_when: False
+
+  - name: Update CIB
+    command: crm cib commit {{ shadow_name }}
+    when: old_cib.stdout_lines != new_cib.stdout_lines
+
+  - name: Delete shadow CIB
+    command: crm cib delete {{ shadow_name }}
+    check_mode: no
+    changed_when: False

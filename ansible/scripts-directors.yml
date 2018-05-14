@@ -1,0 +1,214 @@
+- hosts: scripts-directors
+  vars:
+    network_allow_service_restart: false
+    network_ether_interfaces:
+    - device: vlan181
+      hwaddr: "{{ vlan181_hwaddr }}"
+      cidr: "{{ vlan181_address }}/16"
+      gateway: 18.181.0.1
+      dns_nameservers:
+      - 18.70.0.160
+      - 18.72.0.3
+      - 18.71.0.151
+      dns_search: mit.edu
+      options:
+      - metric 1
+      - up ip route add 18.181.0.0/16 table 181 dev vlan181
+      - up ip route add default table 181 via 18.181.0.1 dev vlan181
+      - up ip rule add from 18.181.0.0/16 table 181
+      - down ip rule del table 181
+    - device: vlan486
+      hwaddr: "{{ vlan486_hwaddr }}"
+      cidr: "{{ vlan486_address }}/24"
+      gateway: 18.4.86.1
+      options:
+      - metric 2
+      - up ip route add 18.4.86.0/24 table 486 dev vlan486
+      - up ip route add default table 486 via 18.4.86.1 dev vlan486
+      - up ip rule add from 18.4.86.0/24 table 486
+      - down ip rule del table 486
+    pacemaker_corosync_ring_interface: vlan486
+    pacemaker_corosync_group: scripts-directors
+  pre_tasks:
+  - name: Install packages
+    apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+    - open-vm-tools
+    - open-vm-tools-dkms
+    - rsyslog-relp
+    - exim4-daemon-light
+    - resolvconf
+    - mlocate
+    - lighttpd
+    - lighttpd-mod-magnet
+    - nagios-nrpe-server
+    - pacemaker
+    - pacemaker-cli-utils
+    - crmsh
+    - ldirectord
+    - aptitude
+    - tcpdump
+    - tshark
+    - strace
+    - emacs-nox
+  - systemd: name=ldirectord enabled=no
+  - include_role: name=udev_rename_netiface
+  - include_role: name=network_interface
+  - when: udev_rename_netiface_config_changed.changed or ether_result.changed
+    command: "true"
+    notify:
+      - reboot
+      - reconfigure munin-node
+      - setup
+  roles:
+  - ldirectord-status
+  - lvs-iptables
+  - lvs-lighttpd
+  - munin-node
+  tasks:
+  - name: Enable GSSAPIAuthentication
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '(?i)^#?\s*GSSAPIAuthentication\s'
+      line: GSSAPIAuthentication yes
+    notify: reload ssh
+  - name: Disable PasswordAuthentication
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '(?i)^#?\s*PasswordAuthentication\s'
+      line: PasswordAuthentication no
+    notify: reload ssh
+  - name: Configure rsyslog
+    copy:
+      dest: /etc/rsyslog.d/scripts-syslog-client.conf
+      content: |
+        $ModLoad omrelp
+        {% for rsyslog in rsyslogs %}
+        {% if loop.first %}
+        *.info :omrelp:{{ rsyslog }}:2514
+        $ActionExecOnlyWhenPreviousIsSuspended on
+        {% else %}
+        & :omrelp:{{ rsyslog }}:2514
+        {% endif %}
+        {% endfor %}
+        $ActionExecOnlyWhenPreviousIsSuspended off
+    notify: restart rsyslog
+  - name: Install munin cps plugin
+    copy:
+      dest: /etc/munin/plugins/cps_1_0
+      src: files/cps_
+      mode: 0755
+    notify: restart munin-node
+  - name: Create munin cps plugin links
+    file:
+      src: /etc/munin/plugins/cps_1_0
+      dest: "/etc/munin/plugins/cps_{{ item }}_0"
+      state: link
+    with_items:
+      - 2
+      - 3
+    notify: restart munin-node
+  - name: Configure munin cps plugin
+    copy:
+      dest: /etc/munin/plugin-conf.d/cps
+      content: |
+        [cps_1_0]
+        env.graph_title Load balanced miscellaneous connections
+        [cps_2_0]
+        env.graph_title Load balanced Apache connections
+        [cps_3_0]
+        env.graph_title Load balanced SMTP connections
+    notify: restart munin-node
+  - name: Configure nrpe
+    copy:
+      dest: /etc/nagios/nrpe_local.cfg
+      src: files/nrpe_local.cfg
+    notify: restart nrpe
+  - name: Update k5login
+    copy:
+      dest: /root/.k5login
+      content: |
+        {% for maintainer in maintainers %}
+        {{ maintainer.username }}/root@ATHENA.MIT.EDU
+        {% endfor %}
+  - name: Update /etc/aliases
+    lineinfile:
+      path: /etc/aliases
+      regexp: '^root:'
+      line: |
+        root: {% for maintainer in maintainers|rejectattr('root_mail', 'none') -%}
+        {{ maintainer.root_mail|default(maintainer.username + '@mit.edu') }}{{ '' if loop.last else ', ' }}
+        {%- endfor %}
+    notify: newaliases
+  - name: Load IPVS modules
+    copy:
+      dest: /etc/modules-load.d/lvs.conf
+      content: |
+        ip_vs_dh
+        ip_vs_ftp
+        ip_vs
+        ip_vs_lblc
+        ip_vs_lblcr
+        ip_vs_lc
+        ip_vs_nq
+        ip_vs_rr
+        ip_vs_sed
+        ip_vs_sh
+        ip_vs_wlc
+        ip_vs_wrr
+    notify:
+      - load modules
+      - reload sysctl
+  - name: Configure sysctl
+    copy:
+      dest: /etc/sysctl.d/lvs.conf
+      content: |
+        net.ipv4.ip_forward=1
+        net.ipv4.vs.expire_quiescent_template = 1
+    notify: reload sysctl
+  - name: "Install workaround for https://bugs.debian.org/808950"
+    copy:
+      dest: /usr/local/sbin/ipvsadm-hacked
+      content: |
+        #!/bin/sh
+        [ "$1" != "--syncid" ] || shift 2  # https://bugs.debian.org/808950
+        exec ipvsadm "$@"
+      mode: 0755
+  - name: Enable IPVS connection synchronization daemon
+    copy:
+      dest: /etc/default/ipvsadm
+      content: |
+        IPVSADM=/usr/local/sbin/ipvsadm-hacked  # https://bugs.debian.org/808950
+        AUTO=false
+        DAEMON=both
+        IFACE=vlan486
+    notify: restart ipvsadm
+  - include_role: name=pacemaker-corosync
+    vars:
+      haveged_enabled: false
+      pacemaker_enable_nodelist: false
+  - name: Configure ldirectord
+    copy:
+      dest: /etc/ha.d/ldirectord.cf
+      src: files/ldirectord.cf
+  handlers:
+  - name: reload ssh
+    service: name=ssh state=reloaded
+  - name: restart rsyslog
+    service: name=rsyslog state=restarted
+  - name: newaliases
+    command: newaliases
+  - name: load modules
+    service: name=systemd-modules-load state=restarted
+  - name: reload sysctl
+    service: name=systemd-sysctl state=restarted
+  - name: restart ipvsadm
+    service: name=ipvsadm state=restarted
+  - name: reboot
+    include_tasks: reboot.yml
+  - name: restart nrpe
+    service: name=nagios-nrpe-server state=restarted
+  - name: setup
+    setup:

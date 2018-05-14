@@ -1,0 +1,5 @@
+- import_playbook: scripts-directors.yml
+
+- import_playbook: scripts-directors-cib.yml
+
+- import_playbook: scripts-syslog.yml

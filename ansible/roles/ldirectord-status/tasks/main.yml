@@ -1,0 +1,17 @@
+- copy:
+    src: ldirectord-status/
+    dest: /etc/ldirectord-status
+    mode: 0755
+- copy:
+    src: "{{ item }}"
+    dest: /etc/systemd/system/
+  with_items:
+  - ldirectord-finger.socket
+  - ldirectord-http.socket
+  - ldirectord-finger@.service
+  - ldirectord-http@.service
+  notify: reload_units
+- name: start ldirectord-finger.socket
+  systemd: daemon_reload=yes name=ldirectord-finger.socket state=started enabled=yes
+- name: start ldirectord-http.socket
+  systemd: name=ldirectord-http.socket state=started enabled=yes

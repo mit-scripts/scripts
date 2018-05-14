@@ -1,0 +1,10 @@
+---
+- name: Install iptables-persistent
+  apt:
+    name: iptables-persistent
+    state: present
+- name: Install scripts-iptables.rules.v4
+  copy:
+    src: scripts-iptables.rules.v4
+    dest: /etc/iptables/rules.v4
+  notify: restart netfilter-persistent

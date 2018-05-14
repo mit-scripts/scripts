@@ -1,0 +1,137 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright © 2012 Anders Kaseorg <andersk@mit.edu>
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation files
+# (the “Software”), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+import ConfigParser
+import contextlib
+import errno
+import os
+import re
+import shlex
+import signal
+import sys
+import subprocess
+
+def reads(fd):
+    while True:
+        try:
+            s = os.read(fd, 4096)
+        except OSError, e:
+            if e.errno == errno.EINTR:
+                yield ''
+                continue
+            else:
+                raise
+
+        if not s:
+            return
+        yield s
+
+def lines(i):
+    buf = ''
+    for s in i:
+        buf += s
+        lines = buf.split('\n')
+        buf = lines[-1]
+        yield lines[:-1]
+
+@contextlib.contextmanager
+def timeout(seconds):
+    timeout = []
+    def on_timeout(signum, frame):
+        timeout.append(True)  # because Python scoping sucks
+    old_alrm = signal.signal(signal.SIGALRM, on_timeout)
+    assert signal.alarm(seconds) == 0
+    yield lambda: bool(timeout)
+    signal.alarm(0)
+    signal.signal(signal.SIGALRM, old_alrm)
+
+def chunks(seconds, i):
+    def chunk(xs):
+        for x in xs:
+            yield x
+        with timeout(seconds) as done:
+            for xs in i:
+                for x in xs:
+                    yield x
+                if done():
+                    break
+    for xs in i:
+        yield chunk(xs)
+
+facilities = [
+    'kern', 'user', 'mail', 'daemon', 'auth', 'syslog', 'lpr', 'news', 'uucp', 'cron', 'authpriv', 'ftp',
+    '12', '13', '14', '15',
+    'local0', 'local1', 'local2', 'local3', 'local4', 'local5', 'local6', 'local7',
+    'mark'
+]
+
+severity_symbols = [
+    '@b(@color(magenta)☠)',
+    '@b(@color(magenta)☣)',
+    '@b(@color(magenta)☢)',
+    '@b(@color(red)⊗)',
+    '@b(@color(yellow)⚠)',
+    '@b(@color(blue)☞)',
+    '@b(@color(cyan)ⓘ)',
+    '@b(@color(green)☻)'
+]
+
+syslog_re = re.compile(r'''^<(?P<pri>\d+)>(?P<version>1) (?P<timestamp>\S*) (?P<hostname>\S*) (?P<app_name>\S*) (?P<procid>\S*) (?P<msgid>\S*) (?P<sd>(?:\[[^]= "]+(?: [^]= "]+="(?:[^]"\\]|\\.)*")*\])*|-) (?P<msg>.*)$''')
+
+def parse_msg(msg):
+    m = syslog_re.match(msg).groupdict()
+    m['severity'] = int(m['pri']) % 8
+    m['facility'] = facilities[int(m['pri']) // 8]
+    return m
+
+def format_msg(msg):
+    m = parse_msg(msg)
+    return 'syslog.{hostname}.{facility}'.format(**m).replace('@', '@@'), severity_symbols[m['severity']] + ' {app_name}[{procid}]:{msg}'.format(**m).replace('@', '@@')
+
+def main(program, conf_filename):
+    conf = ConfigParser.ConfigParser()
+    conf.read(conf_filename)
+    zwrite_args = shlex.split(conf.get('zwrite', 'args'))
+
+    for msgs in chunks(1, lines(reads(0))):
+        instances = []
+        batches = {}
+        try:
+            for msg in msgs:
+                try:
+                    instance, out = format_msg(msg)
+                except Exception:
+                    continue
+                if instance not in instances:
+                    batches[instance] = ''
+                    instances.append(instance)
+                batches[instance] += out + '\n'
+        finally:
+            for instance in instances:
+                subprocess.Popen(['zwrite', '-q', '-d', '-n', '-i', instance] + zwrite_args, stdin=subprocess.PIPE). \
+                    communicate(batches[instance])
+
+if __name__ == '__main__':
+    main(*sys.argv)
