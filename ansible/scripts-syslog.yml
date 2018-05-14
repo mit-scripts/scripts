@@ -56,14 +56,14 @@
       dest: /etc/zephyr-syslog-public.conf
       content: |
         [zwrite]
-        args=-d -c scripts-auto-beta
+        args=-d -c scripts-auto
     notify: restart zephyr-syslog@public.service
   - name: Configure zephyr-syslog@private
     copy:
       dest: /etc/zephyr-syslog-private.conf
       content: |
         [zwrite]
-        args=-d -c scripts-spew-beta {{ maintainers|map(attribute='username')|join(' ') }}
+        args=-d -c scripts-spew {{ maintainers|map(attribute='username')|join(' ') }}
     notify: restart zephyr-syslog@private.service
   - name: Install zephyr-syslog@.socket
     copy:
