@@ -18,18 +18,34 @@ all:
     - username: vasilvv
 
     vips:
+    - host: scripts-director.mit.edu
+      ip: 18.181.0.132
+      cidr_netmask: 16
+      nic: vlan181
     - host: scripts-director-new.mit.edu
       ip: 18.4.86.132
       cidr_netmask: 24
       nic: vlan486
+    - host: scripts.mit.edu
+      ip: 18.181.0.43
+      cidr_netmask: 16
+      nic: vlan181
     - host: scripts-new.mit.edu
       ip: 18.4.86.43
       cidr_netmask: 24
       nic: vlan486
+    - host: scripts-cert.mit.edu
+      ip: 18.181.0.50
+      cidr_netmask: 16
+      nic: vlan181
     - host: scripts-cert-new.mit.edu
       ip: 18.4.86.50
       cidr_netmask: 24
       nic: vlan486
+    - host: scripts-vhosts.mit.edu
+      ip: 18.181.0.46
+      cidr_netmask: 16
+      nic: vlan181
     - host: scripts-vhosts-new.mit.edu
       ip: 18.4.86.46
       cidr_netmask: 24
@@ -38,6 +54,10 @@ all:
       ip: 18.4.86.229
       cidr_netmask: 24
       nic: vlan486
+    - host: sipb.mit.edu
+      ip: 18.181.0.29
+      cidr_netmask: 16
+      nic: vlan181
     - host: sipb-new.mit.edu
       ip: 18.4.86.29
       cidr_netmask: 24
