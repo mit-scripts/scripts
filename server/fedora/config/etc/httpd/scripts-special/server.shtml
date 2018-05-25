@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>scripts.mit.edu connection information</title>
+    <style>
+      html { background: #2050A0; }
+      body { margin: 1em auto; border: 1px solid black; background: #FFF; max-width: 60em; padding: 1em; font: 80% 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif; }
+      summary { cursor: pointer; }
+      pre { white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <p>Your connection to <!--#echo var="REQUEST_SCHEME" -->://<!--#echo var="HTTP_HOST" --> on <!--#echo var="SERVER_ADDR" -->:<!--#echo var="SERVER_PORT" --> is currently served by <strong><!--#include file="hostname" --></strong> (as of <!--#echo var="DATE_GMT" -->).</p>
+    <details>
+      <summary>Server variables</summary>
+      <pre>
+<!--#printenv --></pre>
+    </details>
+  </body>
+</html>
