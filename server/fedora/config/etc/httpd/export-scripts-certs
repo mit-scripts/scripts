@@ -4,6 +4,7 @@ import base64
 import errno
 import fcntl
 import hashlib
+import itertools
 import ldap
 import os
 import subprocess
@@ -87,8 +88,8 @@ def conf(vhost):
             cert_file.write(certs_pem)
         os.rename(cert_path + '.new', cert_path)
 
-    for port in 443, 444:
-        yield '<VirtualHost *:{}>\n'.format(port)
+    for ip, port in itertools.product(['*', '18.181.0.46'], [443, 444]):
+        yield '<VirtualHost {}:{}>\n'.format(ip, port)
         yield '\tServerName {}\n'.format(name)
         if aliases:
             yield '\tServerAlias {}\n'.format(' '.join(aliases))
@@ -98,6 +99,8 @@ def conf(vhost):
             yield '\tInclude conf.d/vhosts-common-ssl-cert.conf\n'
         yield '\tSSLCertificateFile {}\n'.format(cert_path)
         yield '\tSSLCertificateKeyFile {}\n'.format(key_path)
+        if ip == '18.181.0.46':
+            yield '\tInclude conf.d/181-interstitial.conf\n'
         yield '</VirtualHost>\n'
 
 with open(os.path.join(CERTS_DIR, '.lock'), 'w') as lock_file:

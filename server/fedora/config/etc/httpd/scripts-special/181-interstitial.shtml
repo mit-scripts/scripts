@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>scripts.mit.edu connection information</title>
+    <style>
+      html { background: #2050A0; }
+      body { margin: 1em auto; border: 1px solid black; background: #FFF; max-width: 54em; padding: 1em 3em; font: 80%/150% 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif; }
+      summary { cursor: pointer; }
+      pre { white-space: pre-wrap; }
+      .red { color: #d33; }
+    </style>
+  </head>
+  <body>
+    <h1 class="red">DNS update required for <!--#echo var="SERVER_NAME" --></h1>
+
+    <p><em>This is a message from the scripts.mit.edu team to the owner of <!--#echo var="SERVER_NAME" -->.  If you are not the owner, please pass this message along to them.  (They should have received a copy by email.)</em></p>
+
+    <hr />
+
+    <p><!--#echo var="SERVER_NAME" --> is currently connected to the Scripts server via a DNS A record for 18.181.0.46.  As a result of IS&T selling a large portion of MIT’s IPv4 address space to Amazon, we have been forced to migrate the Scripts server to a new address.  To keep <!--#echo var="SERVER_NAME" --> working, you must update your DNS records to follow this migration.</p>
+
+    <p>Specifically: <strong>you need to update this A record from the old address ‘18.181.0.46’ to the new address ‘18.4.86.46’.</strong></p>
+
+    <p>Alternatively, you may be able to replace the A record with a CNAME record for ‘scripts-vhosts.mit.edu.’, keeping in mind the <a href="https://scripts.mit.edu/faq/14">caveats noted in our FAQ</a>.</p>
+
+    <p>These changes must be made with your domain registrar or external DNS provider.  There is no need to respond to this notice or otherwise contact the Scripts team.</p>
+
+    <p>(The Scripts team does not control your DNS and cannot make the updates for you.  While we may be able to provide advice on a best-effort volunteer basis, keep in mind that we are sending similar notices regarding nearly 300 hostnames, so responses, if any, may be delayed.)</p>
+
+    <p>Both the old and new addresses are functional at present, but you must change to the new address by <strong>June 12</strong>: at that point, the old address 18.181.0.46 will stop pointing to Scripts and might be repurposed by some arbitrary Amazon cloud customer.</p>
+
+    <p>We apologize for any inconvenience.</p>
+
+    <hr />
+
+    <p><a href="/__scripts/dismiss-181-interstitial<!--#echo var="REDIRECT_ORIGINAL_URI" -->">I understand; continue to <!--#echo var="REQUEST_SCHEME" -->://<!--#echo var="HTTP_HOST" --><!--#echo var="REDIRECT_ORIGINAL_URI" --></a></p>
+  </body>
+</html>
