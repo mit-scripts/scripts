@@ -661,11 +661,6 @@ null:
 	return HTTP_INTERNAL_SERVER_ERROR;
     }
 
-    if ((code = reconfigure_directive(
-             r->pool, server, "ServerName",
-             apr_pstrcat(r->pool, "'", escape(r->pool, reqc->name), "'", (const char *)NULL))) != 0)
-	return code;
-
     char *docroot =
 	strcmp(reqc->directory, ".") == 0 ?
 	apr_pstrcat(r->pool, reqc->home, "/web_scripts", (const char *)NULL) :
