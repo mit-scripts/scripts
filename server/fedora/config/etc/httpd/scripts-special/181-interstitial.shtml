@@ -5,7 +5,7 @@
     <title>DNS update required for <!--#echo var="SERVER_NAME" --></title>
     <style>
       html { background: #2050A0; }
-      body { margin: 1em auto; border: 1px solid black; background: #FFF; max-width: 54em; padding: 1em 3em; font: 80%/150% 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif; }
+      body { margin: 1em auto; border: 1px solid black; background: #FFF; max-width: 54em; padding: 1em 3em; font: 80%/1.5 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif; }
       summary { cursor: pointer; }
       pre { white-space: pre-wrap; }
       .red { color: #d33; }
