@@ -3,11 +3,11 @@
 127.0.0.1	localhost.localdomain localhost
 ::1		localhost.localdomain localhost
 
-18.181.0.43	scripts.mit.edu scripts
-18.181.0.46	scripts-vhosts.mit.edu scripts-vhosts
-18.181.0.50	scripts-cert.mit.edu scripts-cert
-18.181.0.52	sql.mit.edu sql
-18.181.0.229	scripts-test.mit.edu scripts-test
+18.181.0.43	scripts-old.mit.edu scripts-old
+18.181.0.46	scripts-vhosts-old.mit.edu scripts-vhosts-old
+18.181.0.50	scripts-cert-old.mit.edu scripts-cert-old
+18.181.0.52	sql-old.mit.edu sql-old
+18.181.0.229	scripts-test-old.mit.edu scripts-test-old
 
 18.181.0.57	better-mousetrap.mit.edu better-mousetrap scripts1.mit.edu scripts1
 18.181.0.53	old-faithful.mit.edu old-faithful scripts2.mit.edu scripts2
@@ -35,12 +35,12 @@
 172.21.0.203	miracle-cure.mit.edu
 172.21.0.204	lucky-star.mit.edu
 
-18.4.60.52	sql-new.mit.edu sql-new
+18.4.60.52	sql.mit.edu sql
 
-18.4.86.43	scripts-new.mit.edu scripts-new
-18.4.86.46	scripts-vhosts-new.mit.edu scripts-vhosts-new
-18.4.86.50	scripts-cert-new.mit.edu scripts-cert-new
-18.4.86.229	scripts-test-new.mit.edu scripts-test-new
+18.4.86.43	scripts.mit.edu scripts
+18.4.86.46	scripts-vhosts.mit.edu scripts-vhosts
+18.4.86.50	scripts-cert.mit.edu scripts-cert
+18.4.86.229	scripts-test.mit.edu scripts-test
 
 18.4.86.57	better-mousetrap-new.mit.edu better-mousetrap-new scripts1-new.mit.edu scripts1-new
 18.4.86.53	old-faithful-new.mit.edu old-faithful-new scripts2-new.mit.edu scripts2-new
