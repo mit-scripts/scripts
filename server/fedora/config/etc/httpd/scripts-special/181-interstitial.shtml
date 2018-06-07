@@ -14,11 +14,13 @@
   <body>
     <h1 class="red">DNS update required for <!--#echo var="SERVER_NAME" --></h1>
 
-    <p><em>This is a message from the scripts.mit.edu team to the owner of <!--#echo var="SERVER_NAME" -->.  If you are not the owner, please pass this message along to them.  (They should have received a copy by email.)</em></p>
+    <h2 id="time"></h2>
+
+    <p><em>This is an urgent message from the scripts.mit.edu team to the owner of <!--#echo var="SERVER_NAME" -->.  If you are not the owner, please pass this message along to them.  (They should have received several copies by email.)</em></p>
 
     <hr />
 
-    <p><!--#echo var="SERVER_NAME" --> is currently connected to the Scripts server via a DNS A record for 18.181.0.46.  As a result of IS&T selling a large portion of MIT’s IPv4 address space to Amazon, we have been forced to migrate the Scripts server to a new address.  To keep <!--#echo var="SERVER_NAME" --> working, you must update your DNS records to follow this migration.</p>
+    <p><!--#echo var="SERVER_NAME" --> is currently connected to the Scripts server via a DNS A record for 18.181.0.46.  As a result of IS&amp;T selling a large portion of MIT’s IPv4 address space to Amazon, we have been forced to migrate the Scripts server to a new address.  To keep <!--#echo var="SERVER_NAME" --> working, you must update your DNS records to follow this migration.</p>
 
     <p>Specifically: <strong>you need to update this A record from the old address ‘18.181.0.46’ to the new address ‘18.4.86.46’.</strong></p>
 
@@ -35,5 +37,27 @@
     <hr />
 
     <p><a href="/__scripts/dismiss-181-interstitial<!--#echo var="REDIRECT_ORIGINAL_URI" -->">I understand; continue to <!--#echo var="REQUEST_SCHEME" -->://<!--#echo var="HTTP_HOST" --><!--#echo var="REDIRECT_ORIGINAL_URI" --></a></p>
+
+    <script>
+      "use strict";
+      document.addEventListener("DOMContentLoaded", function() {
+        var timeElt = document.getElementById("time");
+        (function update() {
+          var left = 1528776000000 - Date.now();
+          var show = Math.ceil(left / 1000);
+          if (show > 0) {
+            timeElt.textContent =
+              "Time remaining: " +
+              Math.floor(show / 86400) + " days " +
+              ("0" + Math.floor((show % 86400) / 3600)).slice(-2) + ":" +
+              ("0" + Math.floor((show % 3600) / 60)).slice(-2) + ":" +
+              ("0" + show % 60).slice(-2);
+            setTimeout(update, left - 1000 * (show - 1));
+          } else {
+            timeElt.textContent = "";
+          }
+        })();
+      });
+    </script>
   </body>
 </html>
