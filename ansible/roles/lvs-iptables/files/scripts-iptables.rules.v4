@@ -31,10 +31,6 @@
 # Send everything else to FWM 1 (primary)
 -A scripts -m mark --mark 0 -j MARK --set-mark 1
 
-# webzephyr.mit.edu is special because its SMTP needs to always go to the primary (FWM 1)
--A PREROUTING -m tcp -m multiport -p tcp -d 18.181.0.49 --dports 80,443,444 -j MARK --set-mark 2
--A PREROUTING -m mark --mark 0 -d 18.181.0.49 -j MARK --set-mark 1
-
 # scripts-primary.mit.edu goes to the primary (FWM 1) on all ports
 -A PREROUTING -d 18.181.0.182 -j MARK --set-mark 1
 -A PREROUTING -d 18.4.86.182 -j MARK --set-mark 1

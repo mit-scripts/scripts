@@ -62,10 +62,6 @@ all:
       ip: 18.4.86.29
       cidr_netmask: 24
       nic: vlan486
-    - host: webzephyr.mit.edu
-      ip: 18.181.0.49
-      cidr_netmask: 16
-      nic: vlan181
 
     rsyslogs:
     - 18.4.86.15  # log-flume

@@ -1,9 +1,2 @@
-webmaster@szs.mit.edu jdaniel@mit.edu
-webmaster@webzephyr.mit.edu jdaniel@mit.edu
-@szs.mit.edu webzephyr
-@webzephyr.mit.edu webzephyr
-# Domains also match here
 scripts-vhosts-old.mit.edu true
 scripts-vhosts.mit.edu true
-szs.mit.edu true
-webzephyr.mit.edu true
