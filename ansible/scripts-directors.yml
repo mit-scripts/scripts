@@ -1,4 +1,5 @@
 - hosts: scripts-directors
+  serial: 1
   vars:
     network_allow_service_restart: false
     network_ether_interfaces:

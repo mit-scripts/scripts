@@ -1,4 +1,5 @@
 - hosts: scripts-directors[0]
+  serial: 1
 
   vars:
   - dynamic_property_names:
