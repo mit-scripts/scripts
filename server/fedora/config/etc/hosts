@@ -3,38 +3,6 @@
 127.0.0.1	localhost.localdomain localhost
 ::1		localhost.localdomain localhost
 
-18.181.0.43	scripts-old.mit.edu scripts-old
-18.181.0.46	scripts-vhosts-old.mit.edu scripts-vhosts-old
-18.181.0.50	scripts-cert-old.mit.edu scripts-cert-old
-18.181.0.52	sql-old.mit.edu sql-old
-18.181.0.229	scripts-test-old.mit.edu scripts-test-old
-
-18.181.0.57	better-mousetrap-old.mit.edu better-mousetrap-old
-18.181.0.53	old-faithful-old.mit.edu old-faithful-old
-18.181.0.167	bees-knees-old.mit.edu bees-knees-old
-18.181.0.228	cats-whiskers-old.mit.edu cats-whiskers-old
-18.181.0.236	whole-enchilada-old.mit.edu whole-enchilada-old
-18.181.0.237	pancake-bunny-old.mit.edu pancake-bunny-old
-18.181.0.234	busy-beaver-old.mit.edu busy-beaver-old
-18.181.0.235	real-mccoy-old.mit.edu real-mccoy-old
-18.181.0.135	shining-armor-old.mit.edu shining-armor-old
-18.181.0.141	golden-egg-old.mit.edu golden-egg-old
-18.181.0.203	miracle-cure-old.mit.edu miracle-cure-old
-18.181.0.204	lucky-star-old.mit.edu lucky-star-old
-
-172.21.0.57	better-mousetrap-old.mit.edu
-172.21.0.53	old-faithful-old.mit.edu
-172.21.0.167	bees-knees-old.mit.edu
-172.21.0.228	cats-whiskers-old.mit.edu
-172.21.0.236	whole-enchilada-old.mit.edu
-172.21.0.237	pancake-bunny-old.mit.edu
-172.21.0.234	busy-beaver-old.mit.edu
-172.21.0.235	real-mccoy-old.mit.edu
-172.21.0.135	shining-armor-old.mit.edu
-172.21.0.141	golden-egg-old.mit.edu
-172.21.0.203	miracle-cure-old.mit.edu
-172.21.0.204	lucky-star-old.mit.edu
-
 18.4.60.52	sql.mit.edu sql
 
 18.4.86.43	scripts.mit.edu scripts
@@ -67,3 +35,35 @@
 172.21.0.141	golden-egg.mit.edu
 172.21.0.203	miracle-cure.mit.edu
 172.21.0.204	lucky-star.mit.edu
+
+18.181.0.43	scripts-old.mit.edu scripts-old
+18.181.0.46	scripts-vhosts-old.mit.edu scripts-vhosts-old
+18.181.0.50	scripts-cert-old.mit.edu scripts-cert-old
+18.181.0.52	sql-old.mit.edu sql-old
+18.181.0.229	scripts-test-old.mit.edu scripts-test-old
+
+18.181.0.57	better-mousetrap-old.mit.edu better-mousetrap.mit.edu better-mousetrap-old
+18.181.0.53	old-faithful-old.mit.edu old-faithful.mit.edu old-faithful-old
+18.181.0.167	bees-knees-old.mit.edu bees-knees.mit.edu bees-knees-old
+18.181.0.228	cats-whiskers-old.mit.edu cats-whiskers.mit.edu cats-whiskers-old
+18.181.0.236	whole-enchilada-old.mit.edu whole-enchilada.mit.edu whole-enchilada-old
+18.181.0.237	pancake-bunny-old.mit.edu pancake-bunny.mit.edu pancake-bunny-old
+18.181.0.234	busy-beaver-old.mit.edu busy-beaver.mit.edu busy-beaver-old
+18.181.0.235	real-mccoy-old.mit.edu real-mccoy.mit.edu real-mccoy-old
+18.181.0.135	shining-armor-old.mit.edu shining-armor.mit.edu shining-armor-old
+18.181.0.141	golden-egg-old.mit.edu golden-egg.mit.edu golden-egg-old
+18.181.0.203	miracle-cure-old.mit.edu miracle-cure.mit.edu miracle-cure-old
+18.181.0.204	lucky-star-old.mit.edu lucky-star.mit.edu lucky-star-old
+
+172.21.0.57	better-mousetrap-old.mit.edu
+172.21.0.53	old-faithful-old.mit.edu
+172.21.0.167	bees-knees-old.mit.edu
+172.21.0.228	cats-whiskers-old.mit.edu
+172.21.0.236	whole-enchilada-old.mit.edu
+172.21.0.237	pancake-bunny-old.mit.edu
+172.21.0.234	busy-beaver-old.mit.edu
+172.21.0.235	real-mccoy-old.mit.edu
+172.21.0.135	shining-armor-old.mit.edu
+172.21.0.141	golden-egg-old.mit.edu
+172.21.0.203	miracle-cure-old.mit.edu
+172.21.0.204	lucky-star-old.mit.edu
