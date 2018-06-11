@@ -9,18 +9,51 @@
 18.181.0.52	sql-old.mit.edu sql-old
 18.181.0.229	scripts-test-old.mit.edu scripts-test-old
 
-18.181.0.57	better-mousetrap.mit.edu better-mousetrap scripts1.mit.edu scripts1
-18.181.0.53	old-faithful.mit.edu old-faithful scripts2.mit.edu scripts2
-18.181.0.167	bees-knees.mit.edu bees-knees scripts3.mit.edu scripts3
-18.181.0.228	cats-whiskers.mit.edu cats-whiskers scripts4.mit.edu scripts4
-18.181.0.236	whole-enchilada.mit.edu whole-enchilada scripts5.mit.edu scripts5
-18.181.0.237	pancake-bunny.mit.edu pancake-bunny scripts6.mit.edu scripts6
-18.181.0.234	busy-beaver.mit.edu busy-beaver scripts7.mit.edu scripts7
-18.181.0.235	real-mccoy.mit.edu real-mccoy scripts8.mit.edu scripts8
-18.181.0.135	shining-armor.mit.edu shining-armor scripts9.mit.edu scripts9
-18.181.0.141	golden-egg.mit.edu golden-egg scripts10.mit.edu scripts10
-18.181.0.203	miracle-cure.mit.edu miracle-cure scripts11.mit.edu scripts11
-18.181.0.204	lucky-star.mit.edu lucky-star scripts12.mit.edu scripts12
+18.181.0.57	better-mousetrap-old.mit.edu better-mousetrap-old
+18.181.0.53	old-faithful-old.mit.edu old-faithful-old
+18.181.0.167	bees-knees-old.mit.edu bees-knees-old
+18.181.0.228	cats-whiskers-old.mit.edu cats-whiskers-old
+18.181.0.236	whole-enchilada-old.mit.edu whole-enchilada-old
+18.181.0.237	pancake-bunny-old.mit.edu pancake-bunny-old
+18.181.0.234	busy-beaver-old.mit.edu busy-beaver-old
+18.181.0.235	real-mccoy-old.mit.edu real-mccoy-old
+18.181.0.135	shining-armor-old.mit.edu shining-armor-old
+18.181.0.141	golden-egg-old.mit.edu golden-egg-old
+18.181.0.203	miracle-cure-old.mit.edu miracle-cure-old
+18.181.0.204	lucky-star-old.mit.edu lucky-star-old
+
+172.21.0.57	better-mousetrap-old.mit.edu
+172.21.0.53	old-faithful-old.mit.edu
+172.21.0.167	bees-knees-old.mit.edu
+172.21.0.228	cats-whiskers-old.mit.edu
+172.21.0.236	whole-enchilada-old.mit.edu
+172.21.0.237	pancake-bunny-old.mit.edu
+172.21.0.234	busy-beaver-old.mit.edu
+172.21.0.235	real-mccoy-old.mit.edu
+172.21.0.135	shining-armor-old.mit.edu
+172.21.0.141	golden-egg-old.mit.edu
+172.21.0.203	miracle-cure-old.mit.edu
+172.21.0.204	lucky-star-old.mit.edu
+
+18.4.60.52	sql.mit.edu sql
+
+18.4.86.43	scripts.mit.edu scripts
+18.4.86.46	scripts-vhosts.mit.edu scripts-vhosts
+18.4.86.50	scripts-cert.mit.edu scripts-cert
+18.4.86.229	scripts-test.mit.edu scripts-test
+
+18.4.86.57	better-mousetrap.mit.edu better-mousetrap scripts1.mit.edu scripts1
+18.4.86.53	old-faithful.mit.edu old-faithful scripts2.mit.edu scripts2
+18.4.86.167	bees-knees.mit.edu bees-knees scripts3.mit.edu scripts3
+18.4.86.228	cats-whiskers.mit.edu cats-whiskers scripts4.mit.edu scripts4
+18.4.86.236	whole-enchilada.mit.edu whole-enchilada scripts5.mit.edu scripts5
+18.4.86.237	pancake-bunny.mit.edu pancake-bunny scripts6.mit.edu scripts6
+18.4.86.234	busy-beaver.mit.edu busy-beaver scripts7.mit.edu scripts7
+18.4.86.235	real-mccoy.mit.edu real-mccoy scripts8.mit.edu scripts8
+18.4.86.135	shining-armor.mit.edu shining-armor scripts9.mit.edu scripts9
+18.4.86.141	golden-egg.mit.edu golden-egg scripts10.mit.edu scripts10
+18.4.86.203	miracle-cure.mit.edu miracle-cure scripts11.mit.edu scripts11
+18.4.86.204	lucky-star.mit.edu lucky-star scripts12.mit.edu scripts12
 
 172.21.0.57	better-mousetrap.mit.edu
 172.21.0.53	old-faithful.mit.edu
@@ -34,36 +67,3 @@
 172.21.0.141	golden-egg.mit.edu
 172.21.0.203	miracle-cure.mit.edu
 172.21.0.204	lucky-star.mit.edu
-
-18.4.60.52	sql.mit.edu sql
-
-18.4.86.43	scripts.mit.edu scripts
-18.4.86.46	scripts-vhosts.mit.edu scripts-vhosts
-18.4.86.50	scripts-cert.mit.edu scripts-cert
-18.4.86.229	scripts-test.mit.edu scripts-test
-
-18.4.86.57	better-mousetrap-new.mit.edu better-mousetrap-new scripts1-new.mit.edu scripts1-new
-18.4.86.53	old-faithful-new.mit.edu old-faithful-new scripts2-new.mit.edu scripts2-new
-18.4.86.167	bees-knees-new.mit.edu bees-knees-new scripts3-new.mit.edu scripts3-new
-18.4.86.228	cats-whiskers-new.mit.edu cats-whiskers-new scripts4-new.mit.edu scripts4-new
-18.4.86.236	whole-enchilada-new.mit.edu whole-enchilada-new scripts5-new.mit.edu scripts5-new
-18.4.86.237	pancake-bunny-new.mit.edu pancake-bunny-new scripts6-new.mit.edu scripts6-new
-18.4.86.234	busy-beaver-new.mit.edu busy-beaver-new scripts7-new.mit.edu scripts7-new
-18.4.86.235	real-mccoy-new.mit.edu real-mccoy-new scripts8-new.mit.edu scripts8-new
-18.4.86.135	shining-armor-new.mit.edu shining-armor-new scripts9-new.mit.edu scripts9-new
-18.4.86.141	golden-egg-new.mit.edu golden-egg-new scripts10-new.mit.edu scripts10-new
-18.4.86.203	miracle-cure-new.mit.edu miracle-cure-new scripts11-new.mit.edu scripts11-new
-18.4.86.204	lucky-star-new.mit.edu lucky-star-new scripts12-new.mit.edu scripts12-new
-
-172.21.0.57	better-mousetrap-new.mit.edu
-172.21.0.53	old-faithful-new.mit.edu
-172.21.0.167	bees-knees-new.mit.edu
-172.21.0.228	cats-whiskers-new.mit.edu
-172.21.0.236	whole-enchilada-new.mit.edu
-172.21.0.237	pancake-bunny-new.mit.edu
-172.21.0.234	busy-beaver-new.mit.edu
-172.21.0.235	real-mccoy-new.mit.edu
-172.21.0.135	shining-armor-new.mit.edu
-172.21.0.141	golden-egg-new.mit.edu
-172.21.0.203	miracle-cure-new.mit.edu
-172.21.0.204	lucky-star-new.mit.edu
