@@ -12,12 +12,6 @@
       - 18.72.0.3
       - 18.71.0.151
       dns_search: mit.edu
-      options:
-      - metric 1
-      - up ip route add 18.4.86.0/24 table 486 dev vlan486
-      - up ip route add default table 486 via 18.4.86.1 dev vlan486
-      - up ip rule add from 18.4.86.0/24 table 486
-      - down ip rule del table 486
     pacemaker_corosync_ring_interface: vlan486
     pacemaker_corosync_group: scripts-directors
   pre_tasks:
