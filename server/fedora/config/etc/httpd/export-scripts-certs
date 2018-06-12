@@ -88,7 +88,7 @@ def conf(vhost):
             cert_file.write(certs_pem)
         os.rename(cert_path + '.new', cert_path)
 
-    for ip, port in itertools.product(['*', '18.181.0.46'], [443, 444]):
+    for ip, port in itertools.product(['*'], [443, 444]):
         yield '<VirtualHost {}:{}>\n'.format(ip, port)
         yield '\tServerName {}\n'.format(name)
         if aliases:
@@ -99,8 +99,6 @@ def conf(vhost):
             yield '\tInclude conf.d/vhosts-common-ssl-cert.conf\n'
         yield '\tSSLCertificateFile {}\n'.format(cert_path)
         yield '\tSSLCertificateKeyFile {}\n'.format(key_path)
-        if ip == '18.181.0.46':
-            yield '\tInclude conf.d/181-interstitial.conf\n'
         yield '</VirtualHost>\n'
 
 with open(os.path.join(CERTS_DIR, '.lock'), 'w') as lock_file:

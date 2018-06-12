@@ -13,13 +13,10 @@
 :scripts - [0:0]
 
 # scripts-vhosts.mit.edu
--A PREROUTING -d 18.181.0.46 -j scripts
 -A PREROUTING -d 18.4.86.46 -j scripts
 # scripts.mit.edu
--A PREROUTING -d 18.181.0.43 -j scripts
 -A PREROUTING -d 18.4.86.43 -j scripts
 # scripts-cert.mit.edu
--A PREROUTING -d 18.181.0.50 -j scripts
 -A PREROUTING -d 18.4.86.50 -j scripts
 
 # Send Apache-bound traffic to FWM 2 (load-balanced)
@@ -32,16 +29,13 @@
 -A scripts -m mark --mark 0 -j MARK --set-mark 1
 
 # scripts-primary.mit.edu goes to the primary (FWM 1) on all ports
--A PREROUTING -d 18.181.0.182 -j MARK --set-mark 1
 -A PREROUTING -d 18.4.86.182 -j MARK --set-mark 1
 
 # sipb.mit.edu acts like regular scripts for the web ports, everything else goes to i-hate-penguins.xvm.mit.edu (FWM 4)
--A PREROUTING -m tcp -m multiport -p tcp -d 18.181.0.29 --dports 80,443,444 -j MARK --set-mark 2
 -A PREROUTING -m tcp -m multiport -p tcp -d 18.4.86.29 --dports 80,443,444 -j MARK --set-mark 2
 # Also send port 25 there too because the IP is shared with rtfm.mit.edu (fix this after renaming the machine)
 #-A PREROUTING -m tcp -m multiport -p tcp -d 18.181.0.29 --dports 20,21,25 -j MARK --set-mark 4
 # All else to i-hate-penguins
--A PREROUTING -m mark --mark 0 -d 18.181.0.29 -j MARK --set-mark 4
 -A PREROUTING -m mark --mark 0 -d 18.4.86.29 -j MARK --set-mark 4
 
 COMMIT
