@@ -1,0 +1,9 @@
+- name: Update /etc/aliases
+  lineinfile:
+    path: /etc/aliases
+    regexp: '^root:'
+    line: |
+      root: {% for maintainer in maintainers|rejectattr('root_mail', 'none') -%}
+      {{ maintainer.root_mail|default(maintainer.username + '@mit.edu') }}{{ '' if loop.last else ', ' }}
+      {%- endfor %}
+  notify: newaliases

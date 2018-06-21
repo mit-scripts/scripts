@@ -2,6 +2,7 @@
   serial: 1
   roles:
   - k5login
+  - root-aliases
   tasks:
   - name: Configure Kerberos
     debconf: name=krb5-config question=krb5-config/default_realm vtype=string value=ATHENA.MIT.EDU
@@ -19,15 +20,6 @@
     - libzephyr4-krb5
     - zephyr-clients
     - aptitude
-  - name: Update /etc/aliases
-    lineinfile:
-      path: /etc/aliases
-      regexp: '^root:'
-      line: |
-        root: {% for maintainer in maintainers|rejectattr('root_mail', 'none') -%}
-        {{ maintainer.root_mail|default(maintainer.username + '@mit.edu') }}{{ '' if loop.last else ', ' }}
-        {%- endfor %}
-    notify: newaliases
   - name: Start zhm
     service: name=zhm state=started
   - name: Install zephyr-syslog
@@ -87,8 +79,6 @@
     notify: restart rsyslog
 
   handlers:
-  - name: newaliases
-    command: newaliases
   - name: reload systemd
     systemd: daemon_reload=yes
   - name: restart zephyr-syslog@public.service

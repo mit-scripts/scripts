@@ -49,6 +49,7 @@
   roles:
   - k5login
   - syslog-client
+  - root-aliases
   - ldirectord-status
   - lvs-iptables
   - lvs-lighttpd
@@ -85,15 +86,6 @@
       dest: /etc/nagios/nrpe_local.cfg
       src: files/nrpe_local.cfg
     notify: restart nrpe
-  - name: Update /etc/aliases
-    lineinfile:
-      path: /etc/aliases
-      regexp: '^root:'
-      line: |
-        root: {% for maintainer in maintainers|rejectattr('root_mail', 'none') -%}
-        {{ maintainer.root_mail|default(maintainer.username + '@mit.edu') }}{{ '' if loop.last else ', ' }}
-        {%- endfor %}
-    notify: newaliases
   - name: Load IPVS modules
     copy:
       dest: /etc/modules-load.d/lvs.conf
@@ -146,8 +138,6 @@
       dest: /etc/ha.d/ldirectord.cf
       src: files/ldirectord.cf
   handlers:
-  - name: newaliases
-    command: newaliases
   - name: load modules
     service: name=systemd-modules-load state=restarted
   - name: reload sysctl
