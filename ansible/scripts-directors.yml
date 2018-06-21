@@ -22,7 +22,6 @@
     with_items:
     - open-vm-tools
     - open-vm-tools-dkms
-    - rsyslog-relp
     - exim4-daemon-light
     - resolvconf
     - mlocate
@@ -49,26 +48,12 @@
       - setup
   roles:
   - k5login
+  - syslog-client
   - ldirectord-status
   - lvs-iptables
   - lvs-lighttpd
   - munin-node
   tasks:
-  - name: Configure rsyslog
-    copy:
-      dest: /etc/rsyslog.d/scripts-syslog-client.conf
-      content: |
-        $ModLoad omrelp
-        {% for rsyslog in rsyslogs %}
-        {% if loop.first %}
-        *.info :omrelp:{{ rsyslog }}:2514
-        $ActionExecOnlyWhenPreviousIsSuspended on
-        {% else %}
-        & :omrelp:{{ rsyslog }}:2514
-        {% endif %}
-        {% endfor %}
-        $ActionExecOnlyWhenPreviousIsSuspended off
-    notify: restart rsyslog
   - name: Install munin cps plugin
     copy:
       dest: /etc/munin/plugins/cps_1_0
@@ -161,8 +146,6 @@
       dest: /etc/ha.d/ldirectord.cf
       src: files/ldirectord.cf
   handlers:
-  - name: restart rsyslog
-    service: name=rsyslog state=restarted
   - name: newaliases
     command: newaliases
   - name: load modules

@@ -1,0 +1,17 @@
+- name: Install rsyslog-relp
+  apt: name=rsyslog-relp state=present
+- name: Configure rsyslog
+  copy:
+    dest: /etc/rsyslog.d/scripts-syslog-client.conf
+    content: |
+      $ModLoad omrelp
+      {% for rsyslog in rsyslogs %}
+      {% if loop.first %}
+      *.info :omrelp:{{ rsyslog }}:2514
+      $ActionExecOnlyWhenPreviousIsSuspended on
+      {% else %}
+      & :omrelp:{{ rsyslog }}:2514
+      {% endif %}
+      {% endfor %}
+      $ActionExecOnlyWhenPreviousIsSuspended off
+  notify: restart rsyslog
