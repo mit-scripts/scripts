@@ -1,5 +1,7 @@
 - hosts: scripts-syslogs
   serial: 1
+  roles:
+  - k5login
   tasks:
   - name: Configure Kerberos
     debconf: name=krb5-config question=krb5-config/default_realm vtype=string value=ATHENA.MIT.EDU
@@ -17,25 +19,6 @@
     - libzephyr4-krb5
     - zephyr-clients
     - aptitude
-  - name: Update k5login
-    copy:
-      dest: /root/.k5login
-      content: |
-        {% for maintainer in maintainers %}
-        {{ maintainer.username }}/root@ATHENA.MIT.EDU
-        {% endfor %}
-  - name: Enable GSSAPIAuthentication
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      regexp: '(?i)^#?\s*GSSAPIAuthentication\s'
-      line: GSSAPIAuthentication yes
-    notify: reload ssh
-  - name: Disable PasswordAuthentication
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      regexp: '(?i)^#?\s*PasswordAuthentication\s'
-      line: PasswordAuthentication no
-    notify: reload ssh
   - name: Update /etc/aliases
     lineinfile:
       path: /etc/aliases
@@ -104,8 +87,6 @@
     notify: restart rsyslog
 
   handlers:
-  - name: reload ssh
-    service: name=ssh state=reloaded
   - name: newaliases
     command: newaliases
   - name: reload systemd

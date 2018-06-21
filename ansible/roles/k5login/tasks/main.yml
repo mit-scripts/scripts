@@ -1,0 +1,19 @@
+- name: Enable GSSAPIAuthentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '(?i)^#?\s*GSSAPIAuthentication\s'
+    line: GSSAPIAuthentication yes
+  notify: reload ssh
+- name: Disable PasswordAuthentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '(?i)^#?\s*PasswordAuthentication\s'
+    line: PasswordAuthentication no
+  notify: reload ssh
+- name: Update k5login
+  copy:
+    dest: /root/.k5login
+    content: |
+      {% for maintainer in maintainers %}
+      {{ maintainer.username }}/root@ATHENA.MIT.EDU
+      {% endfor %}

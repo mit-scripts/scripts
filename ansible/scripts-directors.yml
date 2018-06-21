@@ -48,23 +48,12 @@
       - reconfigure munin-node
       - setup
   roles:
+  - k5login
   - ldirectord-status
   - lvs-iptables
   - lvs-lighttpd
   - munin-node
   tasks:
-  - name: Enable GSSAPIAuthentication
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      regexp: '(?i)^#?\s*GSSAPIAuthentication\s'
-      line: GSSAPIAuthentication yes
-    notify: reload ssh
-  - name: Disable PasswordAuthentication
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      regexp: '(?i)^#?\s*PasswordAuthentication\s'
-      line: PasswordAuthentication no
-    notify: reload ssh
   - name: Configure rsyslog
     copy:
       dest: /etc/rsyslog.d/scripts-syslog-client.conf
@@ -111,13 +100,6 @@
       dest: /etc/nagios/nrpe_local.cfg
       src: files/nrpe_local.cfg
     notify: restart nrpe
-  - name: Update k5login
-    copy:
-      dest: /root/.k5login
-      content: |
-        {% for maintainer in maintainers %}
-        {{ maintainer.username }}/root@ATHENA.MIT.EDU
-        {% endfor %}
   - name: Update /etc/aliases
     lineinfile:
       path: /etc/aliases
@@ -179,8 +161,6 @@
       dest: /etc/ha.d/ldirectord.cf
       src: files/ldirectord.cf
   handlers:
-  - name: reload ssh
-    service: name=ssh state=reloaded
   - name: restart rsyslog
     service: name=rsyslog state=restarted
   - name: newaliases
