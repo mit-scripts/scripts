@@ -12,7 +12,9 @@ myorigin = scripts.mit.edu
 mydestination = scripts.mit.edu, scripts, $myhostname, scripts-test.mit.edu, scripts-test, localhost
 relayhost =
 mynetworks_style = host
-mailbox_command_maps = ldap:/etc/postfix/mailbox-command-maps-ldap.cf
+mailbox_command_maps =
+    texthash:/etc/postfix/mailbox_command_maps,
+    ldap:/etc/postfix/mailbox-command-maps-ldap.cf
 mailbox_size_limit = 0
 message_size_limit = 41943040
 recipient_delimiter = +
