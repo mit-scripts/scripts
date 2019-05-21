@@ -6,7 +6,9 @@
   dnf: name=nrpe state=present
   when: ansible_os_family == "RedHat"
 - name: Configure nrpe
-  line: include=/etc/nagios/nrpe_local.cfg
+  lineinfile:
+    line: include=/etc/nagios/nrpe_local.cfg
+    path: /etc/nagios/nrpe.cfg
   notify: restart nrpe
 - name: Configure nrpe 2
   copy:
