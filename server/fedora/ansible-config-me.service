@@ -3,7 +3,7 @@ Description=Run ansible-pull at first boot to apply environment configuration
 After=network-online.target
 
 [Service]
-ExecStart=/srv/repository/server/fedora/.sh
+ExecStart=/srv/repository/server/fedora/ansible-config-me.sh
 Type=oneshot
 
 [Install]
