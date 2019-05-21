@@ -27,7 +27,6 @@
     - mlocate
     - lighttpd
     - lighttpd-mod-magnet
-    - nagios-nrpe-server
     - pacemaker
     - pacemaker-cli-utils
     - crmsh
@@ -54,6 +53,7 @@
   - lvs-iptables
   - lvs-lighttpd
   - munin-node
+  - nrpe
   tasks:
   - name: Install munin cps plugin
     copy:
@@ -81,11 +81,6 @@
         [cps_3_0]
         env.graph_title Load balanced SMTP connections
     notify: restart munin-node
-  - name: Configure nrpe
-    copy:
-      dest: /etc/nagios/nrpe_local.cfg
-      src: files/nrpe_local.cfg
-    notify: restart nrpe
   - name: Load IPVS modules
     copy:
       dest: /etc/modules-load.d/lvs.conf
@@ -146,7 +141,5 @@
     service: name=ipvsadm state=restarted
   - name: reboot
     include_tasks: reboot.yml
-  - name: restart nrpe
-    service: name=nagios-nrpe-server state=restarted
   - name: setup
     setup:

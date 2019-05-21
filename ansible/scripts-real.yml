@@ -1,0 +1,9 @@
+- hosts: scripts-real
+  serial: 1
+  roles:
+    - k5login
+    - syslog-client
+    - root-aliases
+    - munin-node
+    - nrpe
+
