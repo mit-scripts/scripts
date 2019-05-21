@@ -4,7 +4,9 @@
 
 install
 
-url --url=http://mirrors.mit.edu/fedora/linux/releases/30/Server/x86_64/os
+text
+
+url --url=http://mirrors.mit.edu/fedora/linux/releases/30/Everything/x86_64/os
 
 lang en_US.UTF-8
 keyboard us
@@ -40,8 +42,8 @@ poweroff
 
 %packages
 @core
-@online-docs
 @standard
+@online-docs
 @system-tools
 ansible
 git

@@ -65,3 +65,7 @@ all:
       hosts:
         log-flume.mit.edu: {}
         log-normal.mit.edu: {}
+
+    scripts-real:
+      hosts:
+        quentin-scripts-f30.xvm.mit.edu: {}
