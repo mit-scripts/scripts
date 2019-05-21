@@ -67,5 +67,7 @@ all:
         log-normal.mit.edu: {}
 
     scripts-real:
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
       hosts:
         quentin-scripts-f30.xvm.mit.edu: {}
