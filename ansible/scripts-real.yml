@@ -25,6 +25,20 @@
       content: |
         /mit hesiod:hesiod
     notify: reload autofs
+  - name: Configure sudoers
+    copy:
+      dest: /etc/sudoers.d/scripts
+      content: |
+        scripts ALL=(root)      NOPASSWD: /usr/local/sbin/ldap-backup ""
+        scripts ALL=(root)      NOPASSWD: /usr/local/sbin/get-homedirs ""
+        scripts ALL=(root)      NOPASSWD: /etc/httpd/export-scripts-certs ""
+        nrpe    ALL=(signup)    NOPASSWD: /etc/nagios/check_ldap_mmr.real
+        pony    ALL=(root)      NOPASSWD: /etc/pki/tls/gencsr-pony
+
+        Defaults:munin !syslog
+
+        munin ALL=(root) SETENV: NOPASSWD: /etc/munin/plugins/postfix_mailqueue , /etc/munin/plugins/postfix_mailvolume , /etc/munin/plugins/hddtemp_smartctl , /etc/munin/plugins/sendmail* , /etc/munin/plugins/if_* , /etc/munin/plugins/if_err_eth2
+        munin ALL=(root) NOPASSWD: /etc/munin/plugins/smart_*, /etc/munin/plugins/sensors_*
   handlers:
   - name: reload autofs
     service: name=ipvsadm state=reloaded
