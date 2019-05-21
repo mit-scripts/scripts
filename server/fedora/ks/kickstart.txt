@@ -44,7 +44,6 @@ poweroff
 @core
 @standard
 @online-docs
-@system-tools
 ansible
 git
 %end
