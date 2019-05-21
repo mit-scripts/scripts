@@ -1,0 +1,10 @@
+[Unit]
+Description=Run ansible-pull at first boot to apply environment configuration
+After=network-online.target
+
+[Service]
+ExecStart=/srv/repository/server/fedora/.sh
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,56 @@
+# from http://ezyang.scripts.mit.edu/kickstart/scripts.php?type=xvm&release=30&hostname=feral-purrbeast.xvm.mit.edu
+
+# Kickstart file for scripts.mit.edu
+
+install
+
+url --url=http://mirrors.mit.edu/fedora/linux/releases/30/Server/x86_64/os
+
+lang en_US.UTF-8
+keyboard us
+#network --device eth0 --bootproto static --ip 18.49.4.31 --netmask 255.255.0.0 --gateway 18.49.0.1 --nameserver 18.70.0.160 --nameserver 18.71.0.151 --nameserver 18.72.0.3 --hostname feral-purrbeast.xvm.mit.edu
+#network --device eth1 --bootproto static --ip 172.21.4.31 --netmask 255.255.0.0
+
+timezone --utc America/New_York
+selinux --disabled
+authconfig --enableshadow --passalgo=sha512 --enablefingerprint
+firewall --disabled
+
+clearpart --all --drives=xvda --initlabel
+ignoredisk --only-use=xvda
+part / --fstype=ext4 --grow --asprimary --size=1
+part swap --grow --size=1
+
+# console=hvc0 makes this VM work as an XVM ParaVM (which is what we
+# eventually want to be running as, not HVM which we have to do
+# for boot CDs).
+# biosdevname=0 disables clever device naming, which happens when Fedora
+# is unable to tell that we are running as a VM.
+bootloader --location=mbr --driveorder=xvda --append="console=hvc0 rhgb quiet biosdevname=0"
+
+#repo --name="fedora30"  --baseurl=http://download3.fedora.redhat.com/pub/fedora/linux/releases/30/Everything/x86_64/os/
+#repo --name="updates30" --baseurl=http://download3.fedora.redhat.com/pub/fedora/linux/updates/30/Everything/x86_64/
+
+# --disabled=avahi-daemon,nfslock,pcscd,rpcgssd,rpcidmapd,sendmail
+services --enabled=named,ntpd,network --disabled=rpcbind
+
+user --name=scripts-build --groups=mock
+
+poweroff
+
+%packages
+@core
+@online-docs
+@standard
+@system-tools
+ansible
+git
+%end
+
+%post --erroronfail --log=/root/ks-post.log
+set -e
+cd /srv
+git clone -b ansible-realserver https://github.com/mit-scripts/scripts repository
+chown -R scripts-build /srv/repository
+ln -s /srv/repository/server/fedora/ansible-config-me.service /etc/systemd/system/
+%end
