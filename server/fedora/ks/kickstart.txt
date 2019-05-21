@@ -34,7 +34,7 @@ bootloader --location=mbr --driveorder=xvda --append="console=hvc0 rhgb quiet bi
 #repo --name="updates30" --baseurl=http://download3.fedora.redhat.com/pub/fedora/linux/updates/30/Everything/x86_64/
 
 # --disabled=avahi-daemon,nfslock,pcscd,rpcgssd,rpcidmapd,sendmail
-services --enabled=named,ntpd,network --disabled=rpcbind
+#services --enabled=named,ntpd,network --disabled=rpcbind
 
 user --name=scripts-build --groups=mock
 
