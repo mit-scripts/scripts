@@ -8,6 +8,14 @@
     - nrpe
   # TODO: Configure nrpe with realserver-specific checks
   tasks:
+  - name: Install hesiod
+    dnf: name=hesiod-devel state=present
+  - name: Configure hesiod
+    copy:
+      dest: /etc/hesiod.conf
+      content: |
+        rhs=.ATHENA.MIT.EDU
+        lhs=.ns
   - name: Install autofs
     dnf: name=autofs state=present
   - name: Configure autofs
