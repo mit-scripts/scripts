@@ -1,8 +1,10 @@
 ---
-- name: Install munin-node
-  apt:
-    name: munin-node
-    state: present
+- name: Install munin-node debian
+  apt: name=munin-node state=present
+  when: ansible_os_family == "Debian"
+- name: Install munin-node redhat
+  dnf: name=munin-node state=present
+  when: ansible_os_family == "RedHat"
 - name: Configure munin
   blockinfile:
     path: /etc/munin/munin-node.conf

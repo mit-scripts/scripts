@@ -1,5 +1,9 @@
-- name: Install rsyslog-relp
+- name: Install rsyslog-relp debian
   apt: name=rsyslog-relp state=present
+  when: ansible_os_family == "Debian"
+- name: Install rsyslog-relp redhat
+  dnf: name=rsyslog-relp state=present
+  when: ansible_os_family == "RedHat"
 - name: Configure rsyslog
   copy:
     dest: /etc/rsyslog.d/scripts-syslog-client.conf

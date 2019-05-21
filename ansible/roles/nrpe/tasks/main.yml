@@ -1,13 +1,9 @@
 ---
-- name: Install nrpe
-  apt:
-    name: "nagios-nrpe-server"
-    state: present
+- name: Install nrpe debian
+  apt: name=nagios-nrpe-server state=present
   when: ansible_os_family == "Debian"
-- name: Install nrpe
-  yum:
-    name: nrpe
-    state: present
+- name: Install nrpe redhat
+  dnf: name=nrpe state=present
   when: ansible_os_family == "RedHat"
 - name: Configure nrpe
   line: include=/etc/nagios/nrpe_local.cfg

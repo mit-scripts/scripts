@@ -1,2 +1,9 @@
-- name: reload ssh
+- name: reload ssh debian
+  listen: reload ssh
   service: name=ssh state=reloaded
+  when: ansible_os_family == "Debian"
+- name: reload ssh redhat
+  listen: reload ssh
+  service: name=sshd state=reloaded
+  when: ansible_os_family == "RedHat"
+

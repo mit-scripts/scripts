@@ -6,4 +6,4 @@
     - root-aliases
     - munin-node
     - nrpe
-
+  # TODO: Configure nrpe with realserver-specific checks
