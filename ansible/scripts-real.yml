@@ -41,4 +41,4 @@
         munin ALL=(root) NOPASSWD: /etc/munin/plugins/smart_*, /etc/munin/plugins/sensors_*
   handlers:
   - name: reload autofs
-    service: name=ipvsadm state=reloaded
+    service: name=autofs state=reloaded
