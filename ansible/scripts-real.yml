@@ -9,8 +9,8 @@
   # TODO: Configure nrpe with realserver-specific checks
   # TODO: Configure aliases with blocked accounts and procmail for root
   tasks:
-  - name: Install hesiod
-    dnf: name=hesiod-devel state=present
+  #- name: Install hesiod
+  #  dnf: name=hesiod-devel state=present
   - name: Configure hesiod
     copy:
       dest: /etc/hesiod.conf
