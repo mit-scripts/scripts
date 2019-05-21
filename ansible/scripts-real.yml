@@ -7,3 +7,15 @@
     - munin-node
     - nrpe
   # TODO: Configure nrpe with realserver-specific checks
+  tasks:
+  - name: Install autofs
+    dnf: name=autofs state=present
+  - name: Configure autofs
+    copy:
+      dest: /etc/auto.master
+      content: |
+        /mit hesiod:hesiod
+    notify: reload autofs
+  handlers:
+  - name: reload autofs
+    service: name=ipvsadm state=reloaded
