@@ -17,3 +17,13 @@
       {% for maintainer in maintainers %}
       {{ maintainer.username }}/root@ATHENA.MIT.EDU
       {% endfor %}
+- name: Install Kerberos utilities
+  block:
+    - apt: name=krb5-user state=present
+      when: ansible_os_family == "Debian"
+    - dnf: name=krb5-workstation state=present
+      when: ansible_os_family == "RedHat"
+- name: Configure Kerberos
+  copy:
+    dest: /etc/krb5.conf
+    src: krb5.conf
