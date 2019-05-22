@@ -10,22 +10,26 @@
   # TODO: Configure nrpe with realserver-specific checks
   # TODO: Configure aliases with blocked accounts and procmail for root
   tasks:
-  #- name: Install hesiod
-  #  dnf: name=hesiod-devel state=present
-  - name: Configure hesiod
-    copy:
-      dest: /etc/hesiod.conf
-      content: |
-        rhs=.ATHENA.MIT.EDU
-        lhs=.ns
-  - name: Install autofs
-    dnf: name=autofs state=present
-  - name: Configure autofs
-    copy:
-      dest: /etc/auto.master
-      content: |
-        /mit hesiod:hesiod
-    notify: reload autofs
+  - name: Hesiod
+    block:
+    #- name: Install hesiod
+    #  dnf: name=hesiod-devel state=present
+    - name: Configure hesiod
+      copy:
+        dest: /etc/hesiod.conf
+        content: |
+          rhs=.ATHENA.MIT.EDU
+          lhs=.ns
+  - name: autofs
+    block:
+    - name: Install autofs
+      dnf: name=autofs state=present
+    - name: Configure autofs
+      copy:
+        dest: /etc/auto.master
+        content: |
+          /mit hesiod:hesiod
+      notify: reload autofs
   - name: Configure sudoers
     copy:
       dest: /etc/sudoers.d/scripts
@@ -62,6 +66,22 @@
       - IgnoreUserKnownHosts yes
       - DenyUsers {{ groups['scripts-real'] | map('regex_replace', '^', 'root@') | join(' ') }}
     notify: reload ssh
+  - name: mock
+    block:
+    - name: Install mock
+      dnf: name=mock state=present
+    - name: Restrict mock to root
+      block:
+        - lineinfile:
+            path: /etc/pam.d/mock
+            insertafter: EOF
+            line: "{{ item }}"
+          loop:
+            - "auth	required	pam_deny.so"
+            - "account	required	pam_deny.so"
+        - replace:
+            path: /etc/pam.d/mock
+            regexp: '^(auth|account)\s+.*\s+system-auth'
   handlers:
   - name: reload autofs
     service: name=autofs state=reloaded
