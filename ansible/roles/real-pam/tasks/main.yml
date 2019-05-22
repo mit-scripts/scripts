@@ -26,3 +26,8 @@
     - issue.net
     - issue.net.no_tkt
     - issue.net.no_user
+- name: Configure sshd for ChallengeResponseAuthentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '(?i)^#?\s*ChallengeResponseAuthentication\s'
+    line: "ChallengeResponseAuthentication yes"

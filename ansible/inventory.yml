@@ -71,3 +71,4 @@ all:
         ansible_python_interpreter: /usr/bin/python3
       hosts:
         quentin-scripts-f30.xvm.mit.edu: {}
+        scripts-f30-test.xvm.mit.edu: {}

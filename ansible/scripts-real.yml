@@ -40,6 +40,27 @@
 
         munin ALL=(root) SETENV: NOPASSWD: /etc/munin/plugins/postfix_mailqueue , /etc/munin/plugins/postfix_mailvolume , /etc/munin/plugins/hddtemp_smartctl , /etc/munin/plugins/sendmail* , /etc/munin/plugins/if_* , /etc/munin/plugins/if_err_eth2
         munin ALL=(root) NOPASSWD: /etc/munin/plugins/smart_*, /etc/munin/plugins/sensors_*
+  - name: Configure sshd for scripts
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '(?i)^#?\s*{{ item | regex_search("^(\S+)") }}\s'
+      line: "{{ item }}"
+    loop:
+      # "PasswordAuthentication no" and "GSSAPIAuthentication yes" comes from the k5login role
+      # "ChallengeResponseAuthentication yes" comes from the real-pam role
+      - GSSAPICleanupCredentials yes
+      - GSSAPIStrictAcceptorCheck no
+      - GSSAPIKeyExchange yes
+      - X11Forwarding no
+      - Banner /etc/issue.net
+      - LogLevel VERBOSE
+      - MaxStartups 50:30:500
+      - AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION LC_ALL EDITOR VISUAL
+      # See trac #23
+      - HostbasedAuthentication yes
+      - IgnoreRhosts yes
+      - IgnoreUserKnownHosts yes
+      - DenyUsers {{ groups['scripts-real'] | map('regex_replace', '^', 'root@') | join(' ') }}
   handlers:
   - name: reload autofs
     service: name=autofs state=reloaded
