@@ -1,0 +1,24 @@
+---
+- name: Install mock
+  dnf: name=mock state=present
+- name: Restrict mock to root
+  block:
+  - lineinfile:
+      path: /etc/pam.d/mock
+      insertafter: EOF
+      line: "{{ item }}"
+    loop:
+      - "auth	required	pam_deny.so"
+      - "account	required	pam_deny.so"
+  - replace:
+      path: /etc/pam.d/mock
+      regexp: '^(auth|account)\s+.*\s+system-auth'
+- name: Configure mock chroots
+  vars:
+    releasever: "{{ item[0] }}"
+    arch: "{{ item[1] }}"
+  template:
+    src: chroot.cfg.j2
+    dest: /etc/mock/scripts-fc{{ releasever }}-{{ arch }}.cfg
+  loop:
+    - ["30", "x86_64" ]
