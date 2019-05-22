@@ -16,13 +16,13 @@
   replace:
     path: /etc/pam.d/sshd
     after: 'pam_deny.so'
-    regexp: '^auth\s(.+)$'
+    regexp: '^(auth\s.+)$'
     replace: '# \1'
-- name: Install /etc/{{ item }}
+- name: Install /etc/issue.net*
   copy:
     dest: "/etc/{{ item }}"
     src: "{{ item }}"
-  with_items:
-    issue.net
-    issue.net.no_tkt
-    issue.net.no_user
+  loop:
+    - issue.net
+    - issue.net.no_tkt
+    - issue.net.no_user
