@@ -1,0 +1,28 @@
+---
+- name: Configure sshd to print helpful warnings
+  blockinfile:
+    path: /etc/pam.d/sshd
+    insertafter: "#%PAM-1.0"
+    block: |
+      # If their user exists (success),
+      auth	[success=ignore ignore=ignore default=1]	pam_succeed_if.so uid >= 0
+      # print the "You don't have tickets" error:
+      auth	[success=die ignore=reset default=die]	pam_echo.so file=/etc/issue.net.no_tkt
+      # else print the "your account doesn't exist" error:
+      auth	[success=die ignore=reset default=die]	pam_echo.so file=/etc/issue.net.no_user
+      # If they somehow slipped through, deny:
+      auth	required	pam_deny.so
+- name: Remove all other auth methods
+  replace:
+    path: /etc/pam.d/sshd
+    after: 'pam_deny.so'
+    regexp: '^auth\s(.+)$'
+    replace: '# \1'
+- name: Install /etc/{{ item }}
+  copy:
+    dest: "/etc/{{ item }}"
+    src: "{{ item }}"
+  with_items:
+    issue.net
+    issue.net.no_tkt
+    issue.net.no_user
