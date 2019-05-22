@@ -31,3 +31,4 @@
     path: /etc/ssh/sshd_config
     regexp: '(?i)^#?\s*ChallengeResponseAuthentication\s'
     line: "ChallengeResponseAuthentication yes"
+  notify: reload ssh
