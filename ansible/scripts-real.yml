@@ -67,6 +67,11 @@
       - IgnoreUserKnownHosts yes
       - DenyUsers {{ groups['scripts-real'] | map('regex_replace', '^', 'root@') | join(' ') }}
     notify: reload ssh
+  - name: Limit Java memory
+    lineinfile:
+      path: /etc/environment
+      line: JAVA_TOOL_OPTIONS="-Xmx128M -XX:MaxPermSize=64M"
+      regexp: '^JAVA_TOOL_OPTIONS='
   handlers:
   - name: reload autofs
     service: name=autofs state=reloaded

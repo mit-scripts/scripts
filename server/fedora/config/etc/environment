@@ -1,1 +1,0 @@
-JAVA_TOOL_OPTIONS="-Xmx128M -XX:MaxPermSize=64M"
