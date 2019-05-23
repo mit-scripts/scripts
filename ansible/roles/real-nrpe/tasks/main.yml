@@ -1,0 +1,5 @@
+---
+- name: Install NRPE plugins
+  copy: 
+    src: plugins/
+    dest: /etc/nagios/

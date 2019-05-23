@@ -1,0 +1,19 @@
+---
+nrpe_checks:
+  check_users: /usr/lib64/nagios/plugins/check_users -w 25 -c 50
+  check_load: /usr/lib64/nagios/plugins/check_load -w 50:50:50 -c 100:50:50
+  check_disk: /usr/lib64/nagios/plugins/check_disk -w 10% -c 5% -A -i ^/mnt
+  check_procs_cpu: /usr/lib64/nagios/plugins/check_procs -w 4 -c 6 -P 50
+  check_procs_crond: "/usr/lib64/nagios/plugins/check_procs -w 1: -c 1: -C crond"
+  check_procs_nscd: /usr/lib64/nagios/plugins/check_procs -w 1:256 -c 1:512 -u nscd
+  check_procs_postfix: /usr/lib64/nagios/plugins/check_procs -w 1:128 -c 1:256 -u postfix
+  check_postfix_mailq: /usr/lib64/nagios/plugins/check_mailq -w 5000 -c 10000 -M postfix
+  check_afs: /etc/nagios/check_afs
+  check_afs_athena: /etc/nagios/check_afs athena
+  check_afs_sipb: /etc/nagios/check_afs sipb
+  check_cron_working: /etc/nagios/check_cron_working
+  check_ldap_mmr: /etc/nagios/check_ldap_mmr
+  check_kern_taint: /etc/nagios/check_kern_taint
+  check_backend: /usr/lib64/nagios/plugins/check_ping -H 172.21.0.52 -w 500.0,30% -c 3000.0,80%   # sql.mit.edu backend IP
+  check_smtp: /usr/lib64/nagios/plugins/check_smtp -H localhost -f scripts@mit.edu -C 'RCPT TO:<scripts@mit.edu>' -R 250
+  check_mail_dnsrbl: /etc/nagios/check_mail_dnsrbl -w 3 -c 4 -h `hostname`

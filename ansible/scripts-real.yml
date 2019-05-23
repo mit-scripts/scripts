@@ -5,10 +5,9 @@
     - syslog-client
     - root-aliases
     - munin-node
-    - nrpe
+    - real-nrpe
     - real-pam
     - mock
-  # TODO: Configure nrpe with realserver-specific checks
   # TODO: Configure aliases with blocked accounts and procmail for root
   tasks:
   - name: Hesiod
@@ -75,7 +74,7 @@
   - name: Configure resource limits
     copy:
       dest: /etc/security/limits.d/scripts
-      contents: |
+      content: |
         # No limits for root
         root             -
         scripts-build    -
