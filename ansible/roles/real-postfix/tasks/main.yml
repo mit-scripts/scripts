@@ -6,6 +6,10 @@
     src: postfix/
     dest: /etc/postfix/
   notify: reload postfix
+- name: Install main.cf
+  template:
+    src: main.cf.j2
+    dest: /etc/postfix/main.cf
 - name: Ensure /etc/scripts exists
   file:
     path: /etc/scripts/
