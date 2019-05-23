@@ -72,6 +72,19 @@
       path: /etc/environment
       line: JAVA_TOOL_OPTIONS="-Xmx128M -XX:MaxPermSize=64M"
       regexp: '^JAVA_TOOL_OPTIONS='
+  - name: Configure resource limits
+    copy:
+      dest: /etc/security/limits.d/scripts
+      contents: |
+        # No limits for root
+        root             -
+        scripts-build    -
+
+        # For everyone else,
+        *                soft    core            0
+        *                -       rss             524268
+        *                -       data            1048576
+        *                -       as              1572864
   handlers:
   - name: reload autofs
     service: name=autofs state=reloaded
