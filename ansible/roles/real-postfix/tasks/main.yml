@@ -1,11 +1,10 @@
 ---
 - name: Install postfix
   dnf:
-    name: "{{ item }}"
+    name:
+      - postfix
+      - postfix-ldap
     state: present
-  with_items:
-    - postfix
-    - postfix-ldap
   notify: reload postfix
 - name: Install postfix configuration files
   copy:
