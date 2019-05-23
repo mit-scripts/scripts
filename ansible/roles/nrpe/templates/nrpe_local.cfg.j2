@@ -1,4 +1,4 @@
 allowed_hosts=18.4.60.65
-{% for name, command in nrpe_checks.items() %}
+{% for name, command in nrpe_checks | dictsort %}
 command[{{ name }}]={{ command }}
 {% endfor %}
