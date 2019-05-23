@@ -27,6 +27,7 @@ all:
       ip: 18.4.86.43
       cidr_netmask: 24
       nic: vlan486
+      mail: True
     - host: scripts-cert-new.mit.edu
       ip: 18.4.86.50
       cidr_netmask: 24
@@ -35,6 +36,7 @@ all:
       ip: 18.4.86.46
       cidr_netmask: 24
       nic: vlan486
+      mail: True
     - host: scripts-test-new.mit.edu
       ip: 18.4.86.229
       cidr_netmask: 24
@@ -69,6 +71,10 @@ all:
     scripts-real:
       vars:
         ansible_python_interpreter: /usr/bin/python3
+        vips:
+          - host: scripts-test.mit.edu
+            ip: 18.4.86.229
+            cidr_netmask: 24
       hosts:
         quentin-scripts-f30.xvm.mit.edu: {}
         scripts-f30-test.xvm.mit.edu: {}
