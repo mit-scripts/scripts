@@ -7,6 +7,7 @@
     - munin-node
     - real-nrpe
     - real-pam
+    - real-postfix
     - mock
   # TODO: Configure aliases with blocked accounts and procmail for root
   tasks:
