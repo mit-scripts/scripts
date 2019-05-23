@@ -6,6 +6,10 @@
     src: postfix/
     dest: /etc/postfix/
   notify: reload postfix
+- name: Ensure /etc/scripts exists
+  file:
+    path: /etc/scripts/
+    state: directory
 - name: Install root's procmailrc
   template:
     src: root-procmailrc.j2
