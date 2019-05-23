@@ -14,4 +14,9 @@
   template:
     src: root-procmailrc.j2
     dest: /etc/scripts/root-procmailrc
+- name: Enable postfix
+  service:
+    name: postfix
+    enabled: yes
+    state: started
 # TODO: Move blocked users from /etc/aliases into LDAP as scriptsMailboxCommand: /bin/false
