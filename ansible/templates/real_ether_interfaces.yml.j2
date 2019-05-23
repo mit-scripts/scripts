@@ -1,0 +1,7 @@
+{% for vip in vips %}
+- device: lo:{{ loop.index }}
+  bootproto: static
+  address: {{ vip.ip }}
+  netmask: {{ (vip.ip + "/" + (vip.cidr_netmask | string)) | ipaddr('netmask') }}
+  onboot: True
+{% endfor %}

@@ -1,5 +1,12 @@
 - hosts: scripts-real
   serial: 1
+  vars:
+    network_ether_interfaces: "{{ lookup('template', 'templates/real_ether_interfaces.yml.j2') | from_yaml }}"
+  pre_tasks:
+    - include_role:
+        name: network_interface
+      vars:
+        network_check_packages: False
   roles:
     - k5login
     - syslog-client
