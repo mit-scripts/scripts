@@ -1,0 +1,13 @@
+---
+- name: Install postfix
+  dnf: name=postfix state=present
+- name: Install postfix configuration files
+  copy:
+    src: postfix/
+    dest: /etc/postfix/
+  notify: reload postfix
+- name: Install root's procmailrc
+  template:
+    src: root-procmailrc.j2
+    dest: /etc/scripts/root-procmailrc
+# TODO: Move blocked users from /etc/aliases into LDAP as scriptsMailboxCommand: /bin/false

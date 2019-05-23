@@ -1,0 +1,6 @@
+server_host = ldapi://%2fvar%2frun%2fslapd-scripts.socket/
+search_base = ou=People,dc=scripts,dc=mit,dc=edu
+query_filter = (&(objectClass=posixAccount)(uid=%s))
+result_attribute = scriptsMailboxCommand
+bind = no
+version = 3
