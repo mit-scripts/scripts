@@ -1,4 +1,4 @@
-server_host = ldapi://%2fvar%2frun%2fslapd-scripts.socket/
+server_host = {{ ldap_server }}
 search_base = ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
 query_filter = (&(objectClass=scriptsVhost)(|(scriptsVhostName=%d)(scriptsVhostAlias=%d))(!(scriptsVhostName=scripts.mit.edu))(scriptsReservedMail=%u))
 result_attribute = scriptsVhostName
