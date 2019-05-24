@@ -1,0 +1,3 @@
+---
+- name: restart nslcd
+  service: name=nslcd state=reloaded

@@ -3,7 +3,7 @@
   dnf:
     name:
       - nscd
-      - nslcd
+      - nss-pam-ldapd
     state: present
 - name: Configure nscd for caching
   lineinfile:
@@ -20,3 +20,27 @@
     - suggested-size group 1999
     - persistent group no
     - suggested-size hosts 1999
+- name: Enable nscd
+  service:
+    name: nscd
+    enabled: yes
+    state: started
+- name: Configure nslcd
+  copy:
+    dest: /etc/nslcd.conf
+    content: |
+      uid nslcd
+      gid ldap
+      uri {{ ldap_server }}
+      base dc=scripts,dc=mit,dc=edu
+      base   group  ou=Groups,dc=scripts,dc=mit,dc=edu
+      base   passwd ou=People,dc=scripts,dc=mit,dc=edu
+      timelimit 120
+      bind_timelimit 120
+      idle_timelimit 3600
+  notify: restart nslcd
+- name: Enable nslcd
+  service:
+    name: nslcd
+    enabled: yes
+    state: started

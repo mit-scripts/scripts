@@ -2,6 +2,7 @@
   serial: 1
   vars:
     network_ether_interfaces: "{{ lookup('template', 'templates/real_ether_interfaces.yml.j2') | from_yaml }}"
+    ldap_server: "{{ run_local_ldap | default(True) | ternary('ldapi://%2fvar%2frun%2fslapd-scripts.socket/', 'ldap://scripts-ldap.mit.edu/') }}"
   pre_tasks:
     - include_role:
         name: network_interface
@@ -13,6 +14,7 @@
     - root-aliases
     - munin-node
     - real-nrpe
+    - real-nss
     - real-pam
     - real-postfix
     - mock
