@@ -20,6 +20,7 @@
     - virtual-alias-domains-ldap.cf
     - virtual-alias-maps-ldap-reserved.cf
     - virtual-alias-maps-ldap.cf
+  notify: reload postfix
 - name: Install main.cf
   template:
     src: main.cf.j2
