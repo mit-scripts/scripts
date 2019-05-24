@@ -11,7 +11,7 @@
 # value we were queried with (the domain whose mail we host).  Protocol
 # version 3 is necessary to use ldapi.
 
-server_host = ldapi://%2fvar%2frun%2fslapd-scripts.socket/
+server_host = {{ ldap_server }}
 search_base = ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
 query_filter = (&(objectClass=scriptsVhost)(|(scriptsVhostName=%s)(scriptsVhostAlias=%s))(!(scriptsVhostName=scripts.mit.edu)))
 result_attribute = scriptsVhostName

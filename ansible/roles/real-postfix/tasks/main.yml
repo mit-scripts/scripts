@@ -11,6 +11,15 @@
     src: postfix/
     dest: /etc/postfix/
   notify: reload postfix
+- name: Install postfix LDAP configuration
+  template:
+    src: "postfix/{{ item }}.j2"
+    dest: /etc/postfix/{{ item }}
+  loop:
+    - mailbox-command-maps-ldap.cf
+    - virtual-alias-domains-ldap.cf
+    - virtual-alias-maps-ldap-reserved.cf
+    - virtual-alias-maps-ldap.cf
 - name: Install main.cf
   template:
     src: main.cf.j2

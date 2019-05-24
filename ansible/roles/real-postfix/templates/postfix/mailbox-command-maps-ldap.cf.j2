@@ -1,4 +1,4 @@
-server_host = ldapi://%2fvar%2frun%2fslapd-scripts.socket/
+server_host = {{ ldap_server }}
 search_base = ou=People,dc=scripts,dc=mit,dc=edu
 query_filter = (&(objectClass=posixAccount)(uid=%s))
 result_attribute = scriptsMailboxCommand
