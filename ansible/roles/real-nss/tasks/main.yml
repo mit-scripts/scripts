@@ -44,3 +44,17 @@
     name: nslcd
     enabled: yes
     state: started
+# TODO: Install nss-nonlocal
+- name: Create authselect profile
+  copy:
+    dest: /etc/authselect/custom/scripts/
+    src: authselect/
+- name: Get current authselect profile
+  command:
+    /usr/bin/authselect current -r
+  check_mode: no
+  register: authselect_current
+- name: Switch authselect profile
+  command:
+    /usr/bin/authselect select scripts
+  when: authselect_current.stdout != "scripts"
