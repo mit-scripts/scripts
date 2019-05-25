@@ -4,6 +4,7 @@
     name:
       - postfix
       - postfix-ldap
+      - procmail
     state: present
   notify: reload postfix
 - name: Install postfix configuration files
