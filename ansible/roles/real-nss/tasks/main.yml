@@ -8,7 +8,7 @@
 - name: Configure nscd for caching
   lineinfile:
     path: /etc/nscd.conf
-    regexp: '(?i)^#?\s*{{ item | regex_search("^(\S+)") }}\s*{{ item | regex_search("^\s*\S+\s*(passwd|group|hosts|services|netgroup)") }}\s'
+    regexp: '(?i)^#?\s*{{ item | regex_search("^(\S+)") }}\s*{{ item | regex_search("^\s*\S+\s*(passwd|group|hosts|services|netgroup)", "\\1") }}\s'
     line: "{{ item }}"
   loop:
     - threads 32
