@@ -8,7 +8,7 @@
 - name: Configure nscd for caching
   lineinfile:
     path: /etc/nscd.conf
-    regexp: '(?i)^#?\s*{{ item | regex_search("^(\S+)") }}\s*{{ item | regex_search("^\s*\S+\s*(passwd|group|hosts|services|netgroup)", "\\1") }}\s'
+    regexp: '(?i)^#?\s*{{ item.split()[0] }}\s+{{ (item.split()[1] in ("passwd group hosts services netgroup").split()) | ternary(item.split()[1] + "\s+", "") }}'
     line: "{{ item }}"
   loop:
     - threads 32
@@ -58,6 +58,7 @@
   command:
     /usr/bin/authselect current -r
   check_mode: no
+  changed_when: False
   register: authselect_current
 - name: Switch authselect profile
   command:
