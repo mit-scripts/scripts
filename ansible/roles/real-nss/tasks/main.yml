@@ -20,6 +20,7 @@
     - suggested-size group 1999
     - persistent group no
     - suggested-size hosts 1999
+  notify: reload nscd
 - name: Enable nscd
   service:
     name: nscd
