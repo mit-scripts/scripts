@@ -49,6 +49,10 @@
   copy:
     dest: /etc/authselect/custom/scripts/
     src: authselect/
+- name: Configure nsswitch
+  template:
+    dest: /etc/authselect/custom/scripts/nsswitch.conf
+    src: nsswitch.conf.j2
 - name: Get current authselect profile
   command:
     /usr/bin/authselect current -r

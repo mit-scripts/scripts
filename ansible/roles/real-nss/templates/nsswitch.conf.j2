@@ -1,8 +1,8 @@
-passwd:     files nonlocal
-passwd_nonlocal: ldap
+passwd:     files {% if use_nss_nonlocal %}nonlocal
+passwd_nonlocal: {% endif %}ldap
 shadow:     files
-group:      files nonlocal
-group_nonlocal: ldap
+group:      files {% if use_nss_nonlocal %}nonlocal
+group_nonlocal: {% endif %}ldap
 hosts:      files dns myhostname
 
 ethers:     files
