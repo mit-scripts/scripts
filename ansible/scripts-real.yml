@@ -100,6 +100,15 @@
         *                -       rss             524268
         *                -       data            1048576
         *                -       as              1572864
+  - name: Enable per-user logs
+    ini_file:
+      path: /etc/systemd/journald.conf
+      section: Journal
+      option: SplitMode
+      value: uid
+    notify: restart journald
   handlers:
   - name: reload autofs
     service: name=autofs state=reloaded
+  - name: restart journald
+    service: name=systemd-journald state=restarted
