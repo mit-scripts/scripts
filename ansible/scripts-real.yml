@@ -14,8 +14,8 @@
     - root-aliases
     - munin-node
     - real-nrpe
-    - real-nss
-    - real-pam
+    - real-nsspam
+    - real-sshd
     - real-postfix
     - mock
   # TODO: Configure aliases with blocked accounts and procmail for root
