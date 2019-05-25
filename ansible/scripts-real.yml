@@ -30,6 +30,7 @@
         content: |
           rhs=.ATHENA.MIT.EDU
           lhs=.ns
+  # TODO: Find package that provides lookup_hesiod.so or switch to another automounter
   - name: autofs
     block:
     - name: Install autofs
@@ -40,6 +41,11 @@
         content: |
           /mit hesiod:hesiod
       notify: reload autofs
+    - name: Enable autofs
+      service:
+        name: autofs
+        enabled: yes
+        state: started
   - name: Configure sudoers
     copy:
       dest: /etc/sudoers.d/scripts
