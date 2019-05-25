@@ -102,6 +102,7 @@
         *                -       as              1572864
   - name: Enable per-user logs
     ini_file:
+      no_extra_spaces: yes
       path: /etc/systemd/journald.conf
       section: Journal
       option: SplitMode
