@@ -19,7 +19,7 @@
 # See /COPYRIGHT in this repository for more information.
 
 FEDORA		= fc$(shell lsb_release -rs)
-upstream_yum	= krb5 krb5.i686 httpd openssh libgsasl openssl openssl.i686 389-ds-base
+upstream_yum	= krb5-libs krb5-libs.i686 httpd openssh libgsasl openssl-libs openssl-libs.i686 389-ds-base
 hackage		= cgi-3001.1.8.5 unix-handle-0.0.0
 upstream_hackage = ghc-cgi ghc-unix-handle
 gems		= pony:1.8 fcgi:0.9.2.1

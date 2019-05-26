@@ -1,9 +1,12 @@
 ---
-- name: Install mock
+- name: Install mock and build dependencies
   dnf:
     name:
       - mock
       - redhat-lsb-core
+      - rpmdevtools
+      - cabal-install
+      - rubygems
     state: present
 - name: Restrict mock to root
   block:
