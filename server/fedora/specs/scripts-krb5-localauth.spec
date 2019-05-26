@@ -26,19 +26,19 @@ See http://scripts.mit.edu/wiki for more information.
 
 %build
 autoreconf -fvi
-%configure --prefix=/usr/local
+%configure
 make
 
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
+make install DESTDIR=$RPM_BUILD_ROOT
 
 %clean
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(0755, root, root)
-/usr/local/lib/libscripts-krb5-localauth.so
+/usr/lib64/libscripts-krb5-localauth.*
 
 %changelog
 * Sun May 26 2019  Quentin Smith <quentin@MIT.EDU> 0.00
