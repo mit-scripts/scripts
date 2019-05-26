@@ -30,3 +30,19 @@
     dest: /etc/mock/scripts-fc{{ releasever }}-{{ arch }}.cfg
   loop:
     - ["30", "x86_64" ]
+- name: Create local RPM repo
+  file:
+    path: /home/scripts-build/mock-local/
+    owner: scripts-build
+    state: directory
+- stat:
+    path: /home/scripts-build/mock-local/
+  register: rpm_st
+- stat:
+    path: /home/scripts-build/mock-local/repodata/repomd.xml
+  register: md_st
+- name: Generate repo metadata
+  command: /usr/bin/createrepo /home/scripts-build/mock-local/
+  become: yes
+  become_user: scripts-build
+  when: (not md_st.stat.exists) or (rpm_st.stat.mtime > md_st.stat.mtime)
