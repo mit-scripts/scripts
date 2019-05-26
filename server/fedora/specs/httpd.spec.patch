@@ -1,19 +1,18 @@
---- httpd.spec.~1~	2014-07-23 06:24:15.000000000 -0400
-+++ httpd.spec	2014-10-09 03:26:23.922059553 -0400
-@@ -15,7 +15,7 @@
+--- httpd.spec.~1~	2019-05-25 23:57:46.000000000 -0400
++++ httpd.spec	2019-05-26 00:02:03.000000000 -0400
+@@ -13,7 +13,7 @@
  Summary: Apache HTTP Server
  Name: httpd
- Version: 2.4.10
--Release: 2%{?dist}
-+Release: 2%{?dist}.scripts.%{scriptsversion}
- URL: http://httpd.apache.org/
- Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
+ Version: 2.4.39
+-Release: 4%{?dist}
++Release: 4%{?dist}.scripts.%{scriptsversion}
+ URL: https://httpd.apache.org/
+ Source0: https://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
  Source1: index.html
-@@ -65,6 +65,16 @@
- Patch101: httpd-2.4.6-CVE-2014-3581.patch
- Patch102: httpd-2.4.10-CVE-2014-3583.patch
- Patch103: httpd-2.4.10-CVE-2014-8109.patch
-+
+@@ -86,6 +86,15 @@
+ 
+ # Security fixes
+ 
 +Patch1001: httpd-suexec-scripts.patch
 +Patch1002: httpd-mod_status-security.patch
 +Patch1003: httpd-304s.patch
@@ -24,35 +23,35 @@
 +Patch1008: httpd-suexec-CVE-2016-5387.patch
 +
  License: ASL 2.0
- Group: System Environment/Daemons
- BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-@@ -77,6 +86,7 @@
+ BuildRequires: gcc, autoconf, pkgconfig, findutils, xmlto
+ BuildRequires: perl-interpreter, perl-generators, systemd-devel
+@@ -96,6 +105,7 @@
  Provides: webserver
  Provides: mod_dav = %{version}-%{release}, httpd-suexec = %{version}-%{release}
- Provides: httpd-mmn = %{mmn}, httpd-mmn = %{mmnisa}, httpd-mmn = %{oldmmnisa}
+ Provides: httpd-mmn = %{mmn}, httpd-mmn = %{mmnisa}
 +Provides: scripts-httpd = %{version}-%{release}
  Requires: httpd-tools = %{version}-%{release}
- Requires(pre): /usr/sbin/useradd
- Requires(preun): systemd-units
-@@ -94,6 +104,7 @@
- Obsoletes: secureweb-devel, apache-devel, stronghold-apache-devel
+ Requires: httpd-filesystem = %{version}-%{release}
+ Requires: mod_http2
+@@ -115,6 +125,7 @@
+ Summary: Development interfaces for the Apache HTTP Server
  Requires: apr-devel, apr-util-devel, pkgconfig
  Requires: httpd = %{version}-%{release}
 +Provides: scripts-httpd-devel = %{version}-%{release}
  
  %description devel
  The httpd-devel package contains the APXS binary and other files
-@@ -132,6 +143,7 @@
- Requires(post): openssl, /bin/cat
- Requires(pre): httpd
+@@ -159,6 +170,7 @@
+ Requires(pre): httpd-filesystem
  Requires: httpd = 0:%{version}-%{release}, httpd-mmn = %{mmnisa}
+ Requires: sscg >= 2.2.0
 +Provides: scripts-mod_ssl
- Obsoletes: stronghold-mod_ssl
+ # Require an OpenSSL which supports PROFILE=SYSTEM
+ Conflicts: openssl-libs < 1:1.0.1h-4
  
- %description -n mod_ssl
-@@ -190,6 +202,15 @@
- %patch55 -p1 -b .malformedhost
- %patch56 -p1 -b .uniqueid
+@@ -232,6 +244,15 @@
+ %patch60 -p1 -b .enable-sslv3
+ %patch61 -p1 -b .r1857129
  
 +%patch1001 -p1 -b .suexec-scripts
 +%patch1002 -p1 -b .mod_status-security
@@ -66,7 +65,7 @@
  # Patch in the vendor string
  sed -i '/^#define PLATFORM/s/Unix/%{vstring}/' os/unix/os.h
  
-@@ -242,11 +262,13 @@
+@@ -310,11 +331,13 @@
  	--enable-suexec --with-suexec \
          --enable-suexec-capabilities \
  	--with-suexec-caller=%{suexec_caller} \
@@ -77,14 +76,14 @@
 +	--with-suexec-userdir=web_scripts \
 +	--with-suexec-trusteddir=/usr/libexec/scripts-trusted \
 +	--with-suexec-logfile=%{_localstatedir}/log/httpd/suexec.log \
-+        --without-suexec-syslog \
++	--without-suexec-syslog \
  	--with-suexec-bin=%{_sbindir}/suexec \
--	--with-suexec-uidmin=500 --with-suexec-gidmin=100 \
+-	--with-suexec-uidmin=1000 --with-suexec-gidmin=1000 \
 +	--with-suexec-uidmin=50 --with-suexec-gidmin=50 \
+         --with-brotli \
          --enable-pie \
          --with-pcre \
-         --enable-mods-shared=all \
-@@ -542,7 +564,8 @@
+@@ -634,7 +657,8 @@
  %{_sbindir}/fcgistarter
  %{_sbindir}/apachectl
  %{_sbindir}/rotatelogs
