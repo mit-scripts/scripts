@@ -8,6 +8,21 @@
         name: network_interface
       vars:
         network_check_packages: False
+    - name: Configure scripts RPM repos
+      copy:
+        dest: /etc/yum.repos.d/scripts.repo
+        content: |
+          [scripts]
+          name=Scripts
+          baseurl=http://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}/
+          enabled=1
+          gpgcheck=0
+
+          [scripts-testing]
+          name=Scripts Testing
+          baseurl=http://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}-testing/
+          enabled=0
+          gpgcheck=0
   roles:
     - k5login
     - syslog-client
