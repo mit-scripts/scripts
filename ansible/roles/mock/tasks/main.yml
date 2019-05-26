@@ -7,6 +7,7 @@
       - rpmdevtools
       - cabal-install
       - rubygems
+      - autoconf
     state: present
 - name: Restrict mock to root
   block:
