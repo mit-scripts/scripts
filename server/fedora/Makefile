@@ -18,6 +18,7 @@
 #
 # See /COPYRIGHT in this repository for more information.
 
+FEDORA		= fc$(shell lsb_release -rs)
 upstream_yum	= krb5 krb5.i686 httpd openssh libgsasl openssl openssl.i686 389-ds-base
 hackage		= cgi-3001.1.8.5 unix-handle-0.0.0
 upstream_hackage = ghc-cgi ghc-unix-handle
@@ -143,12 +144,12 @@ $(oursrc): rpmbuild_args += --define 'scriptsversion $(scriptsversion)'
 $(filter %.i686,$(oursrc)): %.i686: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc20-i386 --arch=i686 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-${FEDORA}-i386 --arch=i686 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(filter-out %.i686,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc20-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(upstream) openafs-kernel: rpmbuild_args += --define 'scriptsversion $(scriptsversion)'
 
@@ -156,18 +157,18 @@ kernel: rpmbuild_args += --define 'buildid .scripts.%{scriptsversion}' --without
 
 $(filter %.i686,$(upstream)): %.i686: setup patch-specs
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc20-i386 --arch=i686 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-${FEDORA}-i386 --arch=i686 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(filter-out %.i686,$(upstream)): %: setup patch-specs
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-fc20-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 openafs-kernel: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/openafs*.spec
-	/usr/bin/mock -r scripts-fc27-`uname -m` --clean
-	/usr/bin/mock -r scripts-fc27-`uname -m` --install elfutils-libelf-devel
-	/usr/bin/mock -r scripts-fc27-`uname -m` --no-clean ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` --clean
+	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` --install elfutils-libelf-devel
+	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` --no-clean ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
 
 #sort -n sorts "2.6.25-1" later than "2.6.25.1-1", so it's Wrong
 #kernvers = $(shell rpm -q --qf "%{Version}-%{Release}\n" --whatprovides kernel | sort -n | tail -n1)
