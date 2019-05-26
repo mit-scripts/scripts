@@ -1,4 +1,4 @@
-AC_INIT([nss_nonlocal], [2.1], [andersk@mit.edu])
+AC_INIT([nss_nonlocal], [2.2], [andersk@mit.edu])
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])

@@ -77,8 +77,8 @@ static service_user *__nss_group_nonlocal_database;
 
 static int
 internal_function
-__nss_group_nonlocal_lookup(service_user **ni, const char *fct_name,
-			    void **fctp)
+__nss_group_nonlocal_lookup2(service_user **ni, const char *fct_name,
+			     const char *fct2_name, void **fctp)
 {
     if (__nss_group_nonlocal_database == NULL
 	&& __nss_database_lookup("group_nonlocal", NULL, NULL,
@@ -88,6 +88,8 @@ __nss_group_nonlocal_lookup(service_user **ni, const char *fct_name,
     *ni = __nss_group_nonlocal_database;
 
     *fctp = __nss_lookup_function(*ni, fct_name);
+    if (*fctp == NULL && fct2_name != NULL)
+	*fctp = __nss_lookup_function(*ni, fct2_name);
     return 0;
 }
 
@@ -100,7 +102,7 @@ check_nonlocal_gid(const char *user, const char *group, gid_t gid, int *errnop)
     char *buf;
     size_t buflen = sysconf(_SC_GETGR_R_SIZE_MAX);
     const struct walk_nss w = {
-	.lookup = &__nss_group_lookup, .fct_name = "getgrgid_r",
+	.lookup2 = &__nss_group_lookup2, .fct_name = "getgrgid_r",
 	.status = &status, .errnop = errnop, .buf = &buf, .buflen = &buflen
     };
     const __typeof__(&_nss_nonlocal_getgrgid_r) self = &_nss_nonlocal_getgrgid_r;
@@ -161,7 +163,7 @@ get_local_group(const char *name, struct group *grp, char **buffer, int *errnop)
     enum nss_status status;
     size_t buflen = sysconf(_SC_GETGR_R_SIZE_MAX);
     const struct walk_nss w = {
-	.lookup = &__nss_group_lookup, .fct_name = "getgrnam_r",
+	.lookup2 = &__nss_group_lookup2, .fct_name = "getgrnam_r",
 	.status = &status, .errnop = errnop, .buf = buffer, .buflen = &buflen
     };
     const __typeof__(&_nss_nonlocal_getgrnam_r) self = &_nss_nonlocal_getgrnam_r;
@@ -186,7 +188,7 @@ _nss_nonlocal_setgrent(int stayopen)
 {
     enum nss_status status;
     const struct walk_nss w = {
-	.lookup = &__nss_group_nonlocal_lookup, .fct_name = "setgrent",
+	.lookup2 = &__nss_group_nonlocal_lookup2, .fct_name = "setgrent",
 	.status = &status
     };
     const __typeof__(&_nss_nonlocal_setgrent) self = NULL;
@@ -197,8 +199,8 @@ _nss_nonlocal_setgrent(int stayopen)
 	return status;
 
     if (!grent_initialized) {
-	__nss_group_nonlocal_lookup(&grent_startp, grent_fct_name,
-				    &grent_fct_start);
+	__nss_group_nonlocal_lookup2(&grent_startp, grent_fct_name, NULL,
+				     &grent_fct_start);
 	__sync_synchronize();
 	grent_initialized = true;
     }
@@ -212,7 +214,7 @@ _nss_nonlocal_endgrent(void)
 {
     enum nss_status status;
     const struct walk_nss w = {
-	.lookup = &__nss_group_nonlocal_lookup, .fct_name = "endgrent",
+	.lookup2 = &__nss_group_nonlocal_lookup2, .fct_name = "endgrent",
 	.status = &status, .all_values = 1,
     };
     const __typeof__(&_nss_nonlocal_endgrent) self = NULL;
@@ -255,7 +257,8 @@ _nss_nonlocal_getgrent_r(struct group *grp, char *buffer, size_t buflen,
 
 	if (status == NSS_STATUS_SUCCESS)
 	    return NSS_STATUS_SUCCESS;
-    } while (__nss_next(&grent_nip, grent_fct_name, &grent_fct.ptr, status, 0) == 0);
+    } while (__nss_next2(&grent_nip, grent_fct_name, NULL, &grent_fct.ptr,
+			 status, 0) == 0);
 
     grent_nip = NULL;
     return NSS_STATUS_NOTFOUND;
@@ -268,7 +271,7 @@ _nss_nonlocal_getgrnam_r(const char *name, struct group *grp,
 {
     enum nss_status status;
     const struct walk_nss w = {
-	.lookup = &__nss_group_nonlocal_lookup, .fct_name = "getgrnam_r",
+	.lookup2 = &__nss_group_nonlocal_lookup2, .fct_name = "getgrnam_r",
 	.status = &status, .errnop = errnop
     };
     const __typeof__(&_nss_nonlocal_getgrnam_r) self = NULL;
@@ -297,7 +300,7 @@ _nss_nonlocal_getgrgid_r(gid_t gid, struct group *grp,
 {
     enum nss_status status;
     const struct walk_nss w = {
-	.lookup = &__nss_group_nonlocal_lookup, .fct_name = "getgrgid_r",
+	.lookup2 = &__nss_group_nonlocal_lookup2, .fct_name = "getgrgid_r",
 	.status = &status, .errnop = errnop
     };
     const __typeof__(&_nss_nonlocal_getgrgid_r) self = NULL;
@@ -360,7 +363,7 @@ _nss_nonlocal_initgroups_dyn(const char *user, gid_t group, long int *start,
 {
     enum nss_status status;
     const struct walk_nss w = {
-	.lookup = &__nss_group_nonlocal_lookup, .fct_name = "initgroups_dyn",
+	.lookup2 = &__nss_group_nonlocal_lookup2, .fct_name = "initgroups_dyn",
 	.status = &status, .all_values = 1, .errnop = errnop
     };
     const __typeof__(&_nss_nonlocal_initgroups_dyn) self = NULL;

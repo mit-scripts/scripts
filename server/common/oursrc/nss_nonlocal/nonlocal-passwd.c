@@ -54,8 +54,8 @@ static service_user *__nss_passwd_nonlocal_database;
 
 static int
 internal_function
-__nss_passwd_nonlocal_lookup(service_user **ni, const char *fct_name,
-			     void **fctp)
+__nss_passwd_nonlocal_lookup2(service_user **ni, const char *fct_name,
+			      const char *fct2_name, void **fctp)
 {
     if (__nss_passwd_nonlocal_database == NULL
 	&& __nss_database_lookup("passwd_nonlocal", NULL, NULL,
@@ -65,6 +65,8 @@ __nss_passwd_nonlocal_lookup(service_user **ni, const char *fct_name,
     *ni = __nss_passwd_nonlocal_database;
 
     *fctp = __nss_lookup_function(*ni, fct_name);
+    if (*fctp == NULL && fct2_name != NULL)
+	*fctp = __nss_lookup_function(*ni, fct2_name);
     return 0;
 }
 
@@ -77,7 +79,7 @@ check_nonlocal_uid(const char *user, uid_t uid, int *errnop)
     char *buf;
     size_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
     const struct walk_nss w = {
-	.lookup = &__nss_passwd_lookup, .fct_name = "getpwuid_r",
+	.lookup2 = &__nss_passwd_lookup2, .fct_name = "getpwuid_r",
 	.status = &status, .errnop = errnop, .buf = &buf, .buflen = &buflen
     };
     const __typeof__(&_nss_nonlocal_getpwuid_r) self = &_nss_nonlocal_getpwuid_r;
@@ -126,7 +128,7 @@ check_nonlocal_user(const char *user, int *errnop)
     char *buf;
     size_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
     const struct walk_nss w = {
-	.lookup = __nss_passwd_lookup, .fct_name = "getpwnam_r",
+	.lookup2 = __nss_passwd_lookup2, .fct_name = "getpwnam_r",
 	.status = &status, .errnop = errnop, .buf = &buf, .buflen = &buflen
     };
     const __typeof__(&_nss_nonlocal_getpwnam_r) self = &_nss_nonlocal_getpwnam_r;
@@ -151,7 +153,7 @@ get_nonlocal_passwd(const char *name, struct passwd *pwd, char **buffer,
     enum nss_status status;
     size_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
     const struct walk_nss w = {
-	.lookup = __nss_passwd_nonlocal_lookup, .fct_name = "getpwnam_r",
+	.lookup2 = __nss_passwd_nonlocal_lookup2, .fct_name = "getpwnam_r",
 	.status = &status, .errnop = errnop, .buf = buffer, .buflen = &buflen
     };
     const __typeof__(&_nss_nonlocal_getpwnam_r) self = NULL;
@@ -177,7 +179,7 @@ _nss_nonlocal_setpwent(int stayopen)
 {
     enum nss_status status;
     const struct walk_nss w = {
-	.lookup = &__nss_passwd_nonlocal_lookup, .fct_name = "setpwent",
+	.lookup2 = &__nss_passwd_nonlocal_lookup2, .fct_name = "setpwent",
 	.status = &status
     };
     const __typeof__(&_nss_nonlocal_setpwent) self = NULL;
@@ -188,8 +190,8 @@ _nss_nonlocal_setpwent(int stayopen)
 	return status;
 
     if (!pwent_initialized) {
-	__nss_passwd_nonlocal_lookup(&pwent_startp, pwent_fct_name,
-				     &pwent_fct_start);
+	__nss_passwd_nonlocal_lookup2(&pwent_startp, pwent_fct_name, NULL,
+				      &pwent_fct_start);
 	__sync_synchronize();
 	pwent_initialized = true;
     }
@@ -203,7 +205,7 @@ _nss_nonlocal_endpwent(void)
 {
     enum nss_status status;
     const struct walk_nss w = {
-	.lookup = &__nss_passwd_nonlocal_lookup, .fct_name = "endpwent",
+	.lookup2 = &__nss_passwd_nonlocal_lookup2, .fct_name = "endpwent",
 	.status = &status, .all_values = 1,
     };
     const __typeof__(&_nss_nonlocal_endpwent) self = NULL;
@@ -246,7 +248,8 @@ _nss_nonlocal_getpwent_r(struct passwd *pwd, char *buffer, size_t buflen,
 
 	if (status == NSS_STATUS_SUCCESS)
 	    return NSS_STATUS_SUCCESS;
-    } while (__nss_next(&pwent_nip, pwent_fct_name, &pwent_fct.ptr, status, 0) == 0);
+    } while (__nss_next2(&pwent_nip, pwent_fct_name, 0, &pwent_fct.ptr, status,
+                         0) == 0);
 
     pwent_nip = NULL;
     return NSS_STATUS_NOTFOUND;
@@ -260,7 +263,7 @@ _nss_nonlocal_getpwnam_r(const char *name, struct passwd *pwd,
     enum nss_status status;
     int group_errno;
     const struct walk_nss w = {
-	.lookup = __nss_passwd_nonlocal_lookup, .fct_name = "getpwnam_r",
+	.lookup2 = __nss_passwd_nonlocal_lookup2, .fct_name = "getpwnam_r",
 	.status = &status, .errnop = errnop
     };
     const __typeof__(&_nss_nonlocal_getpwnam_r) self = NULL;
@@ -297,7 +300,7 @@ _nss_nonlocal_getpwuid_r(uid_t uid, struct passwd *pwd,
     enum nss_status status;
     int group_errno;
     const struct walk_nss w = {
-	.lookup = &__nss_passwd_nonlocal_lookup, .fct_name = "getpwuid_r",
+	.lookup2 = &__nss_passwd_nonlocal_lookup2, .fct_name = "getpwuid_r",
 	.status = &status, .errnop = errnop
     };
     const __typeof__(&_nss_nonlocal_getpwuid_r) self = NULL;

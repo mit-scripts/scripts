@@ -43,8 +43,8 @@ static service_user *__nss_shadow_nonlocal_database;
 
 static int
 internal_function
-__nss_shadow_nonlocal_lookup(service_user **ni, const char *fct_name,
-			    void **fctp)
+__nss_shadow_nonlocal_lookup2(service_user **ni, const char *fct_name,
+			      const char *fct2_name, void **fctp)
 {
     if (__nss_shadow_nonlocal_database == NULL
 	&& __nss_database_lookup("shadow_nonlocal", NULL, NULL,
@@ -54,6 +54,8 @@ __nss_shadow_nonlocal_lookup(service_user **ni, const char *fct_name,
     *ni = __nss_shadow_nonlocal_database;
 
     *fctp = __nss_lookup_function(*ni, fct_name);
+    if (*fctp == NULL && fct2_name != NULL)
+	*fctp = __nss_lookup_function(*ni, fct2_name);
     return 0;
 }
 
@@ -73,7 +75,7 @@ _nss_nonlocal_setspent(int stayopen)
 {
     enum nss_status status;
     const struct walk_nss w = {
-	.lookup = &__nss_shadow_nonlocal_lookup, .fct_name = "setspent",
+	.lookup2 = &__nss_shadow_nonlocal_lookup2, .fct_name = "setspent",
 	.status = &status
     };
     const __typeof__(&_nss_nonlocal_setspent) self = NULL;
@@ -84,8 +86,8 @@ _nss_nonlocal_setspent(int stayopen)
 	return status;
 
     if (!spent_initialized) {
-	__nss_shadow_nonlocal_lookup(&spent_startp, spent_fct_name,
-				     &spent_fct_start);
+	__nss_shadow_nonlocal_lookup2(&spent_startp, spent_fct_name, NULL,
+				      &spent_fct_start);
 	__sync_synchronize();
 	spent_initialized = true;
     }
@@ -99,7 +101,7 @@ _nss_nonlocal_endspent(void)
 {
     enum nss_status status;
     const struct walk_nss w = {
-	.lookup = &__nss_shadow_nonlocal_lookup, .fct_name = "endspent",
+	.lookup2 = &__nss_shadow_nonlocal_lookup2, .fct_name = "endspent",
 	.status = &status
     };
     const __typeof__(&_nss_nonlocal_endspent) self = NULL;
@@ -137,7 +139,8 @@ _nss_nonlocal_getspent_r(struct spwd *pwd, char *buffer, size_t buflen,
 
 	if (status == NSS_STATUS_SUCCESS)
 	    return NSS_STATUS_SUCCESS;
-    } while (__nss_next(&spent_nip, spent_fct_name, &spent_fct.ptr, status, 0) == 0);
+    } while (__nss_next2(&spent_nip, spent_fct_name, NULL, &spent_fct.ptr,
+			 status, 0) == 0);
 
     spent_nip = NULL;
     return NSS_STATUS_NOTFOUND;
@@ -150,7 +153,7 @@ _nss_nonlocal_getspnam_r(const char *name, struct spwd *pwd,
 {
     enum nss_status status;
     const struct walk_nss w = {
-	.lookup = __nss_shadow_nonlocal_lookup, .fct_name = "getspnam_r",
+	.lookup2 = __nss_shadow_nonlocal_lookup2, .fct_name = "getspnam_r",
 	.status = &status, .errnop = errnop
     };
     const __typeof__(&_nss_nonlocal_getspnam_r) self = NULL;
