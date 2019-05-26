@@ -14,13 +14,13 @@
         content: |
           [scripts]
           name=Scripts
-          baseurl=http://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}/
+          baseurl=https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}/
           enabled=1
           gpgcheck=0
 
           [scripts-testing]
           name=Scripts Testing
-          baseurl=http://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}-testing/
+          baseurl=https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}-testing/
           enabled=0
           gpgcheck=0
   roles:
