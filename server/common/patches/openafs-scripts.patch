@@ -131,7 +131,7 @@ index 2eb228f..d5d6e4a 100644
 -    attrs->va_gid = fakedir ? 0 : avc->f.m.Group;	/* yeah! */
 +    attrs->va_uid = fakedir ? 0 : avc->f.fid.Fid.Volume;
 +    attrs->va_gid = (avc->f.m.Owner == DAEMON_SCRIPTS_PTSID ? avc->f.m.Group : avc->f.m.Owner);
- #if defined(AFS_SUN56_ENV)
+ #if defined(AFS_SUN5_ENV)
      attrs->va_fsid = avc->v.v_vfsp->vfs_fsid.val[0];
  #elif defined(AFS_DARWIN80_ENV)
 diff --git a/src/afs/VNOPS/afs_vnop_lookup.c b/src/afs/VNOPS/afs_vnop_lookup.c
