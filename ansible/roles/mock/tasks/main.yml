@@ -1,6 +1,10 @@
 ---
 - name: Install mock
-  dnf: name=mock state=present
+  dnf:
+    name:
+      - mock
+      - redhat-lsb-core
+    state: present
 - name: Restrict mock to root
   block:
   - lineinfile:
