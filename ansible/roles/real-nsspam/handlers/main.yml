@@ -1,5 +1,8 @@
 ---
+- name: apply authselect
+  command: /usr/bin/authselect apply-changes
 - name: restart nslcd
   service: name=nslcd state=restarted
-- name: reload nscd
-  service: name=nscd state=reloaded
+- name: restart nscd
+  service: name=nscd state=restarted
+  # Reloading nscd does not cause it to reread its configuration.

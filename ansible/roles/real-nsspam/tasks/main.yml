@@ -20,7 +20,7 @@
     - suggested-size group 1999
     - persistent group no
     - suggested-size hosts 1999
-  notify: reload nscd
+  notify: restart nscd
 - name: Enable nscd
   service:
     name: nscd
@@ -54,10 +54,14 @@
   copy:
     dest: /etc/authselect/custom/scripts/
     src: authselect/
+  notify: apply authselect
 - name: Configure nsswitch
   template:
     dest: /etc/authselect/custom/scripts/nsswitch.conf
     src: nsswitch.conf.j2
+  notify:
+    - apply authselect
+    - restart nscd
 - name: Get current authselect profile
   command:
     /usr/bin/authselect current -r
