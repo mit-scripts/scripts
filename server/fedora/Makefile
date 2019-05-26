@@ -19,7 +19,8 @@
 # See /COPYRIGHT in this repository for more information.
 
 FEDORA		= fc$(shell lsb_release -rs)
-upstream_yum	= krb5-libs krb5-libs.i686 httpd openssh
+upstream_yum	= krb5 krb5.i686 httpd openssh
+upstream_yum_download = krb5-libs krb5-libs.i686 httpd openssh
 hackage		= cgi-3001.1.8.5 unix-handle-0.0.0
 upstream_hackage = ghc-cgi ghc-unix-handle
 gems		= pony:1.8 fcgi:0.9.2.1
@@ -69,7 +70,7 @@ mkdir-tree:
 download: download_stamp
 download_stamp:
 	mkdir -p $(dload)
-	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
+	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum_download)
 	wget -P $(dload) $(openafs_url)
 	#wget -P $(dload) $(zephyr_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
