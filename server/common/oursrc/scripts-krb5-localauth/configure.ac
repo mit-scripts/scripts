@@ -1,4 +1,4 @@
-AC_INIT([scripts-krb5-localauth])
+AC_INIT([scripts-krb5-localauth], [1.0])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 AC_PROG_CC
