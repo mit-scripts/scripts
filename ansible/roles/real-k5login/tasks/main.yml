@@ -1,0 +1,19 @@
+---
+- name: Install scripts-krb5-localauth
+  dnf: name=scripts-krb5-localauth state=present
+  when: use_scripts_localauth
+- name: Configure Kerberos to use scripts localauth
+  copy:
+    dest: /etc/krb5.conf.d/scripts
+    content: |
+      [plugins]
+      localauth = {
+        module = scripts:/usr/lib64/libscripts-krb5-localauth.so
+        enable_only = scripts
+      }
+  when: use_scripts_localauth
+- name: Remove scripts localauth configuration
+  file:
+    path: /etc/krb5.conf.d/scripts
+    state: absent
+  when: not use_scripts_localauth

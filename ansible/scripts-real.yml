@@ -24,10 +24,10 @@
           enabled=0
           gpgcheck=0
   roles:
-    - k5login
     - syslog-client
     - root-aliases
     - munin-node
+    - real-k5login
     - real-nrpe
     - real-nsspam
     - real-sshd

@@ -23,6 +23,10 @@
       when: ansible_os_family == "Debian"
     - dnf: name=krb5-workstation state=present
       when: ansible_os_family == "RedHat"
+- name: Ensure krb5.conf.d exists
+  file:
+    path: /etc/krb5.conf.d
+    state: directory
 - name: Configure Kerberos
   copy:
     dest: /etc/krb5.conf
