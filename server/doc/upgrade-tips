@@ -202,9 +202,7 @@ and ensure run on the new platform.  They include:
 Fedora occasionally updates the architecture name for 32-bit; the last
 such update was in Fedora 12, when i586 became i686.  Fixing this
 usually just involves replacing i586 with i686 in the appropriate places
-(Makefile, specfiles, /etc/mock configuration).  Note that for
-hysterical raisins we still refer to our 32-bit builds as i386.
-[XXX: Maybe this should change]
+(Makefile, specfiles, /etc/mock configuration).
 
 Until we decide that the performance impact is negligible, any new PHP
 extensions other than the few we’ve whitelisted should be disabled by

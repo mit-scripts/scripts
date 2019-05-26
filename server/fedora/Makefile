@@ -144,7 +144,7 @@ $(oursrc): rpmbuild_args += --define 'scriptsversion $(scriptsversion)'
 $(filter %.i686,$(oursrc)): %.i686: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-${FEDORA}-i386 --arch=i686 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-${FEDORA}-i686 --arch=i686 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(filter-out %.i686,$(oursrc)): %: setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
@@ -157,7 +157,7 @@ kernel: rpmbuild_args += --define 'buildid .scripts.%{scriptsversion}' --without
 
 $(filter %.i686,$(upstream)): %.i686: setup patch-specs
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
-	/usr/bin/mock -r scripts-${FEDORA}-i386 --arch=i686 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+	/usr/bin/mock -r scripts-${FEDORA}-i686 --arch=i686 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(filter-out %.i686,$(upstream)): %: setup patch-specs
 	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
