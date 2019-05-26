@@ -2,6 +2,9 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <stdio.h>
+#include <errno.h>
+#include <unistd.h>
 
 static krb5_error_code
 userok_scripts(krb5_context context, krb5_localauth_moddata data,
@@ -14,10 +17,10 @@ userok_scripts(krb5_context context, krb5_localauth_moddata data,
   int pid, status;
 
   /* Get the local user's homedir and uid. */
-  if (getpwnam_r(luser, &pwx, pwbuf, sizeof(pwbuf), &pwd) != 0 || pwd == NULL)
+  if (getpwnam_r(lname, &pwx, pwbuf, sizeof(pwbuf), &pwd) != 0 || pwd == NULL)
     goto cleanup;
 
-  if (krb5_unparse_name(context, principal, &princname) != 0)
+  if (krb5_unparse_name(context, aname, &princname) != 0)
     goto cleanup;
 
   if ((pid = fork()) == -1)
@@ -27,7 +30,7 @@ userok_scripts(krb5_context context, krb5_localauth_moddata data,
     char *args[4];
 #define ADMOF_PATH "/usr/local/sbin/ssh-admof"
     args[0] = ADMOF_PATH;
-    args[1] = (char *) luser;
+    args[1] = (char *) lname;
     args[2] = princname;
     args[3] = NULL;
     execv(ADMOF_PATH, args);
@@ -51,7 +54,7 @@ localauth_scripts_initvt(krb5_context context, int maj_ver, int min_ver,
     krb5_localauth_vtable vt = (krb5_localauth_vtable)vtable;
 
     vt->name = "scripts";
-    vt->userok = userok_test;
+    vt->userok = userok_scripts;
     return 0;
   }
   return KRB5_PLUGIN_VER_NOTSUPP;
