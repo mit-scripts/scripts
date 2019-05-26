@@ -1,7 +1,7 @@
 --- openafs.spec.orig	2015-06-25 05:18:38.000000000 -0400
 +++ openafs.spec	2015-07-13 21:41:31.196173273 -0400
 @@ -4,7 +4,7 @@
- %define pkgvers 1.6.12
+ %define pkgvers 1.8.3
  # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
 -%define pkgrel 1
@@ -15,7 +15,7 @@
  %endif
 +BuildRequires: libtool
  
- ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64
+ ExclusiveArch: %{ix86} x86_64 ia64 s390 s390x sparc64 ppc ppc64 aarch64
  
 +Patch1000: openafs-scripts.patch
 +Patch1003: openafs-systemd-csdb.patch
@@ -80,14 +80,13 @@
  Summary: OpenAFS programs to use with krb5
  Requires: openafs = %{version}
  Group: Networking/Filesystems
-@@ -547,7 +559,7 @@
+@@ -547,6 +559,6 @@
  %if %{build_modules}
  
- %if %{fedorakmod}
 -%{expand:%(%{kmodtool} rpmtemplate %{kmod_name} %{kverrel} %{depmod} %{kvariants} 2>/dev/null)}
 +%{expand:%(%{kmodtool} rpmtemplate %{kmod_name} %{kverrel} %{depmod} %{kvariants} | sed '/^%package/ aProvides: scripts-kmod-openafs' 2>/dev/null)}
  
- %else
+ %endif
  
 @@ -704,6 +716,10 @@
  #%setup -q -n %{srcdir}
@@ -109,10 +108,10 @@
  ./configure --with-afs-sysname=${sysname} \
         --prefix=%{_prefix} \
         --libdir=%{_libdir} \
-@@ -1273,6 +1291,13 @@
- rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
- rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so.*
- rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so.*
+@@ -746,6 +764,13 @@
+ rm -f $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so*
+ rm -f $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so*
+ rm -f $RPM_BUILD_ROOT%{_libdir}/libkopenafs.so*
 +%else
 +chmod +x $RPM_BUILD_ROOT%{_libdir}/libafsauthent.so
 +chmod +x $RPM_BUILD_ROOT%{_libdir}/libafsrpc.so
@@ -121,5 +120,5 @@
 +chmod +x $RPM_BUILD_ROOT%{_libdir}/libkopenafs.so
 +chmod +x $RPM_BUILD_ROOT%{_libdir}/libkopenafs.so.*
  %endif
- 
- %endif
+ rm -f $RPM_BUILD_ROOT%{_sbindir}/afsd.fuse
+ %if !%{kauth_support}
