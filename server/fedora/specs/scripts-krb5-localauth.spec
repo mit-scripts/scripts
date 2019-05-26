@@ -22,7 +22,8 @@ See http://scripts.mit.edu/wiki for more information.
 %setup -q -n %{name}
 
 %build
-./configure --prefix=/usr/local
+autoreconf -fvi
+%configure --prefix=/usr/local
 make
 
 %install
@@ -37,5 +38,5 @@ make install DESTDIR=$RPM_BUILD_ROOT prefix=/usr/local
 /usr/local/lib/libscripts-krb5-localauth.so
 
 %changelog
-* Sat May 26 2019  Quentin Smith <quentin@MIT.EDU> 0.00
+* Sun May 26 2019  Quentin Smith <quentin@MIT.EDU> 0.00
 - Initial release
