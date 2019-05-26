@@ -9,6 +9,9 @@ License: GPL
 Source: %{name}.tar.gz 
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 BuildRequires: krb5-devel
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
 %define debug_package %{nil}
 
 %description 
