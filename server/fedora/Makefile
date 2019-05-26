@@ -19,15 +19,14 @@
 # See /COPYRIGHT in this repository for more information.
 
 FEDORA		= fc$(shell lsb_release -rs)
-upstream_yum	= krb5 krb5.i686 httpd openssh
-upstream_yum_download = krb5-libs krb5-libs.i686 httpd openssh
+upstream_yum	= httpd openssh
 hackage		= cgi-3001.1.8.5 unix-handle-0.0.0
 upstream_hackage = ghc-cgi ghc-unix-handle
 gems		= pony:1.8 fcgi:0.9.2.1
 upstream_gems	= rubygem-pony rubygem-fcgi
 upstream_eggs   = python-authkit
 upstream	= openafs $(upstream_yum) $(upstream_hackage) $(upstream_gems) $(upstream_eggs) moira zephyr zephyr.i686 python-zephyr python-afs python-moira python-hesiod athena-aclocal discuss
-oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat fuse-better-mousetrapfs scripts-munin-plugins
+oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat fuse-better-mousetrapfs scripts-munin-plugins scripts-krb5-localauth
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
 patches		= ${PWD}/../common/patches
@@ -70,7 +69,7 @@ mkdir-tree:
 download: download_stamp
 download_stamp:
 	mkdir -p $(dload)
-	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum_download)
+	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
 	wget -P $(dload) $(openafs_url)
 	#wget -P $(dload) $(zephyr_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
