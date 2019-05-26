@@ -45,7 +45,11 @@
     name: nslcd
     enabled: yes
     state: started
-# TODO: Install nss-nonlocal
+- name: Install nss_nonlocal
+  dnf:
+    name: nss_nonlocal
+    state: present
+  when: use_nss_nonlocal
 - name: Create authselect profile
   copy:
     dest: /etc/authselect/custom/scripts/

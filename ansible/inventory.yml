@@ -78,7 +78,7 @@ all:
                 ip: 18.4.86.229
                 cidr_netmask: 24
             run_local_ldap: no
-            use_nss_nonlocal: no
+            use_nss_nonlocal: yes
           hosts:
             quentin-scripts-f30.xvm.mit.edu: {}
             scripts-f30-test.xvm.mit.edu: {}
