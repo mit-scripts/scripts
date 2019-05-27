@@ -35,6 +35,11 @@
     - mock
   # TODO: Configure aliases with blocked accounts and procmail for root
   tasks:
+  - name: Install accountadm
+    dnf:
+      name:
+        - accountadm
+      state: present
   - name: Hesiod
     block:
     - name: Install hesiod
@@ -124,6 +129,15 @@
       option: SplitMode
       value: uid
     notify: restart journald
+  - name: Install OpenAFS
+    dnf:
+      name:
+        - scripts-kmod-openafs
+        - scripts-openafs-client
+        - scripts-openafs-authlibs
+        - scripts-openafs-devel
+        - scripts-openafs-krb5
+      state: present
   handlers:
   - name: reload autofs
     service: name=autofs state=reloaded
