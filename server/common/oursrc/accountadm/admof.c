@@ -44,6 +44,14 @@ extern int pioctl(char *, afs_int32, struct ViceIoctl *, afs_int32);
 #define _STR(x) #x
 #define STR(x) _STR(x)
 
+#ifndef MAX
+#define MAX(x,y) ({	    \
+      typeof(x) _x = (x);   \
+      typeof(y) _y = (y);   \
+      (void) (&_x == &_y);  \
+      _x > _y ? _x : _y; })
+#endif
+
 #define SYSADMINS "system:scripts-root"
 #define SYSADMIN_CELL "athena.mit.edu"
 
