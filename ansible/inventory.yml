@@ -79,6 +79,8 @@ all:
                 cidr_netmask: 24
             run_local_ldap: no
             use_nss_nonlocal: yes
+            use_hesiod: yes
+            use_scripts_localauth: yes
           hosts:
             quentin-scripts-f30.xvm.mit.edu: {}
             scripts-f30-test.xvm.mit.edu: {}
