@@ -12,7 +12,7 @@ BuildArch:	noarch
 %define debug_package %{nil}
 
 Requires:       fuse >= 2.2
-Requires:       fuse-python
+Requires:       python3-fuse
 
 %description
 This is a FUSE-filesystem client which logs and kills any accessors.
