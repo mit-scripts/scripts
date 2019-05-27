@@ -37,8 +37,9 @@
   tasks:
   - name: Hesiod
     block:
-    #- name: Install hesiod
-    #  dnf: name=hesiod-devel state=present
+    - name: Install hesiod
+      dnf: name=hesiod-devel state=present
+      when: use_hesiod | default(True)
     - name: Configure hesiod
       copy:
         dest: /etc/hesiod.conf
