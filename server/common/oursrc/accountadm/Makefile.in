@@ -9,7 +9,7 @@ sysconfdir = @sysconfdir@
 
 all-local: admof
 
-admof: LDLIBS = -lafsauthent_pic -lafsrpc_pic -lresolv -lkrb5 -lpthread -lk5crypto
+admof: LDLIBS = -lrokenafs -lafsauthent_pic -lafsrpc_pic -lresolv -lkrb5 -lpthread -lk5crypto
 admof: admof.o
 
 install:
