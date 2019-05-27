@@ -1,0 +1,67 @@
+From 40fb2973fde5cefd1687637e208f2877865b4c5f Mon Sep 17 00:00:00 2001
+From: Nalin Dahyabhai <nalin@redhat.com>
+Date: Tue, 3 May 2016 13:34:32 -0400
+Subject: [PATCH] Remove hard-coded defaults for LHS and RHS
+
+Don't fall back to using a default LHS or RHS when the configuration
+file can't be read.  Instead, return an error.
+Original report from https://bugzilla.redhat.com/show_bug.cgi?id=1332493
+
+(cherry picked from commit 247e2ce1f2aff40040657acaae7f1a1d673d6618)
+---
+ src/lib/Makefile.am |  2 +-
+ src/lib/hesiod.c    | 21 +--------------------
+ 2 files changed, 2 insertions(+), 21 deletions(-)
+
+diff --git a/src/lib/Makefile.am b/src/lib/Makefile.am
+index d092565..e6324b1 100644
+--- a/src/lib/Makefile.am
++++ b/src/lib/Makefile.am
+@@ -15,7 +15,7 @@ noinst_PROGRAMS = hestest
+ hestest_SOURCES = hestest.c
+ hestest_LDADD = libhesiod.la
+ 
+-TESTS_ENVIRONMENT = ./hestest
++TESTS_ENVIRONMENT = HESIOD_CONFIG=$(srcdir)/hesiod.conf.sample ./hestest
+ TESTS = hestest.conf
+ 
+ EXTRA_DIST = hesiod.conf.sample hestest.conf
+diff --git a/src/lib/hesiod.c b/src/lib/hesiod.c
+index 2738713..e69a8ca 100644
+--- a/src/lib/hesiod.c
++++ b/src/lib/hesiod.c
+@@ -81,10 +81,6 @@ static const char rcsid[] = "$Id: hesiod.c,v 1.30 2002-04-03 21:40:55 ghudson Ex
+ #define T_TXT	16
+ #endif
+ 
+-/* Defaults if the configuration file is not present. */
+-#define DEF_RHS ".athena.mit.edu"
+-#define DEF_LHS ".ns"
+-
+ /* Maximum size of a Hesiod response from the DNS. */
+ #define MAX_HESRESP 1024
+ 
+@@ -301,22 +297,7 @@ static int read_config_file(struct hesiod_p *ctx, const char *filename)
+   /* Try to open the configuration file. */
+   fp = fopen(filename, "r");
+   if (!fp)
+-    {
+-      /* Use compiled in default domain names. */
+-      ctx->lhs = malloc(strlen(DEF_LHS) + 1);
+-      ctx->rhs = malloc(strlen(DEF_RHS) + 1);
+-      if (ctx->lhs && ctx->rhs)
+-	{
+-	  strcpy(ctx->lhs, DEF_LHS);
+-	  strcpy(ctx->rhs, DEF_RHS);
+-	  return 0;
+-	}
+-      else
+-	{
+-	  errno = ENOMEM;
+-	  return -1;
+-	}
+-    }
++    return -1;
+ 
+   ctx->lhs = NULL;
+   ctx->rhs = NULL;

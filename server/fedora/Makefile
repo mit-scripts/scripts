@@ -25,7 +25,7 @@ upstream_hackage = ghc-cgi ghc-unix-handle
 gems		= pony:1.8 fcgi:0.9.2.1
 upstream_gems	= rubygem-pony rubygem-fcgi
 upstream_eggs   = python-authkit
-upstream	= openafs $(upstream_yum) $(upstream_hackage) $(upstream_gems) $(upstream_eggs) moira zephyr zephyr.i686 python-zephyr python-afs python-moira python-hesiod athena-aclocal discuss
+upstream	= openafs hesiod $(upstream_yum) $(upstream_hackage) $(upstream_gems) $(upstream_eggs) moira zephyr zephyr.i686 python-zephyr python-afs python-moira python-hesiod athena-aclocal discuss
 oursrc		= execsys tokensys accountadm httpdmods logview sql-signup nss_nonlocal nss_nonlocal.i686 whoisd athrun php_scripts scripts-wizard scripts-base scripts-static-cat fuse-better-mousetrapfs scripts-munin-plugins scripts-krb5-localauth
 allsrc		= $(upstream) $(oursrc)
 oursrcdir	= ${PWD}/../common/oursrc
@@ -42,6 +42,7 @@ out_sbin	= $(topdir)/sbin
 
 dload		= ${PWD}/.dload
 openafs_url	= "http://www.openafs.org/dl/openafs/1.8.3/openafs-1.8.3-1.src.rpm"
+hesiod_url	= "ftp://athena-dist.mit.edu/pub/ATHENA/hesiod/hesiod-3.2.1.tar.gz"
 #zephyr_url	= "http://zephyr.1ts.org/files/zephyr-3.0.2.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
@@ -71,6 +72,7 @@ download_stamp:
 	mkdir -p $(dload)
 	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
 	wget -P $(dload) $(openafs_url)
+	wget -P $(dload) $(hesiod_url)
 	#wget -P $(dload) $(zephyr_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 	cabal update
