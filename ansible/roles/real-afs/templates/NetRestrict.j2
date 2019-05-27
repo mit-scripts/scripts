@@ -1,0 +1,5 @@
+{% for interface in network_ether_interfaces %}
+{% if device.startswith("lo") %}
+{{ interface.device }}
+{% endif %}
+{% endfor %}

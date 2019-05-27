@@ -1,0 +1,49 @@
+---
+- name: Install OpenAFS
+  dnf:
+    name:
+      - scripts-kmod-openafs
+      - scripts-openafs-client
+      - scripts-openafs-authlibs
+      - scripts-openafs-devel
+      - scripts-openafs-krb5
+    state: present
+- name: Configure ThisCell
+  copy:
+    dest: /usr/vice/etc/ThisCell
+    content: athena.mit.edu
+  notify: restart openafs-client
+- name: Configure CellAlias
+  copy:
+    dest: /usr/vice/etc/CellAlias
+    content: |
+      athena.mit.edu          athena
+      csail.mit.edu           csail
+      dev.mit.edu             dev
+      lees.mit.edu            lees
+      net.mit.edu             net
+      ops.mit.edu             ops
+      sipb.mit.edu            sipb
+      andrew.cmu.edu          andrew
+      acpub.duke.edu          acpub
+  notify: restart openafs-client
+- name: Configure SuidCells
+  copy:
+    dest: /usr/vice/etc/{{ item }}
+    content: ""
+  loop:
+    - SuidCells
+    - SuidCells.dist
+    - SuidCells.local
+  notify: restart openafs-client
+- name: Configure NetRestrict
+  template:
+    dest: /usr/vice/etc/NetRestrict
+    src: NetRestrict.j2
+  notify: restart openafs-client
+- name: Start openafs-client
+  service:
+    name: openafs-client
+    enabled: yes
+    state: started
+
