@@ -2,6 +2,7 @@
 - name: Install OpenAFS
   dnf:
     name:
+      - fuse-better-mousetrapfs
       - scripts-kmod-openafs
       - scripts-openafs-client
       - scripts-openafs-authlibs
