@@ -10,6 +10,7 @@ Source: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 BuildRequires: gcc
 BuildRequires: krb5-devel
+BuildRequires: pkgconfig(mit-krb5)
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: libtool
