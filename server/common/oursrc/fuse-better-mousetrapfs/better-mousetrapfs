@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # better-mousetrapfs: Filesystem that logs and kills any accessors
@@ -43,7 +43,7 @@ class BetterMousetrapFS(fuse.Fuse):
 
     def getattr(self, path):
         if path == '/':
-            return fuse.Stat(st_mode = stat.S_IFDIR | 0755, st_nlink = 2)
+            return fuse.Stat(st_mode = stat.S_IFDIR | 0o755, st_nlink = 2)
         else:
             return -errno.EACCES
 
