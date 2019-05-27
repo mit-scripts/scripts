@@ -42,7 +42,6 @@ out_sbin	= $(topdir)/sbin
 
 dload		= ${PWD}/.dload
 openafs_url	= "http://www.openafs.org/dl/openafs/1.8.3/openafs-1.8.3-1.src.rpm"
-hesiod_url	= "ftp://athena-dist.mit.edu/pub/ATHENA/hesiod/hesiod-3.2.1.tar.gz"
 #zephyr_url	= "http://zephyr.1ts.org/files/zephyr-3.0.2.tar.gz"
 
 PKG		= $(patsubst %.i686,%,$@)
@@ -72,13 +71,13 @@ download_stamp:
 	mkdir -p $(dload)
 	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
 	wget -P $(dload) $(openafs_url)
-	wget -P $(dload) $(hesiod_url)
 	#wget -P $(dload) $(zephyr_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 	cabal update
 	cabal fetch --no-dependencies $(hackage)
 	cp -a $(hackage:%=~/.cabal/packages/*/*/*/%.tar.gz) $(tmp_src)
 	$(foreach gem, $(gems), gem fetch $(firstword $(subst :, ,$(gem))) -v $(lastword $(subst :, ,$(gem)));)
+	spectool -g -R $(specs)/hesiod.spec
 	spectool -g -R $(specs)/zephyr.spec
 	spectool -g -R $(specs)/python-zephyr.spec
 	spectool -g -R $(specs)/python-afs.spec
