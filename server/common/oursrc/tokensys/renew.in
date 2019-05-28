@@ -6,11 +6,13 @@
 export KRB5CCNAME=/home/afsagent/krb5cc
 export KRBTKFILE=/home/afsagent/tkt
 
+princ="$(@klist_path@ -k /etc/daemon.keytab | awk 'NR == 4 { print $2 }')"
+
 # Option #1: invoke kinit with a password
-#echo "password" | @kinit_path@ >/dev/null daemon/scripts.mit.edu
+#echo "password" | @kinit_path@ >/dev/null "$princ"
 
 # Option #2: invoke kinit with a keytab
-@kinit_path@ -k -t /etc/daemon.keytab daemon/scripts.mit.edu
+@kinit_path@ -k -t /etc/daemon.keytab "$princ"
 
 # Obtain AFS tokens
 @aklog_path@

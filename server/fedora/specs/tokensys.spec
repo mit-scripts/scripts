@@ -28,7 +28,7 @@ See http://scripts.mit.edu/wiki for more information.
 %setup -q -n %{name}
 
 %build
-./configure --with-kinit=/usr/bin/kinit --with-aklog=/usr/bin/aklog --with-fs=/usr/bin/fs
+./configure --with-kinit=/usr/bin/kinit --with-klist=/usr/bin/klist --with-aklog=/usr/bin/aklog --with-fs=/usr/bin/fs
 
 %install
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
