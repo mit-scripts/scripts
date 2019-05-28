@@ -71,6 +71,7 @@
       [Install]
       WantedBy=multi-user.target
   notify: restart better-mousetrapfs
+  register: afs000_mount
 - name: Configure better-mousetrapfs mountpoint
   copy:
     dest: /usr/vice/etc/CellServDB.mousetrap
@@ -79,6 +80,28 @@
   notify:
     - restart openafs-client
     - restart better-mousetrapfs
+- name: Start openafs-client
+  service:
+    name: openafs-client
+    enabled: yes
+    state: started
+  register: openafs_started
+- name: Start better-mousetrapfs
+  systemd:
+    daemon_reload: "{{ afs000_mount.changed }}"
+    name: afs-000.mount
+    enabled: yes
+    state: started
+  register: better_mousetrapfs_started
+- name: Start afsagent
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop:
+    - scripts-afsagent.service
+    - scripts-afsagent-startup.service
+    - scripts-afsagent.timer
 
 # CellServDB maintains a mapping of cell names to IP addresses of servers
 # serving them.

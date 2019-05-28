@@ -7,9 +7,11 @@
     enabled: yes
     state: restarted
   notify: restart better-mousetrapfs
+  when: not openafs_started.changed
 - name: restart better-mousetrapfs
   systemd:
     daemon_reload: yes
     name: afs-000.mount
     enabled: yes
     state: restarted
+  when: not better_mousetrapfs_started.changed
