@@ -9,3 +9,4 @@
     dest: /etc/modules-load.d/fuse.conf
     content: |
       fuse
+  notify: load modules
