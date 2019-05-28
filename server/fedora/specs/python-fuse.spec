@@ -1,4 +1,4 @@
-Name:           fuse-python
+Name:           python-fuse
 Version:        0.3.1
 Release:        1.%{scriptsversion}%{?dist}
 Summary:        Python bindings for FUSE - filesystem in userspace
