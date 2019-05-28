@@ -1,4 +1,4 @@
-Name:           python-fuse
+Name:           fuse-python
 Version:        0.3.1
 Release:        1.%{scriptsversion}%{?dist}
 Summary:        Python bindings for FUSE - filesystem in userspace
@@ -30,7 +30,7 @@ Obsoletes: fuse-python < %{version}-%{release}
 %description -n python3-fuse %_description
 
 %prep
-%setup -q
+%setup -q -n python-fuse-%{version}
 
 %build
 %py3_build
