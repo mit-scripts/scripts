@@ -9,20 +9,12 @@
       - scripts-openafs-devel
       - scripts-openafs-krb5
     state: present
-- name: Configure better-mousetrapfs
+- name: Disable garbage collection of PAGs
   copy:
-    dest: /etc/systemd/system/afs-000.mount
+    dest: /etc/sysctl.d/99-scripts-afs.conf
     content: |
-      [Unit]
-      Description=FUSE better mousetrap filesystem
-      After=openafs-client.service
-      [Mount]
-      What=/usr/sbin/better-mousetrapfs
-      Where=/afs/000
-      Type=fuse
-      Options=defaults,nonempty
-      [Install]
-      WantedBy=multi-user.target
+      afs.GCPAGs = 0
+  notify: apply sysctl
 - name: Configure ThisCell
   copy:
     dest: /usr/vice/etc/ThisCell
@@ -56,14 +48,18 @@
     dest: /usr/vice/etc/NetRestrict
     src: NetRestrict.j2
   notify: restart openafs-client
-- name: Start openafs-client
-  service:
-    name: openafs-client
-    enabled: yes
-    state: started
-- name: Start better-mousetrapfs
-  systemd:
-    daemon_reload: yes
-    name: afs-000.mount
-    enabled: yes
-    state: started
+- name: Configure better-mousetrapfs
+  copy:
+    dest: /etc/systemd/system/afs-000.mount
+    content: |
+      [Unit]
+      Description=FUSE better mousetrap filesystem
+      After=openafs-client.service
+      [Mount]
+      What=/usr/sbin/better-mousetrapfs
+      Where=/afs/000
+      Type=fuse
+      Options=defaults,nonempty
+      [Install]
+      WantedBy=multi-user.target
+  notify: restart better-mousetrapfs

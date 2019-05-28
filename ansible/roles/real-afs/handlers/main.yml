@@ -1,3 +1,14 @@
 ---
 - name: restart openafs-client
-  service: name=openafs-client state=restarted
+  service:
+    name: openafs-client
+    enabled: yes
+    state: restarted
+- name: restart better-mousetrapfs
+  systemd:
+    daemon_reload: yes
+    name: afs-000.mount
+    enabled: yes
+    state: restarted
+- name: apply sysctl
+  service: name=systemd-sysctl state=restarted
