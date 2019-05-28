@@ -1,0 +1,11 @@
+---
+- name: Install fuse.conf
+  copy:
+    dest: /etc/fuse.conf
+    content: |
+      user_allow_other
+- name: Load fuse kernel module
+  copy:
+    dest: /etc/modules-load.d/fuse.conf
+    content: |
+      fuse
