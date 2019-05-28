@@ -77,6 +77,7 @@ all:
               - host: scripts-test.mit.edu
                 ip: 18.4.86.229
                 cidr_netmask: 24
+            afs_cache_size: 500000
             run_local_ldap: no
             use_nss_nonlocal: yes
             use_hesiod: yes

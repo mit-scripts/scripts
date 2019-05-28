@@ -39,7 +39,7 @@
   copy:
     dest: /usr/vice/etc/cacheinfo
     content: |
-      /afs:/usr/vice/cache:10000000
+      /afs:/usr/vice/cache:{{ afs_cache_size | default(10000000) }}
   notify: restart openafs-client
 - name: Configure SuidCells
   copy:
