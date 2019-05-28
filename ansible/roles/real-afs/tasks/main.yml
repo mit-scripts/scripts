@@ -18,7 +18,8 @@
 - name: Configure ThisCell
   copy:
     dest: /usr/vice/etc/ThisCell
-    content: athena.mit.edu
+    content: |
+      athena.mit.edu
   notify: restart openafs-client
 - name: Configure CellAlias
   copy:
@@ -37,7 +38,8 @@
 - name: Resize AFS cache
   copy:
     dest: /usr/vice/etc/cacheinfo
-    content: /afs:/usr/vice/cache:10000000
+    content: |
+      /afs:/usr/vice/cache:10000000
   notify: restart openafs-client
 - name: Configure SuidCells
   copy:
