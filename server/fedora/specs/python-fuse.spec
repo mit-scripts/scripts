@@ -5,7 +5,7 @@ Summary:        Python bindings for FUSE - filesystem in userspace
 
 License:        LGPLv2
 URL:            https://github.com/libfuse/python-fuse
-Source0:        https://github.com/libfuse/python-fuse/archive/v%{version}.tar.gz
+Source0:        https://github.com/libfuse/python-fuse/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  pkgconfig
@@ -34,17 +34,15 @@ Obsoletes: fuse-python < %{version}-%{release}
 
 %build
 %py3_build
-mv -f Changelog Changelog.old
-iconv -f iso8859-1 -t utf-8 < Changelog.old > Changelog
 
 %install
 %py3_install
 
 %files -n python3-fuse
 %license COPYING
-%doc AUTHORS Changelog FAQ example README.1st
-%doc README.new_fusepy_api README.new_fusepy_api.html README.package_maintainers
-%{python2_sitearch}/*
+%doc AUTHORS FAQ example README.md README.historic
+%doc README.new_fusepy_api README.package_maintainers
+%{python3_sitearch}/*
 
 %changelog
 * Mon May 27 2019 Quentin Smith <quentin@mit.edu> - 0.3.1-1
