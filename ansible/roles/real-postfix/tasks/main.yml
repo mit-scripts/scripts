@@ -59,6 +59,13 @@
     value: '"-m -r -1 -- --socket=/run/spamd.socket"'
     no_extra_spaces: yes
   notify: restart spamass-milter
+- name: Configure spamassassin
+  ini_file:
+    path: /etc/sysconfig/spamassassin
+    option: SPAMDOPTIONS
+    value: '"--username=sa-milt --groupname=sa-milt --nouser-config --socketpath=/run/spamd.socket --socketowner=sa-milt --socketgroup=sa-milt --socketmode=0600"'
+    no_extra_spaces: yes
+  notify: restart spamassassin
 - name: Enable postfix
   service:
     name: "{{ item }}"
