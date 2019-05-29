@@ -1,3 +1,0 @@
-# Options to spamd
-#SPAMDOPTIONS="-c -m5 -H"
-SPAMDOPTIONS="--username=sa-milt --groupname=sa-milt --nouser-config --socketpath=/run/spamd.socket --socketowner=sa-milt --socketgroup=sa-milt --socketmode=0600"
