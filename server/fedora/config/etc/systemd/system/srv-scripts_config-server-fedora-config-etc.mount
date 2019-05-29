@@ -1,8 +1,0 @@
-[Unit]
-Before=local-fs.target
-[Mount]
-What=/etc
-Where=/srv/scripts_config/server/fedora/config/etc
-Options=bind
-[Install]
-WantedBy=local-fs.target
