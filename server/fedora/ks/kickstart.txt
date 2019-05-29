@@ -51,7 +51,7 @@ git
 %post --erroronfail --log=/root/ks-post.log
 set -e
 cd /srv
-git clone -b ansible-realserver https://github.com/mit-scripts/scripts repository
+git clone -b ansible-realserver --recurse-submodules https://github.com/mit-scripts/scripts repository
 chown -R scripts-build /srv/repository
 ln -s /srv/repository/server/fedora/ansible-config-me.service /etc/systemd/system/
 %end
