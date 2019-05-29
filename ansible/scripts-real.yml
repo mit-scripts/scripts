@@ -27,7 +27,6 @@
           gpgcheck=0
   roles:
     - syslog-client
-    - root-aliases
     - munin-node
     - real-k5login
     - real-nrpe
