@@ -5,7 +5,7 @@
       - postfix
       - postfix-ldap
       - procmail
-      - spamass-milter
+      - spamass-milter-postfix
     state: present
   notify: reload postfix
 - name: Create /etc/systemd/system/postfix.service.d/
@@ -52,6 +52,13 @@
     dest: /etc/aliases
     src: aliases
   notify: newaliases
+- name: Configure spamass-milter
+  ini_file:
+    path: /etc/sysconfig/spamass-milter
+    option: EXTRA_FLAGS
+    value: '"-m -r -1 -- --socket=/run/spamd.socket"'
+    no_extra_spaces: yes
+  notify: restart spamass-milter
 - name: Enable postfix
   service:
     name: "{{ item }}"
