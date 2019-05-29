@@ -2,6 +2,6 @@
 - device: lo:{{ loop.index }}
   bootproto: static
   address: {{ vip.ip }}
-  netmask: {{ (vip.ip + "/" + (vip.cidr_netmask | string)) | ipaddr('netmask') }}
+  netmask: 255.255.255.255
   onboot: True
 {% endfor %}
