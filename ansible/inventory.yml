@@ -79,6 +79,7 @@ all:
                 cidr_netmask: 24
             afs_cache_size: 500000
             run_local_ldap: no
+            use_afs: yes
             use_nss_nonlocal: yes
             use_hesiod: yes
             use_scripts_localauth: yes
