@@ -5,6 +5,7 @@
       - postfix
       - postfix-ldap
       - procmail
+      - spamass-milter
     state: present
   notify: reload postfix
 - name: Create /etc/systemd/system/postfix.service.d/
@@ -53,7 +54,10 @@
   notify: newaliases
 - name: Enable postfix
   service:
-    name: postfix
+    name: "{{ item }}"
     enabled: yes
     state: started
+  loop:
+    - spamass-milter
+    - postfix
 # TODO: Move blocked users from /etc/aliases into LDAP as scriptsMailboxCommand: /bin/false
