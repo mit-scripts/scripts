@@ -1,0 +1,7 @@
+---
+- name: restart var-lib-mock
+  systemd:
+    daemon_reload: yes
+    name: var-lib-mock.service
+    enabled: yes
+    state: restarted
