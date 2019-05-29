@@ -35,6 +35,11 @@
   template:
     src: root-procmailrc.j2
     dest: /etc/scripts/root-procmailrc
+- name: Install aliases
+  copy:
+    dest: /etc/aliases
+    src: aliases
+  notify: newaliases
 - name: Enable postfix
   service:
     name: postfix
