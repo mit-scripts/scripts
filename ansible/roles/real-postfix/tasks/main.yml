@@ -7,6 +7,10 @@
       - procmail
     state: present
   notify: reload postfix
+- name: Create /etc/systemd/system/postfix.service.d/
+  file:
+    path: /etc/systemd/system/postfix.service.d/
+    state: directory
 - name: Delay postfix startup until network is online
   copy:
     dest: /etc/systemd/system/postfix.service.d/scripts-postfix-network-online.conf
