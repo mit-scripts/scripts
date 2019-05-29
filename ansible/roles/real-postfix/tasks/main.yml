@@ -7,6 +7,13 @@
       - procmail
     state: present
   notify: reload postfix
+- name: Delay postfix startup until network is online
+  copy:
+    dest: /etc/systemd/system/postfix.service.d/scripts-postfix-network-online.conf
+    content: |
+      [Unit]
+      Wants=network-online.target
+      After=network-online.target
 - name: Install postfix configuration files
   copy:
     src: postfix/
