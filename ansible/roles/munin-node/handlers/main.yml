@@ -1,6 +1,8 @@
 ---
 - name: reconfigure munin-node
-  shell: munin-node-configure --suggest --shell --remove-also | sh
+  shell: munin-node-configure --suggest --shell --remove-also | sh -x
+  register: munin_node_configure
+  changed_when: munin_node_config.stderr != ""
   notify: restart munin-node
 - name: restart munin-node
   service: name=munin-node state=restarted
