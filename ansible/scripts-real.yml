@@ -32,16 +32,16 @@
               enabled=0
               gpgcheck=0
         - name: Configure dnf.conf
-        ini_file:
-          path: /etc/dnf/dnf.conf
-          section: main
-          option: "{{ item.option }}"
-          value: "{{ item.value }}"
-        loop:
-          - option: installonly_limit
-            value: 0
-          - option: installonlypkgs
-            value: kernel kernel-devel kernel-modules kmod-openafs ghc-cgi ghc-cgi-devel
+          ini_file:
+            path: /etc/dnf/dnf.conf
+            section: main
+            option: "{{ item.option }}"
+            value: "{{ item.value }}"
+          loop:
+            - option: installonly_limit
+              value: 0
+            - option: installonlypkgs
+              value: kernel kernel-devel kernel-modules kmod-openafs ghc-cgi ghc-cgi-devel
   roles:
     - syslog-client
     - munin-node
