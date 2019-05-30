@@ -39,7 +39,7 @@ diff --git a/server/config.c b/server/config.c
 index c1aae17..254c5d2 100644
 --- a/server/config.c
 +++ b/server/config.c
-@@ -2245,46 +2245,52 @@ AP_DECLARE(void) ap_merge_log_config(const struct ap_logconf *old_conf,
+@@ -2344,46 +2344,52 @@
      }
  }
  
@@ -53,10 +53,8 @@ index c1aae17..254c5d2 100644
      dconf->log = &main_server->log;
  
 -    for (virt = main_server->next; virt; virt = virt->next) {
--        merge_server_configs(p, main_server->module_config,
--                             virt->module_config);
-+    merge_server_configs(p, main_server->module_config,
-+			 virt->module_config);
+-        merge_server_configs(p, main_server->module_config, virt);
++    merge_server_configs(p, main_server->module_config, virt);
  
 -        virt->lookup_defaults =
 -            ap_merge_per_dir_configs(p, main_server->lookup_defaults,
@@ -112,12 +110,13 @@ index c1aae17..254c5d2 100644
 +AP_DECLARE(void) ap_fixup_virtual_hosts(apr_pool_t *p, server_rec *main_server)
 +{
 +    server_rec *virt;
-+    
+ 
 +    for (virt = main_server->next; virt; virt = virt->next)
 +        ap_fixup_virtual_host(p, main_server, virt);
- 
++ 
      ap_core_reorder_directories(p, main_server);
  }
+ 
 -- 
 1.8.1.2
 
