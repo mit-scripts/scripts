@@ -14,21 +14,34 @@
         name: network_interface
       vars:
         network_check_packages: False
-    - name: Configure scripts RPM repos
-      copy:
-        dest: /etc/yum.repos.d/scripts.repo
-        content: |
-          [scripts]
-          name=Scripts
-          baseurl=https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}/
-          enabled=1
-          gpgcheck=0
+    - name: Configure dnf
+      block:
+        - name: Configure scripts RPM repos
+          copy:
+            dest: /etc/yum.repos.d/scripts.repo
+            content: |
+              [scripts]
+              name=Scripts
+              baseurl=https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}/
+              enabled=1
+              gpgcheck=0
 
-          [scripts-testing]
-          name=Scripts Testing
-          baseurl=https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}-testing/
-          enabled=0
-          gpgcheck=0
+              [scripts-testing]
+              name=Scripts Testing
+              baseurl=https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}-testing/
+              enabled=0
+              gpgcheck=0
+        - name: Configure dnf.conf
+        ini_file:
+          path: /etc/dnf/dnf.conf
+          section: main
+          option: "{{ item.option }}"
+          value: "{{ item.value }}"
+        loop:
+          - option: installonly_limit
+            value: 0
+          - option: installonlypkgs
+            value: kernel kernel-devel kernel-modules kmod-openafs ghc-cgi ghc-cgi-devel
   roles:
     - syslog-client
     - munin-node
