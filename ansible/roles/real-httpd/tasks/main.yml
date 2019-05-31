@@ -4,6 +4,7 @@
     name:
       - scripts-httpd
       - scripts-mod_ssl
+      - mod_ldap
       - httpdmods
     state: present
 - name: Configure httpd
