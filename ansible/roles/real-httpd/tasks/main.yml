@@ -1,0 +1,12 @@
+---
+- name: Install scripts-httpd
+  dnf:
+    name:
+      - scripts-httpd
+      - scripts-mod_ssl
+    state: present
+- name: Configure httpd
+  copy:
+    dest: /etc/httpd/
+    src: httpd/
+  notify: reload httpd
