@@ -54,6 +54,7 @@ cert_filenames = set()
 
 def conf(vhost):
     name, = vhost['scriptsVhostName']
+    name = name.decode('utf-8')
     aliases = vhost.get('scriptsVhostAlias', [])
     certs, = vhost['scriptsVhostCertificate']
     try:
@@ -61,6 +62,7 @@ def conf(vhost):
     except KeyError:
         err('Error: missing scriptsVhostCertificateKeyFile for vhost {}\n'.format(name))
         return
+    key_filename = key_filename.decode('utf-8')
 
     try:
         certs = [crypto.load_certificate(crypto.FILETYPE_ASN1, base64.b64decode(cert)) for cert in certs.split()]
