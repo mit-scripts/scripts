@@ -6,6 +6,8 @@ import fcntl
 import hashlib
 import itertools
 import ldap
+import ldap.ldapobject
+import ldap.resiter
 import os
 import subprocess
 import sys
@@ -21,22 +23,30 @@ def err(e):
     sys.stderr.write(e)
     error = True
 
-ll = ldap.initialize(ldap.get_option(ldap.OPT_URI))
+class LDAPObject(ldap.ldapobject.SimpleLDAPObject, ldap.resiter.ResultProcessor): pass
+
+ll = LDAPObject(ldap.get_option(ldap.OPT_URI))
 try:
     with open('/etc/signup-ldap-pw') as pw_file:
         ll.simple_bind_s("cn=Directory Manager", pw_file.read())
 except FileNotFoundError:
-    err("LDAP password not found; vhosts will be incomplete")
+    err('LDAP password not found; vhosts will be incomplete\n')
     ll.simple_bind_s()
 
 if not os.path.exists(CERTS_DIR):
     os.mkdir(CERTS_DIR)
 
-vhosts = ll.search_s(
-    'ou=VirtualHosts,dc=scripts,dc=mit,dc=edu',
-    ldap.SCOPE_SUBTREE,
-    '(&(objectClass=scriptsVhost)(scriptsVhostCertificate=*))',
-    ['scriptsVhostName', 'scriptsVhostAlias', 'scriptsVhostCertificate', 'scriptsVhostCertificateKeyFile'])
+vhosts = []
+
+try:
+    for res_type,res_data,res_msgid,res_controls in ll.allresults(ll.search(
+            'ou=VirtualHosts,dc=scripts,dc=mit,dc=edu',
+            ldap.SCOPE_SUBTREE,
+            '(&(objectClass=scriptsVhost)(scriptsVhostCertificate=*))',
+            ['scriptsVhostName', 'scriptsVhostAlias', 'scriptsVhostCertificate', 'scriptsVhostCertificateKeyFile'])):
+        vhosts.extend(res_data)
+except ldap.ADMINLIMIT_EXCEEDED:
+    err('LDAP server returned partial results\n')
 
 vhosts.sort(key=lambda result: result[1]['scriptsVhostName'])
 
