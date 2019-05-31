@@ -12,6 +12,7 @@
   copy:
     dest: /etc/httpd/
     src: httpd/
+    mode: preserve
   notify: reload httpd
 - name: Enable httpd
   service:
