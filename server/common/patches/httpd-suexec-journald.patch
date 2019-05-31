@@ -32,7 +32,7 @@ index 745d86c..4014c1f 100644
  	$(LINK) $(checkgid_LTFLAGS) $(checkgid_OBJECTS) $(PROGRAM_LDADD)
  
  suexec_OBJECTS = suexec.lo
-+suexec_LDADD = "-lsystemd-journal -lsystemd-id128"
++suexec_LDADD = "-lsystemd"
 +suexec.lo: suexec.c
 +	$(LIBTOOL) --mode=compile $(CC) $(ab_CFLAGS) $(ALL_CFLAGS) $(ALL_CPPFLAGS) \
 +	    $(ALL_INCLUDES) $(PICFLAGS) $(LTCFLAGS) -DSCRIPTS_HAVE_SYSTEMD_JOURNAL \
