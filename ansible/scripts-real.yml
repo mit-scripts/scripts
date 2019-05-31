@@ -45,6 +45,7 @@
   roles:
     - syslog-client
     - munin-node
+    - real-ldap
     - real-k5login
     - real-nrpe
     - real-nsspam

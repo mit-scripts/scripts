@@ -1,0 +1,12 @@
+---
+- name: Install LDAP client
+  dnf: name=openldap state=present
+- name: Configure ldap.conf
+  lineinfile:
+    path: /etc/openldap/ldap.conf
+    regexp: '(?i)^#?\s*{{ item | regex_search("^(\S+)") }}\s'
+    line: "{{ item }}"
+  loop:
+    - BASE dc=scripts,dc=mit,dc=edu
+    - URI {{ ldap_server }}
+# TODO: Configure 389-ds if run_local_ldap is true
