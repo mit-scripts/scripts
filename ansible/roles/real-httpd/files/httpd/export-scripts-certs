@@ -27,7 +27,7 @@ vhosts = ll.search_s(
     '(&(objectClass=scriptsVhost)(scriptsVhostCertificate=*))',
     ['scriptsVhostName', 'scriptsVhostAlias', 'scriptsVhostCertificate', 'scriptsVhostCertificateKeyFile'])
 
-vhosts.sort(key=lambda (dn, vhost): vhost['scriptsVhostName'])
+vhosts.sort(key=lambda result: result[1]['scriptsVhostName'])
 
 cert_filenames = set()
 error = False
