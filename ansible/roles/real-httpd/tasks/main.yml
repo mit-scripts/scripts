@@ -7,6 +7,7 @@
       - mod_ldap
       - httpdmods
       - python3-ldap
+      - python3-pyOpenSSL
     state: present
 - name: Configure httpd
   copy:

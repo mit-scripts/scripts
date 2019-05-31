@@ -14,9 +14,20 @@ from OpenSSL import crypto, SSL
 
 CERTS_DIR = '/var/lib/scripts-certs'
 
+error = False
+
+def err(e):
+    global error
+    sys.stderr.write(e)
+    error = True
+
 ll = ldap.initialize(ldap.get_option(ldap.OPT_URI))
-with open('/etc/signup-ldap-pw') as pw_file:
-    ll.simple_bind_s("cn=Directory Manager", pw_file.read())
+try:
+    with open('/etc/signup-ldap-pw') as pw_file:
+        ll.simple_bind_s("cn=Directory Manager", pw_file.read())
+except FileNotFoundError:
+    err("LDAP password not found; vhosts will be incomplete")
+    ll.simple_bind_s()
 
 if not os.path.exists(CERTS_DIR):
     os.mkdir(CERTS_DIR)
@@ -30,12 +41,6 @@ vhosts = ll.search_s(
 vhosts.sort(key=lambda result: result[1]['scriptsVhostName'])
 
 cert_filenames = set()
-error = False
-
-def err(e):
-    global error
-    sys.stderr.write(e)
-    error = True
 
 def conf(vhost):
     name, = vhost['scriptsVhostName']
