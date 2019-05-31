@@ -9,7 +9,7 @@
  URL: https://httpd.apache.org/
  Source0: https://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
  Source1: index.html
-@@ -86,6 +86,15 @@
+@@ -86,6 +86,14 @@
  
  # Security fixes
  
@@ -19,7 +19,6 @@
 +Patch1004: httpd-fixup-vhost.patch
 +Patch1005: httpd-allow-null-user.patch
 +Patch1006: httpd-suexec-journald.patch
-+Patch1007: httpd-bug57070.patch
 +Patch1008: httpd-suexec-CVE-2016-5387.patch
 +
  License: ASL 2.0
@@ -49,7 +48,7 @@
  # Require an OpenSSL which supports PROFILE=SYSTEM
  Conflicts: openssl-libs < 1:1.0.1h-4
  
-@@ -232,6 +244,15 @@
+@@ -232,6 +244,14 @@
  %patch60 -p1 -b .enable-sslv3
  %patch61 -p1 -b .r1857129
  
@@ -59,7 +58,6 @@
 +%patch1004 -p1 -b .fixup-vhost
 +%patch1005 -p1 -b .allow-null-user
 +%patch1006 -p1 -b .journald
-+%patch1007 -p0 -b .bug57070
 +%patch1008 -p0 -b .CVE-2016-5387
 +
  # Patch in the vendor string
