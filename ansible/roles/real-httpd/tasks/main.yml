@@ -10,3 +10,8 @@
     dest: /etc/httpd/
     src: httpd/
   notify: reload httpd
+- name: Enable httpd
+  service:
+    name: httpd
+    enabled: yes
+    state: started
