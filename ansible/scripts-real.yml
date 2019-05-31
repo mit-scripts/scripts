@@ -52,6 +52,7 @@
     - real-postfix
     - real-afs
     - mock
+    - real-httpd
   # TODO: Configure aliases with blocked accounts and procmail for root
   tasks:
   - name: Install accountadm
