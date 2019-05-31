@@ -6,6 +6,7 @@
       - scripts-mod_ssl
       - mod_ldap
       - httpdmods
+      - python3-ldap
     state: present
 - name: Configure httpd
   copy:

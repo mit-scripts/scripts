@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import base64
 import errno
@@ -14,7 +14,7 @@ from OpenSSL import crypto, SSL
 
 CERTS_DIR = '/var/lib/scripts-certs'
 
-ll = ldap.initialize('ldapi://%2fvar%2frun%2fslapd-scripts.socket/')
+ll = ldap.initialize(ldap.get_option(ldap.OPT_URI))
 with open('/etc/signup-ldap-pw') as pw_file:
     ll.simple_bind_s("cn=Directory Manager", pw_file.read())
 
