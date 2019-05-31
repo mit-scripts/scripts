@@ -134,7 +134,7 @@ with open(os.path.join(CERTS_DIR, '.lock'), 'w') as lock_file:
         else:
             raise
 
-    if old_vhosts_conf is not None and new_vhosts_conf != old_vhosts_conf:
+    if old_vhosts_conf is None or new_vhosts_conf != old_vhosts_conf:
         with open(os.path.join(CERTS_DIR, 'vhosts.conf.new'), 'w') as new_vhosts_file:
             new_vhosts_file.write(new_vhosts_conf)
         os.rename(os.path.join(CERTS_DIR, 'vhosts.conf.new'), os.path.join(CERTS_DIR, 'vhosts.conf'))
