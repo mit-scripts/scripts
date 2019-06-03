@@ -9,6 +9,7 @@
       - httpdmods
       - python3-ldap
       - python3-pyOpenSSL
+      - logview
     state: present
 - name: Configure httpd
   copy:
