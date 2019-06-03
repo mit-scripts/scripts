@@ -83,6 +83,8 @@ all:
             use_nss_nonlocal: yes
             use_hesiod: yes
             use_scripts_localauth: yes
+            use_accountadm: yes
+            use_scripts_httpd: yes
           hosts:
             quentin-scripts-f30.xvm.mit.edu: {}
             scripts-f30-test.xvm.mit.edu: {}

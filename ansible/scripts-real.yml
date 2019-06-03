@@ -53,7 +53,8 @@
     - real-postfix
     - real-afs
     - mock
-    - real-httpd
+    - role: real-httpd
+      when: use_scripts_httpd | default(True)
   # TODO: Configure aliases with blocked accounts and procmail for root
   tasks:
   - name: Install accountadm
@@ -61,6 +62,7 @@
       name:
         - accountadm
       state: present
+    when: use_accountadm | default(True)
   - name: Hesiod
     block:
     - name: Install hesiod
