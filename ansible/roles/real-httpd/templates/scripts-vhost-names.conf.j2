@@ -15,4 +15,5 @@ ServerAlias \
     golden-egg.mit.edu golden-egg g-e.mit.edu g-e scripts10.mit.edu scripts10 18.4.86.141 \
     miracle-cure.mit.edu miracle-cure m-c.mit.edu m-c scripts11.mit.edu scripts11 18.4.86.203 \
     lucky-star.mit.edu lucky-star l-s.mit.edu l-s scripts12.mit.edu scripts12 18.4.86.204 \
+    {{ ansible_nodename }} {{ ansible_hostname }} {{ ansible_default_ipv4.address }} \
     localhost 127.0.0.1 ::1

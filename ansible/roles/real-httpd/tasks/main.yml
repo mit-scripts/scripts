@@ -18,12 +18,15 @@
     mode: preserve
   notify: reload httpd
 - name: Configure mod_vhost_ldap
-  copy:
+  template:
     dest: /etc/httpd/conf.d/vhost_ldap.conf
-    content: |
-      VhostLDAPEnabled on
-      VhostLDAPUrl "{{ ldap_server }}ou=VirtualHosts,dc=scripts,dc=mit,dc=edu"
-      VhostLDAPFallback notfound.example.com
+    src: vhost_ldap.conf.j2
+  notify: reload httpd
+- name: Configure vhost names
+  template:
+    dest: /etc/httpd/conf.d/scripts-vhost-names.conf
+    src: scripts-vhost-names.conf.j2
+  notify: reload httpd
 - name: Install certificates
   copy:
     dest: /etc/pki/tls/certs/
