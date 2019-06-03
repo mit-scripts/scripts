@@ -20,7 +20,10 @@ error = False
 
 def err(e):
     global error
-    sys.stderr.write(e)
+    if isinstance(e, bytes):
+        sys.stderr.buffer.write(e)
+    else:
+        sys.stderr.write(e)
     error = True
 
 class LDAPObject(ldap.ldapobject.SimpleLDAPObject, ldap.resiter.ResultProcessor): pass
@@ -141,10 +144,10 @@ with open(os.path.join(CERTS_DIR, '.lock'), 'w') as lock_file:
 
         configtest = subprocess.Popen(['apachectl', 'configtest'], stderr=subprocess.PIPE)
         e = configtest.communicate()[1]
-        if configtest.returncode == 0 and e == 'Syntax OK\n':
+        if configtest.returncode == 0 and e == b'Syntax OK\n':
             subprocess.check_call(['apachectl', 'graceful'])
         else:
-            err('apachectl configtest failed:\n' + e)
+            err(b'apachectl configtest failed:\n' + e)
 
     for filename in os.listdir(CERTS_DIR):
         if filename.endswith('.pem') and filename not in cert_filenames:
