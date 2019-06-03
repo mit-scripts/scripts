@@ -5,6 +5,7 @@
       - scripts-httpd
       - scripts-mod_ssl
       - mod_ldap
+      - mod_fcgid
       - httpdmods
       - python3-ldap
       - python3-pyOpenSSL
@@ -13,6 +14,12 @@
   copy:
     dest: /etc/httpd/
     src: httpd/
+    mode: preserve
+  notify: reload httpd
+- name: Install certificates
+  copy:
+    dest: /etc/pki/tls/certs/
+    src: certs/
     mode: preserve
   notify: reload httpd
 - name: Enable httpd
