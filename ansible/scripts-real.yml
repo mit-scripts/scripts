@@ -45,6 +45,7 @@
   roles:
     - syslog-client
     - munin-node
+    - mock
     - real-ldap
     - real-k5login
     - real-nrpe
@@ -52,7 +53,7 @@
     - real-sshd
     - real-postfix
     - real-afs
-    - mock
+    - real-php
     - role: real-httpd
       when: use_scripts_httpd | default(True)
   # TODO: Configure aliases with blocked accounts and procmail for root

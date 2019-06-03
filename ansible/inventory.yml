@@ -85,6 +85,7 @@ all:
             use_scripts_localauth: yes
             use_accountadm: yes
             use_scripts_httpd: yes
+            use_scripts_php: yes
           hosts:
             quentin-scripts-f30.xvm.mit.edu: {}
             scripts-f30-test.xvm.mit.edu: {}

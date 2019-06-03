@@ -1,3 +1,4 @@
 ---
 dependencies:
   - real-ldap
+  - real-php

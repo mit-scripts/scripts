@@ -1,0 +1,54 @@
+---
+- name: Install PHP
+  dnf:
+    name:
+      - php
+      - php-cli
+    state: present
+- name: Install php_scripts
+  dnf:
+    name:
+      - php_scripts
+    state: present
+  when: use_scripts_php
+- name: Configure php.ini
+  ini_file:
+    path: /etc/php.ini
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  loop:
+    - section: PHP
+      option: short_open_tag
+      value: "On"
+    - section: PHP
+      option: memory_limit
+      value: "1024M"
+    - section: PHP
+      option: variables_order
+      value: '"EGPCS"'
+    - section: PHP
+      option: enable_dl
+      value: "On"
+    - section: Date
+      option: date.timezone
+      value: '"US/Eastern"'
+    - section: MySQLi
+      option: mysqli.default_host
+      value: '"sql.mit.edu"'
+    - section: Session
+      option: session.save_path
+      value: '"/var/lib/scripts-php-sessions"'
+    - section: Session
+      option: url_rewriter.tags
+      value: '"a=href,area=href,frame=src,input=src,form=fakeentry"'
+- name: Configure php.d/_scripts.ini
+  copy:
+    dest: /etc/php.d/_scripts.ini
+    # TODO: Reconcile this with php.ini above.
+    content: |
+      {% if use_scripts_php %}zend_extension = /usr/lib64/php/modules/scripts.so{% endif %}
+      cgi.fix_pathinfo = 1
+      cgi.force_redirect = 0
+      memory_limit = 1024M
+      date.timezone = America/New_York
