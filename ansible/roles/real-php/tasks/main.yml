@@ -4,6 +4,9 @@
     name:
       - php
       - php-cli
+      - php-json
+      - php-mysqlnd
+      - php-mbstring
     state: present
 - name: Install php_scripts
   dnf:
@@ -47,7 +50,9 @@
     dest: /etc/php.d/_scripts.ini
     # TODO: Reconcile this with php.ini above.
     content: |
-      {% if use_scripts_php %}zend_extension = /usr/lib64/php/modules/scripts.so{% endif %}
+      {% if use_scripts_php %}
+      zend_extension = /usr/lib64/php/modules/scripts.so
+      {% endif %}
       cgi.fix_pathinfo = 1
       cgi.force_redirect = 0
       memory_limit = 1024M
