@@ -4,6 +4,7 @@
     name:
       - scripts-httpd
       - scripts-mod_ssl
+      - scripts-static-cat
       - mod_ldap
       - mod_fcgid
       - httpdmods
