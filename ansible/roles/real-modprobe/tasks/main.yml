@@ -8,6 +8,12 @@
     dest: /etc/scripts/modprobe
     src: modprobe
     mode: preserve
+- name: Load binfmt_misc
+  copy:
+    dest: /etc/modules-load.d/binfmt_misc.conf
+    content: |
+      binfmt_misc
+  notify: load modules
 - name: Activate modprobe replacement script
   copy:
     dest: /etc/sysctl.d/99-scripts-modprobe.conf
