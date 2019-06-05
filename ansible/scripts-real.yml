@@ -58,6 +58,19 @@
       when: use_scripts_httpd | default(True)
   # TODO: Configure aliases with blocked accounts and procmail for root
   tasks:
+  - name: Editors
+    block:
+      - name: Install editors
+        dnf:
+          name:
+            - vim
+            - emacs-nox
+          state: present
+      - name: Disable viminfo
+        lineinfile:
+          path: /etc/vimrc
+          regexp: '^set viminfo='
+          line: "set viminfo=  \" don't keep a viminfo file"
   - name: Install accountadm
     dnf:
       name:
