@@ -1,1 +1,0 @@
-* * * * * scripts touch /afs/athena.mit.edu/contrib/scripts/cron_scripts/cron_status_flag/$(hostname -f) > /dev/null 2>&1

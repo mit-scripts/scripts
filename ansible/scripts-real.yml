@@ -55,6 +55,7 @@
     - real-postfix
     - real-afs
     - real-php
+    - real-cron
     - role: real-httpd
       when: use_scripts_httpd | default(True)
   # TODO: Configure aliases with blocked accounts and procmail for root

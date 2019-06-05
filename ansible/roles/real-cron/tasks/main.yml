@@ -1,0 +1,11 @@
+---
+- name: Write scripts cron status flag
+  copy:
+    dest: /etc/cron.d/scripts-cron_status
+    content: |
+      * * * * * scripts touch /afs/athena.mit.edu/contrib/scripts/cron_scripts/cron_status_flag/$(hostname -f) > /dev/null 2>&1
+- name: Check number of crontabs
+  copy:
+    dest: /etc/cron.daily/num-crontabs
+    src: num-crontabs
+    mode: preserve
