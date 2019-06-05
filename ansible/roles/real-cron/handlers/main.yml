@@ -1,0 +1,3 @@
+---
+- name: restart crond
+  systemd: daemon_reload=yes name=crond.service state=restarted

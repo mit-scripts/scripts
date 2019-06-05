@@ -1,4 +1,17 @@
 ---
+- name: Use sendmail to notify cron output
+  ini_file:
+    no_extra_spaces: yes
+    path: /etc/sysconfig/crond
+    section: null
+    option: CRONDARGS
+    value: "\"-m '/usr/sbin/sendmail -FCronDaemon -i -odi -oem -oi -t'\""
+  notify: restart crond
+- name: Require AFS tokens before crond starts
+  copy:
+    dest: /etc/systemd/system/crond.service.d/
+    src: scripts.conf
+  notify: restart crond
 - name: Write scripts cron status flag
   copy:
     dest: /etc/cron.d/scripts-cron_status
