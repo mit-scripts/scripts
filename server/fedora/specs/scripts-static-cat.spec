@@ -11,6 +11,8 @@ Source0:        %{name}.tar.gz
 
 BuildRequires:  golang >= 1.6
 
+%undefine _missing_build_ids_terminate_build
+
 %description
 static-cat is a binary for serving static content on scripts.mit.edu.
 
