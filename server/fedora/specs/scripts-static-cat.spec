@@ -1,7 +1,4 @@
-# https://fedoraproject.org/wiki/Packaging:Haskell
-
-# Link Haskell libs statically for 3x faster startup speed.
-%define ghc_without_dynamic 1
+# https://fedoraproject.org/wiki/PackagingDrafts/Go
 
 Name:           scripts-static-cat
 Version:        0.0
@@ -12,19 +9,7 @@ License:        GPL+
 URL:            http://scripts.mit.edu/
 Source0:        %{name}.tar.gz
 
-BuildRequires:  ghc-Cabal-devel
-BuildRequires:  ghc-rpm-macros
-# Begin cabal-rpm deps:
-BuildRequires:  ghc-MonadCatchIO-mtl-devel
-BuildRequires:  ghc-bytestring-devel
-BuildRequires:  ghc-cgi-devel
-BuildRequires:  ghc-containers-devel
-BuildRequires:  ghc-filepath-devel
-BuildRequires:  ghc-old-locale-devel
-BuildRequires:  ghc-time-devel
-BuildRequires:  ghc-unix-devel
-BuildRequires:  ghc-unix-handle-devel
-# End cabal-rpm deps
+BuildRequires:  golang >= 1.6
 
 %description
 static-cat is a binary for serving static content on scripts.mit.edu.
@@ -33,20 +18,19 @@ static-cat is a binary for serving static content on scripts.mit.edu.
 %prep
 %setup -q -n %{name}
 
-
 %build
-%ghc_bin_build
-
+go build -o static-cat .
 
 %install
-%ghc_bin_install
-
+install -p -m 0755 ./static-cat %{buildroot}%{_bindir}/static-cat
 
 %files
 %attr(755,root,root) %{_bindir}/static-cat
 
-
 %changelog
+* Wed Jun 5 2019 Quentin Smith - 0.0-0
+- static-cat now written in Go
+
 * Mon May 26 2014 Alexander Chernyakhovsky <achernya@mit.edu> - 0.0-0
 - Updated for F20 with cabal-rpm
 
