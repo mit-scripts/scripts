@@ -16,12 +16,13 @@ static-cat is a binary for serving static content on scripts.mit.edu.
 
 
 %prep
-%setup -q -n %{name}
+%autosetup -n %{name}
 
 %build
 go build -o static-cat .
 
 %install
+install -d %{buildroot}%{_bindir}
 install -p -m 0755 ./static-cat %{buildroot}%{_bindir}/static-cat
 
 %files
