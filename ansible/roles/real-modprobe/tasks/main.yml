@@ -1,0 +1,16 @@
+---
+- name: Ensure /etc/scripts exists
+  file:
+    path: /etc/scripts/
+    state: directory
+- name: Install modprobe replacement script
+  copy:
+    dest: /etc/scripts/modprobe
+    src: modprobe
+    mode: preserve
+- name: Activate modprobe replacement script
+  copy:
+    dest: /etc/sysctl.d/99-scripts-modprobe.conf
+    content: |
+      kernel.modprobe = /etc/scripts/modprobe
+  notify: apply sysctl

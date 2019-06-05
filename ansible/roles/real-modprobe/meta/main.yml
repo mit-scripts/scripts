@@ -1,4 +1,3 @@
 ---
 dependencies:
   - sysctl
-  - real-fuse

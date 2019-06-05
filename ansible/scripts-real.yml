@@ -49,6 +49,7 @@
     - real-ldap
     - real-k5login
     - real-nrpe
+    - real-modprobe
     - real-nsspam
     - real-sshd
     - real-postfix
