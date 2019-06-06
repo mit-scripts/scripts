@@ -51,6 +51,7 @@
     - real-nrpe
     - real-modprobe
     - real-nsspam
+    - real-iptables
     - real-sshd
     - real-postfix
     - real-afs

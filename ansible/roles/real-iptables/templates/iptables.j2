@@ -1,9 +1,8 @@
-*filter
+ *filter
 :INPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :log-smtp - [0:0]
--A INPUT -p udp -m udp --dport 161 ! -s 18.0.0.0/8 -j REJECT
 -A OUTPUT -p tcp -m tcp --dport 25 --syn -j log-smtp
 -A log-smtp -m owner --uid-owner postfix -j RETURN
 -A log-smtp -m owner --uid-owner nrpe -o lo -d 127.0.0.1 -j RETURN
@@ -11,8 +10,10 @@
 -A log-smtp -m owner --uid-owner 537644531 -o lo -j RETURN
 -A log-smtp -j LOG --log-prefix "SMTP " --log-uid
 -A log-smtp -o lo -d 127.0.0.1 -j RETURN
-# 18.9.28.100=outgoing.mit.edu
--A log-smtp -d 18.9.28.100 -j RETURN
+# outgoing.mit.edu
+{% for ip in lookup('dig', 'outgoing.mit.edu') %}
+-A log-smtp -d {{ ip }} -j RETURN
+{% endfor %}
 -A log-smtp -j REJECT --reject-with icmp-admin-prohibited
 -A OUTPUT -d 192.42.116.41 -j LOG --log-prefix "Eitest sinkhole " --log-uid
 -A OUTPUT -d 216.218.185.162 -j LOG --log-prefix "matsnu sinkhole " --log-uid

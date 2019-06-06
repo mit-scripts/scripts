@@ -1,0 +1,33 @@
+---
+- name: Install iptables service
+  dnf: name=iptables state=present
+- name: Configure iptables modules
+  copy:
+    dest: /etc/modules-load.d/iptables.conf
+    content: |
+      nf_log_ipv4
+      xt_LOG
+      xt_owner
+      ip6_tables
+      ip6table_filter
+      ip6t_REJECT
+      nf_log_ipv6
+  notify: load modules
+- name: Configure iptables rules
+  template:
+    dest: /etc/sysconfig/iptables
+    src: iptables.j2
+  notify: reload iptables
+- name: Configure ip6tables rules
+  template:
+    dest: /etc/sysconfig/ip6tables
+    src: ip6tables.j2
+  notify: reload ip6tables
+- name: Start ip{,6}tables rules
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop:
+    - iptables
+    - ip6tables
