@@ -73,6 +73,7 @@
       content: |
         [Unit]
         Description=FUSE better mousetrap filesystem
+        Requires=openafs-client.service
         After=openafs-client.service
         [Mount]
         What=/usr/sbin/better-mousetrapfs
