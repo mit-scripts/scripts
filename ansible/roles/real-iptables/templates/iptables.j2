@@ -1,4 +1,4 @@
- *filter
+*filter
 :INPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
@@ -11,7 +11,7 @@
 -A log-smtp -j LOG --log-prefix "SMTP " --log-uid
 -A log-smtp -o lo -d 127.0.0.1 -j RETURN
 # outgoing.mit.edu
-{% for ip in lookup('dig', 'outgoing.mit.edu') %}
+{% for ip in lookup('dig', 'outgoing.mit.edu', wantlist=True) %}
 -A log-smtp -d {{ ip }} -j RETURN
 {% endfor %}
 -A log-smtp -j REJECT --reject-with icmp-admin-prohibited
