@@ -1,2 +1,0 @@
-AFSD_ARGS="-afsdb -dynroot -fakestat -stat 25000 -daemons 100 -volumes 4000 -files 400000 -chunksize 19"
-BOSSERVER_ARGS=

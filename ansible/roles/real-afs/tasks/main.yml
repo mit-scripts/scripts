@@ -19,6 +19,14 @@
       content: |
         afs.GCPAGs = 0
     notify: apply sysctl
+  - name: Increase AFS performance
+    ini_file:
+      no_extra_spaces: yes
+      path: /etc/sysconfig/openafs
+      section: null
+      option: AFSD_ARGS
+      value: '"-afsdb -dynroot -fakestat -stat 25000 -daemons 100 -volumes 4000 -files 400000 -chunksize 19"'
+    notify: restart openafs-client
   - name: Configure ThisCell
     copy:
       dest: /usr/vice/etc/ThisCell
