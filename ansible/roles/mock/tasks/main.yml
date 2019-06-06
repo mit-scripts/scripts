@@ -56,13 +56,14 @@
     owner: scripts-build
     state: directory
 - stat:
-    path: /home/scripts-build/mock-local/
-  register: rpm_st
-- stat:
     path: /home/scripts-build/mock-local/repodata/repomd.xml
   register: md_st
+- find:
+    paths: /home/scripts-build/mock-local/
+    patterns: "*.rpm"
+  register: rpm_st
 - name: Generate repo metadata
   command: /usr/bin/createrepo /home/scripts-build/mock-local/
   become: yes
   become_user: scripts-build
-  when: (not md_st.stat.exists) or (rpm_st.stat.mtime > md_st.stat.mtime)
+  when: (not md_st.stat.exists) or ((rpm_st.files|map(attribute='mtime')|max) > md_st.stat.mtime)
