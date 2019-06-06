@@ -1,6 +1,6 @@
 ---
 - name: Install iptables service
-  dnf: name=iptables state=present
+  dnf: name=iptables-services state=present
 - name: Configure iptables modules
   copy:
     dest: /etc/modules-load.d/iptables.conf
