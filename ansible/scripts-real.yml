@@ -4,8 +4,12 @@
     network_ether_interfaces: "{{ lookup('template', 'templates/real_ether_interfaces.yml.j2') | from_yaml }}"
     ldap_server: "{{ run_local_ldap | default(True) | ternary('ldapi://%2fvar%2frun%2fslapd-scripts.socket/', 'ldap://scripts-ldap.mit.edu/') }}"
   pre_tasks:
-    - name: Install python3-netaddr
-      dnf: name=python3-netaddr state=present
+    - name: Install playbook Python dependencies
+      dnf:
+        name:
+          - python3-netaddr
+          - python3-dns
+        state: present
     - name: Install network-scripts
       dnf:
         name: network-scripts
