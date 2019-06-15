@@ -47,7 +47,8 @@
             - option: installonlypkgs
               value: kernel kernel-devel kernel-modules kmod-openafs ghc-cgi ghc-cgi-devel
   roles:
-    - syslog-client
+    - role: syslog-client
+      when: syslog_client | default(True)
     - munin-node
     - mock
     - real-ldap

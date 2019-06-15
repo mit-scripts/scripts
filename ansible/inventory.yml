@@ -77,6 +77,8 @@ all:
               - host: scripts-test.mit.edu
                 ip: 18.4.86.229
                 cidr_netmask: 24
+            # Don't Zephyr from dev servers
+            syslog_client: no
             afs_cache_size: 500000
             run_local_ldap: no
             use_afs: yes
@@ -87,5 +89,8 @@ all:
             use_scripts_httpd: yes
             use_scripts_php: yes
           hosts:
-            quentin-scripts-f30.xvm.mit.edu: {}
+            quentin-scripts-f30.xvm.mit.edu:
+              vars:
+                syslog_client: yes
+            quentin-ansible-test.xvm.mit.edu: {}
             scripts-f30-test.xvm.mit.edu: {}
