@@ -114,6 +114,7 @@
       - scripts-afsagent.service
       - scripts-afsagent-startup.service
       - scripts-afsagent.timer
+    when: has_daemon_keytab
 
 # CellServDB maintains a mapping of cell names to IP addresses of servers
 # serving them.

@@ -12,6 +12,7 @@
     dest: /etc/systemd/system/crond.service.d/
     src: scripts.conf
   notify: restart crond
+  when: has_daemon_keytab
 - name: Write scripts cron status flag
   copy:
     dest: /etc/cron.d/scripts-cron_status

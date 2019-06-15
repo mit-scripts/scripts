@@ -1,0 +1,14 @@
+---
+- name: Check for /etc/daemon.keytab
+  stat:
+    path: /etc/daemon.keytab
+  register: daemon_keytab
+- name: Check for /etc/krb5.keytab
+  stat:
+    path: /etc/krb5.keytab
+  register: host_keytab
+- name: Record as facts
+  set_fact:
+    cacheable: true
+    has_daemon_keytab: "{{ daemon_keytab.stat.exists }}"
+    has_host_keytab: "{{ host_keytab.stat.exists }}"
