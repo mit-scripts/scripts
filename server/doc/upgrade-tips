@@ -5,9 +5,9 @@ Upgrading Scripts for a new Fedora distribution
 -------------------
 
 You should read the Release Notes for all of the intervening
-releases.  For example, here are the Fedora 13 release notes:
+releases.  For example, here are the Fedora 30 release notes:
 
-    http://docs.fedoraproject.org/en-US/Fedora/13/html/Release_Notes/
+    https://fedoraproject.org/wiki/Releases/30/ChangeSet
 
 Because we sometimes skip releases, you should read any skipped
 release's report notes.
@@ -26,34 +26,32 @@ specific, so when you are ramping up the new release, you will want
 a new branch to do development on, before merging back upon the
 official release.  You can do this with:
 
-    svn cp svn://scripts.mit.edu/trunk \
-           svn://scripts.mit.edu/branches/fcXX-dev
+    git checkout -b f30
 
-On the new branch, there are a number of files you will have to
-update:
+3. Install a new VM
+-------------------
 
-2.1 Mock
+Update the kickstart file at server/fedora/ks/kickstart.txt for the
+new release. At a minimum you'll need to change the "url" stanza, and
+probably also change the branch name in the "git clone" command.
 
-Mock needs to be setup for the new environment.  The first thing to do
-is to update the Makefile by substituting
-s/scripts-fcOLD/scripts-fcNEW/g on the /usr/bin/mock invocations.
-After that, you need to go to /etc/mock and create the new cfg file
-for the new scripts-fcXX-ARCH configurations (where ARCH is x86_64 and
-i386).  You can base the new cfg off of the older version's, however
-you will want to make the following changes:
+Add your new VM to ansible/inventory.yml, probably in the
+"scripts-real-test" section. Initially you won't have any Scripts
+packages available for this distro, so set the use_* variables to "no"
+to skip installing those packages.
 
-    * Update all references to the old Fedora release to the new
-      Fedora release.  This includes root, dist, mirrorlist, baseurl
+Install a new VM using the kickstart file. You might want to do this
+with the kernel command-line parameter:
 
-    * Temporarily disabling the web.mit.edu Scripts RPM repository
-      and the local RPM repository by setting enabled=0 (it's there for
-      a reason!)  However, the local RPM repository is fairly painless
-      to create and will come in handy when you start attempting to
-      build packages that have dependencies on other scriptsified
-      packages: you can set one up as scripts-build with:
+    inst.ks=https://raw.githubusercontent.com/mit-scripts/scripts/ansible-realserver/server/fedora/ks/kickstart.txt inst.text
 
-        mkdir ~/mock-local
-        createrepo ~/mock-local
+The "ansible-config-me" service will run on first boot and execute the
+Ansible playbook. If you're lucky, it will complete successfully on
+the first try, but likely something has changed in the new
+distro. Update the Ansible configuration in /srv/repository (either
+locally or remotely and then pull your changes in) and re-run the
+service with "systemctl start ansible-config-me" until the service
+successfully completes.
 
 3. Rebuild Scripts packages
 ---------------------------
@@ -69,6 +67,9 @@ so they don't get blown away on a successive mock build.  ~/mock-local
 is a good choice.  The Mock RPMs will be created in:
 
     /var/lib/mock/$MOCK_ENV/result/
+
+I suggest copying these to ~/mock-local and then rsyncing from there
+to /mit/scripts/rpm-fcXX.
 
 Here are some of the common troubles you'll have to deal with:
 
@@ -162,11 +163,11 @@ all you need to do is copy the RPMs from the build server to there
 your root tickets on a server.)  When you're done, run `createrepo -d`
 on the directory.
 
-Note that if you do a successive rebuild without bumping the Subversion
-revision (via a `svn up`), the new package will have the *same* version
-and yum will probably insist on using the old cached version.  You can
-use `yum clean all` to reset your cache and force yum to get the latest
-version.
+As you put RPMs in this directory, you can start flipping the use_*
+flags in inventory.yml to start enabling these packages. You can rerun
+Ansible at any time with
+
+    /srv/repository/server/fedora/ansible-config-me.sh
 
 5. Update fs sysname
 --------------------
