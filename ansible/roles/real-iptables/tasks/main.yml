@@ -13,6 +13,8 @@
       ip6t_REJECT
       nf_log_ipv6
   notify: load modules
+- name: Immediately load new modules
+  meta: flush_handlers
 - name: Configure iptables rules
   template:
     dest: /etc/sysconfig/iptables

@@ -10,3 +10,5 @@
     content: |
       fuse
   notify: load modules
+- name: Immediately load new modules
+  meta: flush_handlers
