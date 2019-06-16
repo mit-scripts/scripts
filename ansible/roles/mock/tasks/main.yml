@@ -66,4 +66,4 @@
   command: /usr/bin/createrepo /home/scripts-build/mock-local/
   become: yes
   become_user: scripts-build
-  when: (not md_st.stat.exists) or ((rpm_st.files|map(attribute='mtime')|max) > md_st.stat.mtime)
+  when: (not md_st.stat.exists) or (rpm_st.files and ((rpm_st.files|map(attribute='mtime')|max) > md_st.stat.mtime))
