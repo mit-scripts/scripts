@@ -50,8 +50,11 @@ git
 
 %post --erroronfail --log=/root/ks-post.log
 set -e
+systemctl enable serial-getty@ttyS0.service
 cd /srv
 git clone -b ansible-realserver --recurse-submodules https://github.com/mit-scripts/scripts repository
 chown -R scripts-build /srv/repository
 ln -s /srv/repository/server/fedora/ansible-config-me.service /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable ansible-config-me
 %end
