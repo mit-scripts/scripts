@@ -13,6 +13,8 @@ keyboard us
 #network --device eth0 --bootproto static --ip 18.49.4.31 --netmask 255.255.0.0 --gateway 18.49.0.1 --nameserver 18.70.0.160 --nameserver 18.71.0.151 --nameserver 18.72.0.3 --hostname feral-purrbeast.xvm.mit.edu
 #network --device eth1 --bootproto static --ip 172.21.4.31 --netmask 255.255.0.0
 
+rootpw --lock
+
 timezone --utc America/New_York
 selinux --disabled
 authconfig --enableshadow --passalgo=sha512 --enablefingerprint
@@ -50,6 +52,7 @@ git
 
 %post --erroronfail --log=/root/ks-post.log
 set -e
+passwd -d root
 systemctl enable serial-getty@ttyS0.service
 cd /srv
 git clone -b ansible-realserver --recurse-submodules https://github.com/mit-scripts/scripts repository
