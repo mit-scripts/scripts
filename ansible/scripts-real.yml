@@ -174,6 +174,21 @@
       option: SplitMode
       value: uid
     notify: restart journald
+  - name: grub
+    block:
+      - name: Configure grub
+        ini_file:
+          no_extra_spaces: yes
+          path: /etc/default/grub
+          section: null
+          option: "{{ item.option }}"
+          value: "\"{{ item.value }}\""
+        loop:
+          - option: GRUB_CMDLINE_LINUX
+            value: "biosdevname=0 console=tty1 console=ttyS0 console=hvc0 rd.md=0 rd.lvm=0 rd.dm=0 rd.luks=0 crashkernel=128M"
+          - option: GRUB_TERMINAL
+            value: "serial console"
+        notify: regenerate grub
   - name: Enable update e-mails
     block:
       - name: Install dnf-automatic
@@ -219,3 +234,5 @@
     service: name=autofs state=reloaded
   - name: restart journald
     service: name=systemd-journald state=restarted
+  - name: regenerate grub
+    command: grub2-mkconfig -o /boot/grub2/grub.cfg
