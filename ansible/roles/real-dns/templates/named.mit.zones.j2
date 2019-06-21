@@ -1,0 +1,14 @@
+{% macro zone(name) %}
+zone "{{ name }}" IN {
+    type stub;
+    masters { {% for server in mit_dns_servers %}{{server}}; {% endfor %} };
+    file "slaves/{{ name }}.stub";
+};
+{% endmacro %}
+{{ zone("mit.edu") }}
+{{ zone("0.4.3.0.6.2.ip6.arpa") }}
+{{ zone("10.in-addr.arpa") }}
+{# http://kb.mit.edu/confluence/x/F4DCAg (2019-06-21) #}
+{% for i in range(0, 128) %}
+{{ zone(i ~ ".18.in-addr.arpa") }}
+{% endfor %}

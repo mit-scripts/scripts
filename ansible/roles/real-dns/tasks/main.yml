@@ -1,0 +1,25 @@
+---
+- name: Install bind
+  dnf:
+    name:
+      - bind
+    state: present
+- name: Configure named.mit.zones
+  template:
+    src: named.mit.zones.j2
+    dest: /etc/named.mit.zones
+  notify: reload named
+- name: Configure named.conf
+  blockinfile:
+    path: /etc/named.conf
+    block: |
+      include "/etc/named.mit.zones";
+  notify: reload named
+- name: Start named
+  service: name=named state=started
+- name: Configure resolv.conf
+  copy:
+    dest: /etc/sysconfig/networking/profiles/default/resolv.conf
+    content: |
+      search mit.edu
+      nameserver 127.0.0.1

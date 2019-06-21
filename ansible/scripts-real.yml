@@ -51,6 +51,7 @@
       when: syslog_client | default(True)
     - munin-node
     - mock
+    - real-dns
     - real-ldap
     - real-k5login
     - real-nrpe
