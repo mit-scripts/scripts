@@ -17,6 +17,10 @@
   notify: reload named
 - name: Start named
   service: name=named state=started
+- name: Create network profile
+  file:
+    path: /etc/sysconfig/networking/profiles/default/
+    state: directory
 - name: Configure resolv.conf
   copy:
     dest: /etc/sysconfig/networking/profiles/default/resolv.conf
