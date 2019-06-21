@@ -205,6 +205,15 @@
           name: dnf-automatic.timer
           enabled: yes
           state: started
+  - name: User utilities
+    block:
+      - name: Install utilities
+        dnf:
+          name:
+            - strace
+            - ImageMagick
+            - GraphicsMagick
+          state: present
   handlers:
   - name: reload autofs
     service: name=autofs state=reloaded
