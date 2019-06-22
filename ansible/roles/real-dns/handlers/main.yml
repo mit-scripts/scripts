@@ -1,3 +1,6 @@
 ---
 - name: reload named
   service: name=named state=reloaded
+- name: restart NetworkManager
+  service: name=NetworkManager state=restarted
+  # N.B. Empirically, reloading NetworkManager does not cause resolv.conf to be regenerated.

@@ -27,3 +27,5 @@
   with_dict:
     DOMAIN: mit.edu
     DNS1: 127.0.0.1
+    PEERDNS: "no"
+  notify: restart NetworkManager
