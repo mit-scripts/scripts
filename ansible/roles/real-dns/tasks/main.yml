@@ -17,13 +17,13 @@
   notify: reload named
 - name: Start named
   service: name=named state=started
-- name: Create network profile
-  file:
-    path: /etc/sysconfig/networking/profiles/default/
-    state: directory
-- name: Configure resolv.conf
-  copy:
-    dest: /etc/sysconfig/networking/profiles/default/resolv.conf
-    content: |
-      search mit.edu
-      nameserver 127.0.0.1
+- name: Configure DNS servers
+  ini_file:
+    no_extra_spaces: yes
+    path: /etc/sysconfig/network-scripts/ifcfg-{{ ansible_default_ipv4.interface }}
+    section: null
+    option: "{{ item.key }}"
+    value: '"{{ item.value }}"'
+  with_dict:
+    DOMAIN: mit.edu
+    DNS1: 127.0.0.1
