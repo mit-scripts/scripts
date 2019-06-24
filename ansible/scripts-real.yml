@@ -7,7 +7,6 @@
 # TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
 # TODO: Configure lpr
 # TODO: Configure NTP
-# TODO: Configure network-related sysctls (why do we have ip_forward set?)
 # TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
 # TODO: Configure /etc/tmpfiles.d
 # TODO: Replace rc.local with something modern, if needed
@@ -248,6 +247,20 @@
       dest: /etc/sysctl.d/99-scripts-sysrq.conf
       content: |
         kernel.sysrq = 1
+    notify: apply sysctl
+  - name: Configure multihomed networking sysctls
+    copy:
+      dest: /etc/sysctl.d/99-scripts-networking.conf
+      content: |
+        net.ipv4.ip_forward = 1
+        net.ipv4.tcp_syncookies = 1
+        net.ipv4.conf.default.accept_source_route = 0
+        net.ipv4.conf.default.arp_ignore = 1
+        net.ipv4.conf.default.arp_announce = 2
+        net.ipv4.conf.all.arp_ignore = 1
+        net.ipv4.conf.all.arp_announce = 2
+        net.ipv4.conf.all.rp_filter = 2
+        net.ipv4.tcp_keepalive_time = 825
     notify: apply sysctl
   - name: User utilities
     block:
