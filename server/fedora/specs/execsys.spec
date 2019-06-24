@@ -6,6 +6,7 @@ Release: 0
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
 License: GPL
+Requires: subversion
 Source: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 BuildRequires: systemd-rpm-macros
@@ -38,7 +39,7 @@ make install DESTDIR=$RPM_BUILD_ROOT
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(0755, root, root)
+%defattr(0644, root, root)
 %{_unitdir}/execsys-binfmt.service
 %{_unitdir}/scripts-svn.socket
 %{_unitdir}/scripts-svn@.service
@@ -46,6 +47,7 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %{_unitdir}/scripts-git@.service
 %{_unitdir}/scripts-local-smtp.socket
 %{_unitdir}/scripts-local-smtp@.service
+%defattr(0755, root, root)
 /usr/sbin/ldapize.pl
 /usr/sbin/svnproxy.pl
 /usr/sbin/gitproxy.pl
