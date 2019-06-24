@@ -8,6 +8,13 @@
     - user munin
     - group munin
   notify: restart munin-node
+- name: Configure sudoers
+  copy:
+    dest: /etc/sudoers.d/scripts-munin-node
+    content: |
+      Defaults:munin !syslog
+
+      munin ALL=(root) SETENV: NOPASSWD: /etc/munin/plugins/postfix_mailqueue , /etc/munin/plugins/postfix_mailvolume , /etc/munin/plugins/sendmail* , /etc/munin/plugins/if_* , /etc/munin/plugins/if_err_eth2
 - name: Install htpasswd
   dnf: name=httpd-tools state=present
 - name: Generate password
@@ -58,14 +65,6 @@
       env.mspqueue /var/spool/clientmqueue
       command sudo -E %c
       
-      [smart_*]
-      user root
-      command sudo %c
-
-      [sensors_*]
-      user root
-      command sudo %c
-
       [if_*]
       user root
       command sudo -E %c
