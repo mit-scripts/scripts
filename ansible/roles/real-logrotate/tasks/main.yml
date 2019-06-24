@@ -1,0 +1,5 @@
+---
+- name: Configure lograte for HTTPD
+  copy:
+    dest: /etc/logrotate.d/httpd
+    src: httpd

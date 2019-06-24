@@ -65,6 +65,7 @@
     - real-cron
     - role: real-httpd
       when: use_scripts_httpd | default(True)
+    - real-logrotate
   # TODO: Configure aliases with blocked accounts and procmail for root
   tasks:
   - name: Editors

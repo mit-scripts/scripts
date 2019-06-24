@@ -6,7 +6,7 @@
     create 640 root logview
     sharedscripts
     postrotate
-	/bin/kill -HUP `cat /var/run/httpd/httpd.pid 2>/dev/null` 2> /dev/null || true
+	/bin/systemctl reload httpd.service > /dev/null 2>/dev/null || true
     endscript
 }
 
@@ -26,7 +26,7 @@
     notifempty
     sharedscripts
     postrotate
-	/bin/kill -HUP `cat /var/run/httpd/httpd.pid 2>/dev/null` 2> /dev/null || true
+	/bin/systemctl reload httpd.service > /dev/null 2>/dev/null || true
     endscript
 }
 
@@ -38,6 +38,6 @@
     create 600 root root
     sharedscripts
     postrotate
-	/bin/kill -HUP `cat /var/run/httpd/httpd.pid 2>/dev/null` 2> /dev/null || true
+	/bin/systemctl reload httpd.service > /dev/null 2>/dev/null || true
     endscript
 }
