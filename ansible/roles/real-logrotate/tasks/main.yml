@@ -3,3 +3,8 @@
   copy:
     dest: /etc/logrotate.d/httpd
     src: httpd
+- name: Start logrotate
+  systemd:
+    name: logrotate.timer
+    enabled: yes
+    state: started

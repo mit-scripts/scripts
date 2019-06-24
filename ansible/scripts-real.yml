@@ -13,7 +13,6 @@
 # TODO: Configure /etc/tmpfiles.d
 # TODO: Replace rc.local with something modern, if needed
 # TODO: Configure logwatch
-# TODO: Configure logrotate
 # TODO: Make dnf drop setuid and caps on binaries we don't want to have them
 # TODO: Install prune-mailq
 # TODO: Select and install python packages (both Python 2 and Python 3)
