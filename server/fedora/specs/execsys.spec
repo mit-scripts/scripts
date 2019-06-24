@@ -9,6 +9,7 @@ License: GPL
 Requires: xinetd
 Source: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
+BuildRequires: gcc
 %define debug_package %{nil}
 
 %description
@@ -24,7 +25,7 @@ See http://scripts.mit.edu/wiki for more information.
 %setup -q -n %{name}
 
 %build
-./configure --prefix=/usr/local --with-pl=/usr/bin/perl --with-php=/usr/bin/php-cgi --with-py=/usr/bin/python --with-exe=/usr/bin/mono
+./configure --prefix=/usr/local
 make
 
 %install
