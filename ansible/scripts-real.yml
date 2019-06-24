@@ -1,3 +1,26 @@
+# TODO: Install more PHP modules, consider disabling by default or just leaving them.
+# TODO: Configure ssh host-based authentication
+# TODO: Move blocked accounts into LDAP
+# TODO: Find package that provides lookup_hesiod.so or switch to another automounter
+# TODO: Configure a local 389-ds
+# TODO: Configure clamav (what do we use this for?)
+# TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
+# TODO: Configure lpr
+# TODO: Configure NTP
+# TODO: Configure network-related sysctls (why do we have ip_forward set?)
+# TODO: Configure reboot-on-panic
+# TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
+# TODO: Configure /etc/tmpfiles.d
+# TODO: Replace rc.local with something modern, if needed
+# TODO: Configure logwatch
+# TODO: Configure logrotate
+# TODO: Make dnf drop setuid and caps on binaries we don't want to have them
+# TODO: Install prune-mailq
+# TODO: Select and install python packages (both Python 2 and Python 3)
+# TODO: Select and install perl packages
+# TODO: Select and install ruby packages
+# TODO: Select and install $language packages
+
 - hosts: scripts-real
   serial: 1
   vars:
@@ -67,7 +90,6 @@
       when: use_scripts_httpd | default(True)
       notify: reconfigure munin-node
     - real-logrotate
-  # TODO: Configure aliases with blocked accounts and procmail for root
   tasks:
   - name: Editors
     block:
@@ -99,7 +121,6 @@
         content: |
           rhs=.ATHENA.MIT.EDU
           lhs=.ns
-  # TODO: Find package that provides lookup_hesiod.so or switch to another automounter
   - name: autofs
     block:
     - name: Install autofs
