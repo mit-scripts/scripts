@@ -9,6 +9,9 @@ License: GPL
 Source: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 BuildRequires: systemd-rpm-macros
+BuildRequires: pkgconfig(systemd)
+BuildRequires: autoconf
+BuildRequires: automake
 %define debug_package %{nil}
 
 %description
