@@ -49,8 +49,8 @@
   roles:
     - role: syslog-client
       when: syslog_client | default(True)
-    - munin-node
     - mock
+    - real-munin-node
     - real-dns
     - real-ldap
     - real-k5login
@@ -65,6 +65,7 @@
     - real-cron
     - role: real-httpd
       when: use_scripts_httpd | default(True)
+      notify: reconfigure munin-node
     - real-logrotate
   # TODO: Configure aliases with blocked accounts and procmail for root
   tasks:

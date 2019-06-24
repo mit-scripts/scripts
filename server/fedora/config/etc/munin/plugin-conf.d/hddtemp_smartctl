@@ -1,4 +1,0 @@
-[hddtemp_smartctl]
-user root
-env.drives sda sdb
-command sudo -E %c
