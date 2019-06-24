@@ -8,7 +8,6 @@
 # TODO: Configure lpr
 # TODO: Configure NTP
 # TODO: Configure network-related sysctls (why do we have ip_forward set?)
-# TODO: Configure reboot-on-panic
 # TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
 # TODO: Configure /etc/tmpfiles.d
 # TODO: Replace rc.local with something modern, if needed
@@ -71,6 +70,7 @@
     - role: syslog-client
       when: syslog_client | default(True)
     - mock
+    - sysctl
     - real-munin-node
     - real-dns
     - real-ldap
@@ -235,6 +235,14 @@
           name: dnf-automatic.timer
           enabled: yes
           state: started
+  - name: Configure reboot on {panic,oops,OOM}
+    copy:
+      dest: /etc/sysctl.d/99-scripts-reboot.conf
+      content: |
+        kernel.panic = 5
+        kernel.panic_on_oops = 1
+        vm.panic_on_oom = 1
+    notify: apply sysctl
   - name: User utilities
     block:
       - name: Install utilities
