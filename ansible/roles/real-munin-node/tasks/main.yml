@@ -28,6 +28,8 @@
     dest: /etc/munin/apache-htpasswd
     content: "{{htpasswd.stdout}}"
     mode: 0600
+    owner: apache
+  notify: reconfigure munin-node
 - name: Configure apache plugins
   copy:
     dest: /etc/munin/plugin-conf.d/{{ item }}
