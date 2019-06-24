@@ -1,0 +1,7 @@
+[Unit]
+Description=SVN proxy server
+
+[Service]
+ExecStart=-/usr/sbin/svnproxy.pl
+StandardInput=socket
+User=apache

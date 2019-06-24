@@ -1,4 +1,0 @@
-#!/bin/sh
-
-rm -f configure config.* Makefile
-rm -rf auto*.cache

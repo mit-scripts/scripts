@@ -1,0 +1,9 @@
+[Unit]
+Description=Git proxy socket
+
+[Socket]
+ListenStream=9418
+Accept=yes
+
+[Install]
+WantedBy=sockets.target

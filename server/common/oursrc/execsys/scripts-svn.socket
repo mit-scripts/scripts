@@ -1,0 +1,9 @@
+[Unit]
+Description=SVN proxy socket
+
+[Socket]
+ListenStream=3690
+Accept=yes
+
+[Install]
+WantedBy=sockets.target

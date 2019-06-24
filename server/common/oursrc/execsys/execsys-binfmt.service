@@ -1,0 +1,13 @@
+[Unit]
+Description=Configure files to automatically run based on magic.
+Requires=proc-sys-fs-binfmt_misc.mount
+After=proc-sys-fs-binfmt_misc.mount
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c "echo ':CLR:M::MZ::/usr/bin/mono:' > /proc/sys/fs/binfmt_misc/register"
+ExecStop=/bin/sh -c "echo -1 > /proc/sys/fs/binfmt_misc/status"
+
+[Install]
+WantedBy=multi-user.target

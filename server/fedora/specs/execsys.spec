@@ -6,26 +6,25 @@ Release: 0
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
 License: GPL
-Requires: xinetd
 Source: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
-BuildRequires: gcc
+BuildRequires: systemd-rpm-macros
 %define debug_package %{nil}
 
 %description
 
 scripts.mit.edu glue associated with file execution
 Contains:
- - Apache configuration file <execsys.conf>
+ - SVN and Git servers
  - binfmt_misc init script <execsys-binfmt>
- - Binary for serving static content <static-cat>
 See http://scripts.mit.edu/wiki for more information.
 
 %prep
 %setup -q -n %{name}
 
 %build
-./configure --prefix=/usr/local
+autoreconf -fvi
+%configure
 make
 
 %install
@@ -37,32 +36,51 @@ make install DESTDIR=$RPM_BUILD_ROOT
 
 %files
 %defattr(0755, root, root)
-/etc/init.d/execsys-binfmt
-/usr/local/sbin/ldapize.pl
-/usr/local/sbin/svnproxy.pl
+%{_unitdir}/execsys-binfmt.service
+%{_unitdir}/scripts-svn.socket
+%{_unitdir}/scripts-svn@.service
+%{_unitdir}/scripts-git.socket
+%{_unitdir}/scripts-git@.service
+%{_unitdir}/scripts-local-smtp.socket
+%{_unitdir}/scripts-local-smtp@.service
+/usr/sbin/ldapize.pl
+/usr/sbin/svnproxy.pl
+/usr/sbin/gitproxy.pl
+/usr/sbin/local-smtp-proxy
 /usr/libexec/scripts-trusted/svn
-/etc/xinetd.d/scripts-svn
-/usr/local/sbin/gitproxy.pl
 /usr/libexec/scripts-trusted/git
-/etc/xinetd.d/scripts-git
-/usr/local/sbin/local-smtp-proxy
-/etc/xinetd.d/scripts-local-smtp
 
 %post
-chkconfig --add execsys-binfmt
-service execsys-binfmt start
-service xinetd reload
+%systemd_post execsys-binfmt.service
+%systemd_post execsys-svn.socket
+%systemd_post execsys-svn@.service
+%systemd_post execsys-git.socket
+%systemd_post execsys-git@.service
+%systemd_post execsys-local-smtp.socket
+%systemd_post execsys-local-smtp@.service
 
 %preun
-if [ "$1" = "0" ] ; then
-   service execsys-binfmt stop
-   chkconfig --del execsys-binfmt
-fi
+%systemd_preun execsys-binfmt.service
+%systemd_preun execsys-svn.socket
+%systemd_preun execsys-svn@.service
+%systemd_preun execsys-git.socket
+%systemd_preun execsys-git@.service
+%systemd_preun execsys-local-smtp.socket
+%systemd_preun execsys-local-smtp@.service
 
 %postun
-service xinetd reload
+%systemd_postun_with_restart execsys-binfmt.service
+%systemd_postun_with_restart execsys-svn.socket
+%systemd_postun_with_restart execsys-svn@.service
+%systemd_postun_with_restart execsys-git.socket
+%systemd_postun_with_restart execsys-git@.service
+%systemd_postun_with_restart execsys-local-smtp.socket
+%systemd_postun_with_restart execsys-local-smtp@.service
 
 %changelog
+* Mon Jun 24 2019  Quentin Smith <quentin@mit.edu>
+- Brave new systemd world
+
 * Wed Dec 31 2008  Quentin Smith <quentin@mit.edu>
 - don't stop execsys on package updates
 

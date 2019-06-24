@@ -1,0 +1,10 @@
+[Unit]
+Description=Local SMTP proxy socket
+
+[Socket]
+ListenStream=127.0.0.1:25
+ListenStream=[::1]:25
+Accept=yes
+
+[Install]
+WantedBy=sockets.target
