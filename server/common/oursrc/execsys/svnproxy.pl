@@ -71,7 +71,7 @@ for (;;) {
 }
 
 # Now start the real svnserve based on the URL.
-$pid = open2(\*IN, \*OUT, '/usr/local/sbin/ldapize.pl', $url) or die "$0: open: $!";
+$pid = open2(\*IN, \*OUT, '/usr/sbin/ldapize.pl', $url) or die "$0: open: $!";
 
 # Read the greeting, expecting it to be identical to the dummy greeting.
 while ($greeting ne '') {

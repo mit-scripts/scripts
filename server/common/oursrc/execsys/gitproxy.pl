@@ -46,7 +46,7 @@ for (;;) {
 }
 
 # Now start the real git daemon based on the URL.
-my $pid = open2(\*IN, \*OUT, '/usr/local/sbin/ldapize.pl', "git://$host/") or die "$0: open: $!";
+my $pid = open2(\*IN, \*OUT, '/usr/sbin/ldapize.pl', "git://$host/") or die "$0: open: $!";
 
 # Finally, go into a poll loop to transfer the remaining data
 # (STDIN -> OUT, IN -> STDOUT), including the client's message to git daemon.
