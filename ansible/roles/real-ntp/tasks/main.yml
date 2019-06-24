@@ -1,0 +1,20 @@
+---
+- name: Install chrony
+  dnf:
+    name:
+      - chrony
+    state: present
+- name: Configure Chrony to not use a pool
+  lineinfile:
+    path: /etc/chrony.conf
+    regexp: '^(#?)(pool .*)$'
+    line: '#\2'
+    backrefs: yes
+  notify: restart chronyd
+- name: Configure NTP servers
+  blockinfile:
+    path: /etc/chrony.conf
+    block: |
+      server time.mit.edu
+      server tick.mit.edu
+  notify: restart chronyd
