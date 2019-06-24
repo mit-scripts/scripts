@@ -243,6 +243,12 @@
         kernel.panic_on_oops = 1
         vm.panic_on_oom = 1
     notify: apply sysctl
+  - name: Enable sysrq
+    copy:
+      dest: /etc/sysctl.d/99-scripts-sysrq.conf
+      content: |
+        kernel.sysrq = 1
+    notify: apply sysctl
   - name: User utilities
     block:
       - name: Install utilities
