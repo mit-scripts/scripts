@@ -6,6 +6,7 @@ Release: 0
 Vendor: The scripts.mit.edu Team (scripts@mit.edu)
 URL: http://scripts.mit.edu
 License: GPL
+Requires: git-daemon
 Requires: subversion
 Requires: perl(Net::LDAP)
 Source: %{name}.tar.gz
