@@ -12,6 +12,24 @@ my $mesg;
 
 my $vhostName = $hostname;
 
+my $uri;
+
+open(my $conf, "<", "/etc/openldap/ldap.conf") or die "open: $!";
+while (my $line = <$conf>) {
+  if ($line =~ m/^URI\s+(\S+)/) {
+    $uri = $1;
+  }
+}
+close($conf) or die "close: $!";
+
+if (not $uri) {
+  die "Couldn't find LDAP URI";
+}
+
+my $ldap = Net::LDAP->new($uri);
+$mesg = $ldap->bind();
+$mesg->code && die $mesg->error;
+
 vhost:
 # oh my gosh Net::LDAP::Filter SUCKS
 my $filter = bless({and =>
@@ -23,10 +41,6 @@ my $filter = bless({and =>
           {equalityMatch => {attributeDesc  => 'scriptsVhostAlias',
                              assertionValue => $vhostName}}]}]},
     'Net::LDAP::Filter');
-
-my $ldap = Net::LDAP->new("ldapi://%2fvar%2frun%2fslapd-scripts.socket/");
-$mesg = $ldap->bind();
-$mesg->code && die $mesg->error;
 
 $mesg = $ldap->search(base => "ou=VirtualHosts,dc=scripts,dc=mit,dc=edu",
                       filter => $filter);
