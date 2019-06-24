@@ -141,8 +141,6 @@
       content: |
         scripts ALL=(root)      NOPASSWD: /usr/local/sbin/ldap-backup ""
         scripts ALL=(root)      NOPASSWD: /usr/local/sbin/get-homedirs ""
-        scripts ALL=(root)      NOPASSWD: /etc/httpd/export-scripts-certs ""
-        nrpe    ALL=(signup)    NOPASSWD: /etc/nagios/check_ldap_mmr.real
         pony    ALL=(root)      NOPASSWD: /etc/pki/tls/gencsr-pony
   - name: Configure sshd for scripts
     lineinfile:

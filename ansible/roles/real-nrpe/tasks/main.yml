@@ -3,3 +3,8 @@
   copy: 
     src: plugins/
     dest: /etc/nagios/
+- name: Allow NRPE to check LDAP status
+  copy:
+    dest: /etc/sudoers.d/scripts-nrpe
+    content: |
+      nrpe    ALL=(signup)    NOPASSWD: /etc/nagios/check_ldap_mmr.real

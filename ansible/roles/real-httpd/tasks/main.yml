@@ -12,6 +12,11 @@
       - python3-pyOpenSSL
       - logview
     state: present
+- name: Allow scripts to export certificates
+  copy:
+    dest: /etc/sudoers.d/scripts-httpd
+    content: |
+      scripts ALL=(root)      NOPASSWD: /etc/httpd/export-scripts-certs ""
 - name: Configure httpd
   copy:
     dest: /etc/httpd/
