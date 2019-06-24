@@ -35,8 +35,9 @@
       [{{ item }}]
       env.url http://munin:{{password.stdout}}@127.0.0.1:%d/server-status/?auto
     mode: 0600
+    owner: munin
   loop:
-    - apache_access
+    - apache_accesses
     - apache_processes
     - apache_volume
   notify: reconfigure munin-node
@@ -44,7 +45,7 @@
   copy:
     dest: /etc/munin/plugin-conf.d/zzz-scripts
     content: |
-      [postfix]
+      [postfix*]
       user root
       env.logfile maillog
       env.logdir /var/log
