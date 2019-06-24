@@ -47,6 +47,11 @@
   template:
     src: root-procmailrc.j2
     dest: /etc/scripts/root-procmailrc
+- name: Install prune-mailq
+  copy:
+    dest: /etc/scripts/prune-mailq
+    src: prune-mailq
+    mode: preserve
 - name: Install aliases
   copy:
     dest: /etc/aliases
