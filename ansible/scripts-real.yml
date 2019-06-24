@@ -107,6 +107,21 @@
         - accountadm
       state: present
     when: use_accountadm | default(True)
+  - name: execsys
+    when: use_execsys | default(True)
+    block:
+      - name: Install execsys
+        dnf: name=execsys state=present
+      - name: Enable execsys services
+        systemd:
+          name: "{{ item }}"
+          enabled: yes
+          state: started
+        loop:
+          - execsys-binfmt.service
+          - scripts-svn.socket
+          - scripts-git.socket
+          - scripts-local-smtp.socket
   - name: Hesiod
     block:
     - name: Install hesiod

@@ -88,6 +88,7 @@ all:
             use_accountadm: yes
             use_scripts_httpd: yes
             use_scripts_php: yes
+            use_execsys: yes
           hosts:
             quentin-scripts-f30.xvm.mit.edu:
               vars:
