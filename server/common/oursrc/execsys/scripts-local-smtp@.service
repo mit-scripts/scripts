@@ -4,3 +4,4 @@ Description=Local SMTP proxy server
 [Service]
 ExecStart=-/usr/sbin/local-smtp-proxy.pl
 StandardInput=socket
+StandardError=journal

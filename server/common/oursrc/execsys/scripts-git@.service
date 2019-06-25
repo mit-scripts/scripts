@@ -4,4 +4,5 @@ Description=Git proxy server
 [Service]
 ExecStart=-/usr/sbin/gitproxy.pl
 StandardInput=socket
+StandardError=journal
 User=apache

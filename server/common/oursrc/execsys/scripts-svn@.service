@@ -4,4 +4,5 @@ Description=SVN proxy server
 [Service]
 ExecStart=-/usr/sbin/svnproxy.pl
 StandardInput=socket
+StandardError=journal
 User=apache
