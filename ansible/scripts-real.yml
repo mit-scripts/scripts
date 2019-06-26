@@ -133,6 +133,16 @@
         content: |
           rhs=.ATHENA.MIT.EDU
           lhs=.ns
+  - name: Zephyr
+    when: use_zephyr | default(True)
+    block:
+    - name: Install zephyr
+      dnf: name=zephyr state=present
+    - name: Start zephyr
+      service:
+        name: zhm
+        enabled: yes
+        state: started
   - name: autofs
     block:
     - name: Install autofs
