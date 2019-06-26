@@ -10,6 +10,7 @@ License:        MIT
 URL:            http://zephyr.1ts.org/
 Source0:        https://github.com/zephyr-im/zephyr/archive/%{commit}/%{name}-%{version}-%{shortcommit}.tar.gz
 Patch0:         zephyr-zhm-service.patch
+Patch1:         zephyr-zhm-pidfile.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  krb5-devel hesiod-devel libss-devel libcom_err-devel readline-devel bison
@@ -58,7 +59,7 @@ developing applications that use %{name}.
 
 
 %prep
-%autosetup -n %{name}-%{commit}
+%autosetup -n %{name}-%{commit} -p1
 
 
 %build
