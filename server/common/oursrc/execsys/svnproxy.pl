@@ -29,6 +29,7 @@ my $pid = open(IN, '-|');
 defined $pid or die "$0: open: $!";
 if ($pid == 0) {
     close(STDIN) or die "$0: close: $!";
+    close(STDERR) or die "$0: close: $!";
     exec('svnserve', '-i') or die "$0: exec svnproxy: $!";
 }
 my $greeting = '';
@@ -48,7 +49,7 @@ while ($buf ne '') {
     $n >= 0 or die "$0: write: $!";
     $buf = substr($buf, $n);
 }
-close(IN) or die "$0: close: $!";
+close(IN);  # ignore error; newer svnserve exits 1
 waitpid(-1, 0) or die "$0: waitpid: $!";
 
 # Receive the response from the client, and parse out the URL.

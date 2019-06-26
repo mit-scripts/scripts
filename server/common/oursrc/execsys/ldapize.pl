@@ -64,7 +64,7 @@ my ($homeDirectory, $uidNumber, $gidNumber) =
     map { $userEntry->get_value($_) } qw(homeDirectory uidNumber gidNumber);
 (my $scriptsdir = $homeDirectory) =~ s{(?:/Scripts)?$}{/Scripts};
 
-if ($proto eq 'svn') {
+if ($proto eq 'svn' || $proto =~ m/^svn\+/) {
   chdir '/usr/libexec/scripts-trusted';
   exec('/usr/sbin/suexec', $uidNumber, $gidNumber, '/usr/libexec/scripts-trusted/svn', "$scriptsdir/svn/$vhostDirectory");
 } elsif ($proto eq 'git') {
