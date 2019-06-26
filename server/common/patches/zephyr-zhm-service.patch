@@ -1,0 +1,14 @@
+--- /dev/null	2019-06-26 01:44:07.000000000 -0400
++++ zhm.service	2019-06-26 01:42:54.000000000 -0400
+@@ -0,0 +1,11 @@
++[Unit]
++Description=Zephyr Host Manager
++Documentation=man:zhm(8)
++
++[Service]
++Type=forking
++ExecStart=/usr/sbin/zhm -f
++PIDFile=/var/run/zhm.pid
++
++[Install]
++WantedBy=multi-user.target

@@ -2,22 +2,20 @@ Name:           zephyr
 Version:        3.1.2
 %define commit 54c6b84a81301a1691f9bec10c63c1e36166df9d
 %define shortcommit %(c=%{commit}; echo ${c:0:7})
-Release:        0.%{scriptsversion}%{?dist}
+Release:        1.%{scriptsversion}%{?dist}
 Summary:        Client programs for the Zephyr real-time messaging system
 
 Group:          Applications/Communications
 License:        MIT
 URL:            http://zephyr.1ts.org/
 Source0:        https://github.com/zephyr-im/zephyr/archive/%{commit}/%{name}-%{version}-%{shortcommit}.tar.gz
-Source1:        zhm.init
+Patch0:         zephyr-zhm-service.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  krb5-devel hesiod-devel libss-devel libcom_err-devel readline-devel bison
+BuildRequires:  gcc
+BuildRequires:  systemd-rpm-macros
 Requires:       %{name}-libs = %{version}-%{release}
-Requires(post): chkconfig
-Requires(preun): chkconfig
-Requires(preun): initscripts
-Requires(postun): initscripts
 
 %description
 Zephyr is an institutional/enterprise-scale distributed real-time messaging and
@@ -60,8 +58,7 @@ developing applications that use %{name}.
 
 
 %prep
-%setup -q -n %{name}-%{commit}
-cp -p %{SOURCE1} .
+%autosetup -n %{name}-%{commit}
 
 
 %build
@@ -77,9 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT libdir=%{_libdir}
 find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 
-mkdir -p $RPM_BUILD_ROOT%{_initddir}
-install -m755 zhm.init \
-        $RPM_BUILD_ROOT%{_initddir}/zhm
+mkdir -p $RPM_BUILD_ROOT%{_unitdir}
+install -m755 zhm.service \
+        $RPM_BUILD_ROOT%{_unitdir}/zhm.service
 # Make RPM's Provide: searcher actually search the .so files! A recent
 # change in how RPM detects Provides automatically means that only
 # files that are executable get searched. Without this hack, all of
@@ -90,21 +87,15 @@ install -m755 zhm.init \
 chmod a+x $RPM_BUILD_ROOT%{_libdir}/libzephyr.so.*
 
 %post
-/sbin/chkconfig --add zhm
+%systemd_post zhm.service
 
 
 %preun
-if [ $1 = 0 ] ; then
-    /sbin/service zhm stop >/dev/null 2>&1
-    /sbin/chkconfig --del zhm
-fi
+%systemd_preun zhm.service
 
 
 %postun
-if [ "$1" -ge "1" ] ; then
-    /sbin/service zhm condrestart >/dev/null 2>&1 || :
-fi
-
+%systemd_postun zhm.service
 
 %post           libs -p /sbin/ldconfig
 
@@ -126,7 +117,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/zstat.8*
 %{_mandir}/man8/zshutdown_notify.8*
 %{_datadir}/zephyr
-%{_initddir}/zhm
+%{_unitdir}/zhm.service
 
 
 %files          server
@@ -146,6 +137,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/zephyr.pc
 
 %changelog
+* Wed Jun 26 2019 Quentin Smith <quentin@mit.edu> - 3.1.2-1
+- Fix packaging for F30
+
 * Mon May 26 2014 Alexander Chernyakhovsky <achernya@mit.edu> - 3.1.2-0
 - Update to Zephyr 3.1.2, fix packaging for F20
 
