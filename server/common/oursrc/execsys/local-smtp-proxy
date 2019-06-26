@@ -75,13 +75,17 @@ def proxy(sock, uid):
     peer = sock.getpeername()
 
     class Proxy(object):
-        def process_message(self, peer, mailfrom, rcpttos, data):
+        def process_message(self, peer, mailfrom, rcpttos, data, **kwargs):
+            args = ['/usr/sbin/sendmail', '-f', mailfrom]
+            if 'BODY=8BITMIME' in kwargs.get('mail_options', []):
+                args += ['-B', '8BITMIME']
+            args += rcpttos
             with subprocess.Popen(
-                    ['/usr/sbin/sendmail', '-f', mailfrom] + rcpttos,
+                    args,
                     stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE) as p:
-                out, err = p.communicate(data.encode())
+                out, err = p.communicate(data)
                 if p.returncode == 0:
                     return '250 OK'
                 else:
