@@ -72,6 +72,7 @@ for (;;) {
 }
 
 # Now start the real svnserve based on the URL.
+# TODO: Find ldapize.pl based on configure arguments.
 $pid = open2(\*IN, \*OUT, '/usr/sbin/ldapize.pl', $url) or die "$0: open: $!";
 
 # Read the greeting, expecting it to be identical to the dummy greeting.

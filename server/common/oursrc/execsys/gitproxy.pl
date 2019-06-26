@@ -46,6 +46,7 @@ for (;;) {
 }
 
 # Now start the real git daemon based on the URL.
+# TODO: Find ldapize.pl based on configure arguments.
 my $pid = open2(\*IN, \*OUT, '/usr/sbin/ldapize.pl', "git://$host/") or die "$0: open: $!";
 
 # Finally, go into a poll loop to transfer the remaining data
