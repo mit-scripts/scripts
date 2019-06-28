@@ -5,7 +5,6 @@
 # TODO: Configure a local 389-ds
 # TODO: Configure clamav (what do we use this for?)
 # TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
-# TODO: Configure lpr
 # TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
 # TODO: Configure /etc/tmpfiles.d
 # TODO: Replace rc.local with something modern, if needed
