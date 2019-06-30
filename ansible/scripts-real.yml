@@ -67,6 +67,7 @@
       when: syslog_client | default(True)
     - mock
     - sysctl
+    - tmpfiles
     - real-munin-node
     - real-dns
     - real-ntp
@@ -195,6 +196,7 @@
       dest: /etc/tmpfiles.d/scripts-crash.conf
       content: |
         d /var/crash 1755 root root 10d
+    notify: create tmpfiles
   - name: Configure resource limits
     copy:
       dest: /etc/security/limits.d/scripts

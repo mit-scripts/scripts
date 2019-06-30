@@ -20,6 +20,7 @@
     content: |
       d /var/lib/scripts-php-sessions 1773 root root 30d
       d /tmp/sessions 1773 root root 30d
+  notify: create tmpfiles
 - name: Configure php.ini
   ini_file:
     path: /etc/php.ini
