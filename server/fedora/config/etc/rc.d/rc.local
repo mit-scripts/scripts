@@ -1,5 +1,0 @@
-#!/bin/bash
-
-touch /var/lock/subsys/local
-
-/bin/mkdir -pm 1773 /tmp/sessions

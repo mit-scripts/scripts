@@ -14,11 +14,12 @@
       - php_scripts
     state: present
   when: use_scripts_php
-- name: Create session directory
+- name: Create session directories
   copy:
     dest: /etc/tmpfiles.d/scripts-php-sessions.conf
     content: |
       d /var/lib/scripts-php-sessions 1773 root root 30d
+      d /tmp/sessions 1773 root root 30d
 - name: Configure php.ini
   ini_file:
     path: /etc/php.ini
