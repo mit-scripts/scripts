@@ -6,7 +6,6 @@
 # TODO: Configure clamav (what do we use this for?)
 # TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
 # TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
-# TODO: Configure /etc/tmpfiles.d
 # TODO: Replace rc.local with something modern, if needed
 # TODO: Configure logwatch
 # TODO: Make dnf drop setuid and caps on binaries we don't want to have them
@@ -191,6 +190,11 @@
       path: /etc/environment
       line: JAVA_TOOL_OPTIONS="-Xmx128M -XX:MaxPermSize=64M"
       regexp: '^JAVA_TOOL_OPTIONS='
+  - name: Clean up kdump cores
+    copy:
+      dest: /etc/tmpfiles.d/scripts-crash.conf
+      content: |
+        d /var/crash 1755 root root 10d
   - name: Configure resource limits
     copy:
       dest: /etc/security/limits.d/scripts
