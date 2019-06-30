@@ -9,4 +9,11 @@
   loop:
     - BASE dc=scripts,dc=mit,dc=edu
     - URI {{ ldap_server }}
+- name: Create /disabled
+  file:
+    path: /disabled
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
 # TODO: Configure 389-ds if run_local_ldap is true
