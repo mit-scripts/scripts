@@ -22,7 +22,7 @@ class WhoisFactory(protocol.ServerFactory):
         self.ldap_URL = ldap_URL
         self.ldap = ldap.initialize(self.ldap_URL)
         self.ldap_base = ldap_base
-        self.key = file(keyFile).read()
+        self.key = open(keyFile).read()
     def canonicalize(self, vhost):
         vhost = vhost.lower().rstrip(".")
         return vhost
@@ -68,6 +68,6 @@ class WhoisFactory(protocol.ServerFactory):
 
 application = service.Application('whois', uid=99, gid=99)
 factory = WhoisFactory(
-    "ldap://localhost", "ou=VirtualHosts,dc=scripts,dc=mit,dc=edu", "/etc/whoisd-password")
+    ldap.get_option(ldap.OPT_URI), "ou=VirtualHosts,"+ldap.get_option(ldap.OPT_DEFBASE), "/etc/whoisd-password")
 internet.TCPServer(43, factory).setServiceParent(
     service.IServiceCollection(application))
