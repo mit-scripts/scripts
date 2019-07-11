@@ -2,7 +2,7 @@ Summary:   whoisd for <scripts.mit.edu> (virtualhost aware)
 Group:     Applications/System
 Name:      whoisd
 Version:   0.%{scriptsversion}
-Release:   1
+Release:   2
 Vendor:    The scripts.mit.edu Team (scripts@mit.edu)
 URL:       http://scripts.mit.edu
 License:   GPL
@@ -11,12 +11,7 @@ Source0:   %{name}.tar.gz
 %define debug_package %{nil}
 
 Requires:      python-twisted-core
-BuildRequires: systemd-units
-
-Requires(post):   systemd-units
-Requires(preun):  systemd-units
-Requires(postun): systemd-units
-Requires(post):   systemd-sysv
+BuildRequires: systemd-rpm-macros
 
 %description
 
@@ -31,30 +26,24 @@ Requires(post):   systemd-sysv
 make install DESTDIR=$RPM_BUILD_ROOT exec_prefix=/usr/local
 
 %post
-if [ $1 -eq 1 ] ; then
-    # Initial installation
-    /bin/systemctl enable scripts-whoisd.service >/dev/null 2>&1 || :
-fi
+%systemd_post scripts-whoisd.service
 
 %preun
-if [ $1 -eq 0 ]; then
-    /bin/systemctl --no-reload disable scripts-whoisd.service >/dev/null 2>&1 || :
-    /bin/systemctl stop scripts-whoisd.service > /dev/null 2>&1 || :
-fi
+%systemd_preun scripts-whoisd.service
 
 %postun
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-if [ $1 -ge 1 ]; then
-    /bin/systemctl try-restart scripts-whoisd.service >/dev/null 2>&1 || :
-fi
+%systemd_postun_with_restart scripts-whoisd.service
 
 %files
 %defattr(0644,root,root,-)
 /usr/local/libexec/whoisd.tac
 %defattr(0644,root,root)
-/lib/systemd/system/scripts-whoisd.service
+%{_unitdir}/scripts-whoisd.service
 
 %changelog
+* Thu Jul 11 2019 Quentin Smith <quentin@mit.edu> 0-2
+- use systemd rpm scriptlets
+
 * Thu Aug 25 2011 Alexander Chernyakhovsky <achernya@mit.edu> 0-1
 - package systemd service file
 
