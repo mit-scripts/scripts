@@ -1,7 +1,6 @@
 # TODO: Install more PHP modules, consider disabling by default or just leaving them.
 # TODO: Configure ssh host-based authentication
 # TODO: Move blocked accounts into LDAP
-# TODO: Find package that provides lookup_hesiod.so or switch to another automounter
 # TODO: Configure a local 389-ds
 # TODO: Configure clamav (what do we use this for?)
 # TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
@@ -143,9 +142,10 @@
         enabled: yes
         state: started
   - name: autofs
+    when: use_autofs | default(True)
     block:
     - name: Install autofs
-      dnf: name=autofs state=present
+      dnf: name=scripts-autofs state=present
     - name: Configure autofs
       copy:
         dest: /etc/auto.master

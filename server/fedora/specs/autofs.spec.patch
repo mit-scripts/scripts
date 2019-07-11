@@ -1,0 +1,29 @@
+--- autofs.spec.~1~	2019-05-14 05:10:39.000000000 -0400
++++ autofs.spec	2019-07-10 23:55:09.464012343 -0400
+@@ -8,7 +8,7 @@
+ Summary: A tool for automatically mounting and unmounting filesystems
+ Name: autofs
+ Version: 5.1.5
+-Release: 4%{?dist}
++Release: 4%{?dist}.scripts.%{scriptsversion}
+ Epoch: 1
+ License: GPLv2+
+ Source: https://www.kernel.org/pub/linux/daemons/autofs/v5/autofs-%{version}.tar.gz
+@@ -24,6 +24,8 @@
+ BuildRequires: cyrus-sasl-devel, openssl-devel module-init-tools util-linux
+ BuildRequires: e2fsprogs libtirpc-devel libsss_autofs libnsl2-devel
+ BuildRequires: rpcgen pkgconfig krb5-devel
++BuildRequires: hesiod-devel
++Provides: scripts-autofs
+ Conflicts: cyrus-sasl-lib < 2.1.23-9
+ Requires: bash coreutils sed gawk grep module-init-tools /bin/ps
+ %if %{with_systemd}
+@@ -83,7 +85,7 @@
+ 	--disable-mount-locking \
+ 	--enable-ignore-busy \
+ 	--enable-forced-shutdown \
+-	--without-hesiod \
++	--with-hesiod \
+ 	--with-libtirpc %{?systemd_configure_arg:}
+ make initdir=%{_initrddir} DONTSTRIP=1
+ 

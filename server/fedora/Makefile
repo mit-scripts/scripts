@@ -19,7 +19,7 @@
 # See /COPYRIGHT in this repository for more information.
 
 FEDORA		= fc$(shell lsb_release -rs)
-upstream_yum	= httpd openssh
+upstream_yum	= httpd openssh autofs
 gems		= pony:1.8 fcgi:0.9.2.1
 upstream_gems	= rubygem-pony rubygem-fcgi
 upstream_eggs   = python-authkit
