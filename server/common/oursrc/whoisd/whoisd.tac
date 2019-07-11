@@ -6,11 +6,11 @@ import posixpath
 
 class WhoisProtocol(basic.LineReceiver):
     def lineReceived(self, hostname):
-    	(key, hostname) = hostname.split('=',2)
-	if key != self.factory.key:
+        (key, hostname) = hostname.split('=',2)
+        if key != self.factory.key:
             self.transport.write("Unauthorized to use whois"+"\r\n")
-	    self.transport.loseConnection()
-	else:
+            self.transport.loseConnection()
+        else:
             self.factory.getWhois(hostname
             ).addErrback(lambda _: "Internal error in server"
             ).addCallback(lambda m:

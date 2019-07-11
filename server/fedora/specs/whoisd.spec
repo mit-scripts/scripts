@@ -10,7 +10,7 @@ Source0:   %{name}.tar.gz
 
 %define debug_package %{nil}
 
-Requires:      python-twisted-core
+Requires:      %{py3_dist Twisted}
 BuildRequires: systemd-rpm-macros
 
 %description
