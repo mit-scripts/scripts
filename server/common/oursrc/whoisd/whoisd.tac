@@ -1,3 +1,4 @@
+# -*- mode: python; -*-
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor, defer
 from twisted.protocols import basic
@@ -24,14 +25,9 @@ class WhoisFactory(protocol.ServerFactory):
         self.ldap_base = ldap_base
         self.key = open(keyFile).read()
     def canonicalize(self, vhost):
-        vhost = vhost.lower().rstrip(".")
-        return vhost
-#        if vhost.endswith(".mit.edu"):
-#            return vhost
-#        else:
-#            return vhost + ".mit.edu"
+        return vhost.lower().rstrip(".")
     def searchLDAP(self, vhost):
-        attrlist = ('scriptsVhostName', 'homeDirectory', 'scriptsVhostDirectory', 'uid')
+        attrlist = ('scriptsVhostName', 'scriptsVhostAlias', 'homeDirectory', 'scriptsVhostDirectory', 'uid')
         results = self.ldap.search_st(self.ldap_base, ldap.SCOPE_SUBTREE,
             ldap.filter.filter_format(
                 '(|(scriptsVhostName=%s)(scriptsVhostAlias=%s))', (vhost,)*2),
@@ -40,7 +36,7 @@ class WhoisFactory(protocol.ServerFactory):
             result = results[0]
             attrs = result[1]
             for attr in attrlist:
-                attrs[attr] = attrs[attr][0]
+                attrs[attr] = attrs[attr].join(', ')
             return attrs
         else:
             return None
@@ -58,7 +54,7 @@ class WhoisFactory(protocol.ServerFactory):
                 self.ldap = ldap.initialize(self.ldap_URL)
         if info:
             ret = "Hostname: %s\nAlias: %s\nLocker: %s\nDocument Root: %s" % \
-                (info['scriptsVhostName'], vhost, info['uid'],
+                (info['scriptsVhostName'], info['scriptsVhostAlias'], info['uid'],
                  posixpath.join(info['homeDirectory'], 'web_scripts', info['scriptsVhostDirectory']))
         elif tries == 3:
             ret = "The whois server is experiencing problems looking up LDAP records.\nPlease contact scripts@mit.edu for help if this problem persists."
