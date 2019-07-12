@@ -6,6 +6,8 @@
 # TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
 # TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
 # TODO: Replace rc.local with something modern, if needed
+# TODO: Install whoisd
+# TODO: Build and install the rest of scripts-base
 # TODO: Configure logwatch
 # TODO: Make dnf drop setuid and caps on binaries we don't want to have them
 # TODO: Select and install python packages (both Python 2 and Python 3)
