@@ -6,6 +6,7 @@
 # TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
 # TODO: Replace rc.local with something modern, if needed
 # TODO: Install whoisd
+# TODO: Consider installing a crontab for export-scripts-certs (currently in scripts locker's crontab)
 # TODO: Build and install the rest of scripts-base
 # TODO: Configure logwatch
 # TODO: Make dnf drop setuid and caps on binaries we don't want to have them
