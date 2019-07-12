@@ -2,7 +2,6 @@
 # TODO: Configure ssh host-based authentication
 # TODO: Move blocked accounts into LDAP
 # TODO: Configure a local 389-ds
-# TODO: Configure clamav (what do we use this for?)
 # TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
 # TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
 # TODO: Replace rc.local with something modern, if needed
@@ -303,6 +302,14 @@
         net.ipv4.conf.all.rp_filter = 2
         net.ipv4.tcp_keepalive_time = 825
     notify: apply sysctl
+  - name: ClamAV
+    block:
+      - name: Install clamav
+        dnf:
+          name:
+            - clamav
+            - clamav-update
+          state: present
   - name: User utilities
     block:
       - name: Install utilities
