@@ -77,6 +77,7 @@
     - real-nrpe
     - real-modprobe
     - real-nsspam
+    - real-pki
     - real-iptables
     - real-sshd
     - real-postfix
@@ -165,7 +166,6 @@
       content: |
         scripts ALL=(root)      NOPASSWD: /usr/local/sbin/ldap-backup ""
         scripts ALL=(root)      NOPASSWD: /usr/local/sbin/get-homedirs ""
-        pony    ALL=(root)      NOPASSWD: /etc/pki/tls/gencsr-pony
   - name: Configure sshd for scripts
     lineinfile:
       path: /etc/ssh/sshd_config

@@ -1,0 +1,36 @@
+---
+- name: Install gencsr
+  copy:
+    dest: /etc/pki/tls/
+    src: gencsr/
+    mode: preserve
+- name: Allow pony to run gencsr-pony
+  copy:
+    dest: /etc/sudoers.d/scripts-gencsr-pony
+    content: |
+      pony    ALL=(root)      NOPASSWD: /etc/pki/tls/gencsr-pony
+- name: Configure OpenSSL for CSR generation
+  ini_file:
+    path: /etc/pki/tls/openssl.cnf
+    section: " {{ item.0.section }} "
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    -
+      - section: req_distinguished_name
+        options:
+          - option: countryName_default
+            value: US
+          - option: stateOrProvinceName_default
+            value: Massachusetts
+          - option: organizationalUnitName
+            value: OU
+          - option: organizationalUnitName_default
+            value: scripts.mit.edu web hosting service
+          - option: emailAddress_default
+            value: scripts@mit.edu
+      - section: req
+        options:
+          - option: default_md
+            value: sha256
+    - options
