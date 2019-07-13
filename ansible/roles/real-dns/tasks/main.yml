@@ -16,7 +16,10 @@
       include "/etc/named.mit.zones";
   notify: reload named
 - name: Start named
-  service: name=named state=started
+  service:
+    name: named
+    state: started
+    enabled: yes
 - name: Configure DNS servers
   ini_file:
     no_extra_spaces: yes
