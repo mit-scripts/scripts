@@ -5,4 +5,7 @@
   changed_when: munin_node_configure.stderr != ""
   notify: restart munin-node
 - name: restart munin-node
-  service: name=munin-node state=restarted
+  service:
+    name: munin-node
+    state: restarted
+    enabled: yes
