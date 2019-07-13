@@ -166,28 +166,6 @@
       content: |
         scripts ALL=(root)      NOPASSWD: /usr/local/sbin/ldap-backup ""
         scripts ALL=(root)      NOPASSWD: /usr/local/sbin/get-homedirs ""
-  - name: Configure sshd for scripts
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      regexp: '(?i)^#?\s*{{ item | regex_search("^(\S+)") }}\s'
-      line: "{{ item }}"
-    loop:
-      # "PasswordAuthentication no" and "GSSAPIAuthentication yes" comes from the k5login role
-      # "ChallengeResponseAuthentication yes" comes from the real-pam role
-      - GSSAPICleanupCredentials yes
-      - GSSAPIStrictAcceptorCheck no
-      - GSSAPIKeyExchange yes
-      - X11Forwarding no
-      - Banner /etc/issue.net
-      - LogLevel VERBOSE
-      - MaxStartups 50:30:500
-      - AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION LC_ALL EDITOR VISUAL
-      # See trac #23
-      - HostbasedAuthentication yes
-      - IgnoreRhosts yes
-      - IgnoreUserKnownHosts yes
-      - DenyUsers {{ groups['scripts-real'] | map('regex_replace', '^', 'root@') | join(' ') }}
-    notify: reload ssh
   - name: Limit Java memory
     lineinfile:
       path: /etc/environment
