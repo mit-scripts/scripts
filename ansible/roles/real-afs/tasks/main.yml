@@ -79,7 +79,7 @@
         What=/usr/sbin/better-mousetrapfs
         Where=/afs/000
         Type=fuse
-        Options=defaults,nonempty
+        Options=defaults,nonempty,_netdev
         [Install]
         WantedBy=multi-user.target
     notify: restart better-mousetrapfs
