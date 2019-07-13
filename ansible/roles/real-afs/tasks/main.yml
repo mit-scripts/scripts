@@ -25,7 +25,7 @@
       path: /etc/sysconfig/openafs
       section: null
       option: AFSD_ARGS
-      value: '"-afsdb -dynroot -fakestat -stat 25000 -daemons 100 -volumes 4000 -files 400000 -chunksize 19"'
+      value: '"-afsdb -dynroot -fakestat -stat 25000 -daemons 100 -volumes 4000 -files {{ afs_cache_size / 25 }} -chunksize 19"'
     notify: restart openafs-client
   - name: Configure ThisCell
     copy:
@@ -51,7 +51,7 @@
     copy:
       dest: /usr/vice/etc/cacheinfo
       content: |
-        /afs:/usr/vice/cache:{{ afs_cache_size | default(10000000) }}
+        /afs:/usr/vice/cache:{{ afs_cache_size }}
     notify: restart openafs-client
   - name: Configure SuidCells
     copy:
