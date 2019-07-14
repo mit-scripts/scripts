@@ -33,6 +33,11 @@
       content: |
         athena.mit.edu
     notify: restart openafs-client
+  - name: Configure CellServDB
+    copy:
+      dest: /usr/vice/etc/CellServDB.local
+      src: CellServDB.local
+    notify: restart openafs-client
   - name: Configure CellAlias
     copy:
       dest: /usr/vice/etc/CellAlias
