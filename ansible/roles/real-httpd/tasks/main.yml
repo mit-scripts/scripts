@@ -23,6 +23,11 @@
     src: httpd/
     mode: preserve
   notify: reload httpd
+- name: Configure MITnet regex
+  template:
+    dest: /etc/httpd/conf.d/scripts-remote-mitnet.conf
+    src: scripts-remote-mitnet.conf.j2
+  notify: reload httpd
 - name: Configure mod_vhost_ldap
   template:
     dest: /etc/httpd/conf.d/vhost_ldap.conf
