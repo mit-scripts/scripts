@@ -1,5 +1,5 @@
 {% for host in groups['scripts-real'] %}
-{# TODO: backend IP; get IP from host_vars, not DNS
+{# TODO: backend IP; get IP from host_vars, not DNS #}
 {{ host }}
 {{ lookup('dig', host) }}
 {% endfor %}
