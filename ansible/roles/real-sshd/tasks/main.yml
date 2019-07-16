@@ -56,6 +56,8 @@
   notify: reload ssh
 - name: Read ssh host keys
   command: "/bin/cat /etc/ssh/ssh_host_*_key.pub"
+  changed_when: no
+  check_mode: no
   register: cat_host_keys
 - name: Generate ssh_known_hosts
   # N.B. This assumes that all the scripts servers share a single host key.
@@ -64,3 +66,7 @@
   template:
     dest: /etc/ssh/ssh_known_hosts
     src: ssh_known_hosts.j2
+- name: Generate shosts.equiv
+  template:
+    dest: /etc/ssh/shosts.equiv
+    src: shost.equiv.j2
