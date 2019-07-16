@@ -14,7 +14,7 @@ Source: debathena-%{name}_%{upstreamversion}+%{snapshotversion}.orig.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 #TODO: might really need mit-zephyr-devel, something for autotools-dev
 BuildRequires: readline-devel, e2fsprogs-devel, ncurses-devel, krb5-devel, hesiod-devel
-BuildRequires: gcc
+BuildRequires: gcc, gcc-c++
 Patch1: moira-update-server.rc.patch
 Patch2: moira-fix-manpage-paths.patch
 
