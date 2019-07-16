@@ -1,0 +1,8 @@
+{% for host in groups['scripts-real'] %}
+{# TODO: backend IP; get IP from host_vars, not DNS
+{% set ghal = lookup('moira_ghal', host, include_short_names=True, include_cname=True) %}
+{% set ips = lookup('dig', host) %}
+{% for key in ssh_host_keys %}
+{{ ghal }},{{ ips }} {{ key }}
+{% endfor %}
+{% endfor %}
