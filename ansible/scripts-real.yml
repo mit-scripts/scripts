@@ -1,5 +1,4 @@
 # TODO: Install more PHP modules, consider disabling by default or just leaving them.
-# TODO: Configure ssh host-based authentication
 # TODO: Move blocked accounts into LDAP
 # TODO: Configure a local 389-ds
 # TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
