@@ -21,7 +21,7 @@ class LookupModule(LookupBase):
         p = subprocess.Popen(
             ["qy", "-n", "-s", "ghal", "*", host],
             cwd=self._loader.get_basedir(),
-            stdin=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             stdout=subprocess.PIPE)
         (stdout, stderr) = p.communicate()
         if stderr != "":
@@ -33,7 +33,7 @@ class LookupModule(LookupBase):
             host = host.lower()
             display.debug("Looking up aliases for: %s" % host)
 
-            ret += self.ghal(host)
+            ret.update(self.ghal(host))
             if include_cname:
                 ret.add(host)
         if include_short_names:
