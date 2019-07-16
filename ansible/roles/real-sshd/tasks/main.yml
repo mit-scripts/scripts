@@ -55,7 +55,7 @@
 
   notify: reload ssh
 - name: Read ssh host keys
-  command: "/bin/cat /etc/ssh/ssh_host_*_key.pub"
+  shell: "/bin/cat /etc/ssh/ssh_host_*_key.pub"
   changed_when: no
   check_mode: no
   register: cat_host_keys
