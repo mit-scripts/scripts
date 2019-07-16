@@ -59,6 +59,10 @@
   changed_when: no
   check_mode: no
   register: cat_host_keys
+- name: Ensure qy is installed
+  dnf:
+    name: moira-clients
+    state: present
 - name: Generate ssh_known_hosts
   # N.B. This assumes that all the scripts servers share a single host key.
   vars:
