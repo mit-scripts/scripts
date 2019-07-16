@@ -3,7 +3,6 @@
 # TODO: Configure a local 389-ds
 # TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
 # TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
-# TODO: Replace rc.local with something modern, if needed
 # TODO: Install whoisd
 # TODO: Consider installing a crontab for export-scripts-certs (currently in scripts locker's crontab)
 # TODO: Build and install the rest of scripts-base
