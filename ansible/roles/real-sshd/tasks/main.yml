@@ -63,6 +63,7 @@
   dnf:
     name: moira-clients
     state: present
+  when: use_moira | default(True)
 - name: Generate ssh_known_hosts
   # N.B. This assumes that all the scripts servers share a single host key.
   vars:
@@ -70,10 +71,11 @@
   template:
     dest: /etc/ssh/ssh_known_hosts
     src: ssh_known_hosts.j2
+  when: use_moira | default(True)
 - name: Generate shosts.equiv
   template:
     dest: /etc/ssh/shosts.equiv
-    src: shost.equiv.j2
+    src: shosts.equiv.j2
 - name: Configure ssh for scripts
   copy:
     dest: /etc/ssh/ssh_config.d/99-scripts.conf

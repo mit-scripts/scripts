@@ -151,6 +151,7 @@ all:
             use_execsys: yes
             use_zephyr: yes
             use_autofs: yes
+            use_moira: yes
           hosts:
             quentin-scripts-f30.xvm.mit.edu:
               vars:
