@@ -70,3 +70,7 @@
   template:
     dest: /etc/ssh/shosts.equiv
     src: shost.equiv.j2
+- name: Configure ssh for scripts
+  copy:
+    dest: /etc/ssh/ssh_config.d/99-scripts.conf
+    src: ssh_config-scripts.conf
