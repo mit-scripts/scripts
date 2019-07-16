@@ -1,7 +1,8 @@
 # Make sure to update these to coincide with the most recent debathena-moira
 # release from http://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
-%define upstreamversion 4.0.0
-%define snapshotversion svn20100405
+%undefine _debugsource_packages
+%define upstreamversion 4.0.0.3
+%define snapshotversion 51+g65d55c5
 Summary: moira libraries, clients, and friends
 Group: Applications/System
 Name: moira
@@ -16,16 +17,14 @@ BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 BuildRequires: readline-devel, e2fsprogs-devel, ncurses-devel, krb5-devel, hesiod-devel
 BuildRequires: gcc, gcc-c++
 Patch1: moira-update-server.rc.patch
-Patch2: moira-fix-manpage-paths.patch
 
 %description
 The moira library and clients.  Clone of debathena-moira.
 See http://scripts.mit.edu/wiki for more information.
 
 %prep
-%setup -q -n debathena-%{name}-%{upstreamversion}+%{snapshotversion}
+%setup -q -n %{name}-%{upstreamversion}+%{snapshotversion}/moira
 %patch1
-%patch2 -p1
 
 %build
 # Hack: Add /usr/include/et to put com_err.h on the C include path.
@@ -33,7 +32,7 @@ See http://scripts.mit.edu/wiki for more information.
 # com_err.h in /usr/include.
 # (See https://bugzilla.redhat.com/show_bug.cgi?id=550889)
 # TODO: --with-zephyr is currently borked
-%configure --without-krb4 --with-krb5 --with-hesiod --without-zephyr --without-oracle --without-afs --disable-rpath --with-com_err=/usr CFLAGS='-I /usr/include/et'
+%configure --without-krb4 --with-krb5 --with-hesiod --without-zephyr --without-oracle --without-afs --with-pic --disable-rpath --with-com_err=/usr CFLAGS='-I /usr/include/et -fPIC'
 make %{?_smp_mflags}
 
 %install
@@ -74,7 +73,6 @@ This package contains clients such as moira, stella, blanche, etc.
 
 %files clients
 %defattr(755,root,root)
-%{_bindir}/addusr
 %{_bindir}/blanche
 %{_bindir}/chfn.moira
 %{_bindir}/chpobox
@@ -92,7 +90,9 @@ This package contains clients such as moira, stella, blanche, etc.
 %{_bindir}/dcmmaint
 %{_bindir}/usermaint
 %{_bindir}/update_test
+%{_bindir}/qy
 %defattr(-,root,root)
+/etc/shells.moira
 %doc %{_mandir}/man1/*
 %doc %{_mandir}/man8/mrtest.8.gz
 
