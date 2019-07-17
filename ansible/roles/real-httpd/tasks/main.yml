@@ -17,6 +17,44 @@
     dest: /etc/sudoers.d/scripts-httpd
     content: |
       scripts ALL=(root)      NOPASSWD: /etc/httpd/export-scripts-certs ""
+
+- name: Configure Munin monitoring
+  block:
+  - name: Install htpasswd
+    dnf: name=httpd-tools state=present
+  - name: Generate password
+    check_mode: no
+    shell: cat /etc/munin/apache-passwd {% if not ansible_check_mode %}|| (umask go-rwx && openssl rand -hex 32 | tee /etc/munin/apache-passwd && exit 254){% endif %}
+    register: password
+    failed_when: not ansible_check_mode and password.rc not in (0, 254)
+    changed_when: password.rc != 0
+  - name: Generate htpasswd line
+    check_mode: no
+    command: htpasswd -ni munin
+    args:
+      stdin: "{{password.stdout}}"
+    changed_when: false
+    register: htpasswd
+  - name: Update htpasswd file
+    copy:
+      dest: /etc/munin/apache-htpasswd
+      content: "{{htpasswd.stdout}}"
+      mode: 0600
+      owner: apache
+    notify: reconfigure munin-node
+  - name: Configure apache plugins
+    copy:
+      dest: /etc/munin/plugin-conf.d/{{ item }}
+      content: |
+        [{{ item }}]
+        env.url http://munin:{{password.stdout}}@127.0.0.1:%d/server-status/?auto
+      mode: 0600
+      owner: munin
+    loop:
+      - apache_accesses
+      - apache_processes
+      - apache_volume
+    notify: reconfigure munin-node
 - name: Configure httpd
   copy:
     dest: /etc/httpd/
