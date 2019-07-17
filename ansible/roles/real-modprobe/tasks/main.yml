@@ -14,6 +14,12 @@
     content: |
       binfmt_misc
   notify: load modules
+- name: Load rpc_pipefs
+  copy:
+    dest: /etc/modules-load.d/rpc_pipefs.conf
+    content: |
+      rpc_pipefs
+  notify: load modules
 - name: Activate modprobe replacement script
   copy:
     dest: /etc/sysctl.d/99-scripts-modprobe.conf
