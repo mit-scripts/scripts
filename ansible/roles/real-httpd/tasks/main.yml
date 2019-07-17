@@ -28,14 +28,21 @@
     register: password
     failed_when: not ansible_check_mode and password.rc not in (0, 254)
     changed_when: password.rc != 0
-  - name: Generate htpasswd line
+  - name: Check htpasswd file
     check_mode: no
-    command: htpasswd -ni munin
+    command: htpasswd -vi /etc/munin/apache-htpasswd munin
     args:
       stdin: "{{password.stdout}}"
     changed_when: false
+    register: htpasswd_verify
+  - name: Generate htpasswd line
+    when: htpasswd_verify.rc != 0
+    command: htpasswd -ni munin
+    args:
+      stdin: "{{password.stdout}}"
     register: htpasswd
   - name: Update htpasswd file
+    when: htpasswd_verify.rc != 0
     copy:
       dest: /etc/munin/apache-htpasswd
       content: "{{htpasswd.stdout}}"
