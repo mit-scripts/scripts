@@ -3,12 +3,13 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 lookup: moira_ghal
- description:
- - This lookup returns the aliases of a Moira host.
+description:
+- This lookup returns the aliases of a Moira host.
 """
 
 import subprocess
 
+from ansible.module_utils._text import to_text
 from ansible.plugins.lookup import LookupBase
 from ansible.utils.display import Display
 
@@ -24,9 +25,9 @@ class LookupModule(LookupBase):
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE)
         (stdout, stderr) = p.communicate()
-        if stderr != "":
+        if stderr:
             display.warning("qy: %s" % stderr)
-        return [s.split(',', 2)[0].lower() for s in stdout.splitlines()]
+        return [s.split(',', 2)[0].lower() for s in to_text(stdout).splitlines()]
     def run(self, terms, include_short_names=False, include_cname=False, **kwargs):
         ret = set()
         for host in terms:
