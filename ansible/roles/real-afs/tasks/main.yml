@@ -110,13 +110,20 @@
       enabled: yes
       state: started
     register: better_mousetrapfs_started
-  - name: Start afsagent
+  - name: Enable afsagent
     systemd:
       name: "{{ item }}"
       enabled: yes
-      state: started
     loop:
       - scripts-afsagent.service
+      - scripts-afsagent-startup.service
+      - scripts-afsagent.timer
+    when: has_daemon_keytab
+  - name: Start afsagent
+    systemd:
+      name: "{{ item }}"
+      state: started
+    loop:
       - scripts-afsagent-startup.service
       - scripts-afsagent.timer
     when: has_daemon_keytab
