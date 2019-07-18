@@ -41,4 +41,4 @@ class LookupModule(LookupBase):
             for h in set(ret):
                 if h.endswith(DOMAIN):
                     ret.add(h[:-len(DOMAIN)])
-        return ret
+        return list(sorted(ret))
