@@ -1,6 +1,7 @@
 [Unit]
 Description=Run ansible-pull at first boot to apply environment configuration
 After=network-online.target
+ConditionPathExists=!/etc/ansible-config-done
 
 [Service]
 ExecStart=/srv/repository/server/fedora/ansible-config-me.sh
