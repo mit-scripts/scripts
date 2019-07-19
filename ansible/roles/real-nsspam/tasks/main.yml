@@ -70,5 +70,5 @@
   register: authselect_current
 - name: Switch authselect profile
   command:
-    /usr/bin/authselect select custom/scripts
+    /usr/bin/authselect select custom/scripts --force
   when: authselect_current.stdout != "custom/scripts"
