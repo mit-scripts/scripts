@@ -11,6 +11,7 @@
       - python3-ldap
       - python3-pyOpenSSL
       - logview
+      - httpd-tools
     state: present
 - name: Allow scripts to export certificates
   copy:
@@ -20,8 +21,6 @@
 
 - name: Configure Munin monitoring
   block:
-  - name: Install htpasswd
-    dnf: name=httpd-tools state=present
   - name: Generate password
     check_mode: no
     shell: cat /etc/munin/apache-passwd {% if not ansible_check_mode %}|| (umask go-rwx && openssl rand -hex 32 | tee /etc/munin/apache-passwd && exit 254){% endif %}
@@ -34,6 +33,7 @@
     args:
       stdin: "{{password.stdout}}"
     changed_when: false
+    failed_when: false
     register: htpasswd_verify
   - name: Generate htpasswd line
     when: htpasswd_verify.rc != 0
