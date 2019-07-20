@@ -63,7 +63,7 @@ server=YOUR-SERVER-NAME-HERE
 
 # Start with a Scripts kickstarted install of Fedora (install-fedora)
 # For example,
-    remctl xvm-remote control $server install mirror=http://mirrors.mit.edu/fedora/linux/ dist=30 arch=x86_64 ks=https://raw.githubusercontent.com/mit-scripts/scripts/aerver/fedora/ks/kickstart.txt
+    remctl xvm-remote control $server install mirror=http://mirrors.mit.edu/fedora/linux/ dist=30 arch=x86_64 ks=https://raw.githubusercontent.com/mit-scripts/scripts/ansible-realserver/server/fedora/ks/kickstart.txt
 
 # [TEST] You'll need to fix some config now.  See bottom of document.
 

@@ -26,45 +26,27 @@ you should be able to assign ownership to scripts.
 2. Configure
 ------------
 
-Lest you be tempted to skimp on RAM:  you must have more than 700MBish
-to install Fedora; 1024MB is a good amount is a good amount to give to
+Lest you be tempted to skimp on RAM:  you must have more than 1 GB
+to install Fedora; 2048MB is a good amount is a good amount to give to
 the server.  Disk space on order of 40G is probably good enough.
 
-While it is best to use the install CD from the most recent version
-of Fedora, any kernel which supports Kickstarting can be used.  A good
-bet is to use the Netboot CD from the latest version of Fedora that
-XVM has (since XVM is sort of bad about keeping their boot CDs up to
-date.)  Since you're doing an install CD, it's going to be an HVM.
+Create a VM using the web interface but do not boot it. From the
+command line with suitable tickets, run
 
-You will need VNC access to perform the installation process.  If you have
-Java, just go to the Console page for the VM; if you do not, you can use
-the following set of incants to setup a local VNC server which can talk
-to the console:
+remctl xvm-remote control $server install mirror=http://mirrors.mit.edu/fedora/linux/ dist=30 arch=x86_64 ks=https://raw.githubusercontent.com/mit-scripts/scripts/ansible-realserver/server/fedora/ks/kickstart.txt
 
-    athrun xvm invirt-vnc-client -a $AUTHTOKEN
-    vncviewer localhost
+Watch the installation progress with
 
-where AUTHTOKEN is the contents of the AUTHTOKEN param on the console page
-(which would have had the Java applet.)
+ssh $server@xvm-console.mit.edu
 
-On the bootloader screen (usually it gives you a bunch of options
-such as "Install" or "Advanced"), press TAB and edit the kernel boot
-line to append the text:
+When the installation finishes, the VM will shut down. Boot it with
+the web interface or
 
-    ks=http://ezyang.scripts.mit.edu/kickstart/scripts.php?type=xvm&release=$RELEASE_NO&hostname=scripts-f$RELEASE_NO-test.xvm.mit.edu
+remctl xvm-remote control $server create
 
-with $RELEASE_NO interpolated properly.  You should keep around any initrd
-lines since the kernel image still needs to know how to boot up.
-
-    XXX the kickstart file needs to live in a less sketchy place
-
-The install process will ask you for a password.  Do NOT use the
-scripts-root password.  We have a password in
-/mit/scripts/Private/scripts-test-passwd which we tend to use.
-
-We don't know how to convert to ParaVM yet, because latest Fedora
-uses Grub2 but XVM's bootloader doesn't understand how to read it
-(see also the Scripts patches we manually applied to our hosts.)
+You will need to log in using the serial console or VNC console using
+"root" with no password. sshd will not accept root logins until you
+install a public key.
 
 3. Debugging
 ------------
