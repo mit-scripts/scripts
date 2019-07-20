@@ -1,19 +1,7 @@
 ServerName scripts.mit.edu
 ServerAlias \
-    scripts 18.4.86.43 \
-    scripts-vhosts.mit.edu scripts-vhosts 18.4.86.46 \
-    scripts-test.mit.edu scripts-test 18.4.86.229 \
-    better-mousetrap.mit.edu better-mousetrap b-m.mit.edu b-m scripts1.mit.edu scripts1 18.4.86.57 \
-    old-faithful.mit.edu old-faithful o-f.mit.edu o-f scripts2.mit.edu scripts2 18.4.86.53 \
-    bees-knees.mit.edu bees-knees b-k.mit.edu b-k scripts3.mit.edu scripts3 18.4.86.167 \
-    cats-whiskers.mit.edu cats-whiskers c-w.mit.edu c-w scripts4.mit.edu scripts4 18.4.86.228 \
-    whole-enchilada.mit.edu whole-enchilada w-e.mit.edu w-e scripts5.mit.edu scripts5 18.4.86.236 \
-    pancake-bunny.mit.edu pancake-bunny p-b.mit.edu p-b scripts6.mit.edu scripts6 18.4.86.237 \
-    busy-beaver.mit.edu busy-beaver b-b.mit.edu b-b scripts7.mit.edu scripts7 18.4.86.234 \
-    real-mccoy.mit.edu real-mccoy r-m.mit.edu r-m scripts8.mit.edu scripts8 18.4.86.235 \
-    shining-armor.mit.edu shining-armor s-a.mit.edu s-a scripts9.mit.edu scripts9 18.4.86.135 \
-    golden-egg.mit.edu golden-egg g-e.mit.edu g-e scripts10.mit.edu scripts10 18.4.86.141 \
-    miracle-cure.mit.edu miracle-cure m-c.mit.edu m-c scripts11.mit.edu scripts11 18.4.86.203 \
-    lucky-star.mit.edu lucky-star l-s.mit.edu l-s scripts12.mit.edu scripts12 18.4.86.204 \
-    {{ ansible_nodename }} {{ ansible_hostname }} {{ ansible_default_ipv4.address }} \
+    {% for vip in vips | rejectattr('type') %}
+    {{ vip.host }} {{ vip.host | replace('.mit.edu', '') }} {{ vip.ip }} \
+    {% endfor %}
+    {{ query('moira_ghal', ansible_nodename, include_short_names=True, include_cname=True)|join(' ') }} {{ ansible_default_ipv4.address }} \
     localhost 127.0.0.1 ::1

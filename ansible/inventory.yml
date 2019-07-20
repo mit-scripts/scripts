@@ -23,6 +23,7 @@ all:
       ip: 18.4.86.132
       cidr_netmask: 24
       nic: vlan486
+      type: director
     - host: scripts-new.mit.edu
       ip: 18.4.86.43
       cidr_netmask: 24
@@ -32,6 +33,7 @@ all:
       ip: 18.4.86.50
       cidr_netmask: 24
       nic: vlan486
+      type: cert
     - host: scripts-vhosts-new.mit.edu
       ip: 18.4.86.46
       cidr_netmask: 24
@@ -45,6 +47,7 @@ all:
       ip: 18.4.86.29
       cidr_netmask: 24
       nic: vlan486
+      type: vhost
 
     rsyslogs:
     - 18.4.86.15  # log-flume

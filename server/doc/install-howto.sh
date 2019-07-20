@@ -24,9 +24,6 @@ server=YOUR-SERVER-NAME-HERE
 # [PRODUCTION] If this is the first time you've installed this hostname,
 # you will need to update a bunch of files to add support for it. These
 # include:
-#   o Adding all aliases to /etc/httpd/conf.d/scripts-vhost-names.conf
-#     (usually this is hostname, hostname.mit.edu, h-n, h-n.mit.edu,
-#     scriptsN, scriptsN.mit.edu, and the IP address.)
 #   o Adding routing rules for the static IP in
 #     /etc/sysconfig/network-scripts/route-eth1
 #   o Adding the IP address to the hosts file (same hosts as for
