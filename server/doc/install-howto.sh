@@ -24,19 +24,16 @@ server=YOUR-SERVER-NAME-HERE
 # [PRODUCTION] If this is the first time you've installed this hostname,
 # you will need to update a bunch of files to add support for it. These
 # include:
+#   o Adding it to ansible/inventory.yml in either scripts-real or
+#     scripts-real-test
+#   o If this is a new distribution, set use_* to false in inventory.yml
+#     since none of the scripts packages will be built yet
 #   o Adding routing rules for the static IP in
 #     /etc/sysconfig/network-scripts/route-eth1
 #   o Adding the IP address to the hosts file (same hosts as for
 #     scripts-vhost-names)
-#   o Update SSH config at
-#       - server/fedora/config/etc/ssh/shosts.equiv
-#       - server/fedora/config/etc/ssh/ssh_known_hosts
-#       - server/fedora/config/etc/ssh/sshd_config : DenyUsers
-#     (the last part is critical to ensure that rooting one server
-#     doesn't give you root to all the other servers)
 #   o Put the hostname information in LDAP so SVN and Git work
 #   o Set up Nagios monitoring on sipb-noc for the host
-#   o Set up the host as in the pool on r-b/r-b /etc/heartbeat/ldirectord.cf
 #   o Update locker/etc/known_hosts
 #   o Update website files:
 #       /mit/scripts/web_scripts/home/server.css.cgi
@@ -65,87 +62,36 @@ server=YOUR-SERVER-NAME-HERE
 #                      INFINITE INSTALLATION
 
 # Start with a Scripts kickstarted install of Fedora (install-fedora)
-
-# IMPORTANT: If you are installing a server without the benefit of
-# Kickstart (for example, you are installing on XVM, it is VITALLY
-# IMPORTANT that you go through the kickstart and apply all of the
-# necessary changes--for example, disabling selinux or enabling
-# network.)
-#   XXX We should make Kickstart work for test servers too
-
-# Make sure selinux is disabled
-    selinuxenabled || echo "selinux not enabled"
-
-# Take updates, reboot if there's a kernel update.
-    yum update -y
-
-# Get rid of network manager (XXX figure out to make kickstarter do
-# this for us)
-    yum remove NetworkManager
-
-# Make sure sendmail isn't installed, replace it with postfix
-    yum shell -y <<EOF
-remove sendmail
-install postfix
-run
-exit
-EOF
-
-# Check out the scripts /etc configuration
-    cd /root
-    \cp -a etc /
-    chmod 0440 /etc/sudoers
-    grub2-mkconfig -o /boot/grub2/grub.cfg
+# For example,
+    remctl xvm-remote control $server install mirror=http://mirrors.mit.edu/fedora/linux/ dist=30 arch=x86_64 ks=https://raw.githubusercontent.com/mit-scripts/scripts/aerver/fedora/ks/kickstart.txt
 
 # [TEST] You'll need to fix some config now.  See bottom of document.
 
-# Stop /etc/resolv.conf from getting repeatedly overwritten by
-# purging DNS servers from ifcfg-eth0 and ifcfg-eth1
-    vim /etc/sysconfig/network-scripts/ifcfg-eth0
-    vim /etc/sysconfig/network-scripts/ifcfg-eth1
-
-# Make sure network is working.  Kickstart should have
-# configured eth0 and eth1 correctly; use service network restart
-# to add the new routes from etc in route-eth1.
-    systemctl restart network.service
-    # Check everything worked:
-    route
-    ifconfig
-    cat /etc/hosts
-    cat /etc/sysconfig/network-scripts/route-eth1
+# Check the configuration progress with
+    systemctl status ansible-config-me
+# You can tail the log with
+    journalctl -f -u ansible-config-me
+# If the configuration fails, figure out what happened and rerun it with
+    systemctl start ansible-config-me
 
 # This is the point at which you should start updating scriptsified
 # packages for a new Fedora release.  Consult 'upgrade-tips' for more
 # information.
-    yum install -y scripts-base
-    # Some of these packages are naughty and clobber some of our files
-    cd /etc
-    svn revert resolv.conf hosts sysconfig/openafs nsswitch.conf
-    # Troubleshooting: if accountadm, tokensys and nscd fail to install
-    # you probably forgot to turn off selinux
 
-# Replace rsyslog with syslog-ng by doing:
-    yum shell -y <<EOF
-remove rsyslog
-install syslog-ng
-run
-exit
-EOF
-    systemctl enable syslog-ng.service
-    systemctl start syslog-ng.service
+    su scripts-build -
+    cd /srv/repository/fedora/server && make all
+    cp /var/lib/mock/fedora-*/result/*.rpm /home/scripts-build/mock-local/
+    createrepo ~/mock-local/
+# Flip the appropriate flag(s) in inventory.yml and rerun ansible
+    touch /etc/ansible-config-me
+    systemctl start ansible-config-me
 
 # Install the full list of RPMs that users expect to be on the
 # scripts.mit.edu servers.
 rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
 # arrange for packages.txt to be passed to the server, then run:
     cd /tmp
-    yumdownloader --disablerepo=scripts ghc-cgi ghc-cgi-devel
-    yum localinstall ghc-cgi*.x86_64.rpm
     yum install -y $(cat packages.txt)
-# The reason this works is that ghc-cgi is marked as installonlypkgs
-# in yum.conf, telling yum to install them side-by-side rather than
-# updating them. If it doesn't work, use --skip-broken on the yum
-# command line.
 
 # Check which packages are installed on your new server that are not
 # in the snapshot, and remove ones that aren't needed for some reason
@@ -155,9 +101,6 @@ rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
     diff -u packages.txt newpackages.txt | grep -v kernel | less
     # here's a cute script that removes all extra packages
     yum erase -y $(grep -Fxvf packages.txt newpackages.txt)
-    # 20101208 - Mysteriously we manage to get these extra packages
-    # from kickstart: mcelog mobile-broadband-provider-info
-    # ModemManager PackageKit
 
 # ----------------------------->8--------------------------------------
 #                       INFINITE CONFIGURATION
@@ -185,58 +128,17 @@ python host.py push $server
 #   #   [WIZARD]     daemon.scripts-security-upd
 #   #   [TESTSERVER] daemon.scripts-test
 
-# Test that zephyr is working
-    systemctl enable zhm.service
-    systemctl start zhm.service
-    echo 'Test!' | zwrite -d -c scripts -i test
-
-# Check out the scripts /usr/vice/etc configuration
-    cd /root/vice
-    \cp -a etc /usr/vice
-# [TESTSERVER] If you're installing a test server, this needs to be
-# much smaller; the max filesize on XVM is 10GB.  Pick something like
-# 500000. Also, some of the AFS parameters are kind of silly (and if
-# you're low on disk space, will actually exhaust our inodes).  Edit
-# these parameters in /etc/sysconfig/openafs (I just chopped a zero
-# off of all of our parameters)
-    echo "/afs:/usr/vice/cache:500000" > /usr/vice/etc/cacheinfo
-    vim /etc/sysconfig/openafs
-
 # [PRODUCTION] Set up replication (see ./install-ldap).
 # You'll need the LDAP keytab for this server: be sure to chown it
 # fedora-ds after you create the fedora-ds user
     ls -l /etc/dirsrv/keytab
     cat install-ldap
 
-# Enable lots of services (currently in /etc checkout)
-    systemctl enable openafs-client.service
-    systemctl enable dirsrv.target
-    systemctl enable nslcd.service
-    systemctl enable nscd.service
-    systemctl enable postfix.service
-    systemctl enable nrpe.service # chkconfig'd
-    systemctl enable httpd.service # not for [WIZARD]
-
-    systemctl start openafs-client.service
-    systemctl start dirsrv.target
-    systemctl start nslcd.service
-    systemctl start nscd.service
-    systemctl start postfix.service
-    systemctl start nrpe.service
-    systemctl start httpd.service # not for [WIZARD]
-
 # Note about OpenAFS: Check that fs sysname is correct.  You should see,
 # among others, 'amd64_fedoraX_scripts' (vary X) and 'scripts'. If it's
 # not, you probably did a distro upgrade and should update
 # tokensys (server/common/oursrc/tokensys/scripts-afsagent-startup.in)
     fs sysname
-
-# Postfix doesn't actually deliver mail; fix this
-    cd /etc/postfix
-    postmap virtual
-
-# Munin might not be monitoring packages that were installed after it
-    munin-node-configure --suggest --shell | sh
 
 # Run fmtutil-sys --all, which does something that makes TeX work.
 # (Note: this errors on XeTeX which is ok.)
@@ -247,16 +149,6 @@ python host.py push $server
     find / -xdev -not -perm -o=x -prune -o -type f -print0 | xargs -0r /usr/sbin/getcap | cut -d' ' -f1 | grep -Fxvf /etc/scripts/allowed-filecaps.list
     # You can prune the first set of binaries using 'chmod u-s' and 'chmod g-s'
     # and remove capabilities using 'setcap -r'
-
-# XXX check for selinux gunk
-
-# Fix etc by making sure none of our config files got overwritten
-    cd /etc
-    svn status -q
-    # Some usual candidates for clobbering include nsswitch.conf,
-    # resolv.conf and sysconfig/openafs
-    # [WIZARD/TEST] Remember that changes you made should not get
-    # reverted!
 
 # Reboot the machine to restore a consistent state, in case you
 # changed anything. (Note: Starting kdump fails (this is ok))
@@ -326,12 +218,3 @@ python host.py push $server
 #     XXX alternate strategy replace all the pem's as above
     cd /etc/httpd/vhosts.d
     svn rm *.conf
-
-# [TESTSERVER]
-#   Remove vhosts.d which we don't have rights for XXX
-
-# [TESTSERVER] More stuff for test servers
-#   - Make (/etc/aliases) root mail go to /dev/null, so we don't spam people
-#   - Edit /etc/httpd/conf.d/scripts-vhost-names.conf to have scripts-fX-test.xvm.mit.edu
-#     be an accepted vhost name
-#   - Look at the old test server and see what config changes are floating around
