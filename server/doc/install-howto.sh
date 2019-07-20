@@ -83,7 +83,7 @@ server=YOUR-SERVER-NAME-HERE
     cp /var/lib/mock/fedora-*/result/*.rpm /home/scripts-build/mock-local/
     createrepo ~/mock-local/
 # Flip the appropriate flag(s) in inventory.yml and rerun ansible
-    touch /etc/ansible-config-me
+    rm /etc/ansible-config-done
     systemctl start ansible-config-me
 
 # Install the full list of RPMs that users expect to be on the
