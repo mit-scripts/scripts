@@ -1,5 +1,5 @@
 AC_INIT([shackle], [1.0])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign])
 
 PKG_PROG_PKG_CONFIG
 AC_ARG_WITH([systemdsystemunitdir],
