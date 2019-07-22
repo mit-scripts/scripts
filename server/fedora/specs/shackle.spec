@@ -15,6 +15,7 @@ BuildRequires: systemd-rpm-macros
 BuildRequires: pkgconfig(systemd)
 BuildRequires: autoconf
 BuildRequires: automake
+%define debug_package %{nil}
 
 %description
 
@@ -47,7 +48,7 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %{_unitdir}/shackle.service
 %{_unitdir}/shackle.socket
 %defattr(0755, root, root)
-${_sbindir}/shackle
+%{_sbindir}/shackle
 
 %post
 %systemd_post shackle.service

@@ -1,5 +1,5 @@
 [Service]
-ExecStart=@SBINDIR@/shackle 127.0.0.1 54 INET STREAM INET DGRAM
+ExecStart=@sbindir@/shackle 127.0.0.1 54 INET STREAM INET DGRAM
 NonBlocking=true
 User=nobody
 Group=nobody
