@@ -1,0 +1,5 @@
+---
+- name: Install Perl modules
+  dnf:
+    name: "{{ lookup('file', 'perl.txt').splitlines() | map('regex_replace', '^(.*)$', 'perl(\\1)') | list}}"
+    state: present
