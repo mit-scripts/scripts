@@ -1,0 +1,258 @@
+#!/usr/bin/python
+
+import copy
+import ctypes
+import pwd
+import socket
+from socket import AF_INET, AF_INET6, inet_pton
+import struct
+import sys
+import syslog
+from twisted.internet import address, error, reactor, udp
+from twisted.names import client, dns, server
+from twisted.python import log, systemd
+
+DBL_MIN_TIMEOUT_SECS = 0.5
+
+try:
+    libpsl = ctypes.cdll.LoadLibrary("libpsl.so.5")
+except OSError:
+    libpsl = ctypes.cdll.LoadLibrary("libpsl.so.0")
+
+
+class psl_ctx_t(ctypes.Structure):
+    pass
+
+
+psl_builtin = libpsl.psl_builtin
+psl_builtin.restype = ctypes.POINTER(psl_ctx_t)
+psl_builtin.argtypes = ()
+
+psl_registrable_domain = libpsl.psl_registrable_domain
+psl_registrable_domain.restype = ctypes.c_char_p
+psl_registrable_domain.argtypes = (ctypes.POINTER(psl_ctx_t), ctypes.c_char_p)
+
+LOG_AUTHPRIV = 80
+
+addrFamily = {address.IPv4Address: AF_INET, address.IPv6Address: AF_INET6}
+tableFile = {
+    (AF_INET, "UDP"): "/proc/net/udp",
+    (AF_INET6, "UDP"): "/proc/net/udp6",
+    (AF_INET, "TCP"): "/proc/net/tcp",
+    (AF_INET6, "TCP"): "/proc/net/tcp6",
+}
+
+MIN_UNSCRUPULOUS = inet_pton(AF_INET, "127.0.1.0")
+MAX_UNSCRUPULOUS = inet_pton(AF_INET, "127.0.1.99")
+
+dblExplain = {
+    inet_pton(AF_INET, "127.0.1.2"): "spam domain",
+    inet_pton(AF_INET, "127.0.1.4"): "phish domain",
+    inet_pton(AF_INET, "127.0.1.5"): "malware domain",
+    inet_pton(AF_INET, "127.0.1.6"): "botnet C&C domain",
+    inet_pton(AF_INET, "127.0.1.102"): "abused legit spam",
+    inet_pton(AF_INET, "127.0.1.103"): "abused spammed redirector domain",
+    inet_pton(AF_INET, "127.0.1.104"): "abused legit phish",
+    inet_pton(AF_INET, "127.0.1.105"): "abused legit malware",
+    inet_pton(AF_INET, "127.0.1.106"): "abused legit botnet C&C",
+    inet_pton(AF_INET, "127.0.1.255"): "IP queries prohibited!",
+}
+
+
+class MousetrapQuery(object):
+    def __init__(self, factory, message, protocol, address, peer, query, domain):
+        self.factory = factory
+        self.message = message
+        self.protocol = protocol
+        self.address = address
+        self.peer = peer
+        self.query = query
+        self.done = False
+        self.dblDone = False
+        self.deferred = self.factory.resolver.query(query).addCallbacks(
+            self.gotResponse, self.gotError
+        )
+        self.dblDeferred = self.factory.resolver.query(
+            dns.Query(domain + ".dbl.spamhaus.org")
+        ).addCallbacks(self.gotDBLResponse, self.gotDBLError)
+        self.timeoutCall = reactor.callLater(DBL_MIN_TIMEOUT_SECS, self.timeoutDBL)
+
+    def update(self):
+        if self.done and self.dblDone:
+            if self.ok:
+                self.factory.gotResolverResponse(
+                    self.result, self.message, self.protocol, self.address
+                )
+            else:
+                self.factory.gotResolverError(
+                    self.result, self.message, self.protocol, self.address
+                )
+
+    def gotResponse(self, response):
+        self.done = True
+        self.ok = True
+        self.result = response
+        self.update()
+
+    def gotError(self, fail):
+        self.done = True
+        self.ok = False
+        self.result = fail
+        self.update()
+
+    def gotDBLResponse(self, response):
+        family = addrFamily[type(self.peer)]
+        packed = inet_pton(family, self.peer.host)
+        chunks = len(packed) // 4
+        src_hex = (  # WTF?
+            ("{:08X}" * chunks).format(*struct.unpack("<{}I".format(chunks), packed))
+            + ":{:04X}".format(self.peer.port)
+        ).encode()
+        src0_hex = ("0" * 8 * chunks + ":{:04X}".format(self.peer.port)).encode()
+
+        with open(tableFile[family, self.peer.type], "rb") as f:
+            for line in f:
+                line = line.split()
+                if line[1] == src_hex or line[1] == src0_hex:
+                    uid = int(line[7])
+                    break
+            else:
+                return
+
+        try:
+            username = pwd.getpwuid(uid).pw_name
+        except KeyError:
+            username = None
+            user = "%d" % uid
+        else:
+            user = "%d %r" % (uid, username)
+
+        dblAddress = response[0][0].payload.address
+        if MIN_UNSCRUPULOUS <= dblAddress <= MAX_UNSCRUPULOUS and username not in [
+            "postfix",
+            "sa-milt",
+        ]:
+            syslog.syslog(
+                syslog.LOG_WARNING | LOG_AUTHPRIV,
+                "unscrupulous query %r (%s) by uid %s"
+                % (str(self.query.name), dblExplain.get(dblAddress), user),
+            )
+
+        self.dblDone = True
+        self.timeoutCall.cancel()
+        self.update()
+
+    def gotDBLError(self, fail):
+        self.dblDone = True
+        self.timeoutCall.cancel()
+        self.update()
+
+    def timeoutDBL(self):
+        self.dblDone = True
+        self.dblDeferred.cancel()
+        self.update()
+
+
+class MousetrapDNSServerFactory(server.DNSServerFactory, object):
+    def __init__(self, resolver, verbose=0):
+        super(MousetrapDNSServerFactory, self).__init__(verbose=verbose)
+        self.psl = psl_builtin()
+        assert self.psl, "Could not load public suffix list"
+        self.resolver = resolver
+        self.canRecurse = True
+
+    def handleQuery(self, message, protocol, address):
+        if address:
+            peer = copy.copy(protocol.transport.getHost())
+            peer.host, peer.port = address
+        else:
+            peer = protocol.transport.getPeer()
+        query = message.queries[0]
+        name = str(query.name)
+        domain = psl_registrable_domain(self.psl, name)
+        if domain is None or domain.endswith(".in-addr.arpa"):
+            return (
+                self.resolver.query(query)
+                .addCallback(self.gotResolverResponse, protocol, message, address)
+                .addErrback(self.gotResolverError, protocol, message, address)
+            )
+        else:
+            MousetrapQuery(self, protocol, message, address, peer, query, domain)
+
+
+try:
+    adoptDatagramPort = reactor.adoptDatagramPort
+except AttributeError:
+
+    class PreexistingUDPPort(udp.Port):
+        @classmethod
+        def _fromListeningDescriptor(
+            cls, reactor, fd, addressFamily, protocol, maxPacketSize
+        ):
+            port = socket.fromfd(fd, addressFamily, cls.socketType)
+            interface = port.getsockname()[0]
+            self = cls(
+                None,
+                protocol,
+                interface=interface,
+                reactor=reactor,
+                maxPacketSize=maxPacketSize,
+            )
+            self._preexistingSocket = port
+            return self
+
+        def _bindSocket(self):
+            if self._preexistingSocket is None:
+                super(PreexistingUDPPort, self)._bindSocket()
+            else:
+                skt = self._preexistingSocket
+                self._preexistingSocket = None
+                self._realPortNumber = skt.getsockname()[1]
+
+                log.msg(
+                    "%s starting on %s"
+                    % (self._getLogPrefix(self.protocol), self._realPortNumber)
+                )
+
+                self.connected = 1
+                self.socket = skt
+                self.fileno = self.socket.fileno
+
+    def adoptDatagramPort(fileDescriptor, addressFamily, protocol, maxPacketSize=8192):
+        if addressFamily not in (AF_INET, AF_INET6):
+            raise error.UnsupportedAddressFamily(addressFamily)
+
+        p = PreexistingUDPPort._fromListeningDescriptor(
+            reactor,
+            fileDescriptor,
+            addressFamily,
+            protocol,
+            maxPacketSize=maxPacketSize,
+        )
+        p.startListening()
+        return p
+
+
+def main():
+    upstreamAddr = sys.argv[1]
+    upstreamPort = int(sys.argv[2])
+    syslog.openlog("shackle")
+    resolver = client.Resolver(servers=[(upstreamAddr, upstreamPort)])
+    factory = MousetrapDNSServerFactory(resolver)
+
+    for fd, domain, type in zip(
+        systemd.ListenFDs.fromEnvironment().inheritedDescriptors(),
+        sys.argv[3::2],
+        sys.argv[4::2],
+    ):
+        family = getattr(socket, "AF_" + domain)
+        if type == "DGRAM":
+            adoptDatagramPort(fd, family, dns.DNSDatagramProtocol(controller=factory))
+        elif type == "STREAM":
+            reactor.adoptStreamPort(fd, family, factory)
+
+    reactor.run()
+
+
+if __name__ == "__main__":
+    main()
