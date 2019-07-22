@@ -26,7 +26,6 @@ BSD::Resource
 BerkeleyDB
 Bit::Vector
 Browser::Open
-Bundle::PlRPC
 Business::ISBN
 Business::ISBN::Data
 CGI
@@ -344,7 +343,6 @@ Mail::Alias
 Mail::Box
 Mail::Box::Parser::C
 Mail::DKIM
-Mail::GnuPG
 Mail::IMAPClient
 Mail::RFC822::Address
 Mail::SPF
@@ -568,7 +566,6 @@ Tree::DAG_Node
 Tree::Simple
 Tree::Simple::VisitorFactory
 Try::Tiny
-UDUNITS
 UNIVERSAL::isa
 UNIVERSAL::require
 URI
