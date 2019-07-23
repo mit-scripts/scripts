@@ -3,7 +3,6 @@ actionmailer
 actionpack
 activemodel
 activerecord
-activerecord-deprecated_finders
 activeresource
 activesupport
 arel
@@ -17,13 +16,11 @@ cairo
 chunky_png
 coffee-script
 coffee-script-source
-compass
 dalli
 diff-lcs
 domain_name
 erubis
 execjs
-fcgi
 fssm
 gdk_pixbuf2
 gem2rpm
@@ -54,13 +51,10 @@ net-http-persistent
 nokogiri
 pango
 polyglot
-pony
 psych
 rack
 rack-cache
-rack-mount
 rack-protection
-rack-ssl
 rack-test
 rails
 rails-observers
@@ -68,7 +62,6 @@ railties
 rake
 rdoc
 RedCloth
-regin
 rmagick
 rspec
 rspec-core
@@ -96,6 +89,5 @@ unf
 unf_ext
 uuidtools
 webrobots
-will_paginate
 xml-simple
 ZenTest

@@ -7,3 +7,6 @@
   dnf:
     name: "{{ lookup('file', 'rubygem.txt').splitlines() | map('regex_replace', '^(.*)$', 'rubygem(\\1)') | list}}"
     state: present
+# TODO: Install rubygem-fcgi and rubygem-pony if built (our packages)
+# TODO: Consider forward-porting Ruby gems rack-mount, rack-ssl, will_paginate
+# TODO: Consider updating Ruby gem compass to be installable
