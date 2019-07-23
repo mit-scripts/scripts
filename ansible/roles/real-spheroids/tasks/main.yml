@@ -3,3 +3,7 @@
   dnf:
     name: "{{ lookup('file', 'perl.txt').splitlines() | map('regex_replace', '^(.*)$', 'perl(\\1)') | list}}"
     state: present
+- name: Install Ruby gems
+  dnf:
+    name: "{{ lookup('file', 'rubygem.txt').splitlines() | map('regex_replace', '^(.*)$', 'rubygem(\\1)') | list}}"
+    state: present
