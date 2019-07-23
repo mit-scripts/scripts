@@ -73,7 +73,7 @@ class MousetrapQuery(object):
             self.gotResponse, self.gotError
         )
         self.dblDeferred = self.factory.resolver.query(
-            dns.Query(domain + ".dbl.spamhaus.org")
+            dns.Query(domain + b".dbl.spamhaus.org")
         ).addCallbacks(self.gotDBLResponse, self.gotDBLError)
         self.timeoutCall = reactor.callLater(DBL_MIN_TIMEOUT_SECS, self.timeoutDBL)
 
@@ -168,9 +168,8 @@ class MousetrapDNSServerFactory(server.DNSServerFactory, object):
         else:
             peer = protocol.transport.getPeer()
         query = message.queries[0]
-        name = str(query.name)
-        domain = psl_registrable_domain(self.psl, name)
-        if domain is None or domain.endswith(".in-addr.arpa"):
+        domain = psl_registrable_domain(self.psl, query.name.name)
+        if domain is None or domain.endswith(b".in-addr.arpa"):
             return (
                 self.resolver.query(query)
                 .addCallback(self.gotResolverResponse, protocol, message, address)
