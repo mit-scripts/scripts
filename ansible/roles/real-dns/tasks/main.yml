@@ -15,6 +15,30 @@
     block: |
       include "/etc/named.mit.zones";
   notify: reload named
+- name: Configure named listen port
+  vars:
+    port: "{% if use_shackle %}54{% else %}53{% endif %}"
+  lineinfile:
+    path: /etc/named.conf
+    insertafter: '^\s*options'
+    regexp: '^\s*{{ item.split()[0] }}\s'
+    line: "{{ item }}"
+  notify: reload named
+  loop:
+    - "listen-on port {{ port }} { 127.0.0.1; };"
+    - "listen-on-v6 port {{ port }} { ::1; };"
+- name: Ensure named is listening on the correct port before continuing
+  meta: flush_handlers
+- name: Shackle
+  when: use_shackle
+  block:
+  - name: Install shackle
+    dnf: name=shackle state=present
+  - name: Start shackle
+    systemd:
+      name: shackle.socket
+      state: started
+      enabled: yes
 - name: Start named
   service:
     name: named

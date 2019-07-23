@@ -155,6 +155,7 @@ all:
             use_zephyr: yes
             use_autofs: yes
             use_moira: yes
+            use_shackle: yes
           hosts:
             quentin-scripts-f30.xvm.mit.edu:
               vars:
