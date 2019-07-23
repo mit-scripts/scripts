@@ -1,3 +1,7 @@
+[Unit]
+Description=Shackle DBL DNS resolver socket
+PartOf=shackle.service
+
 [Socket]
 ListenStream=127.0.0.1:53
 ListenDatagram=127.0.0.1:53
