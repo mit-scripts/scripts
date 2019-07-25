@@ -48,8 +48,7 @@ gem build %{gem_name}.gemspec
 
 # gem install installs into a directory.  We set that to be a local
 # directory so that we can move it into the buildroot in %%install
-gem install --local --install-dir ./%{gem_dir} \
-            --force --rdoc %{gem_name}-%{version}.gem
+%gem_install
 
 %install
 mkdir -p %{buildroot}%{gem_dir}
