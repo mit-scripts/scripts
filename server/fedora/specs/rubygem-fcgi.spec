@@ -12,6 +12,7 @@ Source0: https://rubygems.org/gems/%{gem_name}-%{version}.gem
 Requires: ruby(release)
 Requires: ruby(rubygems) 
 Requires: fcgi-devel
+BuildRequires: gcc
 BuildRequires: ruby(release)
 BuildRequires: rubygems-devel 
 BuildRequires: ruby-devel 
