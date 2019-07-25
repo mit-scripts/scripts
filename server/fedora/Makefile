@@ -71,7 +71,7 @@ download_stamp:
 	wget -P $(dload) $(openafs_url)
 	#wget -P $(dload) $(zephyr_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
-	$(foreach gem, $(gems), gem fetch $(firstword $(subst :, ,$(gem))) -v $(lastword $(subst :, ,$(gem)));)
+	$(foreach gem, $(gems), cd $(tmp_src) && gem fetch $(firstword $(subst :, ,$(gem))) -v $(lastword $(subst :, ,$(gem)));)
 	spectool -g -R $(specs)/hesiod.spec
 	spectool -g -R $(specs)/zephyr.spec
 	spectool -g -R $(specs)/python-zephyr.spec
