@@ -156,6 +156,7 @@ all:
             use_autofs: yes
             use_moira: yes
             use_shackle: yes
+            use_scripts_rubygems: yes
           hosts:
             quentin-scripts-f30.xvm.mit.edu:
               vars:
