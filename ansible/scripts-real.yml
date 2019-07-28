@@ -136,7 +136,11 @@
     when: use_zephyr | default(True)
     block:
     - name: Install zephyr
-      dnf: name=zephyr state=present
+      dnf:
+        name:
+          - zephyr
+          - zephyr-devel
+        state: present
     - name: Start zephyr
       service:
         name: zhm
