@@ -35,8 +35,8 @@ if ($pid == 0) {
 my $greeting = '';
 for (;;) {
     my $n = sysread(IN, my $buf, 4096);
-    next if $n < 0 and $! == EINTR;
-    $n >= 0 or die "$0: read: $!";
+    next if (not defined($n)) and $! == EINTR;
+    defined($n) or die "$0: read: $!";
     last if $n == 0;
     $greeting .= $buf;
 }
@@ -45,8 +45,8 @@ for (;;) {
 my $buf = $greeting;
 while ($buf ne '') {
     my $n = syswrite(STDOUT, $buf);
-    next if $n < 0 and $! == EINTR;
-    $n >= 0 or die "$0: write: $!";
+    next if (not defined ($n)) and $! == EINTR;
+    defined($n) or die "$0: write: $!";
     $buf = substr($buf, $n);
 }
 close(IN);  # ignore error; newer svnserve exits 1
