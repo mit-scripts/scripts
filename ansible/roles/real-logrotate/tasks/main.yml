@@ -4,6 +4,7 @@
     dest: /etc/logrotate.d/httpd
     src: httpd
 - name: Start logrotate
+  when: ansible_distribution_major_version|int >= 30
   systemd:
     name: logrotate.timer
     enabled: yes
