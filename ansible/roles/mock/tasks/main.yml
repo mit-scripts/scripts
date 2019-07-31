@@ -48,8 +48,8 @@
     src: chroot.cfg.j2
     dest: /etc/mock/scripts-fc{{ releasever }}-{{ arch }}.cfg
   loop:
-    - ["30", "x86_64"]
-    - ["30", "i686"]
+    - ["{{ ansible_distribution_major_version }}", "x86_64"]
+    - ["{{ ansible_distribution_major_version }}", "i686"]
 - name: Create local RPM repo
   file:
     path: /home/scripts-build/mock-local/
