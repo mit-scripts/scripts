@@ -15,7 +15,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  krb5-devel hesiod-devel libss-devel libcom_err-devel readline-devel bison
 BuildRequires:  gcc
-BuildRequires:  systemd-rpm-macros
+BuildRequires:  (systemd-rpm-macros or systemd < 240)
 Requires:       %{name}-libs = %{version}-%{release}
 
 %description

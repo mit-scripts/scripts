@@ -11,7 +11,7 @@ Requires: subversion
 Requires: perl(Net::LDAP)
 Source: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
-BuildRequires: systemd-rpm-macros
+BuildRequires: (systemd-rpm-macros or systemd < 240)
 BuildRequires: pkgconfig(systemd)
 BuildRequires: autoconf
 BuildRequires: automake
