@@ -56,11 +56,13 @@ baseurl=file:///home/scripts-build/mock-local/
 cost=2000
 enabled=1
 
-[scripts]
-name=Scripts
-baseurl=http://web.mit.edu/scripts/yum-repos/rpm-fc{{ releasever }}/
-enabled=1
+{% for repo in rpm_repos %}
+[{{ repo.key }}]
+name={{ repo.name }}
+baseurl={{ repo.baseurl }}
+enabled={{ 1 if repo.enabled else 0 }}
 gpgcheck=0
+{% endfor %}
 
 [fedora-debuginfo]
 name=fedora-debuginfo

@@ -161,19 +161,20 @@ all:
             quentin-scripts-f30.xvm.mit.edu:
               syslog_client: yes
             quentin-ansible-test.xvm.mit.edu:
-              use_afs: no
-              use_scripts_openssh: no
-              use_nss_nonlocal: no
-              use_hesiod: no
-              use_scripts_localauth: no
-              use_accountadm: no
-              use_scripts_httpd: no
+              enable_testing_repo: yes
+              use_afs: yes
+              use_scripts_openssh: yes
+              use_nss_nonlocal: yes
+              use_hesiod: yes
+              use_scripts_localauth: yes
+              use_accountadm: yes
+              use_scripts_httpd: yes
               use_scripts_php: no
-              use_execsys: no
-              use_zephyr: no
+              use_execsys: yes
+              use_zephyr: yes
               use_autofs: no
-              use_moira: no
-              use_shackle: no
+              use_moira: yes
+              use_shackle: yes
               use_scripts_rubygems: no
 
             scripts-f30-test.xvm.mit.edu: {}

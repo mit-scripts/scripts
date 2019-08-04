@@ -17,6 +17,15 @@
   vars:
     network_ether_interfaces: "{{ lookup('template', 'templates/real_ether_interfaces.yml.j2') | from_yaml }}"
     ldap_server: "{{ run_local_ldap | default(True) | ternary('ldapi://%2fvar%2frun%2fslapd-scripts.socket/', 'ldap://scripts-ldap.mit.edu/') }}"
+    rpm_repos:
+      - key: scripts
+        name: Scripts
+        baseurl: https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}/
+        enabled: yes
+      - key: scripts-testing
+        name: Scripts Testing
+        baseurl: https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}-testing/
+        enabled: "{{ enable_testing_repo | default(False) }}"
   pre_tasks:
     - name: Install playbook Python dependencies
       dnf:
@@ -38,17 +47,13 @@
           copy:
             dest: /etc/yum.repos.d/scripts.repo
             content: |
-              [scripts]
-              name=Scripts
-              baseurl=https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}/
-              enabled=1
+              {% for repo in rpm_repos %}
+              [{{ repo.key }}]
+              name={{ repo.name }}
+              baseurl={{ repo.baseurl }}
+              enabled={{ 1 if repo.enabled else 0 }}
               gpgcheck=0
-
-              [scripts-testing]
-              name=Scripts Testing
-              baseurl=https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}-testing/
-              enabled=0
-              gpgcheck=0
+              {% endfor %}
         - name: Configure dnf.conf
           ini_file:
             path: /etc/dnf/dnf.conf
