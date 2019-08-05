@@ -159,9 +159,9 @@ $(filter-out %.i686,$(upstream)): %: ${tmp_specs}/%.spec setup
 	rpmbuild ${rpmbuild_args} -bs $<
 	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
-openafs-kernel: setup
+openafs-kernel: ${tmp_specs}/openafs.spec setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/openafs*.spec
+	rpmbuild ${rpmbuild_args} -bs $<
 	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` --clean
 	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` --install elfutils-libelf-devel
 	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` --no-clean ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/openafs*.src.rpm | head -1`
