@@ -32,7 +32,8 @@ specs		= ${PWD}/specs
 
 topdir		= ${HOME}/rpmbuild
 tmp_build	= $(topdir)/BUILD
-tmp_specs	= $(topdir)/SPECS
+rpm_specs	= $(topdir)/SPECS
+tmp_specs	= $(topdir)/SPECS-SCRIPTS
 tmp_src		= $(topdir)/SOURCES
 out_rpms	= $(topdir)/RPMS
 out_srpms	= $(topdir)/SRPMS
@@ -62,6 +63,7 @@ clean: minimal-clean
 mkdir-tree:
 	rpmdev-setuptree
 	mkdir -p $(out_sbin)
+	mkdir -p $(tmp_specs)
 	ln -sTf $(topdir) rpmbuild
 
 download: download_stamp
@@ -92,19 +94,16 @@ copy-patches: mkdir-tree
 install-srpms: mkdir-tree download
 	rpm $(rpm_args) -i $(dload)/*.src.rpm 2>/dev/null
 
-copy-specs: mkdir-tree
-	cp ${specs}/*.spec $(tmp_specs)
+# If we have a spec, just copy it.
+${tmp_specs}/%.spec: ${specs}/%.spec mkdir-tree
+	cp $< $@
 
-# Remove old .orig files so we're not misled
-patch-specs: install-srpms
+# If we have a spec patch, install the SRPM and then patch it.
+${tmp_specs}/%.spec: ${specs}/%.spec.patch install-srpms
 	@set -ex; \
-	cd ${tmp_specs}; \
-	list=`ls ${specs}/*.spec.patch`; \
-	rm -f *.orig; \
-	rm -f *.spec.~*~; \
-	for i in $$list; do \
-		patch -bV numbered < $$i; \
-	done
+	rm -f $@.orig; \
+	rm -f $@.specs.~*~; \
+	patch -bV numbered -o $@ ${rpm_specs}/$*.spec $<
 
 # 1. use the package's Makefile to delete leftover files and run autoconf
 # 2. create a tarball (we want it to contain the autoconf output)
@@ -125,7 +124,7 @@ tarballs: mkdir-tree
 	done
 
 #setup: install-srpms copy-patches copy-specs patch-specs tarballs
-setup: copy-patches copy-specs patch-specs tarballs
+setup: copy-patches tarballs
 
 oursrc:
 	make $(oursrc)
@@ -138,26 +137,26 @@ all:
 
 $(oursrc): rpmbuild_args += --define 'scriptsversion $(scriptsversion)'
 
-$(filter %.i686,$(oursrc)): %.i686: setup
+$(filter %.i686,$(oursrc)): %.i686: ${tmp_specs}/%.spec setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
+	rpmbuild ${rpmbuild_args} -bs $<
 	/usr/bin/mock -r scripts-${FEDORA}-i686 --arch=i686 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
-$(filter-out %.i686,$(oursrc)): %: setup
+$(filter-out %.i686,$(oursrc)): %: ${tmp_specs}/%.spec setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
+	rpmbuild ${rpmbuild_args} -bs $<
 	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 $(upstream) openafs-kernel: rpmbuild_args += --define 'scriptsversion $(scriptsversion)'
 
 kernel: rpmbuild_args += --define 'buildid .scripts.%{scriptsversion}' --without debug --without doc
 
-$(filter %.i686,$(upstream)): %.i686: setup patch-specs
-	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
+$(filter %.i686,$(upstream)): %.i686: ${tmp_specs}/%.spec setup
+	rpmbuild ${rpmbuild_args} -bs $<
 	/usr/bin/mock -r scripts-${FEDORA}-i686 --arch=i686 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
-$(filter-out %.i686,$(upstream)): %: setup patch-specs
-	rpmbuild ${rpmbuild_args} -bs ${tmp_specs}/${PKG}.spec
+$(filter-out %.i686,$(upstream)): %: ${tmp_specs}/%.spec setup
+	rpmbuild ${rpmbuild_args} -bs $<
 	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 openafs-kernel: setup
