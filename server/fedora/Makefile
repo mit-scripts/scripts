@@ -107,24 +107,26 @@ ${tmp_specs}/%.spec: ${specs}/%.spec.patch install-srpms
 
 # 1. use the package's Makefile to delete leftover files and run autoconf
 # 2. create a tarball (we want it to contain the autoconf output)
-tarballs: mkdir-tree
+$(tmp_src)/%.tar.gz: $(oursrcdir)/% $(oursrcdir)/%/* mkdir-tree
 	@set -ex; \
 	cd ${oursrcdir}; \
-	list=`find -mindepth 1 -maxdepth 1 -type d`; \
-	for i in $$list; do \
-		pushd $$i; \
-		if [ -x ./mrproper ]; then \
-			./mrproper; \
-			if [ -e configure.in ] || [ -e configure.ac ]; then \
-				autoconf; \
-			fi; \
+	pushd $<; \
+	if [ -x ./mrproper ]; then \
+		./mrproper; \
+		if [ -e configure.in ] || [ -e configure.ac ]; then \
+			autoconf; \
 		fi; \
-		popd; \
-		tar -czf $(tmp_src)/$$i.tar.gz $$i; \
-	done
+	fi; \
+	popd; \
+	tar -czf $@ $*;
+
+# Build a tarball for each package, if we can.
+oursrcdirs := $(notdir $(wildcard $(oursrcdir)/*))
+${oursrcdirs}: %: $(tmp_src)/%.tar.gz
+${oursrcdirs}: %.i686: $(tmp_src)/%.tar.gz
 
 #setup: install-srpms copy-patches copy-specs patch-specs tarballs
-setup: copy-patches tarballs
+setup: copy-patches
 
 oursrc:
 	make $(oursrc)
