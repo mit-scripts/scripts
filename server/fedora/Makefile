@@ -137,27 +137,23 @@ all:
 
 $(oursrc): rpmbuild_args += --define 'scriptsversion $(scriptsversion)'
 
-$(filter %.i686,$(oursrc)): %.i686: ${tmp_specs}/%.spec setup
-	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild ${rpmbuild_args} -bs $<
-	/usr/bin/mock -r scripts-${FEDORA}-i686 --arch=i686 ${rpmbuild_args} --define="_lib lib" -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+mock_chroot = scripts-${FEDORA}-`uname -m`
+mock_args = -r ${mock_chroot} ${rpmbuild_args}
 
-$(filter-out %.i686,$(oursrc)): %: ${tmp_specs}/%.spec setup
-	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
-	rpmbuild ${rpmbuild_args} -bs $<
-	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+%.i686: mock_chroot = scripts-${FEDORA}-i686
+%.i686: mock_args += --arch=i686 --define="_lib lib"
+
+define build-rpm =
+rpmbuild ${rpmbuild_args} -bs $<
+/usr/bin/mock ${mock_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
+endef
+
+%: ${tmp_specs}/%.spec setup
+	$(build-rpm)
+%.i686: ${tmp_specs}/%.spec setup
+	$(build-rpm)
 
 $(upstream) openafs-kernel: rpmbuild_args += --define 'scriptsversion $(scriptsversion)'
-
-kernel: rpmbuild_args += --define 'buildid .scripts.%{scriptsversion}' --without debug --without doc
-
-$(filter %.i686,$(upstream)): %.i686: ${tmp_specs}/%.spec setup
-	rpmbuild ${rpmbuild_args} -bs $<
-	/usr/bin/mock -r scripts-${FEDORA}-i686 --arch=i686 ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
-
-$(filter-out %.i686,$(upstream)): %: ${tmp_specs}/%.spec setup
-	rpmbuild ${rpmbuild_args} -bs $<
-	/usr/bin/mock -r scripts-${FEDORA}-`uname -m` ${rpmbuild_args} -v --rebuild `ls -t ${out_srpms}/${PKG}-[0-9]*.src.rpm | head -1`
 
 openafs-kernel: ${tmp_specs}/openafs.spec setup
 	PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin" \
