@@ -66,11 +66,14 @@ mkdir-tree:
 	mkdir -p $(tmp_specs)
 	ln -sTf $(topdir) rpmbuild
 
+openafs openafs-kernel: $(dload)/$(notdir $openafs_url)
+$(dload)/$(notdir $openafs_url):
+	wget -P $(dload) $(openafs_url)
+
 download: download_stamp
 download_stamp:
 	mkdir -p $(dload)
 	cd $(dload) && yumdownloader --disablerepo=scripts --source $(upstream_yum)
-	wget -P $(dload) $(openafs_url)
 	#wget -P $(dload) $(zephyr_url)
 	cd $(tmp_src) && wget -nd -r -l1 -np -A.orig.tar.gz https://debathena.mit.edu/apt/pool/debathena/d/debathena-moira/
 	$(foreach gem, $(gems), cd $(tmp_src) && gem fetch $(firstword $(subst :, ,$(gem))) -v $(lastword $(subst :, ,$(gem)));)
