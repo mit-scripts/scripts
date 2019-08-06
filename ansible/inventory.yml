@@ -172,7 +172,7 @@ all:
               use_scripts_php: no
               use_execsys: yes
               use_zephyr: yes
-              use_autofs: no
+              use_autofs: yes
               use_moira: yes
               use_shackle: yes
               use_scripts_rubygems: yes

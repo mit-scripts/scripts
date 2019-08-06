@@ -155,7 +155,7 @@
     when: use_autofs | default(True)
     block:
     - name: Install autofs
-      dnf: name=scripts-autofs state=present
+      dnf: name={% if ansible_distribution_major_version|int >= 30 %}scripts-{% endif %}autofs state=present
     - name: Configure autofs
       copy:
         dest: /etc/auto.master
