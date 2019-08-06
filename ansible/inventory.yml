@@ -175,6 +175,6 @@ all:
               use_autofs: no
               use_moira: yes
               use_shackle: yes
-              use_scripts_rubygems: no
+              use_scripts_rubygems: yes
 
             scripts-f30-test.xvm.mit.edu: {}
