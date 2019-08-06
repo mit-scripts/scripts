@@ -126,7 +126,7 @@ $(tmp_src)/%.tar.gz: $(oursrcdir)/% $(oursrcdir)/%/* mkdir-tree
 # Build a tarball for each package, if we can.
 oursrcdirs := $(notdir $(wildcard $(oursrcdir)/*))
 ${oursrcdirs}: %: $(tmp_src)/%.tar.gz
-${oursrcdirs}: %.i686: $(tmp_src)/%.tar.gz
+${oursrcdirs:%=%.i686}: %.i686: $(tmp_src)/%.tar.gz
 
 #setup: install-srpms copy-patches copy-specs patch-specs tarballs
 setup: copy-patches
