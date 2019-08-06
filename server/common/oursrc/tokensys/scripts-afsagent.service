@@ -3,6 +3,7 @@ Description=Scripts afsagent Service
 After=syslog.target openafs-client.service
 Before=remote-fs.target
 Requires=openafs-client.service
+ConditionPathExists=/etc/daemon.keytab
 
 [Service]
 Type=oneshot
