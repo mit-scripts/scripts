@@ -8,9 +8,9 @@
       cidr: "{{ vlan486_address }}/24"
       gateway: 18.4.86.1
       dns_nameservers:
-      - 18.70.0.160
-      - 18.72.0.3
-      - 18.71.0.151
+      - 18.0.70.160
+      - 18.0.72.3
+      - 18.0.71.151
       dns_search: mit.edu
     pacemaker_corosync_ring_interface: vlan486
     pacemaker_corosync_group: scripts-directors
