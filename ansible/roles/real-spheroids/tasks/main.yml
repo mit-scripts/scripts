@@ -14,5 +14,9 @@
       - rubygem-pony
     state: present
   when: use_scripts_rubygems
+- name: Install Python 2 libraries
+  dnf:
+    name: "{{ lookup('file', 'python2.txt').splitlines() | list}}"
+    state: present
 # TODO: Consider forward-porting Ruby gems rack-mount, rack-ssl, will_paginate
 # TODO: Consider updating Ruby gem compass to be installable
