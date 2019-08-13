@@ -53,6 +53,11 @@ all:
     - 18.4.86.15  # log-flume
     - 18.4.86.16  # log-normal
 
+    mit_dns_servers:
+      - 18.0.70.160
+      - 18.0.72.3
+      - 18.0.71.151
+
     # Generated from http://kb.mit.edu/confluence/x/F4DCAg + whois, 2019-07-13
     mit_subnets:
       - 10/8

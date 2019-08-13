@@ -1,5 +1,1 @@
-mit_dns_servers:
-  - 18.70.0.160
-  - 18.71.0.151
-  - 18.72.0.3
 use_shackle: yes
