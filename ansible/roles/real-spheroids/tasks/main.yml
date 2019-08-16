@@ -18,5 +18,12 @@
   dnf:
     name: "{{ lookup('file', 'python2.txt').splitlines() | list}}"
     state: present
+# TODO: Consider forward-porting missing Python packages
+# TODO: Consider installing old Python 2 libraries from an old RPM repo
+- name: Install Fedora 29 Python 2 libraryes
+  dnf:
+    name: "{{ lookup('file', 'python2-f29.txt').splitlines() | list}}"
+    state: present
+  when: ansible_distribution_major_version|int <= 29
 # TODO: Consider forward-porting Ruby gems rack-mount, rack-ssl, will_paginate
 # TODO: Consider updating Ruby gem compass to be installable
