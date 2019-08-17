@@ -19,11 +19,36 @@
     name: "{{ lookup('file', 'python2.txt').splitlines() | list}}"
     state: present
 # TODO: Consider forward-porting missing Python packages
-# TODO: Consider installing old Python 2 libraries from an old RPM repo
-- name: Install Fedora 29 Python 2 libraryes
+- name: Configure F29 repos as a source for old packages
+  when: ansible_distribution_major_version|int >= 30
+  block:
+    - name: Configure F29 repos
+      copy:
+        dest: /etc/yum.repos.d/scripts-python2.repo
+        content: |
+          [scripts-f29]
+          name=Fedora 29 - $basearch
+          metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-29&arch=$basearch
+          enabled=0
+          metadata_expire=7d
+          repo_gpgcheck=0
+          type=rpm
+          gpgcheck=1
+          gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-$basearch
+          [scripts-f29-updates]
+          name=Fedora 29 - $basearch - Updates
+          metalink=https://mirrors.fedoraproject.org/metalink?repo=updates-released-f29&arch=$basearch
+          enabled=0
+          repo_gpgcheck=0
+          type=rpm
+          gpgcheck=1
+          metadata_expire=6h
+          gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-$basearch
+    - set_fact: f29_repos=scripts-f29,scripts-f29-updates
+- name: Install Fedora 29 Python 2 libraries
   dnf:
     name: "{{ lookup('file', 'python2-f29.txt').splitlines() | list}}"
+    enablerepo: "{{ f29_repos | default('') }}"
     state: present
-  when: ansible_distribution_major_version|int <= 29
 # TODO: Consider forward-porting Ruby gems rack-mount, rack-ssl, will_paginate
 # TODO: Consider updating Ruby gem compass to be installable
