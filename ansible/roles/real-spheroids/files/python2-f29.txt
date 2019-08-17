@@ -3,6 +3,7 @@ TurboGears
 pyPdf
 python-ceph-compat
 python2-TurboGears2
+python2-amara
 python2-backlash
 python2-beaker
 python2-cerealizer

@@ -8,7 +8,6 @@ python2-GnuPGInterface
 python2-IPy
 python2-PyPDF2
 python2-alembic
-python2-amara
 python2-babel
 python2-backports
 python2-backports-ssl_match_hostname
