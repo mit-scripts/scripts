@@ -21,7 +21,6 @@ python2-ecdsa
 python2-flask-login
 python2-gasp
 python2-gearbox
-python2-glusterfs-api
 python2-htmlgen
 python2-ipython
 python2-irclib
@@ -68,7 +67,6 @@ python2-turbokid
 python2-turbomail
 python2-tw-forms
 python2-unidecode
-python2-v8
 python2-webpy
 python2-xlrd
 python2-xmltramp
