@@ -50,5 +50,15 @@
     name: "{{ lookup('file', 'python2-f29.txt').splitlines() | list}}"
     enablerepo: "{{ f29_repos | default('') }}"
     state: present
+# TODO: Update Python libraries for F29/F30 python packaging, and change default to on.
+- name: Install scripts-specific Python 2 libraries
+  dnf:
+    name:
+      - python2-afs
+      - python2-hesiod
+      - python2-moira
+      - python2-zephyr
+    state: present
+  when: use_scripts_python2
 # TODO: Consider forward-porting Ruby gems rack-mount, rack-ssl, will_paginate
 # TODO: Consider updating Ruby gem compass to be installable
