@@ -64,14 +64,10 @@ python3-django-doc
 python3-django-filter
 python3-django-formtools
 python3-django-formtools-doc
-python3-django-haystack
-python3-django-helpdesk
 python3-django-jsonfield
 python3-django-macros
 python3-django-markdownx
-python3-django-mptt
 python3-django-nose
-python3-django-notifications-hq
 python3-django-pipeline
 python3-django-post_office
 python3-django-pyscss
@@ -82,12 +78,10 @@ python3-django-rest-framework
 python3-django-rest-framework-composed-permissions
 python3-django-reversion
 python3-django-robots
-python3-django-simple-captcha
 python3-django-stopforumspam
 python3-django-tables2
 python3-django-tagging
 python3-django-tastypie
-python3-django-threadedcomments
 python3-django-tinymce
 python3-djangoql
 python3-dns
@@ -235,7 +229,6 @@ python3-sympy
 python3-talloc
 python3-tempita
 python3-textile
-python3-tgext-crud
 python3-tidy
 python3-tornado
 python3-tpg
