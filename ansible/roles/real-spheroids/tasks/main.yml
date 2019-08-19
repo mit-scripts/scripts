@@ -60,5 +60,11 @@
       - python2-zephyr
     state: present
   when: use_scripts_python2
+# TODO: Package flipflop and/or flup6 for Python 3 as replacements for flup
+# TODO: Package mechanize, MechnicalSoup, or robobrowser for Python 3
+- name: Install Python 3 libraries
+  dnf:
+    name: "{{ lookup('file', 'python3.txt').splitlines() | list}}"
+    state: present
 # TODO: Consider forward-porting Ruby gems rack-mount, rack-ssl, will_paginate
 # TODO: Consider updating Ruby gem compass to be installable
