@@ -30,7 +30,6 @@ python2-durus
 python2-ecdsa
 python2-flask-login
 python2-gasp
-python2-gearbox
 python2-greenlet
 python2-htmlgen
 python2-ipython
@@ -39,7 +38,6 @@ python2-isprelink
 python2-kid
 python2-meld3
 python2-metar
-python2-migrate
 python2-mpd
 python2-myghty
 python2-openbabel
@@ -73,7 +71,6 @@ python2-smbpasswd
 python2-soaplib
 python2-sprox
 python2-sssdconfig
-python2-tg-devtools
 python2-tgcaptcha2
 python2-tgext-admin
 python2-tgext-crud
