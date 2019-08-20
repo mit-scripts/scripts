@@ -16,4 +16,90 @@
     mode: 0755
     owner: root
     group: root
-# TODO: Configure 389-ds if run_local_ldap is true
+- name: Install and configure 389-ds
+  when: run_local_ldap
+  block:
+    - name: Install 389-ds
+      dnf:
+        name:
+          - 389-ds-base
+        state: present
+    - name: Create 389-ds instance
+      command: python3 -
+      args:
+        creates: /etc/dirsrv/slapd-scripts
+        stdin: |
+          import sys
+          from lib389.cli_base import setup_script_logger
+          from lib389.instance.setup import SetupDs
+          from lib389.instance.options import General2Base, Slapd2Base, Backend2Base
+          from lib389.properties import *
+
+          verbose = True
+
+          log = setup_script_logger("dscreate", verbose)
+          
+          sd = SetupDs(verbose, False, log)
+          
+          general = General2Base(log)
+          general.set('start', False)
+          
+          slapd = Slapd2Base(log)
+          slapd.set('instance_name', 'scripts')
+          slapd.set('self_sign_cert', False)
+          slapd.set('root_password', '{PBKDF2_SHA256}bogushash')
+          
+          backend = {
+            BACKEND_NAME: 'userRoot',
+            BACKEND_SUFFIX: 'dc=scripts,dc=mit,dc=edu',
+            'create_suffix_entry': False,
+          }
+          if not sd.create_from_args(general.collect(), slapd.collect(), [backend]):
+            sys.exit(1)
+    - name: Install scripts schema
+      copy:
+        dest: /etc/dirsrv/slapd-scripts/schema/98scripts-vhost.ldif
+        src: 98scripts-vhost.ldif
+    - name: Configure keytab
+      copy:
+        dest: /etc/sysconfig/dirsrv-scripts
+        content: |
+          KRB5_KTNAME=/etc/dirsrv/keytab
+    - name: Start 389-ds
+      service:
+        name: dirsrv@scripts
+        state: started
+        enabled: yes
+    - name: Configure GSSAPI authentication
+      ldap_entry:
+        server_uri: "ldapi://%2fvar%2frun%2fslapd-scripts.socket/"
+        dn: "cn=mapname,cn=mapping,cn=sasl,cn=config"
+        objectClass:
+          - top
+          - nsSaslMapping
+        attributes:
+          cn: mapname
+          nsSaslMapRegexString: '\(.*\)'
+          nsSaslMapBaseDNTemplate: 'uid=\1,ou=People,dc=scripts,dc=mit,dc=edu'
+          nsSaslMapFilterTemplate: "(objectClass=posixAccount)"
+    - name: Configure indices
+      ldap_entry:
+        server_uri: "ldapi://%2fvar%2frun%2fslapd-scripts.socket/"
+        dn: "cn={{ item }},cn=index,cn=userRoot,cn=ldbm database,cn=plugins,cn=config"
+        objectClass:
+          - top
+          - nsIndex
+        attributes:
+          cn: "{{ item }}"
+          nsSystemIndex: "false"
+          nsIndexType:
+            - eq
+            - pres
+      loop:
+        - scriptsVhostName
+        - scriptsVhostAlias
+        - scriptsVhostAccount
+        - memberuid
+        - uidnumber
+        - gidnumber
+      notify: reindex ldap

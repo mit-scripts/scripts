@@ -1,0 +1,3 @@
+---
+- name: reindex ldap
+  command: dsconf scripts backend index reindex --wait userRoot
