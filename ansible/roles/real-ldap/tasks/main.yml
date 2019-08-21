@@ -107,6 +107,15 @@
         - gidnumber
       notify: reindex ldap
     - meta: flush_handlers
+    - name: Create People ou
+      ldap_entry:
+        server_uri: "{{ ldap_instance_uri }}"
+        dn: "ou=People,dc=scripts,dc=mit,dc=edu"
+        objectClass:
+          - top
+          - organizationalunit
+        attributes:
+          ou: People
     - name: Create users for LDAP servers
       ldap_entry:
         server_uri: "{{ ldap_instance_uri }}"
