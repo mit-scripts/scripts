@@ -58,6 +58,7 @@
       - python2-hesiod
       - python2-moira
       - python2-zephyr
+      - python2-authkit
     state: present
   when: use_scripts_python2
 # TODO: Package flipflop and/or flup6 for Python 3 as replacements for flup
@@ -66,5 +67,10 @@
   dnf:
     name: "{{ lookup('file', 'python3.txt').splitlines() | list}}"
     state: present
+- name: Install Fedora 30+ Python 3 libraries
+  dnf:
+    name: "{{ lookup('file', 'python3-f30.txt').splitlines() | list}}"
+    state: present
+  when: ansible_distribution_major_version|int >= 30
 # TODO: Consider forward-porting Ruby gems rack-mount, rack-ssl, will_paginate
 # TODO: Consider updating Ruby gem compass to be installable

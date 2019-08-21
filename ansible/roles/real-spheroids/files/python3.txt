@@ -146,7 +146,6 @@ python3-memcached
 python3-metar
 python3-mglob
 python3-migrate
-python3-minikerberos
 python3-mpd
 python3-mpmath
 python3-mutagen
@@ -234,13 +233,11 @@ python3-tidy
 python3-tornado
 python3-tpg
 python3-transaction
-python3-tre
 python3-tw2-core
 python3-tw2-forms
 python3-tw2-jquery
 python3-twisted
 python3-unidecode
-python3-urlgrabber
 python3-urllib3
 python3-virtualenv
 python3-vobject
