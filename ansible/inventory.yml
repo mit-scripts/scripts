@@ -135,6 +135,12 @@ all:
         log-flume.mit.edu: {}
         log-normal.mit.edu: {}
 
+    scripts-ldap:
+      hosts:
+        doppelganger.mit.edu: {}
+        alter-ego.mit.edu: {}
+        body-double.mit.edu: {}
+
     scripts-real:
       children:
         scripts-real-test:

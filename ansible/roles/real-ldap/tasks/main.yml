@@ -18,6 +18,9 @@
     group: root
 - name: Install and configure 389-ds
   when: run_local_ldap
+  vars:
+    ldap_instance: scripts
+    ldap_instance_uri: "ldapi://%2fvar%2frun%2fslapd-scripts.socket/"
   block:
     - name: Install 389-ds
       dnf:
@@ -27,7 +30,7 @@
     - name: Create 389-ds instance
       command: python3 -
       args:
-        creates: /etc/dirsrv/slapd-scripts
+        creates: "/etc/dirsrv/slapd-{{ldap_instance}}"
         stdin: |
           import sys
           from lib389.cli_base import setup_script_logger
@@ -45,7 +48,7 @@
           general.set('start', False)
           
           slapd = Slapd2Base(log)
-          slapd.set('instance_name', 'scripts')
+          slapd.set('instance_name', '{{ ldap_instance }}')
           slapd.set('self_sign_cert', False)
           slapd.set('root_password', '{PBKDF2_SHA256}bogushash')
           
@@ -58,21 +61,21 @@
             sys.exit(1)
     - name: Install scripts schema
       copy:
-        dest: /etc/dirsrv/slapd-scripts/schema/98scripts-vhost.ldif
+        dest: "/etc/dirsrv/slapd-{{ ldap_instance }}/schema/98scripts-vhost.ldif"
         src: 98scripts-vhost.ldif
     - name: Configure keytab
       copy:
-        dest: /etc/sysconfig/dirsrv-scripts
+        dest: "/etc/sysconfig/dirsrv-{{ ldap_instance }}"
         content: |
           KRB5_KTNAME=/etc/dirsrv/keytab
     - name: Start 389-ds
       service:
-        name: dirsrv@scripts
+        name: "dirsrv@{{ ldap_instance }}"
         state: started
         enabled: yes
     - name: Configure GSSAPI authentication
       ldap_entry:
-        server_uri: "ldapi://%2fvar%2frun%2fslapd-scripts.socket/"
+        server_uri: "{{ ldap_instance_uri }}"
         dn: "cn=mapname,cn=mapping,cn=sasl,cn=config"
         objectClass:
           - top
@@ -84,7 +87,7 @@
           nsSaslMapFilterTemplate: "(objectClass=posixAccount)"
     - name: Configure indices
       ldap_entry:
-        server_uri: "ldapi://%2fvar%2frun%2fslapd-scripts.socket/"
+        server_uri: "{{ ldap_instance_uri }}"
         dn: "cn={{ item }},cn=index,cn=userRoot,cn=ldbm database,cn=plugins,cn=config"
         objectClass:
           - top
@@ -103,3 +106,27 @@
         - uidnumber
         - gidnumber
       notify: reindex ldap
+    - meta: flush_handlers
+    - name: Create users for LDAP servers
+      ldap_entry:
+        server_uri: "{{ ldap_instance_uri }}"
+        dn: "uid=ldap/{{ item }},ou=People,dc=scripts,dc=mit,dc=edu"
+        objectClass:
+          - top
+          - account
+        attributes:
+          uid: "ldap/{{ item }}"
+      loop: "{{ groups['scripts-ldap'] }}"
+    - name: Configure replica
+      ldap_entry:
+        server_uri: "{{ ldap_instance_uri }}"
+        dn: 'cn=replica,cn=dc\3Dscripts\2Cdc\3Dmit\2Cdc\3Dedu,cn=mapping tree,cn=config'
+        objectClass:
+          - top
+          - nsDS5Replica
+        attributes:
+          # Flags = 0 means the replica is read-only; if we want to be able to make changes, we need to set flags to 1 and initialize a changelog.
+          nsDS5Flags: 0
+          nsDS5ReplicaBindDN: "{{ groups['scripts-ldap'] | map('regex_replace', '^(.*)$', 'uid=ldap/\\1,ou=People,dc=scripts,dc=mit,dc=edu') | list }}"
+          nsDS5ReplicaType: 2
+          nsDS5ReplicaRoot: dc=scripts,dc=mit,dc=edu
