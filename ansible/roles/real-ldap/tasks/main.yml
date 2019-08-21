@@ -145,6 +145,7 @@
         attributes:
           # Flags = 0 means the replica is read-only; if we want to be able to make changes, we need to set flags to 1 and initialize a changelog.
           nsDS5Flags: 0
+          nsDS5ReplicaId: 65535
           nsDS5ReplicaBindDN: "{{ groups['scripts-ldap'] | map('regex_replace', '^(.*)$', 'uid=ldap/\\1,ou=People,dc=scripts,dc=mit,dc=edu') | list }}"
           nsDS5ReplicaType: 2
           nsDS5ReplicaRoot: dc=scripts,dc=mit,dc=edu
