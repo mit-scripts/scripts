@@ -107,6 +107,15 @@
         - gidnumber
       notify: reindex ldap
     - meta: flush_handlers
+    - name: Create scripts domain
+      ldap_entry:
+        server_uri: "{{ ldap_instance_uri }}"
+        dn: "dc=scripts,dc=mit,dc=edu"
+        objectClass:
+          - top
+          - domain
+        attributes:
+          dc: scripts
     - name: Create People ou
       ldap_entry:
         server_uri: "{{ ldap_instance_uri }}"
