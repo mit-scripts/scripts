@@ -1,6 +1,10 @@
 ---
-- name: Install LDAP client
-  dnf: name=openldap state=present
+- name: Install LDAP clients
+  dnf:
+    name:
+      - openldap
+      - ldapvi
+    state: present
 - name: Configure ldap.conf
   lineinfile:
     path: /etc/openldap/ldap.conf
