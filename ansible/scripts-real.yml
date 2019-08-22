@@ -3,6 +3,13 @@
 # TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
 # TODO: Build and install the rest of scripts-base
 # TODO: Select and install miscellaneous packages
+# TODO: Install credentials:
+  # /etc/krb5.keytab
+  # /etc/daemon.keytab (0400 afsagent:afsagent)
+  # /etc/signup.keytab (0400 signup:signup)
+  # /etc/dirsrv/keytab (0400 dirsrv:dirsrv)
+  # /etc/ssh/*_key{,.pub}
+  # /root/.ldapvirc
 # Maybe:
 # TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
 # TODO: Install whoisd
