@@ -4,6 +4,7 @@
 # Adapted for scripts.mit.edu by Mitchell Berger <mitchb@mit.edu>
 
 use Net::LDAP;
+use Authen::SASL;
 use strict;
 
 my $nl  = $ENV{'USE_NEWLINES'} ? "\n" : "";
@@ -12,9 +13,19 @@ my $tab = $ENV{'USE_NEWLINES'} ? "  " : "";
 # Nagios codes
 my %ERRORS=('OK'=>0, 'WARNING'=>1, 'CRITICAL'=>2, 'UNKNOWN'=>3, 'DEPENDENT'=>4);
 
-my $ldapserver = 'ldapi://%2fvar%2frun%2fslapd-scripts.socket';
-my $user = 'cn=Directory Manager';
-my $passwdfile = '/etc/signup-ldap-pw';
+my $ldapserver;
+
+open(my $conf, "<", "/etc/openldap/ldap.conf") or die "open: $!";
+while (my $line = <$conf>) {
+  if ($line =~ m/^URI\s+(\S+)/) {
+    $ldapserver = $1;
+  }
+}
+close($conf) or die "close: $!";
+
+if (not $ldapserver) {
+  die "Couldn't find LDAP URI";
+}
 my $configBase = "cn=config";
 my $replicatedBase = "dc=scripts,dc=mit,dc=edu";
 my $server="nsDS5ReplicaHost";
@@ -71,7 +82,12 @@ sub ConnectLdap {
     open (PASSWD, $passwdfile) || &nagios_return("CRITICAL", "Could not read credentials");
     my $passwd = <PASSWD>;
     close (PASSWD);
-    my $mesg = $ldap->bind ( "$user", password => "$passwd" , version => 3 );
+    my $mesg;
+    if ($ldapserver =~ m/^ldapi:/) {
+      $mesg = $ldap->bind(sasl => Authen::SASL->new(mech => "EXTERNAL"), version => 3);
+    } else {
+      $mesg = $ldap->bind(version => 3);
+    }
     if ($mesg->code) {
         &nagios_return("CRITICAL", "Failed to bind to LDAP: " . $mesg->error);
     }

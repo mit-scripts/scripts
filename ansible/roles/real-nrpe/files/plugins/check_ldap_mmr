@@ -1,4 +1,6 @@
 #!/bin/sh
 
 export USE_NEWLINES=1
-exec /usr/bin/sudo -u signup /etc/nagios/check_ldap_mmr.real
+# TODO: Create a non-root user to run this plugin that has read-only
+# access to the replication status objects.
+exec /usr/bin/sudo /etc/nagios/check_ldap_mmr.real

@@ -7,4 +7,4 @@
   copy:
     dest: /etc/sudoers.d/scripts-nrpe
     content: |
-      nrpe    ALL=(signup)    NOPASSWD: /etc/nagios/check_ldap_mmr.real
+      nrpe    ALL=(root)    NOPASSWD: /etc/nagios/check_ldap_mmr.real
