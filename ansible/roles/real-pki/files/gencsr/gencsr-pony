@@ -17,9 +17,14 @@ if any(hostname for hostname in hostnames if '.' not in hostname):
     exit('error: Hostnames must be fully qualified')
 
 # Connect to LDAP
-ll = ldap.initialize('ldapi://%2fvar%2frun%2fslapd-scripts.socket/')
-with open('/etc/signup-ldap-pw') as pw_file:
-    ll.simple_bind_s('cn=Directory Manager', pw_file.read())
+ldap_uri = ldap.get_option(ldap.OPT_URI)
+
+ll = LDAPObject(ldap_uri)
+if ldap_uri.startswith('ldapi:'):
+    ll.sasl_external_bind_s()
+else:
+    # Consider using /etc/signup.keytab to bind with GSSAPI
+    ll.simple_bind_s()
 
 # Verify hostname existence and ownership
 locker_dn = ldap.dn.dn2str([[('uid', locker, 1)], [('ou', 'People', 1)], [('dc', 'scripts', 1)], [('dc', 'mit', 1)], [('dc', 'edu', 1)]])
