@@ -28,13 +28,17 @@ def err(e):
 
 class LDAPObject(ldap.ldapobject.SimpleLDAPObject, ldap.resiter.ResultProcessor): pass
 
-ll = LDAPObject(ldap.get_option(ldap.OPT_URI))
-try:
-    with open('/etc/signup-ldap-pw') as pw_file:
-        ll.simple_bind_s("cn=Directory Manager", pw_file.read())
-except FileNotFoundError:
-    err('LDAP password not found; vhosts will be incomplete\n')
-    ll.simple_bind_s()
+ldap_uri = ldap.get_option(ldap.OPT_URI)
+
+ll = LDAPObject(ldap_uri)
+if ldap_uri.startswith('ldapi:'):
+    ll.sasl_external_bind_s()
+else:
+    try:
+        ll.sasl_gssapi_bind_s()
+    except ldap.LOCAL_ERROR:
+        err('remote LDAP server and no Kerberos tickets; vhosts will be incomplete\n')
+        ll.simple_bind_s()
 
 if not os.path.exists(CERTS_DIR):
     os.mkdir(CERTS_DIR)
