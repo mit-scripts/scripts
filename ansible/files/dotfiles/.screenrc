@@ -1,0 +1,6 @@
+startup_message off
+msgwait 1
+hardstatus string "[screen %n*%f %t] %h"
+caption always "%{= bW}%H  %{+ c}%-Lw%50>%?%F%{+b W}%:%{+ w}%?%n*%f %t%{-}%+Lw%<%-010=%{+ W}"
+altscreen on
+defbce on

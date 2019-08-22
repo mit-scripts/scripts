@@ -8,6 +8,7 @@
   # /etc/daemon.keytab (0400 afsagent:afsagent)
   # /etc/signup.keytab (0400 signup:signup)
   # /etc/dirsrv/keytab (0400 dirsrv:dirsrv)
+  # /etc/pki/tls/private/scripts*.key (0400 root:root)
   # /etc/ssh/*_key{,.pub}
   # /root/.ldapvirc
 # Maybe:
@@ -307,6 +308,10 @@
             - clamav
             - clamav-update
           state: present
+  - name: Install dotfiles
+    copy:
+      dest: /root/
+      src: files/dotfiles/
   - name: User utilities
     block:
       - name: Install utilities
