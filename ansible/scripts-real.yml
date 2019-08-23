@@ -10,7 +10,6 @@
   # /etc/dirsrv/keytab (0400 dirsrv:dirsrv)
   # /etc/pki/tls/private/scripts*.key (0400 root:root)
   # /etc/ssh/*_key{,.pub}
-  # /etc/sql-mit-edu.cfg.php (0400 sql:sql) TODO: kill with fire^Wremctl
   # /root/.ldapvirc
 # Maybe:
 # TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
