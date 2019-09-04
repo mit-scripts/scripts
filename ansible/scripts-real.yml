@@ -1,4 +1,3 @@
-# TODO: Install more PHP modules, consider disabling by default or just leaving them.
 # TODO: Move blocked accounts into LDAP
 # TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
 # TODO: Build and install the rest of scripts-base

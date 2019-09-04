@@ -37,7 +37,6 @@ php-pecl-event
 php-pecl-fann
 php-pecl-gearman
 php-pecl-geoip
-php-pecl-gmagick
 php-pecl-http
 php-pecl-igbinary
 php-pecl-imagick
@@ -59,7 +58,6 @@ php-pecl-propro
 php-pecl-psr
 php-pecl-radius
 php-pecl-raphf
-php-pecl-redis4
 php-pecl-redis5
 php-pecl-rrd
 php-pecl-selinux

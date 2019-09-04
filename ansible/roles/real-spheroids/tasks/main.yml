@@ -14,6 +14,7 @@
       - rubygem-pony
     state: present
   when: use_scripts_rubygems
+# TODO: Consider disabling PHP modules by default
 - name: Install PHP modules
   dnf:
     name: "{{ lookup('file', 'php.txt').splitlines() | list}}"
