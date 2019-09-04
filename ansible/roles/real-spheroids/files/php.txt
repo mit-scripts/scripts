@@ -34,7 +34,6 @@ php-pear-Auth-OpenID
 php-pear-Auth-RADIUS
 php-pear-Auth-SASL
 php-pear-Auth-Yubico
-php-pear-Auth_HTTP
 php-pear-CAS
 php-pear-Cache-Lite
 php-pear-CodeGen
