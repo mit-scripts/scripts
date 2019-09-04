@@ -1,9 +1,12 @@
 graphviz-php
 mlt-php
+php-Smarty
+php-adodb
 php-ast
 php-bcmath
 php-common
 php-dba
+php-devel
 php-enchant
 php-facedetect
 php-gd
@@ -26,6 +29,7 @@ php-odbc
 php-opcache
 php-pdo
 php-pdo-dblib
+php-pear
 php-pear-Auth-OpenID
 php-pear-Auth-RADIUS
 php-pear-Auth-SASL
