@@ -15,7 +15,7 @@
     state: present
   when: use_scripts_rubygems
 # TODO: Consider disabling PHP modules by default
-- name: Install PHP modules
+- name: Install PHP modules and libraries
   dnf:
     name: "{{ lookup('file', 'php.txt').splitlines() | list}}"
     state: present
