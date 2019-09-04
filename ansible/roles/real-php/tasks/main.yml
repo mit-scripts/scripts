@@ -4,6 +4,7 @@
     name:
       - php
       - php-cli
+      # Extensions for scripts.mit.edu textpattern
       - php-json
       - php-mysqlnd
       - php-mbstring
