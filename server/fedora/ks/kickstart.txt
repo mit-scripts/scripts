@@ -21,7 +21,7 @@ firewall --disabled
 clearpart --all --drives=xvda --initlabel
 ignoredisk --only-use=xvda
 part / --fstype=ext4 --grow --asprimary --size=1
-part swap --grow --size=1
+part swap --grow --size=1 --maxsize=4096
 
 # console=hvc0 makes this VM work as an XVM ParaVM (which is what we
 # eventually want to be running as, not HVM which we have to do
