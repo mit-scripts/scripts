@@ -81,4 +81,4 @@
   loop:
     - spamass-milter
     - postfix
-# TODO: Move blocked users from /etc/aliases into LDAP as scriptsMailboxCommand: /bin/false
+# TODO: Move blocked_users into LDAP and configure an authorized_submit_users map

@@ -98,73 +98,11 @@ logview:	root
 scripts-build:	root
 
 # People who are abusing or otherwise causing problems with the mail system
-# Put "/dev/null" as the target of their alias
-# srimano: has a phpBB generating a lot of backscatter
-srimano:	/dev/null
-# dbriggs: phpBB: added 2011-06-25, see mail to -root 2011-03-27, 2011-06-03
-dbriggs:	/dev/null
-# ro21531: spam to rosmosis.net: added 2011-06-25, see mail to -root 2011-06-03
-ro21531:	/dev/null
-# buechley: not responsive to mail sent by -root on 2013-05-14, added 2013-07-04
-buechley:   	 /dev/null
-# cssa: spam, added 2014-02-01
-cssa:	/dev/null
-# mitlti: added 2014-07-26, causing way too much queued mail and not
-# yet responded to mail by -root
-mitlti:		/dev/null
-# paxters: so much spam, added 2014-09-09
-paxters:      	   /dev/null
-# crhie: why all the same, added 2014-10-05
-crhie:	     	 /dev/null
-# baker-foundation: spam, spam, and more spam. Added 2014-11-21
-baker-foundation:   /dev/null
-# 11.309j: still all spammy, despite contact on 2014-11-09. Added 2014-12-01
-11.309j:   /dev/null
-# kgsa: repeat unhappiness. Added 2014-12-01
-kgsa:	/dev/null
-# jains: compromised account sourcing spam. Added 2014-12-13
-jains:	 /dev/null
-# unfolding: compromised account sourcing spam. Added 2014-12-13
-unfolding:	 /dev/null
-# 4.332: compromised account sourcing spam. Added 2014-12-13
-4.332:	 /dev/null
-# asme: compromised account sourcing spam. Added 2014-12-13
-asme:	 /dev/null
-# alisono: compromised account sourcing spam. Added 2014-12-13
-alisono:	 /dev/null
-# laublab: compromised account sourcing spam. Added 2014-12-24
-laublab:	 /dev/null
-# eltahirgroup: compromised account sourcing spam. Added 2015-07-07
-eltahirgroup:	/dev/null
-# strategic: backscatter. Added 2015-10-09
-strategic:	/dev/null
-# je18337: cron spam. Added 2015-10-09
-je18337:	/dev/null 
-# gsc: backscatter. Added 2015-10-09
-gsc:		/dev/null
-# rwf: backscatter. Added 2015-10-09
-rwf:		/dev/null
-# saxelab: spam. Added 2015-10-09
-saxelab:	/dev/null
-# qeg: spam. Added 2015-10-09
-qeg:		/dev/null
-# blackhistory: backscatter. Added 2016-09-03
-blackhistory:	/dev/null
-# tdc: mail loop on procmailrc. Added 2016-09-11
-tdc:		/dev/null
-# seek: spam. Added 2016-10-09.
-seek:		/dev/null
-# braintrust: spam. Added 2016-10-20.
-braintrust: /dev/null
-# newmanlab: spam. Added 2016-12-04.
-newmanlab:	/dev/null
-# game: spam. Added 2017-01-23
-game:	      /dev/null
-# lebanon: spam. Added 2017-01-23
-lebanon:      /dev/null
-# crpg: spam. Added 2017-01-23
-crpg:	      /dev/null
-# scioly: spam. Added 2017-02-23
-scioly:       /dev/null
-# xavid: mail loop. Added 2017-03-06
-xavid:		/dev/null
+# MOVED TO LDAP
+#   cat <<EOF | ldapvi --in --ldapvi
+#   modify: uid=$user,ou=People,dc=scripts,dc=mit,dc=edu
+#   replace: scriptsMailboxCommand
+#   : /bin/true
+#   add: ntUserComment
+#   : $comment
+#   EOF
