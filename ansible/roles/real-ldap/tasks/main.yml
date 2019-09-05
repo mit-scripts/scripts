@@ -67,6 +67,7 @@
       copy:
         dest: "/etc/dirsrv/slapd-{{ ldap_instance }}/schema/98scripts-vhost.ldif"
         src: 98scripts-vhost.ldif
+      notify: reload ldap schema
     - name: Configure keytab
       copy:
         dest: "/etc/sysconfig/dirsrv-{{ ldap_instance }}"

@@ -1,3 +1,5 @@
 ---
 - name: reindex ldap
   command: dsconf scripts backend index reindex --wait userRoot
+- name: reload ldap schema
+  command: dsconf scripts schema reload
