@@ -37,7 +37,7 @@ virtual_alias_maps = ldap:/etc/postfix/virtual-alias-maps-ldap-reserved.cf, ldap
 data_directory = /var/lib/postfix
 authorized_flush_users = fail
 authorized_mailq_users = /etc/postfix/mailq_users
-authorized_submit_users = !/etc/postfix/blocked_users, static:all
+authorized_submit_users = !ldap:/etc/postfix/authorized-submit-users-ldap.cf, static:all
 non_smtpd_milters = unix:/run/spamass-milter/postfix/sock
 # "all" is the default, but if we do not specify it, Fedora's packaging
 # will add the wrong value here.
