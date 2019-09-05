@@ -29,6 +29,7 @@
     src: "postfix/{{ item }}.j2"
     dest: /etc/postfix/{{ item }}
   loop:
+    - authorized-submit-users-ldap.cf
     - mailbox-command-maps-ldap.cf
     - virtual-alias-domains-ldap.cf
     - virtual-alias-maps-ldap-reserved.cf
@@ -81,4 +82,3 @@
   loop:
     - spamass-milter
     - postfix
-# TODO: Move blocked_users into LDAP and configure an authorized_submit_users map
