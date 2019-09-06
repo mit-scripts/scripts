@@ -1,0 +1,14 @@
+- name: Create entry if missing
+  ldap_entry:
+    server_uri: "{{ ldap_instance_uri }}"
+    dn: "{{ dn }}"
+    objectClass: "{{ objectClass }}"
+    attributes: "{{ attributes }}"
+- name: Set attributes
+  ldap_attr:
+    server_uri: "{{ ldap_instance_uri }}"
+    dn: "{{ dn }}"
+    name: "{{ item.key }}"
+    values: "{{ item.value }}"
+    state: exact
+  loop: "{{ attributes|dict2items }}"

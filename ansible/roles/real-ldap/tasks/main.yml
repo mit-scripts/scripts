@@ -79,8 +79,8 @@
         state: started
         enabled: yes
     - name: Configure GSSAPI authentication
-      ldap_entry:
-        server_uri: "{{ ldap_instance_uri }}"
+      include_tasks: ldap_entry_iou.yml
+      vars:
         dn: "cn=mapname,cn=mapping,cn=sasl,cn=config"
         objectClass:
           - top
@@ -91,8 +91,8 @@
           nsSaslMapBaseDNTemplate: 'uid=\1,ou=People,dc=scripts,dc=mit,dc=edu'
           nsSaslMapFilterTemplate: "(objectClass=posixAccount)"
     - name: Configure indices
-      ldap_entry:
-        server_uri: "{{ ldap_instance_uri }}"
+      include_tasks: ldap_entry_iou.yml
+      vars:
         dn: "cn={{ item }},cn=index,cn=userRoot,cn=ldbm database,cn=plugins,cn=config"
         objectClass:
           - top
@@ -113,8 +113,8 @@
       notify: reindex ldap
     - meta: flush_handlers
     - name: Create scripts domain
-      ldap_entry:
-        server_uri: "{{ ldap_instance_uri }}"
+      include_tasks: ldap_entry_iou.yml
+      vars:
         dn: "dc=scripts,dc=mit,dc=edu"
         objectClass:
           - top
@@ -122,8 +122,8 @@
         attributes:
           dc: scripts
     - name: Create People ou
-      ldap_entry:
-        server_uri: "{{ ldap_instance_uri }}"
+      include_tasks: ldap_entry_iou.yml
+      vars:
         dn: "ou=People,dc=scripts,dc=mit,dc=edu"
         objectClass:
           - top
@@ -131,8 +131,8 @@
         attributes:
           ou: People
     - name: Create users for LDAP servers
-      ldap_entry:
-        server_uri: "{{ ldap_instance_uri }}"
+      include_tasks: ldap_entry_iou.yml
+      vars:
         dn: "uid=ldap/{{ item }},ou=People,dc=scripts,dc=mit,dc=edu"
         objectClass:
           - top
@@ -141,8 +141,8 @@
           uid: "ldap/{{ item }}"
       loop: "{{ groups['scripts-ldap'] }}"
     - name: Configure replica
-      ldap_entry:
-        server_uri: "{{ ldap_instance_uri }}"
+      include_tasks: ldap_entry_iou.yml
+      vars:
         dn: 'cn=replica,cn=dc\3Dscripts\2Cdc\3Dmit\2Cdc\3Dedu,cn=mapping tree,cn=config'
         objectClass:
           - top
