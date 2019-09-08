@@ -4,6 +4,7 @@
     dn: "{{ dn }}"
     objectClass: "{{ objectClass }}"
     attributes: "{{ attributes }}"
+  notify: "{{ notify | default(omit) }}"
 - name: Set attributes
   ldap_attr:
     server_uri: "{{ ldap_instance_uri }}"
@@ -12,3 +13,4 @@
     values: "{{ item.value }}"
     state: exact
   loop: "{{ attributes|dict2items }}"
+  notify: "{{ notify | default(omit) }}"

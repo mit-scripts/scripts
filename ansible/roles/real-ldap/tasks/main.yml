@@ -103,6 +103,7 @@
           nsIndexType:
             - eq
             - pres
+        notify: reindex ldap
       loop:
         - scriptsVhostName
         - scriptsVhostAlias
@@ -110,7 +111,6 @@
         - memberuid
         - uidnumber
         - gidnumber
-      notify: reindex ldap
     - meta: flush_handlers
     - name: Create scripts domain
       include_tasks: ldap_entry_iou.yml
