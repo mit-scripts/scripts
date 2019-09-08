@@ -9,8 +9,10 @@
   ldap_attr:
     server_uri: "{{ ldap_instance_uri }}"
     dn: "{{ dn }}"
-    name: "{{ item.key }}"
-    values: "{{ item.value }}"
+    name: "{{ attribute.key }}"
+    values: "{{ attribute.value }}"
     state: exact
   loop: "{{ attributes|dict2items }}"
+  loop_control:
+    loop_var: attribute
   notify: "{{ notify | default(omit) }}"
