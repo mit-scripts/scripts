@@ -150,6 +150,7 @@ all:
               - host: scripts-test.mit.edu
                 ip: 18.4.86.229
                 cidr_netmask: 24
+            enable_testing_repo: yes
             # Don't Zephyr from dev servers
             syslog_client: no
             afs_cache_size: 500000
@@ -172,7 +173,6 @@ all:
             quentin-scripts-f30.xvm.mit.edu:
               syslog_client: yes
             quentin-ansible-test.xvm.mit.edu:
-              enable_testing_repo: yes
               use_afs: yes
               use_scripts_openssh: yes
               use_nss_nonlocal: yes
