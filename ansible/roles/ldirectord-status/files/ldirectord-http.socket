@@ -4,6 +4,7 @@ Description=HTTP Socket for LDirectord Status
 [Socket]
 ListenStream=78
 Accept=yes
+TriggerLimitBurst=0
 
 [Install]
 WantedBy=sockets.target
