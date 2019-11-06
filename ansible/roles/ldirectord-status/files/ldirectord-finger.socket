@@ -1,10 +1,10 @@
 [Unit]
 Description=Finger Socket for LDirectord Status
+OnFailure=ldirectord-finger.socket
 
 [Socket]
 ListenStream=79
 Accept=yes
-TriggerLimitBurst=0
 
 [Install]
 WantedBy=sockets.target

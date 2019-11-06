@@ -2,5 +2,5 @@
 Description=Finger Per-Connection Server
 
 [Service]
-ExecStart=/etc/ldirectord-status/ldirectord-http.sh
+ExecStart=-/etc/ldirectord-status/ldirectord-http.sh
 StandardInput=socket

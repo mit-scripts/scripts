@@ -1,5 +1,6 @@
 [Unit]
 Description=HTTP Socket for LDirectord Status
+OnFailure=ldirectord-http.socket
 
 [Socket]
 ListenStream=78
