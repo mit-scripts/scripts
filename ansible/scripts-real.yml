@@ -1,5 +1,16 @@
 # TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
+  # /etc/hosts lists public IP, then private IP, for each host
+  # /etc/sysconfig/network-scripts/route-vlan461 lists public IP via private IP for each host
 # TODO: Build and install the rest of scripts-base
+  # athrun
+  # discuss (maybe?)
+  # python-afs (maybe?)
+  # python-authkit
+  # python-hesiod (maybe?)
+  # python-moira (maybe?)
+  # python-zephyr (maybe?)
+  # scripts-munin-plugins
+  # scripts-wizard
 # TODO: Select and install miscellaneous packages
 # TODO: Install credentials:
   # /etc/krb5.keytab
@@ -9,10 +20,10 @@
   # /etc/pki/tls/private/scripts*.key (0400 root:root)
   # /etc/ssh/*_key{,.pub}
 # Maybe:
+# TODO: Check which RPMs have been built
 # TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
-# TODO: Install whoisd
 # TODO: Consider installing a crontab for export-scripts-certs (currently in scripts locker's crontab)
-# TODO: Configure logwatch
+# TODO: Configure logwatch (try the trivial existing config and see if it works)
 # TODO: Make dnf drop setuid and caps on binaries we don't want to have them
 
 - hosts: scripts-real
