@@ -66,7 +66,7 @@ mkdir-tree:
 	mkdir -p $(tmp_specs)
 	ln -sTf $(topdir) rpmbuild
 
-openafs openafs-kernel: $(dload)/$(notdir $openafs_url)
+openafs openafs-kernel ${tmp_specs}/openafs.spec: $(dload)/$(notdir $openafs_url)
 $(dload)/$(notdir $openafs_url):
 	wget -P $(dload) $(openafs_url)
 
