@@ -12,6 +12,7 @@ URL:		http://scripts.mit.edu/
 Source0:	debathena-%{name}_%{upstreamversion}.orig.tar.gz
 Source1:	discuss.xinetd
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+BuildRequires:	gcc
 BuildRequires:	athena-aclocal, byacc, libcom_err-devel, libss-devel, krb5-devel, zephyr-devel, readline-devel, less
 Requires:	less
 
