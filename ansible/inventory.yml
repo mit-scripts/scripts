@@ -190,4 +190,4 @@ all:
 
             scripts-f30-test.xvm.mit.edu: {}
 
-            jkoppel-scripts-test: {}
+            jkoppel-scripts-test.xvm.mit.edu: {}
