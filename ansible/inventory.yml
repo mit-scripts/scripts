@@ -191,3 +191,5 @@ all:
             scripts-f30-test.xvm.mit.edu: {}
 
             jkoppel-scripts-test.xvm.mit.edu: {}
+            feral-purrbeast.xvm.mit.edu: {}
+            poisonous-stamp.xvm.mit.edu: {}
