@@ -190,9 +190,21 @@ all:
 
             scripts-f30-test.xvm.mit.edu: {}
 
-            jkoppel-scripts-test.xvm.mit.edu: {}
-            feral-purrbeast.xvm.mit.edu: {}
-            poisonous-stamp.xvm.mit.edu: {}
-            toasted-microwave.xvm.mit.edu: {}
-            miriamscripts.xvm.mit.edu: {}
-            anarchyscripts.xvm.mit.edu: {}
+            jkoppel-scripts-test.xvm.mit.edu:
+              maintainers:
+                - username: jkoppel
+            feral-purrbeast.xvm.mit.edu:
+              maintainers:
+                - username: cela
+            poisonous-stamp.xvm.mit.edu:
+              maintainers:
+                - username: bpchen
+            toasted-microwave.xvm.mit.edu:
+              maintainers:
+                - username: rihn
+            miriamscripts.xvm.mit.edu:
+              maintainers:
+                - username: mrittenb
+            anarchyscripts.xvm.mit.edu:
+              maintainers:
+                - username: jnoguera
