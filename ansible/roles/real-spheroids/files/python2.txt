@@ -7,7 +7,6 @@ pykickstart
 pyliblzma
 pyorbit
 python-cephfs
-python-rados
 python-rbd
 python2-4suite-xml
 python2-Cython
