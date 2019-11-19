@@ -122,7 +122,6 @@ php-pecl-redis5
 php-pecl-rrd
 php-pecl-selinux
 php-pecl-solr2
-php-pecl-sphinx
 php-pecl-ssdeep
 php-pecl-ssh2
 php-pecl-timecop
