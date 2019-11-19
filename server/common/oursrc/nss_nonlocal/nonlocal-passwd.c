@@ -58,8 +58,8 @@ __nss_passwd_nonlocal_lookup2(service_user **ni, const char *fct_name,
 			      const char *fct2_name, void **fctp)
 {
     if (__nss_passwd_nonlocal_database == NULL
-	&& __nss_database_lookup("passwd_nonlocal", NULL, NULL,
-				 &__nss_passwd_nonlocal_database) < 0)
+	&& __nss_database_lookup2("passwd_nonlocal", NULL, NULL,
+				  &__nss_passwd_nonlocal_database) < 0)
 	return -1;
 
     *ni = __nss_passwd_nonlocal_database;

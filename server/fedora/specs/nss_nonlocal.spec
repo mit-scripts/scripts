@@ -2,7 +2,7 @@ Summary: nsswitch proxy module to prevent local account spoofing
 Group: System Environment/Libraries
 Name: nss_nonlocal
 Version: 2.2
-Release: 1
+Release: 2
 URL: http://debathena.mit.edu/nss_nonlocal/
 BuildRequires: autoconf
 BuildRequires: automake
@@ -11,6 +11,7 @@ License: LGPLv2+
 Source: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires(pre): shadow-utils
+Requires: glibc >= 2.29-19
 
 %description
 This nsswitch module acts as a proxy for other nsswitch modules like hesiod,
@@ -61,6 +62,9 @@ exit 0
 /sbin/ldconfig
 
 %changelog
+
+* Sun May 26 2019 Quentin Smith <quentin@mit.edu> 2.2-2
+- Fix build with glibc >= 2.29-19
 
 * Sun May 26 2019 Quentin Smith <quentin@mit.edu> 2.2-1
 - New upstream version.

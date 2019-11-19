@@ -24,9 +24,9 @@ typedef struct service_user service_user;
 extern int __nss_next2 (service_user **ni, const char *fct_name,
 			const char *fct2_name, void **fctp, int status,
 			int all_values);
-extern int __nss_database_lookup (const char *database,
-				  const char *alternative_name,
-				  const char *defconfig, service_user **ni);
+extern int __nss_database_lookup2 (const char *database,
+				   const char *alternative_name,
+				   const char *defconfig, service_user **ni);
 extern void *__nss_lookup_function (service_user *ni, const char *fct_name);
 
 /* glibc/nss/XXX-lookup.c */
