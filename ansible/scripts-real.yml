@@ -86,6 +86,8 @@
             - option: excludepkgs
               value: fedora-obsolete-packages
   roles:
+    - role: packages
+      tags: [always]
     - role: syslog-client
       when: syslog_client | default(True)
     - mock
@@ -107,11 +109,14 @@
     - real-php
     - real-cron
     - role: real-httpd
-      when: use_scripts_httpd | default(True)
+      when: "'httpd' in scripts_packages and 'httpdmods' in scripts_packages"
       notify: reconfigure munin-node
     - real-logrotate
     - real-spheroids
   tasks:
+  - tags: [always]
+    debug:
+      msg: "{{ dnf_available_packages | json_query('[?name==httpd]') }}"
   - name: Editors
     block:
       - name: Install editors
@@ -130,9 +135,9 @@
       name:
         - accountadm
       state: present
-    when: use_accountadm | default(True)
+    when: use_accountadm | default('accountadm' in scripts_packages)
   - name: execsys
-    when: use_execsys | default(True)
+    when: use_execsys | default('execsys' in scripts_packages)
     block:
       - name: Install execsys
         dnf: name=execsys state=present
@@ -150,7 +155,7 @@
     block:
     - name: Install hesiod
       dnf: name=hesiod-devel state=present
-      when: use_hesiod | default(True)
+      when: use_hesiod | default('hesiod_devel' in scripts_packages)
     - name: Configure hesiod
       copy:
         dest: /etc/hesiod.conf
@@ -158,7 +163,7 @@
           rhs=.ATHENA.MIT.EDU
           lhs=.ns
   - name: Zephyr
-    when: use_zephyr | default(True)
+    when: use_zephyr | default('zephyr' in scripts_packages)
     block:
     - name: Install zephyr
       dnf:
@@ -172,7 +177,7 @@
         enabled: yes
         state: started
   - name: autofs
-    when: use_autofs | default(True)
+    when: use_autofs | default(ansible_distribution_major_version < 30 or 'autofs' in scripts_packages)
     block:
     - name: Install autofs
       dnf: name={% if ansible_distribution_major_version|int >= 30 %}scripts-{% endif %}autofs state=present

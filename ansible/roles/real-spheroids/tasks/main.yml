@@ -13,7 +13,7 @@
       - rubygem-fcgi
       - rubygem-pony
     state: present
-  when: use_scripts_rubygems
+  ignore_errors: yes
 # TODO: Consider disabling PHP modules by default
 - name: Install PHP modules and libraries
   dnf:
@@ -65,7 +65,7 @@
       - python2-zephyr
       - python2-authkit
     state: present
-  when: use_scripts_python2
+  ignore_errors: yes
 # TODO: Package flipflop and/or flup6 for Python 3 as replacements for flup
 # TODO: Package mechanize, MechnicalSoup, or robobrowser for Python 3
 - name: Install Python 3 libraries

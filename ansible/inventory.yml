@@ -103,38 +103,10 @@ all:
             syslog_client: no
             afs_cache_size: 500000
             use_local_ldap: no
-            use_afs: yes
-            use_scripts_openssh: yes
-            use_nss_nonlocal: yes
-            use_hesiod: yes
-            use_scripts_localauth: yes
-            use_accountadm: yes
-            use_scripts_httpd: yes
-            use_scripts_php: yes
-            use_execsys: yes
-            use_zephyr: yes
-            use_autofs: yes
-            use_moira: yes
-            use_shackle: yes
-            use_scripts_rubygems: yes
           hosts:
             quentin-scripts-f30.xvm.mit.edu:
               syslog_client: yes
-            quentin-ansible-test.xvm.mit.edu:
-              use_afs: yes
-              use_scripts_openssh: yes
-              use_nss_nonlocal: yes
-              use_hesiod: yes
-              use_scripts_localauth: yes
-              use_accountadm: yes
-              use_scripts_httpd: yes
-              use_scripts_php: no
-              use_execsys: yes
-              use_zephyr: yes
-              use_autofs: yes
-              use_moira: yes
-              use_shackle: yes
-              use_scripts_rubygems: yes
+            quentin-ansible-test.xvm.mit.edu: {}
 
             scripts-f30-test.xvm.mit.edu: {}
 
