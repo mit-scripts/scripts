@@ -175,7 +175,7 @@
         enabled: yes
         state: started
   - name: autofs
-    when: use_autofs | default(ansible_distribution_major_version < 30 or 'autofs' in scripts_packages)
+    when: use_autofs | default(ansible_distribution_major_version|int < 30 or 'autofs' in scripts_packages)
     block:
     - name: Install autofs
       dnf: name={% if ansible_distribution_major_version|int >= 30 %}scripts-{% endif %}autofs state=present
