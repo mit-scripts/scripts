@@ -2,7 +2,6 @@
   # /etc/hosts lists public IP, then private IP, for each host
   # /etc/sysconfig/network-scripts/route-vlan461 lists public IP via private IP for each host
 # TODO: Build and install the rest of scripts-base
-  # discuss (maybe?)
   # python-afs (maybe?)
   # python-authkit
   # python-hesiod (maybe?)
@@ -335,6 +334,13 @@
           state: present
   - name: athrun
     dnf: name=athrun state=present
+    ignore_errors: yes
+  - name: discuss
+    dnf:
+      name:
+        - discuss
+        - discuss-emacs
+      state: present
     ignore_errors: yes
   handlers:
   - name: reload autofs
