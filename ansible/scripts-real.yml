@@ -2,14 +2,12 @@
   # /etc/hosts lists public IP, then private IP, for each host
   # /etc/sysconfig/network-scripts/route-vlan461 lists public IP via private IP for each host
 # TODO: Build and install the rest of scripts-base
-  # athrun
   # discuss (maybe?)
   # python-afs (maybe?)
   # python-authkit
   # python-hesiod (maybe?)
   # python-moira (maybe?)
   # python-zephyr (maybe?)
-  # scripts-munin-plugins
   # scripts-wizard
 # TODO: Select and install miscellaneous packages
 # TODO: Install credentials:
@@ -335,6 +333,9 @@
             - GraphicsMagick
             - screen
           state: present
+  - name: athrun
+    dnf: name=athrun state=present
+    ignore_errors: yes
   handlers:
   - name: reload autofs
     service: name=autofs state=reloaded
