@@ -333,6 +333,7 @@
             - strace
             - ImageMagick
             - GraphicsMagick
+            - screen
           state: present
   handlers:
   - name: reload autofs

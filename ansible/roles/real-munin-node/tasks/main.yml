@@ -35,3 +35,7 @@
       command sudo -E %c
       env.PATH /usr/kerberos/sbin:/usr/kerberos/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
   notify: reconfigure munin-node
+- name: Install scripts-munin-plugins
+  dnf: name=scripts-munin-plugins state=present
+  ignore_errors: yes
+  notify: reconfigure munin-node
