@@ -1,0 +1,24 @@
+---
+- name: Configure dnf to drop unneeded executable permissions
+  template:
+    src: post-action.j2
+    dest: /etc/dnf/plugins/post-transaction-actions.d/drop-permissions.action
+- name: Install allowed-setugid.list
+  template:
+    src: list.j2
+    dest: /etc/scripts/allowed-setugid.list
+  vars:
+    items: "{{ allowed_setugid }}"
+- name: Install allowed-filecaps.list
+  template:
+    src: list.j2
+    dest: /etc/scripts/allowed-filecaps.list
+  vars:
+    items: "{{ allowed_filecaps }}"
+- name: Install cron job
+  copy:
+    dest: /etc/cron.d/scripts-check-statoverride
+    content: |
+      MAILTO=scripts-root@mit.edu
+      23 5 * * * root find / -xdev -not -perm -o=x -prune -o -type f -perm /ug=s -print | grep -Fxvf /etc/scripts/allowed-setugid.list | grep -ve ^/var/lib/mock/ | sed 's/^/Extra set[ug]id binary: /'
+      27 5 * * * root find / -xdev -not -perm -o=x -prune -o -type f -print0 | xargs -0r /usr/sbin/getcap | cut -d' ' -f1 | grep -Fxvf /etc/scripts/allowed-filecaps.list | grep -ve ^/var/lib/mock/ | sed 's/^/Extra file_caps binary: /'

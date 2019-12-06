@@ -1,9 +1,0 @@
-/usr/sbin/mtr:install:setcap -r /usr/sbin/mtr
-/usr/bin/rsh:install:setcap -r /usr/bin/rsh
-/usr/bin/rcp:install:setcap -r /usr/bin/rcp
-/usr/bin/gnome-keyring-daemon:install:setcap -r /usr/bin/gnome-keyring-daemon
-/usr/bin/newrole:install:setcap -r /usr/bin/newrole
-/usr/bin/rlogin:install:setcap -r /usr/bin/rlogin
-/usr/libexec/pt_chown:install:setcap -r /usr/libexec/pt_chown
-/usr/sbin/arping:install:setcap -r /usr/sbin/arping
-/usr/sbin/clockdiff:install:setcap -r /usr/sbin/clockdiff

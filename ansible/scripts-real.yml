@@ -21,7 +21,6 @@
 # TODO: Fix rsyslog configuration so it spews all of authpriv, minus the blacklist of regexes
 # TODO: Consider installing a crontab for export-scripts-certs (currently in scripts locker's crontab)
 # TODO: Configure logwatch (try the trivial existing config and see if it works)
-# TODO: Make dnf drop setuid and caps on binaries we don't want to have them
 
 - hosts: scripts-real
   serial: 1
@@ -90,6 +89,7 @@
     - mock
     - sysctl
     - tmpfiles
+    - real-statoverride
     - real-munin-node
     - real-dns
     - real-ntp

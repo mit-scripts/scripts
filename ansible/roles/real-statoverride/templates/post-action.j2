@@ -1,0 +1,6 @@
+{% for f in drop_setugid %}
+{{f}}:in:chmod ug-s {{f}}
+{% endfor %}
+{% for f in drop_caps %}
+{{f}}:in:setcap -r {{f}}
+{% endfor %}
