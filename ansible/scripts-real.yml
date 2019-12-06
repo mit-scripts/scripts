@@ -318,6 +318,16 @@
             - clamav
             - clamav-update
           state: present
+  - name: sysstat
+    block:
+      - dnf: name=sysstat state=present
+      - name: Retain sysstat logs for 30 days
+        ini_file:
+          no_extra_spaces: yes
+          path: /etc/sysconfig/sysstat
+          section: null
+          option: "HISTORY"
+          value: "30"
   - name: Install dotfiles
     copy:
       dest: /root/
