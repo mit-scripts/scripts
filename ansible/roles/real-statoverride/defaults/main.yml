@@ -19,11 +19,12 @@ allowed_filecaps:
   - /usr/bin/systemd-detect-virt
   - /usr/sbin/fping
   - /usr/sbin/fping6
-  - /usr/sbin/mtr
+  - /usr/sbin/mtr-packet
   - /usr/sbin/suexec
 drop_setugid:
   - /usr/bin/cgexec
   - /usr/bin/fusermount
+  - /usr/bin/fusermount-glusterfs
   - /usr/bin/mount
   - /usr/bin/su
   - /usr/bin/umount
@@ -62,13 +63,17 @@ drop_setugid:
   - /usr/bin/cu
   - /usr/bin/uucico
   - /usr/libexec/qemu-bridge-helper
+  - /usr/sbin/grub2-set-bootflag
+  - /usr/libexec/abrt-action-install-debuginfo-to-abrt-cache
+  - /usr/sbin/mtr-packet # Note: mtr-packet keeps its filecaps
 drop_filecaps:
-   - /usr/sbin/mtr
-   - /usr/bin/rsh
-   - /usr/bin/rcp
-   - /usr/bin/gnome-keyring-daemon
-   - /usr/bin/newrole
-   - /usr/bin/rlogin
-   - /usr/libexec/pt_chown
-   - /usr/sbin/arping
-   - /usr/sbin/clockdiff
+  - /usr/bin/newuidmap
+  - /usr/bin/newgidmap
+  - /usr/bin/rsh
+  - /usr/bin/rcp
+  - /usr/bin/gnome-keyring-daemon
+  - /usr/bin/newrole
+  - /usr/bin/rlogin
+  - /usr/libexec/pt_chown
+  - /usr/sbin/arping
+  - /usr/sbin/clockdiff
