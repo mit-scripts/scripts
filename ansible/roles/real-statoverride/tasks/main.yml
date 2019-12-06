@@ -1,8 +1,16 @@
 ---
+- name: Ensure /etc/dnf/plugins/post-transaction-actions.d exists
+  file:
+    path: /etc/dnf/plugins/post-transaction-actions.d/
+    state: directory
 - name: Configure dnf to drop unneeded executable permissions
   template:
     src: post-action.j2
     dest: /etc/dnf/plugins/post-transaction-actions.d/drop-permissions.action
+- name: Ensure /etc/scripts exists
+  file:
+    path: /etc/scripts/
+    state: directory
 - name: Install allowed-setugid.list
   template:
     src: list.j2
