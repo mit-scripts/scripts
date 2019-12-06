@@ -13,7 +13,7 @@ allowed_setugid:
   - /usr/sbin/postdrop
   - /usr/sbin/postqueue
   - /usr/sbin/userhelper
-allowed_caps:
+allowed_filecaps:
   - /usr/bin/ping
   - /usr/bin/ping6
   - /usr/bin/systemd-detect-virt
@@ -62,7 +62,7 @@ drop_setugid:
   - /usr/bin/cu
   - /usr/bin/uucico
   - /usr/libexec/qemu-bridge-helper
-drop_caps:
+drop_filecaps:
    - /usr/sbin/mtr
    - /usr/bin/rsh
    - /usr/bin/rcp
