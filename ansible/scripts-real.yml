@@ -53,6 +53,14 @@
         name: network_interface
       vars:
         network_check_packages: False
+    - when: ether_result.changed
+      debug:
+        msg: "Network configuration changed; rebooting"
+      changed_when: yes
+      notify:
+        - reconfigure munin-node
+        - reboot
+        - setup
     - name: Configure dnf
       block:
         - name: Configure scripts RPM repos
@@ -357,3 +365,7 @@
     service: name=systemd-journald state=restarted
   - name: regenerate grub
     command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  - name: reboot
+    reboot:
+  - name: setup
+    setup:
