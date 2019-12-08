@@ -89,8 +89,24 @@ all:
         alter-ego.mit.edu: {}
         body-double.mit.edu: {}
 
+    sql:
+      vars:
+        vlan486_address: "{{ lookup('dig', inventory_hostname) }}"
+        vlan461_address: "{{ vlan486_address | replace('18.4.86.', '172.21.0.') }}"
+      hosts:
+        sql.mit.edu: {}
+        primary-key.mit.edu: {}
+        foreign-key.mit.edu: {}
+        sliced-bread.mit.edu: {}
+
     scripts-real:
       children:
+        scripts-real-prod:
+          vars:
+            vlan486_address: "{{ lookup('dig', inventory_hostname) }}"
+            vlan461_address: "{{ vlan486_address | replace('18.4.86.', '172.21.0.') }}"
+          hosts:
+            better-mousetrap.mit.edu: {}
         scripts-real-test:
           vars:
             ansible_python_interpreter: /usr/bin/python3

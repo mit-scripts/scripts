@@ -1,6 +1,5 @@
-# TODO: Configure /etc/hosts and routes so that sql.mit.edu goes over the backend network
+# TODO: Configure /etc/hosts so that sql.mit.edu goes over the backend network
   # /etc/hosts lists public IP, then private IP, for each host
-  # /etc/sysconfig/network-scripts/route-vlan461 lists public IP via private IP for each host
 # TODO: Build and install the rest of scripts-base
   # python-afs (maybe?)
   # python-authkit
