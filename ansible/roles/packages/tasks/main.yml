@@ -2,7 +2,7 @@
 - name: List scripts packages
   dnf:
     list: available
-    disablerepo: [fedora, updates]
+    disablerepo: [fedora, updates, fedora-modular, updates-modular]
   register: dnf_list_available
 - set_fact:
     scripts_packages: "{{ dnf_list_available | json_query('results[*].name') }}"
