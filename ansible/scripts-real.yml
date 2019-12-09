@@ -116,9 +116,6 @@
     - real-logrotate
     - real-spheroids
   tasks:
-  - tags: [always]
-    debug:
-      msg: "{{ dnf_available_packages | json_query('[?name==httpd]') }}"
   - name: Editors
     block:
       - name: Install editors
