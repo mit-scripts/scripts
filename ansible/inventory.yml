@@ -106,8 +106,25 @@ all:
           vars:
             vlan486_address: "{{ ip }}"
             vlan461_address: "{{ vlan486_address | replace('18.4.86.', '172.21.0.') }}"
-          hosts:
-            better-mousetrap.mit.edu: {}
+          children:
+            scripts-real-f30:
+              vars:
+                ansible_python_interpreter: /usr/bin/python3
+              hosts:
+                better-mousetrap.mit.edu:
+                old-faithful.mit.edu:
+                whole-enchilada.mit.edu:
+                real-mccoy.mit.edu:
+                golden-egg.mit.edu:
+                #miracle-cure.mit.edu:
+                #lucky-star.mit.edu:
+            scripts-real-f20:
+              hosts:
+                bees-knees.mit.edu:
+                cats-whiskers.mit.edu:
+                pancake-bunny.mit.edu:
+                busy-beaver.mit.edu:
+                shining-armor.mit.edu:
         scripts-real-test:
           vars:
             ansible_python_interpreter: /usr/bin/python3
