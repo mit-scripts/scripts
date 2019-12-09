@@ -1,3 +1,4 @@
 ---
 - name: reload httpd
   service: name=httpd state=reloaded
+  notify: reconfigure munin-node

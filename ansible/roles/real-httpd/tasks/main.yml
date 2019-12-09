@@ -1,96 +1,100 @@
 ---
-- name: Install scripts-httpd
-  dnf:
-    name:
-      - scripts-httpd
-      - scripts-mod_ssl
-      - scripts-static-cat
-      - mod_ldap
-      - mod_fcgid
-      - httpdmods
-      - python3-ldap
-      - python3-pyOpenSSL
-      - logview
-      - httpd-tools
-    state: present
-- name: Allow scripts to export certificates
-  copy:
-    dest: /etc/sudoers.d/scripts-httpd
-    content: |
-      scripts ALL=(root)      NOPASSWD: /etc/httpd/export-scripts-certs ""
-
-- name: Configure Munin monitoring
-  block:
-  - name: Generate password
-    check_mode: no
-    shell: cat /etc/munin/apache-passwd {% if not ansible_check_mode %}|| (umask go-rwx && openssl rand -hex 32 | tee /etc/munin/apache-passwd && exit 254){% endif %}
-    register: password
-    failed_when: not ansible_check_mode and password.rc not in (0, 254)
-    changed_when: password.rc != 0
-  - name: Check htpasswd file
-    check_mode: no
-    command: htpasswd -vi /etc/munin/apache-htpasswd munin
-    args:
-      stdin: "{{password.stdout}}"
-    changed_when: false
-    failed_when: false
-    register: htpasswd_verify
-  - name: Generate htpasswd line
-    when: htpasswd_verify.rc != 0
-    command: htpasswd -ni munin
-    args:
-      stdin: "{{password.stdout}}"
-    register: htpasswd
-  - name: Update htpasswd file
-    when: htpasswd_verify.rc != 0
-    copy:
-      dest: /etc/munin/apache-htpasswd
-      content: "{{htpasswd.stdout}}"
-      mode: 0600
-      owner: apache
-    notify: reconfigure munin-node
-  - name: Configure apache plugins
-    copy:
-      dest: /etc/munin/plugin-conf.d/{{ item }}
-      content: |
-        [{{ item }}]
-        env.url http://munin:{{password.stdout}}@127.0.0.1:%d/server-status/?auto
-      mode: 0600
-      owner: munin
-    loop:
-      - apache_accesses
-      - apache_processes
-      - apache_volume
-    notify: reconfigure munin-node
 - name: Configure httpd
-  copy:
-    dest: /etc/httpd/
-    src: httpd/
-    mode: preserve
-  notify: reload httpd
-- name: Configure MITnet regex
-  template:
-    dest: /etc/httpd/conf.d/scripts-remote-mitnet.conf
-    src: scripts-remote-mitnet.conf.j2
-  notify: reload httpd
-- name: Configure mod_vhost_ldap
-  template:
-    dest: /etc/httpd/conf.d/vhost_ldap.conf
-    src: vhost_ldap.conf.j2
-  notify: reload httpd
-- name: Configure vhost names
-  template:
-    dest: /etc/httpd/conf.d/scripts-vhost-names.conf
-    src: scripts-vhost-names.conf.j2
-  notify: reload httpd
-- name: Install certificates
-  copy:
-    dest: /etc/pki/tls/certs/
-    src: certs/
-    mode: preserve
-  notify: reload httpd
-- name: Enable httpd
-  service:
-    name: httpd
-    enabled: yes
-    state: started
+  when: "'httpd' in scripts_packages and 'httpdmods' in scripts_packages"
+  block:
+  - name: Install scripts-httpd
+    dnf:
+      name:
+        - scripts-httpd
+        - scripts-mod_ssl
+        - scripts-static-cat
+        - mod_ldap
+        - mod_fcgid
+        - httpdmods
+        - python3-ldap
+        - python3-pyOpenSSL
+        - logview
+        - httpd-tools
+      state: present
+    notify: reconfigure munin-node
+  - name: Allow scripts to export certificates
+    copy:
+      dest: /etc/sudoers.d/scripts-httpd
+      content: |
+        scripts ALL=(root)      NOPASSWD: /etc/httpd/export-scripts-certs ""
+  - name: Configure Munin monitoring
+    block:
+    - name: Generate password
+      check_mode: no
+      shell: cat /etc/munin/apache-passwd {% if not ansible_check_mode %}|| (umask go-rwx && openssl rand -hex 32 | tee /etc/munin/apache-passwd && exit 254){% endif %}
+      register: password
+      failed_when: not ansible_check_mode and password.rc not in (0, 254)
+      changed_when: password.rc != 0
+    - name: Check htpasswd file
+      check_mode: no
+      command: htpasswd -vi /etc/munin/apache-htpasswd munin
+      args:
+        stdin: "{{password.stdout}}"
+      changed_when: false
+      failed_when: false
+      register: htpasswd_verify
+    - name: Generate htpasswd line
+      when: htpasswd_verify.rc != 0
+      command: htpasswd -ni munin
+      args:
+        stdin: "{{password.stdout}}"
+      register: htpasswd
+    - name: Update htpasswd file
+      when: htpasswd_verify.rc != 0
+      copy:
+        dest: /etc/munin/apache-htpasswd
+        content: "{{htpasswd.stdout}}"
+        mode: 0600
+        owner: apache
+      notify: reconfigure munin-node
+    - name: Configure apache plugins
+      copy:
+        dest: /etc/munin/plugin-conf.d/{{ item }}
+        content: |
+          [{{ item }}]
+          env.url http://munin:{{password.stdout}}@127.0.0.1:%d/server-status/?auto
+        mode: 0600
+        owner: munin
+      loop:
+        - apache_accesses
+        - apache_processes
+        - apache_volume
+      notify: reconfigure munin-node
+  - name: Configure httpd
+    copy:
+      dest: /etc/httpd/
+      src: httpd/
+      mode: preserve
+    notify: reload httpd
+  - name: Configure MITnet regex
+    template:
+      dest: /etc/httpd/conf.d/scripts-remote-mitnet.conf
+      src: scripts-remote-mitnet.conf.j2
+    notify: reload httpd
+  - name: Configure mod_vhost_ldap
+    template:
+      dest: /etc/httpd/conf.d/vhost_ldap.conf
+      src: vhost_ldap.conf.j2
+    notify: reload httpd
+  - name: Configure vhost names
+    template:
+      dest: /etc/httpd/conf.d/scripts-vhost-names.conf
+      src: scripts-vhost-names.conf.j2
+    notify: reload httpd
+  - name: Install certificates
+    copy:
+      dest: /etc/pki/tls/certs/
+      src: certs/
+      mode: preserve
+    notify: reload httpd
+  - name: Enable httpd
+    service:
+      name: httpd
+      enabled: yes
+      state: started
+    notify: reconfigure munin-node

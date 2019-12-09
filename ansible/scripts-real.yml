@@ -110,9 +110,7 @@
     - real-afs
     - real-php
     - real-cron
-    - role: real-httpd
-      when: "'httpd' in scripts_packages and 'httpdmods' in scripts_packages"
-      notify: reconfigure munin-node
+    - real-httpd
     - real-logrotate
     - real-spheroids
   tasks:
