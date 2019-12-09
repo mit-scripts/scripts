@@ -1,0 +1,13 @@
+---
+- name: Install /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    block: |
+      {% for hostname in groups['sql'] + groups['scripts-real'] %}
+      {% with info = hostvars[hostname] %}
+      {% if info['vlan486_address'] | default(False) and info['vlan461_address'] | default(False) %}
+      {{ info['vlan486_address'] }} {% for name in lookup('moira_ghal', hostname, include_short_names=True, include_cname=True) %}{{ name }} {% endfor %}
+      {{ info['vlan461_address'] }} {{ hostname }}
+      {% endif %}
+      {% endwith %}
+      {% endfor %}
