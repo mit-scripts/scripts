@@ -5,13 +5,15 @@
     block: |
       {% for hostname in groups['sql'] + groups['scripts-real'] %}
       {% with info = hostvars[hostname] %}
-      {% if info['vlan486_address'] | default(False) and info['vlan461_address'] | default(False) %}
-      {{ info['vlan486_address'] -}}
+      {% if info['ip'] | default(False) %}
+      {{ info['ip'] -}}
       {% for name in query('moira_ghal', hostname, include_short_names=True, include_cname=True) %}
        {{ name -}}
       {% endfor %}
 
+      {% if info['vlan461_address'] | default(False) %}
       {{ info['vlan461_address'] }} {{ hostname }}
+      {% endif %}
       {% endif %}
       {% endwith %}
       {% endfor %}

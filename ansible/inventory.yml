@@ -18,6 +18,8 @@ all:
     - username: quentin
     - username: vasilvv
 
+    ip: "{{ lookup('dig', inventory_hostname) }}"
+
     vips:
     - host: scripts-director.mit.edu
       ip: 18.4.86.132
@@ -91,8 +93,7 @@ all:
 
     sql:
       vars:
-        vlan486_address: "{{ lookup('dig', inventory_hostname) }}"
-        vlan461_address: "{{ vlan486_address | replace('18.4.86.', '172.21.0.') }}"
+        vlan461_address: "{{ ip | replace('18.4.86.', '172.21.0.') | replace('18.4.60.', '172.21.0.') }}"
       hosts:
         sql.mit.edu: {}
         primary-key.mit.edu: {}
@@ -103,7 +104,7 @@ all:
       children:
         scripts-real-prod:
           vars:
-            vlan486_address: "{{ lookup('dig', inventory_hostname) }}"
+            vlan486_address: "{{ ip }}"
             vlan461_address: "{{ vlan486_address | replace('18.4.86.', '172.21.0.') }}"
           hosts:
             better-mousetrap.mit.edu: {}
