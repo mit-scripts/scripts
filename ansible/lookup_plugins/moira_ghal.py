@@ -29,16 +29,15 @@ class LookupModule(LookupBase):
             display.warning("qy: %s" % stderr)
         return [s.split(',', 2)[0].lower() for s in to_text(stdout).splitlines()]
     def run(self, terms, include_short_names=False, include_cname=False, **kwargs):
-        ret = set()
-        for host in terms:
-            host = host.lower()
+        ret = []
+        for host in sorted(set(host.lower() for host in terms)):
             display.debug("Looking up aliases for: %s" % host)
-
-            ret.update(self.ghal(host))
+            aliases = self.ghal(host)
             if include_cname:
-                ret.add(host)
-        if include_short_names:
-            for h in set(ret):
-                if h.endswith(DOMAIN):
-                    ret.add(h[:-len(DOMAIN)])
-        return list(sorted(ret))
+                aliases.insert(0, host)
+            ret.extend(aliases)
+            if include_short_names:
+                for h in aliases:
+                    if h.endswith(DOMAIN):
+                        aliases.append(h[:-len(DOMAIN)])
+        return ret
