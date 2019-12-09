@@ -39,5 +39,5 @@ class LookupModule(LookupBase):
             if include_short_names:
                 for h in aliases:
                     if h.endswith(DOMAIN):
-                        aliases.append(h[:-len(DOMAIN)])
+                        ret.append(h[:-len(DOMAIN)])
         return ret
