@@ -26,8 +26,8 @@
       notify: restart systemd-networkd
 - name: vlan486
   block:
-    - copy:
-        when: vlan486_hwaddr | default(False)
+    - when: vlan486_hwaddr is defined
+      copy:
         dest: /etc/systemd/network/10-vlan486.link
         content: |
           [Match]
