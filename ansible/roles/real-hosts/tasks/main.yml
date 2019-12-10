@@ -17,3 +17,4 @@
       {% endif %}
       {% endwith %}
       {% endfor %}
+  when: use_moira

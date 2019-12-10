@@ -3,5 +3,7 @@ ServerAlias \
     {% for vip in vips | rejectattr('type', 'defined') %}
     {{ vip.host }} {{ vip.host | replace('.mit.edu', '') }} {{ vip.ip }} \
     {% endfor %}
+    {% if use_moira %}
     {{ query('moira_ghal', ansible_nodename, include_short_names=True, include_cname=True)|join(' ') }} {{ ansible_default_ipv4.address }} \
+    {% endif %}
     localhost 127.0.0.1 ::1

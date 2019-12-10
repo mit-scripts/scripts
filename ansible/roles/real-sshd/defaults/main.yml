@@ -1,2 +1,1 @@
 use_scripts_openssh: "{{ 'openssh-server' in scripts_packages }}"
-use_moira: "{{ 'moira-clients' in scripts_packages }}"

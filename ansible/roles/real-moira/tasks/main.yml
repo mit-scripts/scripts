@@ -1,0 +1,6 @@
+---
+- name: Ensure moira is installed
+  dnf:
+    name: moira-clients
+    state: present
+  when: use_moira

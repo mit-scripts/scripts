@@ -1,0 +1,1 @@
+use_moira: "{{ 'moira-clients' in scripts_packages }}"
