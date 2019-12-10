@@ -35,7 +35,7 @@
           Address={% if vlan486_address is defined %}{{ vlan486_address }}/24{% else %}DHCP{% endif %}
       notify: restart systemd-networkd
     - file:
-        path: /etc/sysconfig/network-scripts/ifcfg-eth0
+        path: /etc/sysconfig/network-scripts/ifcfg-{{ansible_default_ipv4.interface}}
         state: absent
       notify: reboot
 - name: vlan486
