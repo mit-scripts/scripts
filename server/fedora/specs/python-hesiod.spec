@@ -62,7 +62,7 @@ BuildRequires:  gcc
 %license COPYING
 %doc README
 %{python3_sitearch}/hesiod.py
-%{python3_sitearch}/_hesiod.so
+%{python3_sitearch}/_hesiod.*.so
 %{python3_sitearch}/PyHesiod-*.egg-info/
 
 
