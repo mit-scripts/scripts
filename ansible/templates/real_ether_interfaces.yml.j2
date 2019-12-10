@@ -8,9 +8,10 @@
 {% if vlan486_address | default(False) and vlan486_hwaddr | default(False) %}
 - device: vlan486
   hwaddress: "{{ vlan486_hwaddr }}"
-  cidr: "{{ vlan486_address }}/24"
+  address: "{{ vlan486_address }}"
+  netmask: 255.255.255.0
   gateway: 18.4.86.1
-  dns_nameservers: "{{ mit_dns_servers }}"
+  dns_nameservers: "{{ mit_dns_servers | list }}"
   dns_search: mit.edu
   bootproto: static
   onboot: True
@@ -18,7 +19,8 @@
 {% if vlan461_address | default(False) and vlan461_hwaddr | default(False) %}
 - device: vlan461
   hwaddress: "{{ vlan461_hwaddr }}"
-  cidr: "{{ vlan461_address }}/24"
+  address: "{{ vlan461_address }}"
+  netmask: 255.255.255.0
   bootproto: static
   onboot: True
   route:
