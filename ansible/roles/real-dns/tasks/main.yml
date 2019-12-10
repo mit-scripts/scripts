@@ -44,17 +44,18 @@
     name: named
     state: started
     enabled: yes
-- file:
-    path: /etc/systemd/network/10-vlan486.network.d/
-    state: directory
 - name: Configure DNS servers
   copy:
-    dest: /etc/systemd/network/10-vlan486.network.d/localdns.conf
+    dest: /etc/systemd/network/10-vlan486.network.d/dns.conf
     content: |
       [Network]
-      DNS=
       DNS=127.0.0.1
       Domains=mit.edu
       [DHCPv4]
       UseDNS=false
+  notify: restart systemd-networkd
+- name: Remove temporary DNS servers
+  file:
+    path: /etc/systemd/network/10-vlan486.network.d/tempdns.conf
+    state: absent
   notify: restart systemd-networkd

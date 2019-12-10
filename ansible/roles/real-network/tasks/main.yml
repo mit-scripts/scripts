@@ -44,9 +44,6 @@
           MACAddress={{vlan486_hwaddr | default(ansible_default_ipv4.macaddress)}}
 
           [Network]
-          {% for ip in mit_dns_servers %}
-          DNS={{ip}}
-          {% endfor %}
           {% if vlan486_address is defined %}
           Address={{vlan486_address}}/24
           {% else %}
@@ -55,6 +52,23 @@
 
           [Route]
           Gateway=18.4.86.1
+      notify: restart systemd-networkd
+    - file:
+        path: /etc/systemd/network/10-vlan486.network.d/
+        state: directory
+    - stat:
+        path: /etc/systemd/network/10-vlan486.network.d/dns.conf
+      register: dns_conf
+    - name: Configure temporary DNS servers
+      copy:
+        dest: /etc/systemd/network/10-vlan486.network.d/tempdns.conf
+        content: |
+          [Network]
+          {% for ip in mit_dns_servers %}
+          DNS={{ip}}
+          {% endfor %}
+          Domains=mit.edu
+      when: not dns_conf.exists
       notify: restart systemd-networkd
     - name: Remove network-scripts config file
       file:
