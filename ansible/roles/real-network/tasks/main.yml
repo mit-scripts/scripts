@@ -32,7 +32,7 @@
           MACAddress={{ansible_default_ipv4.macaddress}}
 
           [Network]
-          Address={% if vlan486_address is defined %}{{ vlan486_address }}/24{% else %}DHCP{% endif %}
+          {% if vlan486_address is defined %}Address={{ vlan486_address }}/24{% else %}DHCP=ipv4{% endif %}
       notify: restart systemd-networkd
     - file:
         path: /etc/sysconfig/network-scripts/ifcfg-{{ansible_default_ipv4.interface}}
