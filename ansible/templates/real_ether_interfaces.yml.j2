@@ -26,8 +26,8 @@
 {% with info = hostvars[hostname] %}
 {% if info['vlan486_address'] | default(False) and info['vlan461_address'] | default(False) %}
     - network: {{ info['vlan486_address'] }}
-    - netmask: "255.255.255.255"
-    - gateway: {{ info['vlan461_address'] }}
+      netmask: "255.255.255.255"
+      gateway: {{ info['vlan461_address'] }}
 {% endif %}
 {% endwith %}
 {% endfor %}
