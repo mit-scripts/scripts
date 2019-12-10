@@ -18,30 +18,16 @@
           [Address]
           Address=127.0.0.1/8
           {% for vip in vips %}
+          {% if vip.type is undefined or vip.type != 'director' %}
           [Address]
           Address={{vip.ip}}/32
+          {% endif %}
           {% endfor %}
       notify: restart systemd-networkd
-- name: Use DHCP for eth0 (dev servers)
-  when: not (vlan486_address is defined and vlan486_hwaddr is defined)
-  block:
-    - copy:
-        dest: /etc/systemd/network/10-vlan486.network
-        content: |
-          [Match]
-          MACAddress={{ansible_default_ipv4.macaddress}}
-
-          [Network]
-          {% if vlan486_address is defined %}Address={{ vlan486_address }}/24{% else %}DHCP=ipv4{% endif %}
-      notify: restart systemd-networkd
-    - file:
-        path: /etc/sysconfig/network-scripts/ifcfg-{{ansible_default_ipv4.interface}}
-        state: absent
-      notify: reboot
 - name: vlan486
-  when: vlan486_address is defined and vlan486_hwaddr is defined
   block:
     - copy:
+        when: vlan486_hwaddr is defined
         dest: /etc/systemd/network/10-vlan486.link
         content: |
           [Match]
@@ -55,15 +41,19 @@
         dest: /etc/systemd/network/10-vlan486.network
         content: |
           [Match]
-          Name=vlan486
+          MACAddress={{vlan486_hwaddr | default(ansible_default_ipv4.macaddress)}}
 
           [Network]
           {% for ip in mit_dns_servers %}
           DNS={{ip}}
           {% endfor %}
-
-          [Address]
+          {% if vlan486_address is defined %}
           Address={{vlan486_address}}/24
+          {% else %}
+          DHCP=ipv4
+          {% endif %}
+
+          [Route]
           Gateway=18.4.86.1
       notify: restart systemd-networkd
     - name: Remove network-scripts config file
@@ -71,6 +61,7 @@
         path: "{{item}}"
         state: absent
       loop:
+        - /etc/sysconfig/network-scripts/ifcfg-{{ansible_default_ipv4.interface}}
         - /etc/sysconfig/network-scripts/ifcfg-eth0
         - /etc/sysconfig/network-scripts/ifcfg-vlan486
 - name: vlan461
@@ -98,6 +89,7 @@
           {% for hostname in groups['sql'] + groups['scripts-real'] %}
           {% with info = hostvars[hostname] %}
           {% if info['vlan486_address'] | default(False) and info['vlan461_address'] | default(False) %}
+          [Route]
           Destination={{ info['vlan486_address'] }}
           Gateway={{ info['vlan461_address'] }}
           {% endif %}
