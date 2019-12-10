@@ -5,5 +5,4 @@
     state: restarted
   notify:
     - reconfigure munin-node
-    - reboot
     - setup
