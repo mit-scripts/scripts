@@ -44,15 +44,17 @@
     name: named
     state: started
     enabled: yes
+- file:
+    path: /etc/systemd/network/10-vlan486.network.d/
+    state: directory
 - name: Configure DNS servers
-  ini_file:
-    no_extra_spaces: yes
-    path: /etc/sysconfig/network-scripts/ifcfg-{{ ansible_default_ipv4.interface }}
-    section: null
-    option: "{{ item.key }}"
-    value: '"{{ item.value }}"'
-  with_dict:
-    DOMAIN: mit.edu
-    DNS1: 127.0.0.1
-    PEERDNS: "no"
-  notify: restart NetworkManager
+  copy:
+    dest: /etc/systemd/network/10-vlan486.network.d/localdns.conf
+    content: |
+      [Network]
+      DNS=
+      DNS=127.0.0.1
+      Domains=mit.edu
+      [DHCPv4]
+      UseDNS=false
+  notify: restart systemd-networkd
