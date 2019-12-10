@@ -54,16 +54,16 @@ BuildRequires:  gcc
 %files -n python2-%{srcname}
 %license COPYING
 %doc README
-%{python2_sitelib}/hesiod.py
-%{python2_sitelib}/_hesiod.so
-%{python2_sitelib}/PyHesiod-*.egg-info/
+%{python2_sitearch}/hesiod.py
+%{python2_sitearch}/_hesiod.so
+%{python2_sitearch}/PyHesiod-*.egg-info/
 
 %files -n python3-%{srcname}
 %license COPYING
 %doc README
-%{python3_sitelib}/hesiod.py
-%{python3_sitelib}/_hesiod.so
-%{python3_sitelib}/PyHesiod-*.egg-info/
+%{python3_sitearch}/hesiod.py
+%{python3_sitearch}/_hesiod.so
+%{python3_sitearch}/PyHesiod-*.egg-info/
 
 
 %changelog
