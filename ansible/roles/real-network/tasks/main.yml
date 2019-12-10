@@ -27,7 +27,7 @@
 - name: vlan486
   block:
     - copy:
-        when: vlan486_hwaddr is defined
+        when: vlan486_hwaddr | default(False)
         dest: /etc/systemd/network/10-vlan486.link
         content: |
           [Match]
@@ -68,7 +68,7 @@
           DNS={{ip}}
           {% endfor %}
           Domains=mit.edu
-      when: not dns_conf.exists
+      when: not dns_conf.stat.exists
       notify: restart systemd-networkd
     - name: Remove network-scripts config file
       file:
