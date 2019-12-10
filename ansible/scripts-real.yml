@@ -47,6 +47,10 @@
       dnf:
         name: network-scripts
         state: present
+    - name: Remove NetworkManager
+      dnf:
+        name: NetworkManager
+        state: absent
     - include_role:
         name: network_interface
       vars:
