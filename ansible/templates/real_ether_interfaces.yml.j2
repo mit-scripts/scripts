@@ -7,7 +7,7 @@
 {% endfor %}
 {% if vlan486_address | default(False) and vlan486_hwaddr | default(False) %}
 - device: vlan486
-  hwaddr: "{{ vlan486_hwaddr }}"
+  hwaddress: "{{ vlan486_hwaddr }}"
   cidr: "{{ vlan486_address }}/24"
   gateway: 18.4.86.1
   dns_nameservers: "{{ mit_dns_servers }}"
@@ -17,7 +17,7 @@
 {% endif %}
 {% if vlan461_address | default(False) and vlan461_hwaddr | default(False) %}
 - device: vlan461
-  hwaddr: "{{ vlan461_hwaddr }}"
+  hwaddress: "{{ vlan461_hwaddr }}"
   cidr: "{{ vlan461_address }}/24"
   bootproto: static
   onboot: True
