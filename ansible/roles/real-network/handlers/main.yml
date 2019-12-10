@@ -1,0 +1,9 @@
+---
+- name: restart systemd-networkd
+  service:
+    name: systemd-networkd
+    state: restarted
+  notify:
+    - reconfigure munin-node
+    - reboot
+    - setup

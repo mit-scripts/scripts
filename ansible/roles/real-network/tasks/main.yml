@@ -1,0 +1,119 @@
+---
+- name: Remove network-scripts
+  dnf:
+    name: network-scripts
+    state: absent
+- name: Remove NetworkManager
+  dnf:
+    name: NetworkManager
+    state: absent
+- name: lo
+  block:
+    - copy:
+        dest: /etc/systemd/network/10-lo.network
+        content: |
+          [Match]
+          Name=lo
+
+          [Address]
+          Address=127.0.0.1/8
+          {% for vip in vips %}
+          [Address]
+          Address={{vip.ip}}/32
+          {% endfor %}
+      notify: restart systemd-networkd
+- name: Use DHCP for eth0 (dev servers)
+  when: not (vlan486_address is defined and vlan486_hwaddr is defined)
+  block:
+    - copy:
+        dest: /etc/systemd/network/10-vlan486.network
+        content: |
+          [Match]
+          MACAddress={{ansible_default_ipv4.macaddress}}
+
+          [Network]
+          Address={% if vlan486_address is defined %}{{ vlan486_address }}/24{% else %}DHCP{% endif %}
+      notify: restart systemd-networkd
+    - file:
+        path: /etc/sysconfig/network-scripts/ifcfg-eth0
+        state: absent
+      notify: reboot
+- name: vlan486
+  when: vlan486_address is defined and vlan486_hwaddr is defined
+  block:
+    - copy:
+        dest: /etc/systemd/network/10-vlan486.link
+        content: |
+          [Match]
+          MACAddress={{vlan486_hwaddr}}
+
+          [Link]
+          Description=Public (VLAN 486)
+          Name=vlan486
+      notify: reboot
+    - copy:
+        dest: /etc/systemd/network/10-vlan486.network
+        content: |
+          [Match]
+          Name=vlan486
+
+          [Network]
+          {% for ip in mit_dns_servers %}
+          DNS={{ip}}
+          {% endfor %}
+
+          [Address]
+          Address={{vlan486_address}}/24
+          Gateway=18.4.86.1
+      notify: restart systemd-networkd
+    - name: Remove network-scripts config file
+      file:
+        path: "{{item}}"
+        state: absent
+      loop:
+        - /etc/sysconfig/network-scripts/ifcfg-eth0
+        - /etc/sysconfig/network-scripts/ifcfg-vlan486
+- name: vlan461
+  when: vlan461_address is defined and vlan461_hwaddr is defined
+  block:
+    - copy:
+        dest: /etc/systemd/network/10-vlan461.link
+        content: |
+          [Match]
+          MACAddress={{vlan461_hwaddr}}
+
+          [Link]
+          Description=Backend (VLAN 461)
+          Name=vlan461
+      notify: reboot
+    - copy:
+        dest: /etc/systemd/network/10-vlan461.network
+        content: |
+          [Match]
+          Name=vlan461
+
+          [Address]
+          Address={{vlan461_address}}/24
+
+          {% for hostname in groups['sql'] + groups['scripts-real'] %}
+          {% with info = hostvars[hostname] %}
+          {% if info['vlan486_address'] | default(False) and info['vlan461_address'] | default(False) %}
+          Destination={{ info['vlan486_address'] }}
+          Gateway={{ info['vlan461_address'] }}
+          {% endif %}
+          {% endwith %}
+          {% endfor %}
+      notify: restart systemd-networkd
+    - name: Remove network-scripts config file
+      file:
+        path: "{{item}}"
+        state: absent
+      loop:
+        - /etc/sysconfig/network-scripts/ifcfg-eth1
+        - /etc/sysconfig/network-scripts/ifcfg-vlan461
+- name: Start systemd-networkd
+  systemd:
+    name: systemd-networkd
+    state: started
+    enabled: yes
+

@@ -21,7 +21,6 @@
 - hosts: scripts-real
   serial: 1
   vars:
-    network_ether_interfaces: "{{ lookup('template', 'templates/real_ether_interfaces.yml.j2') | from_yaml }}"
     ldap_server: "{{ use_local_ldap | default(True) | ternary('ldapi://%2fvar%2frun%2fslapd-scripts.socket/', 'ldap://scripts-ldap.mit.edu/') }}"
     rpm_repos:
       - key: scripts
@@ -43,26 +42,8 @@
       dnf:
         name: fedora-obsolete-packages
         state: absent
-    - name: Install network-scripts
-      dnf:
-        name: network-scripts
-        state: present
-    - name: Remove NetworkManager
-      dnf:
-        name: NetworkManager
-        state: absent
     - include_role:
-        name: network_interface
-      vars:
-        network_check_packages: False
-    - when: ether_result.changed
-      debug:
-        msg: "Network configuration changed; rebooting"
-      changed_when: yes
-      notify:
-        - reconfigure munin-node
-        - reboot
-        - setup
+        name: real-network
     - name: Configure dnf
       block:
         - name: Configure scripts RPM repos
@@ -365,5 +346,6 @@
     command: grub2-mkconfig -o /boot/grub2/grub.cfg
   - name: reboot
     reboot:
+    notify: setup
   - name: setup
     setup:
