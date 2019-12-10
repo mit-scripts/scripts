@@ -65,6 +65,16 @@ server=YOUR-SERVER-NAME-HERE
 # For example,
     remctl xvm-remote control $server install mirror=http://mirrors.mit.edu/fedora/linux/ dist=30 arch=x86_64 ks=https://raw.githubusercontent.com/mit-scripts/scripts/ansible-realserver/server/fedora/ks/kickstart.txt
 
+# On vSphere, create a new virtual machine with 6 CPUs, 10GB RAM, two
+# disks of 100GB and 8GB each, two network cards on VLAN486 and
+# VLAN461, and a serial port.
+# Upload an install image using the Datastore tab, and attach it to
+# the VM using Edit Settings. Don't forget to check the "Connected" box.
+# To boot, use an F30 boot ISO, press tab on "Install", delete "rhgb
+# quiet" and add to the command line
+
+    inst.ks=https://raw.githubusercontent.com/mit-scripts/scripts/ansible-realserver/server/fedora/ks/prod.txt ip=18.4.86.57::18.4.86.1:255.255.255.0:better-mousetrap.mit.edu:eth0:none nameserver=18.0.72.3 biosdevname=0 net.ifnames=0
+
 # [TEST] You'll need to fix some config now.  See bottom of document.
 
 # Check the configuration progress with
@@ -161,53 +171,14 @@ python host.py push $server
 #   o /etc/sysconfig/network
 #   o your lvm thingies; probably don't need to edit
 
-# [TESTSERVER] Enable password log in
-        vim /etc/ssh/sshd_config
-        service sshd reload
-        vim /etc/pam.d/sshd
-# Replace the first auth block with:
-#           # If they're not root, but their user exists (success),
-#           auth    [success=ignore ignore=ignore default=1]        pam_succeed_if.so uid > 0
-#           # print the "You don't have tickets" error:
-#           auth    [success=die ignore=reset default=die]  pam_echo.so file=/etc/issue.net.no_tkt
-#           # If !(they are root),
-#           auth    [success=1 ignore=ignore default=ignore]        pam_succeed_if.so uid eq 0
-#           # print the "your account doesn't exist" error:
-#           auth    [success=die ignore=reset default=die]  pam_echo.so file=/etc/issue.net.no_user
-
-
-# [WIZARD/TESTSERVER] If you are setting up a non-production server,
-# there are some services that it won't provide, and you will need to
-# make it talk to a real server instead.  In particular:
-#   - We don't serve the web, so don't bind scripts.mit.edu
-#   - We don't serve LDAP, so use another server
-# XXX: Someone should write sed scripts to do this
-# This involves editing the following files:
-        svn rm /etc/sysconfig/network-scripts/ifcfg-lo:{0,1,2,3}
-        svn rm /etc/sysconfig/network-scripts/route-eth1 # [TESTSERVER] only
-#   o /etc/nslcd.conf
-#       replace: uri ldapi://%2fvar%2frun%2fdirsrv%2fslapd-scripts.socket/
-#       with: uri ldap://scripts.mit.edu/
-#           (what happened to nss-ldapd?)
-#   o /etc/openldap/ldap.conf
-#       add: URI ldap://scripts.mit.edu/
-#            BASE dc=scripts,dc=mit,dc=edu
-#   o /etc/httpd/conf.d/vhost_ldap.conf
-#       replace: VhostLDAPUrl "ldap://127.0.0.1/ou=VirtualHosts,dc=scripts,dc=mit,dc=edu"
-#       with: VhostLDAPUrl "ldap://scripts.mit.edu/ou=VirtualHosts,dc=scripts,dc=mit,dc=edu"
-#   o /etc/postfix/virtual-alias-{domains,maps}-ldap.cf
-#       replace: server_host ldapi://%2fvar%2frun%2fdirsrv%2fslapd-scripts.socket/
-#       with: server_host = ldap://scripts.mit.edu
-# to use scripts.mit.edu instead of localhost.
-
 # [WIZARD/TESTSERVER] If you are setting up a non-production server,
 # afsagent's cronjob will attempt to be renewing with the wrong
 # credentials (daemon.scripts). Change this:
     vim /home/afsagent/renew # replace all mentions of daemon.scripts.mit.edu
 
 # [TESTSERVER]
-#   - You need a self-signed SSL cert or Apache will refuse to start
-#     or do SSL.  Generate with: (XXX recommended CN?)
+#   - You might need a self-signed SSL cert depending on what you need to do.
+#     Generate with: (XXX recommended CN?)
     openssl req -new -x509 -sha256 -newkey rsa:2048 -keyout /etc/pki/tls/private/scripts.key -out /etc/pki/tls/certs/scripts-cert.pem -nodes -extensions v3_req
     ln -s /etc/pki/tls/private/scripts.key /etc/pki/tls/private/scripts-2048.key
 #     Also make the various public keys match up
