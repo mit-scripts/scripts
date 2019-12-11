@@ -5,13 +5,16 @@
   copy:
     dest: /etc/modules-load.d/iptables.conf
     content: |
+      nfnetlink
       nf_log_ipv4
+      nf_log_ipv6
       xt_LOG
       xt_owner
+      iptable_filter
+      ipt_REJECT
       ip6_tables
       ip6table_filter
       ip6t_REJECT
-      nf_log_ipv6
   notify: load modules
 - name: Immediately load new modules
   meta: flush_handlers
