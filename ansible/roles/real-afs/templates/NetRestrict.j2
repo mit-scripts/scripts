@@ -1,5 +1,3 @@
-{% for interface in network_ether_interfaces %}
-{% if interface.device.startswith("lo") %}
-{{ interface.address }}
-{% endif %}
+{% for address in ansible_lo.ipv4_secondaries %}
+{{ address.address }}
 {% endfor %}
