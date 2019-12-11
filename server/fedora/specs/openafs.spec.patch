@@ -1,7 +1,7 @@
 --- openafs.spec.orig	2015-06-25 05:18:38.000000000 -0400
 +++ openafs.spec	2015-07-13 21:41:31.196173273 -0400
 @@ -4,7 +4,7 @@
- %define pkgvers 1.8.3
+ %define pkgvers 1.8.4
  # for beta/rc releases make pkgrel 0.<tag>
  # for real releases make pkgrel 1 (or more for extra releases)
 -%define pkgrel 1
