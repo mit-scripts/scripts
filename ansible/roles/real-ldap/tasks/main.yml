@@ -154,3 +154,14 @@
           nsDS5ReplicaBindDN: "{{ groups['scripts-ldap'] | map('regex_replace', '^(.*)$', 'uid=ldap/\\1,ou=People,dc=scripts,dc=mit,dc=edu') | list }}"
           nsDS5ReplicaType: 2
           nsDS5ReplicaRoot: dc=scripts,dc=mit,dc=edu
+    - file:
+        path: /etc/systemd/system/dirsrv@scripts.service.d
+        state: directory
+    - name: Start dirsrv before dependencies
+      copy:
+        dest: /etc/systemd/system/dirsrv@scripts.service.d/10-scripts.conf
+        content: |
+          [Unit]
+          Before=httpd.service
+          Before=nslcd.service
+          Before=postfix.service
