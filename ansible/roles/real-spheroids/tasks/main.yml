@@ -66,6 +66,12 @@
       - python2-authkit
     state: present
   ignore_errors: yes
+- name: Install scripts-specific Python 3 libraries
+  dnf:
+    name:
+      - python3-hesiod
+    state: present
+  ignore_errors: yes
 # TODO: Package flipflop and/or flup6 for Python 3 as replacements for flup
 # TODO: Package mechanize, MechnicalSoup, or robobrowser for Python 3
 - name: Install Python 3 libraries
