@@ -70,6 +70,7 @@
   dnf:
     name:
       - python3-hesiod
+      - python3-moira
     state: present
   ignore_errors: yes
 # TODO: Package flipflop and/or flup6 for Python 3 as replacements for flup
