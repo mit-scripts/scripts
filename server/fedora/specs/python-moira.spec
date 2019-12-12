@@ -52,17 +52,25 @@ BuildRequires:  gcc
 %install
 %py2_install
 %py3_install
+mv $RPM_BUILD_ROOT/usr/bin/qy $RPM_BUILD_ROOT/usr/bin/qy-%{python3_version}
  
 %files -n python2-%{srcname}
 %license COPYING
 %doc README
-%{python2_sitearch}/*
+%{python2_sitearch}/PyMoira-*
+%{python2_sitearch}/moira.*
+%{python2_sitearch}/_moira.*
+%{python2_sitearch}/mrclient.*
 
 %files -n python3-%{srcname}
 %license COPYING
 %doc README
-%{python3_sitearch}/*
-/usr/bin/qy
+%{python3_sitearch}/PyMoira-*
+%{python3_sitearch}/moira.*
+%{python3_sitearch}/_moira.*
+%{python3_sitearch}/mrclient.*
+%{python3_sitearch}/__pycache__/*
+/usr/bin/qy-%{python3_version}
 
 
 %changelog
