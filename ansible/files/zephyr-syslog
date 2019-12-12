@@ -88,14 +88,14 @@ facilities = [
 ]
 
 severity_symbols = [
-    '@b(@color(magenta)☠)',
-    '@b(@color(magenta)☣)',
-    '@b(@color(magenta)☢)',
-    '@b(@color(red)⊗)',
-    '@b(@color(yellow)⚠)',
-    '@b(@color(blue)☞)',
-    '@b(@color(cyan)ⓘ)',
-    '@b(@color(green)☻)'
+    '@b(@color(magenta)EMERG)',
+    '@b(@color(magenta)ALERT)',
+    '@b(@color(magenta)CRIT)',
+    '@b(@color(red)ERR)',
+    '@b(@color(yellow)WARN)',
+    '@b(@color(blue)NOTICE)',
+    '@b(@color(cyan)INFO)',
+    '@b(@color(green)DEBUG)'
 ]
 
 syslog_re = re.compile(r'''^<(?P<pri>\d+)>(?P<version>1) (?P<timestamp>\S*) (?P<hostname>\S*) (?P<app_name>\S*) (?P<procid>\S*) (?P<msgid>\S*) (?P<sd>(?:\[[^]= "]+(?: [^]= "]+="(?:[^]"\\]|\\.)*")*\])*|-) (?P<msg>.*)$''')
