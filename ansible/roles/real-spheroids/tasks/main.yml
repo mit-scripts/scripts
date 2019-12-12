@@ -71,6 +71,7 @@
     name:
       - python3-hesiod
       - python3-moira
+      - python3-zephyr
     state: present
   ignore_errors: yes
 # TODO: Package flipflop and/or flup6 for Python 3 as replacements for flup
