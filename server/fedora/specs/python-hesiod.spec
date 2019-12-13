@@ -1,9 +1,9 @@
 %global srcname hesiod
 Name:           python-%{srcname}
 Version:        0.2.11
-%define commit 8538be82f1cd1cbec8b862ee04acc38714f571b4
+%define commit 583fc21cee08baaf5117ed8045bf18a9252eba84
 %define shortcommit %(c=%{commit}; echo ${c:0:7})
-Release:        0.%{scriptsversion}%{?dist}
+Release:        1.%{scriptsversion}%{?dist}
 Summary:        Python access to hesiod library
 
 Group:          Development/Languages
