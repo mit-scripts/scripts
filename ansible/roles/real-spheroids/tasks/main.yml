@@ -69,6 +69,7 @@
 - name: Install scripts-specific Python 3 libraries
   dnf:
     name:
+      - python3-afs
       - python3-hesiod
       - python3-moira
       - python3-zephyr
