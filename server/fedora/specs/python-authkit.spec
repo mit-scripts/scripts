@@ -1,8 +1,5 @@
-# sitelib for noarch packages, sitearch for others (remove the unneeded one)
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-
-Name:		python-authkit
+%global srcname authkit
+Name:		python-%{srcname}
 Version:	0.4.5
 Release:	2%{?dist}
 Summary:	An authentication and authorization toolkit for WSGI applications and frameworks
@@ -16,18 +13,9 @@ BuildArch:	noarch
 BuildRequires:	python-setuptools
 BuildRequires:	python2-devel
 
-Requires:	python-beaker
-Requires:	python-decorator
-Requires:	python-nose
-Requires:	python-openid
-Requires:	python-paste
-Requires:	python-paste-deploy
-Requires:	python-paste-script
-Requires:	python-webob
-
 Patch0:		python-authkit.patch
 
-%description
+%global _description %{expand:
 * Built for WSGI applications and middleware
 * Sophisticated and extensible permissions system
 * Built in support for HTTP basic, HTTP digest, form, cookie and
@@ -35,7 +23,16 @@ Patch0:		python-authkit.patch
 * Easily define users, passwords and roles
 * Designed to be totally extensible so you can use the components to
   integrate with a database, LDAP connection or your own custom system
-* Plays nicely with the Pylons web framework
+* Plays nicely with the Pylons web framework}
+
+%description %_description
+
+%package -n python2-%{srcname}
+Summary:        %{summary}
+BuildRequires:  python2-devel
+%{?python_provide:%python_provide python2-%{srcname}}
+
+%description -n python2-%{srcname} %_description
 
 
 %prep
@@ -44,16 +41,14 @@ Patch0:		python-authkit.patch
 
 
 %build
-# Remove CFLAGS=... for noarch packages (unneeded)
-CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
+%py2_build
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
-%{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+%py2_install
 
  
-%files
+%files -n python2-%{srcname}
 %doc
 # For noarch packages: sitelib
 %{python_sitelib}/*
