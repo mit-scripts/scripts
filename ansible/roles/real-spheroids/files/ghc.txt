@@ -33,9 +33,6 @@ ghc-blaze-markup
 ghc-bytestring-devel
 ghc-case-insensitive
 ghc-case-insensitive-devel
-ghc-cgi
-ghc-cgi-devel
-ghc-citeproc-hs
 ghc-conduit
 ghc-containers-devel
 ghc-data-default
@@ -44,9 +41,6 @@ ghc-deepseq-devel
 ghc-digest
 ghc-directory-devel
 ghc-dlist
-ghc-doc-index
-ghc-editline
-ghc-editline-devel
 ghc-extensible-exceptions
 ghc-extensible-exceptions-devel
 ghc-fgl
@@ -55,17 +49,9 @@ ghc-filepath-devel
 ghc-ghc-devel
 ghc-hashable
 ghc-hashable-devel
-ghc-hashed-storage
-ghc-haskell-platform-devel
 ghc-haskell-src
 ghc-haskell-src-devel
-ghc-haskell2010
-ghc-haskell2010-devel
-ghc-haskell98
-ghc-haskell98-devel
 ghc-highlighting-kate
-ghc-hoopl
-ghc-hoopl-devel
 ghc-hpc-devel
 ghc-hs-bibutils
 ghc-hslogger
@@ -123,7 +109,6 @@ ghc-time-devel
 ghc-transformers-base
 ghc-transformers-devel
 ghc-unix-devel
-ghc-unix-handle
 ghc-unordered-containers
 ghc-unordered-containers-devel
 ghc-utf8-string
