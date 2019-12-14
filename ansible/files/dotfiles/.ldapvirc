@@ -4,3 +4,8 @@ base dc=scripts,dc=mit,dc=edu
 # kinit -k -t /etc/signup.keytab daemon/scripts-signup.mit.edu
 bind sasl
 sasl-mech GSSAPI
+
+profile local
+host ldapi://%2fvar%2frun%2fslapd-scripts.socket/
+bind sasl
+sasl-mech EXTERNAL
