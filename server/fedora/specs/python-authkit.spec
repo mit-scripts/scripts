@@ -1,7 +1,7 @@
 %global srcname authkit
 Name:		python-%{srcname}
 Version:	0.4.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	An authentication and authorization toolkit for WSGI applications and frameworks
 
 License:	MIT
@@ -49,9 +49,11 @@ BuildRequires:  python2-devel
 
  
 %files -n python2-%{srcname}
-%doc
+%license LICENSE.txt
+%doc README.txt
 # For noarch packages: sitelib
-%{python_sitelib}/*
+%{python2_sitelib}/authkit/*
+%{python2_sitelib}/AuthKit-*
 
 
 %changelog
