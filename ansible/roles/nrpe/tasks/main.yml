@@ -3,7 +3,11 @@
   apt: name=nagios-nrpe-server state=present
   when: ansible_os_family == "Debian"
 - name: Install nrpe redhat
-  dnf: name=nrpe state=present
+  dnf:
+    name:
+      - nrpe
+      - nagios-plugins-all
+    state: present
   when: ansible_os_family == "RedHat"
 - name: Configure nrpe
   lineinfile:
