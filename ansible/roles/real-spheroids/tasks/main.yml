@@ -93,3 +93,7 @@
     name: "{{ lookup('file', 'ghc.txt').splitlines() | list}}"
     state: present
 # TODO: Consider forward-porting Haskell libraries like ghc-cgi, ghc-editline, ghc-unix-handle
+- name: Install NodeJS
+  dnf:
+    name: "{{ lookup('file', 'nodejs.txt').splitlines() | list}}"
+    state: present
