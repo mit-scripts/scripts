@@ -97,3 +97,8 @@
   dnf:
     name: "{{ lookup('file', 'nodejs.txt').splitlines() | list}}"
     state: present
+- name: Install Go
+  dnf:
+    name:
+      - golang
+    state: present
