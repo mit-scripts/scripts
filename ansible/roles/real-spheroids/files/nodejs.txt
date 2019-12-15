@@ -33,7 +33,6 @@ nodejs-hoek
 nodejs-http-signature
 nodejs-inherits
 nodejs-ini
-nodejs-init-package-json
 nodejs-json-stringify-safe
 nodejs-lockfile
 nodejs-lru-cache
@@ -43,10 +42,7 @@ nodejs-mkdirp
 nodejs-mute-stream
 nodejs-node-uuid
 nodejs-nopt
-nodejs-normalize-package-data
-nodejs-npm-registry-client
 nodejs-npm-user-validate
-nodejs-npmconf
 nodejs-npmlog
 nodejs-oauth-sign
 nodejs-once
@@ -56,8 +52,6 @@ nodejs-promzard
 nodejs-proto-list
 nodejs-qs
 nodejs-read
-nodejs-read-installed
-nodejs-read-package-json
 nodejs-request
 nodejs-retry
 nodejs-rimraf
