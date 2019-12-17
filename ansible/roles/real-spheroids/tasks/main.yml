@@ -102,3 +102,24 @@
     name:
       - golang
     state: present
+- name: Install Erlang
+  dnf:
+    name: "{{ lookup('file', 'erlang.txt').splitlines() | list}}"
+    state: present
+- name: Install texlive
+  dnf:
+    name:
+      - rubber
+      - texlive
+      - texlive-collection-xetex
+      - texlive-collection-luatex
+      - texlive-collection-context
+      - texlive-collection-binextra
+      - texlive-collection-pstricks
+      - texlive-collection-pictures
+      - texlive-collection-fontutils
+      - texlive-collection-fontsextra
+      - texlive-collection-mathscience
+      - texlive-collection-formatsextra
+      - texlive-collection-metapost
+    state: present

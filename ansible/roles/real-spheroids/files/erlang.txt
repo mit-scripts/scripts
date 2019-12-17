@@ -1,0 +1,13 @@
+erlang-asn1
+erlang-compiler
+erlang-crypto
+erlang-erts
+erlang-hipe
+erlang-inets
+erlang-kernel
+erlang-mnesia
+erlang-public_key
+erlang-runtime_tools
+erlang-ssl
+erlang-stdlib
+erlang-syntax_tools
