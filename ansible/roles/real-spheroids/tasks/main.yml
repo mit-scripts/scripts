@@ -122,4 +122,30 @@
       - texlive-collection-mathscience
       - texlive-collection-formatsextra
       - texlive-collection-metapost
+      - tex-preview
     state: present
+- name: Install C libraries
+  dnf:
+    name: "{{ lookup('file', 'libraries.txt').splitlines() | list}}"
+    state: present
+- name: Install Java
+  dnf:
+    name: "{{ lookup('file', 'java.txt').splitlines() | list}}"
+    state: present
+- name: Install Mono
+  dnf:
+    name: "{{ lookup('file', 'mono.txt').splitlines() | list}}"
+    state: present
+- name: Install utilities
+  dnf:
+    name: "{{ lookup('file', 'utilities.txt').splitlines() | list}}"
+    state: present
+- name: Install scripts development packages
+  dnf:
+    name:
+      - athena-aclocal
+      - openafs-authlibs-devel
+      - openafs-docs
+    state: present
+  ignore_errors: yes
+# TODO: Install all -devel packages for installed packages

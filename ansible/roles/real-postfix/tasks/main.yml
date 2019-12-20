@@ -6,6 +6,7 @@
       - postfix-ldap
       - procmail
       - spamass-milter-postfix
+      - postfix-perl-scripts
     state: present
   notify: reload postfix
 - name: Create /etc/systemd/system/postfix.service.d/

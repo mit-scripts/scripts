@@ -1,3 +1,4 @@
+elixir
 erlang-asn1
 erlang-compiler
 erlang-crypto

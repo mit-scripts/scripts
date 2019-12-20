@@ -1,3 +1,4 @@
+cabal-rpm
 haskell-platform
 ghc
 ghc-Cabal-devel

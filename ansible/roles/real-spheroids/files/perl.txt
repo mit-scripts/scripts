@@ -302,6 +302,7 @@ IPC::SharedCache
 Ima::DBI
 Image::Base
 Image::Info
+Image::Magick
 Image::Xbm
 Image::Xpm
 Import::Into
@@ -461,6 +462,8 @@ Pod::Usage
 Prima
 Probe::Perl
 RPC::XML
+RRDp
+RRDs
 Razor2::Client::Agent
 Readonly
 Readonly::XS
@@ -609,6 +612,7 @@ autodie
 boolean
 common::sense
 constant
+gv
 namespace::autoclean
 namespace::clean
 parent
