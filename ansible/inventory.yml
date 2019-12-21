@@ -1,6 +1,6 @@
 all:
   vars:
-    maintainers:
+    scripts_root:
     - username: achernya
     - username: adehnert
       root_mail: adehnert-sipb@mit.edu
@@ -17,6 +17,13 @@ all:
     - username: tboning
     - username: quentin
     - username: vasilvv
+    maintainers: "{{ scripts_root }}"
+
+    scripts_kiddies:
+    - username: jkoppel
+    - username: jnoguera
+    - username: rihn
+    - username: mrittenb
 
     ip: "{{ lookup('dig', inventory_hostname) | replace('NXDOMAIN', '') | default(omit, true) }}"
 
@@ -79,6 +86,18 @@ all:
         christopher-nolan.mit.edu:
           vlan486_address: 18.4.86.111
           vlan486_hwaddr: 00:50:56:87:d4:4e
+
+    scripts-proxy:
+      vars:
+        vlan486_address: "{{ ip }}"
+      children:
+        scripts-proxy-test:
+          vars:
+            maintainers: "{{ scripts_root + scripts_kiddies }}"
+          hosts:
+            scripts-test-proxy-1.mit.edu:
+            scripts-test-proxy-2.mit.edu:
+            scripts-test-proxy-3.mit.edu:
 
     scripts-syslogs:
       hosts:

@@ -4,8 +4,6 @@
   - k5login
   - root-aliases
   tasks:
-  - name: Configure Kerberos
-    debconf: name=krb5-config question=krb5-config/default_realm vtype=string value=ATHENA.MIT.EDU
   - name: Configure Hesiod
     debconf: name=libhesiod0 question=hesiod/rhs vtype=string value=.athena.mit.edu
   - name: Install packages

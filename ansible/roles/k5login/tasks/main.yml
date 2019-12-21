@@ -31,3 +31,6 @@
   copy:
     dest: /etc/krb5.conf
     src: krb5.conf
+- name: Configure realm in debconf
+  debconf: name=krb5-config question=krb5-config/default_realm vtype=string value=ATHENA.MIT.EDU
+  when: ansible_os_family == "Debian"
