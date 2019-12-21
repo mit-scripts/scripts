@@ -97,6 +97,12 @@ kstart
 ksysguardd
 ldns-utils
 lftp
+liberation-sans-fonts
+liberation-serif-fonts
+libnl3-cli
+libproxy-bin
+librsvg2-tools
+libpst
 lighttpd
 lklug-fonts
 lohit-assamese-fonts
