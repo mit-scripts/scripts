@@ -134,6 +134,8 @@ all:
                   vlan486_hwaddr: 00:50:56:87:16:56
                   vlan461_hwaddr: 00:50:56:87:2f:6f
                 old-faithful.mit.edu:
+                  vlan486_hwaddr: 00:50:56:87:15:39
+                  vlan461_hwaddr: 00:50:56:87:f2:50
                 whole-enchilada.mit.edu:
                 real-mccoy.mit.edu:
                 golden-egg.mit.edu:
