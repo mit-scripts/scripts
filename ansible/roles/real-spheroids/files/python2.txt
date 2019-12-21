@@ -8,7 +8,6 @@ pyliblzma
 pyorbit
 python-cephfs
 python-rbd
-python2-4suite-xml
 python2-Cython
 python2-GeoIP
 python2-GnuPGInterface
