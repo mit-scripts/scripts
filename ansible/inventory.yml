@@ -98,6 +98,13 @@ all:
             scripts-test-proxy-1.mit.edu:
             scripts-test-proxy-2.mit.edu:
             scripts-test-proxy-3.mit.edu:
+        scripts-proxy-quentin:
+          vars:
+            maintainers:
+              - username: quentin
+          children:
+            hosts:
+              scripts-test-proxy-quentin-1.mit.edu:
 
     scripts-syslogs:
       hosts:
