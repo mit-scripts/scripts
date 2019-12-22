@@ -102,9 +102,8 @@ all:
           vars:
             maintainers:
               - username: quentin
-          children:
-            hosts:
-              scripts-test-proxy-quentin-1.mit.edu:
+          hosts:
+            scripts-test-proxy-quentin-1.mit.edu:
 
     scripts-syslogs:
       hosts:
