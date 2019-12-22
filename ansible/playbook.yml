@@ -2,6 +2,8 @@
 
 - import_playbook: scripts-directors-cib.yml
 
+- import_playbook: scripts-proxy.yml
+
 - import_playbook: scripts-syslog.yml
 
 - import_playbook: scripts-real.yml
