@@ -1,3 +1,13 @@
+- hosts: all
+  serial: 1
+  tasks:
+    - name: Install playbook Python dependencies
+      package:
+        name:
+          - python3-netaddr
+          - python3-dns{{ "python" if ansible_os_family == "RedHat" else "" }}
+        state: present
+
 - import_playbook: scripts-directors.yml
 
 - import_playbook: scripts-directors-cib.yml
