@@ -14,7 +14,6 @@
     - open-vm-tools
     - open-vm-tools-dkms
     - rsyslog-relp
-    - exim4-daemon-light
     - libzephyr4-krb5
     - zephyr-clients
     - aptitude

@@ -1,3 +1,8 @@
+- name: Install MTA
+  package:
+    name:
+      - "{{ preferred_mta }}"
+    state: present
 - name: Update /etc/aliases
   lineinfile:
     path: /etc/aliases

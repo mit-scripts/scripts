@@ -19,7 +19,6 @@
     with_items:
     - open-vm-tools
     - open-vm-tools-dkms
-    - exim4-daemon-light
     - resolvconf
     - mlocate
     - lighttpd

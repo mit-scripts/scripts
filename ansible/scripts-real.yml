@@ -24,6 +24,7 @@
         name: Scripts Testing
         baseurl: https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}-testing/
         enabled: "{{ enable_testing_repo | default(False) }}"
+    preferred_mta: postfix
   pre_tasks:
     - name: Remove stale packages
       dnf:
