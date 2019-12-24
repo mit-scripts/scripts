@@ -25,7 +25,7 @@ all:
     - username: rihn
     - username: mrittenb
 
-    ip: "{{ lookup('dig', inventory_hostname) | replace('NXDOMAIN', '') | default(omit, true) }}"
+    ip: "{{ lookup('dig', inventory_hostname) | replace('NXDOMAIN', '') }}"
 
     vips:
     - host: scripts-director.mit.edu
