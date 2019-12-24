@@ -26,6 +26,10 @@
         enabled: "{{ enable_testing_repo | default(False) }}"
     preferred_mta: postfix
   pre_tasks:
+    - name: Block Ansible on legacy realservers
+      assert:
+        that:
+          - ansible_distribution == "Fedora" and ansible_distribution_major_version|int >= 29
     - name: Remove stale packages
       dnf:
         name: fedora-obsolete-packages
