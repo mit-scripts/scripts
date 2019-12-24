@@ -5,7 +5,7 @@
       package:
         name:
           - python3-netaddr
-          - python3-dns{{ "python" if ansible_os_family == "RedHat" else "" }}
+          - python3-dns{{ "python" if ansible_os_family == "Debian" else "" }}
         state: present
 
 - import_playbook: scripts-directors.yml
