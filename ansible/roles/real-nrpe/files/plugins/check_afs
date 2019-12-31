@@ -13,10 +13,10 @@ fi
 
 STATUS=$?
 
-$ECHO "$CHECKS"
+echo "$CHECKS"
 
 if [ $STATUS -gt 0 ]; then
-    if $ECHO "$CHECKS" | grep -i STYX >/dev/null; then
+    if echo "$CHECKS" | grep -i ARTEMIS >/dev/null; then
 	exit $STATE_CRITICAL;
     else
 	exit $STATE_WARNING;
