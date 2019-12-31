@@ -19,3 +19,8 @@
     src: nrpe_local.cfg.j2
     dest: /etc/nagios/nrpe_local.cfg
   notify: restart nrpe
+- name: Enable nrpe
+  service:
+    name: '{{ "nrpe" if ansible_os_family == "RedHat" else "nagios-nrpe-server" }}'
+    state: started
+    enabled: yes
