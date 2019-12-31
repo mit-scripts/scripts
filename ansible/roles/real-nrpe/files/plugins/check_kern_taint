@@ -4,7 +4,7 @@
 taintval=$(cat /proc/sys/kernel/tainted)
 
 if [ "$taintval" = 0 ]; then
-    $ECHO "Not tainted"
+    echo "Not tainted"
     exit $STATE_OK
 fi
 
@@ -38,7 +38,7 @@ for i in P F S R M B U D A W C I; do
     flag=$(($flag * 2))
 done
 
-$ECHO "Tainted: $taints"
+echo "Tainted: $taints"
 
 case "$taints" in
     *M*|*B*|*D*) exit $STATE_CRITICAL;;
