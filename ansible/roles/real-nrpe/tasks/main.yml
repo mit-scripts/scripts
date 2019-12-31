@@ -3,6 +3,7 @@
   copy: 
     src: plugins/
     dest: /etc/nagios/
+    mode: preserve
 - name: Allow NRPE to check LDAP status
   copy:
     dest: /etc/sudoers.d/scripts-nrpe
