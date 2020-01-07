@@ -55,4 +55,7 @@ chown -R scripts-build /srv/repository
 ln -s /srv/repository/server/fedora/ansible-config-me.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable ansible-config-me
+sed -e 's/^GRUB_ENABLE_BLSCFG=.*/GRUB_ENABLE_BLSCFG=false/' /etc/default/grub >/etc/default/grub.new
+mv -f /etc/default/grub.new /etc/default/grub
+grub2-mkconfig -o /boot/grub2/grub.cfg
 %end
