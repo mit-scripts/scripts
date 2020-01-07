@@ -8,15 +8,14 @@
     debconf: name=libhesiod0 question=hesiod/rhs vtype=string value=.athena.mit.edu
   - name: Install packages
     apt:
-      name: "{{ item }}"
+      name:
+        - open-vm-tools
+        - open-vm-tools-dkms
+        - rsyslog-relp
+        - libzephyr4-krb5
+        - zephyr-clients
+        - aptitude
       state: present
-    with_items:
-    - open-vm-tools
-    - open-vm-tools-dkms
-    - rsyslog-relp
-    - libzephyr4-krb5
-    - zephyr-clients
-    - aptitude
   - name: Start zhm
     service: name=zhm state=started
   - name: Install zephyr-syslog

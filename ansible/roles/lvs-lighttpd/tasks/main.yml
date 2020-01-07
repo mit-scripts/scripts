@@ -1,11 +1,10 @@
 ---
 - name: Install packages
   apt:
-    name: "{{ item }}"
+    name:
+      - lighttpd
+      - lighttpd-mod-magnet
     state: present
-  with_items:
-  - lighttpd
-  - lighttpd-mod-magnet
 - name: Install /etc/lighttpd/scripts-maint
   synchronize:
     dest: /etc/lighttpd/scripts-maint/

@@ -14,24 +14,23 @@
   pre_tasks:
   - name: Install packages
     apt:
-      name: "{{ item }}"
+      name:
+        - open-vm-tools
+        - open-vm-tools-dkms
+        - resolvconf
+        - mlocate
+        - lighttpd
+        - lighttpd-mod-magnet
+        - pacemaker
+        - pacemaker-cli-utils
+        - crmsh
+        - ldirectord
+        - aptitude
+        - tcpdump
+        - tshark
+        - strace
+        - emacs-nox
       state: present
-    with_items:
-    - open-vm-tools
-    - open-vm-tools-dkms
-    - resolvconf
-    - mlocate
-    - lighttpd
-    - lighttpd-mod-magnet
-    - pacemaker
-    - pacemaker-cli-utils
-    - crmsh
-    - ldirectord
-    - aptitude
-    - tcpdump
-    - tshark
-    - strace
-    - emacs-nox
   - systemd: name=ldirectord enabled=no
   - include_role: name=udev_rename_netiface
   - include_role: name=network_interface

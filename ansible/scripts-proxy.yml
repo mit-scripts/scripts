@@ -20,10 +20,9 @@
       - setup
   - name: Install packages
     apt:
-      name: "{{ item }}"
+      name:
+        - open-vm-tools
       state: present
-    with_items:
-      - open-vm-tools
   roles:
     - k5login
     - syslog-client
