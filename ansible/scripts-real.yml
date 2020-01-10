@@ -75,7 +75,8 @@
     - real-dns
     - real-hosts
     - real-ntp
-    - real-ldap
+    - role: real-ldap
+      tags: [ldap]
     - real-k5login
     - real-nrpe
     - real-modprobe
