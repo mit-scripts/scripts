@@ -65,9 +65,30 @@
     register: new_cib
     changed_when: False
 
-  - name: Update CIB
-    command: crm cib commit {{ shadow_name }}
+  - name: Make changes
     when: old_cib.stdout_lines != new_cib.stdout_lines
+    block:
+      - name: Diff changes
+        shell: diff -u <(crm configure show) <(crm -c {{ shadow_name }} configure show)
+        args:
+          executable: /bin/bash
+        check_mode: no
+        changed_when: diff.rc
+        failed_when: no
+        register: diff
+
+      - name: Simulate changes
+        command: crm -c {{ shadow_name }} configure simulate nograph
+        check_mode: no
+        register: simulate
+        changed_when: simulate.stdout
+
+      - name: Print changes
+        debug:
+          var: "{'diff': diff.stdout_lines, 'simulate': simulate.stdout_lines}"
+
+      - name: Update CIB
+        command: crm cib commit {{ shadow_name }}
 
   - name: Delete shadow CIB
     command: crm cib delete {{ shadow_name }}
