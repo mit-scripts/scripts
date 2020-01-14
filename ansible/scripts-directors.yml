@@ -47,6 +47,7 @@
   - ldirectord-status
   - lvs-iptables
   - lvs-lighttpd
+  - lvs-ldirectord
   - munin-node
   - nrpe
   tasks:
@@ -123,10 +124,6 @@
     vars:
       haveged_enabled: false
       pacemaker_enable_nodelist: false
-  - name: Configure ldirectord
-    copy:
-      dest: /etc/ha.d/ldirectord.cf
-      src: files/ldirectord.cf
   handlers:
   - name: load modules
     service: name=systemd-modules-load state=restarted

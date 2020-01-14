@@ -145,24 +145,29 @@ all:
             scripts-real-f30:
               vars:
                 ansible_python_interpreter: /usr/bin/python3
+                codename: Thirty
               hosts:
                 better-mousetrap.mit.edu:
                   vlan486_hwaddr: 00:50:56:87:16:56
                   vlan461_hwaddr: 00:50:56:87:2f:6f
+                  primary: True
                 old-faithful.mit.edu:
                   vlan486_hwaddr: 00:50:56:87:15:39
                   vlan461_hwaddr: 00:50:56:87:f2:50
                 whole-enchilada.mit.edu:
                   vlan486_hwaddr: 00:50:56:87:f5:00
                   vlan461_hwaddr: 00:50:56:87:48:9f
-                real-mccoy.mit.edu:
-                golden-egg.mit.edu:
+                #real-mccoy.mit.edu:
+                #golden-egg.mit.edu:
                 #miracle-cure.mit.edu:
                 #lucky-star.mit.edu:
             scripts-real-f20:
+              vars:
+                codename: Heisenbug
               hosts:
                 bees-knees.mit.edu:
                 cats-whiskers.mit.edu:
+                  primary: True
                 pancake-bunny.mit.edu:
                 busy-beaver.mit.edu:
                 shining-armor.mit.edu:

@@ -1,0 +1,6 @@
+---
+- name: Configure ldirectord
+  template:
+    dest: /etc/ha.d/ldirectord.cf
+    src: ldirectord.cf.j2
+
