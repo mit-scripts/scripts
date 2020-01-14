@@ -34,7 +34,7 @@
 -A scripts -m tcp -m multiport -p tcp --dports 80,443,444 -j MARK --set-mark 2
 # Send SMTP-bound traffic to FWM 3 (load-balanced)
 -A scripts -m tcp -p tcp --dport 25 -j MARK --set-mark 3
-# Send finger-bound traffic to FWM 255 (the LVS director itself)
+# Send finger-bound traffic to the LVS director itself
 -A scripts -m tcp -p tcp --dport 78:79 -j RETURN
 # Send everything else to FWM 1 (primary)
 -A scripts -m mark --mark 0 -j MARK --set-mark 1
