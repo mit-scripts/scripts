@@ -9,8 +9,12 @@
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [0:0]
-# Create a table for regular scripts hosts
+# Create a chain for regular scripts hosts
 :scripts - [0:0]
+:primary - [0:0]
+:sipb - [0:0]
+:f20 - [0:0]
+:f30 - [0:0]
 
 # scripts-vhosts.mit.edu
 -A PREROUTING -d 18.4.86.46 -j scripts
@@ -18,6 +22,14 @@
 -A PREROUTING -d 18.4.86.43 -j scripts
 # scripts-cert.mit.edu
 -A PREROUTING -d 18.4.86.50 -j scripts
+# scripts-primary.mit.edu
+-A PREROUTING -d 18.4.86.182 -j primary
+# sipb.mit.edu
+-A PREROUTING -d 18.4.86.29 -j sipb
+# scripts-f20.mit.edu
+-A PREROUTING -d 18.4.86.22 -j f20
+# scripts-f30.mit.edu
+-A PREROUTING -d 18.4.86.30 -j f30
 
 # Send Apache-bound traffic to FWM 2 (load-balanced)
 -A scripts -m tcp -m multiport -p tcp --dports 80,443,444 -j MARK --set-mark 2
@@ -29,13 +41,25 @@
 -A scripts -m mark --mark 0 -j MARK --set-mark 1
 
 # scripts-primary.mit.edu goes to the primary (FWM 1) on all ports
--A PREROUTING -d 18.4.86.182 -j MARK --set-mark 1
+-A primary -j MARK --set-mark 1
 
 # sipb.mit.edu acts like regular scripts for the web ports, everything else goes to i-hate-penguins.xvm.mit.edu (FWM 4)
--A PREROUTING -m tcp -m multiport -p tcp -d 18.4.86.29 --dports 80,443,444 -j MARK --set-mark 2
+-A sipb -m tcp -m multiport -p tcp --dports 80,443,444 -j MARK --set-mark 2
 # Also send port 25 there too because the IP is shared with rtfm.mit.edu (fix this after renaming the machine)
-#-A PREROUTING -m tcp -m multiport -p tcp -d 18.181.0.29 --dports 20,21,25 -j MARK --set-mark 4
+#-A sipb -m tcp -m multiport -p tcp --dports 20,21,25 -j MARK --set-mark 4
 # All else to i-hate-penguins
--A PREROUTING -m mark --mark 0 -d 18.4.86.29 -j MARK --set-mark 4
+-A sipb -m mark --mark 0 -j MARK --set-mark 4
+
+# f20 is the same as scripts but for the Fedora 20 pool
+-A f20 -m tcp -m multiport -p tcp --dports 80,443,444 -j MARK --set-mark 22
+-A f20 -m tcp -p tcp --dport 25 -j MARK --set-mark 23
+-A f20 -m tcp -p tcp --dport 78:79 -j MARK --set-mark 255
+-A f20 -m mark --mark 0 -j MARK --set-mark 21
+
+# f30 is the same as scripts but for the Fedora 30 pool
+-A f30 -m tcp -m multiport -p tcp --dports 80,443,444 -j MARK --set-mark 32
+-A f30 -m tcp -p tcp --dport 25 -j MARK --set-mark 33
+-A f30 -m tcp -p tcp --dport 78:79 -j MARK --set-mark 255
+-A f30 -m mark --mark 0 -j MARK --set-mark 31
 
 COMMIT
