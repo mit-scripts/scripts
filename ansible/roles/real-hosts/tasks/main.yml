@@ -11,6 +11,10 @@
        {{ name -}}
       {% endfor %}
 
+      {% for vip in vips %}
+      {{ vip.ip }} {{ vip.host }} {{ vip.host | replace('.mit.edu', '') }}
+      {% endfor %}
+
       {% if info['vlan461_address'] | default(False) %}
       {{ info['vlan461_address'] }} {{ hostname }}
       {% endif %}
