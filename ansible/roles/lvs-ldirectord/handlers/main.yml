@@ -1,0 +1,3 @@
+- name: reload ldirectord
+  service: name=ldirectord state=reloaded
+  failed_when: no
