@@ -19,6 +19,10 @@
   dnf:
     name: "{{ lookup('file', 'php.txt').splitlines() | list}}"
     state: present
+- name: Make sure PHP modules in php-blacklist.txt are not present
+  dnf:
+    name: "{{ lookup('file', 'php-blacklist.txt').splitlines() | list}}"
+    state: absent
 - name: Install Python 2 libraries
   dnf:
     name: "{{ lookup('file', 'python2.txt').splitlines() | list}}"

@@ -125,7 +125,6 @@ php-pecl-solr2
 php-pecl-ssdeep
 php-pecl-ssh2
 php-pecl-timecop
-php-pecl-uopz
 php-pecl-uuid
 php-pecl-xattr
 php-pecl-xdebug

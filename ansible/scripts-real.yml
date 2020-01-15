@@ -90,7 +90,8 @@
     - real-cron
     - real-httpd
     - real-logrotate
-    - real-spheroids
+    - role: real-spheroids
+      tags: [spheroids]
   tasks:
   - name: Editors
     block:
