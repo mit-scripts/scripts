@@ -17,13 +17,13 @@ all:
     - username: tboning
     - username: quentin
     - username: vasilvv
+    - username: mrittenb
     maintainers: "{{ scripts_root }}"
 
     scripts_kiddies:
     - username: jkoppel
     - username: jnoguera
     - username: rihn
-    - username: mrittenb
 
     ip: "{{ lookup('dig', inventory_hostname) | replace('NXDOMAIN', '') }}"
 
