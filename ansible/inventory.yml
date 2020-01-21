@@ -157,9 +157,15 @@ all:
                 whole-enchilada.mit.edu:
                   vlan486_hwaddr: 00:50:56:87:f5:00
                   vlan461_hwaddr: 00:50:56:87:48:9f
-                #real-mccoy.mit.edu:
-                #golden-egg.mit.edu:
-                #miracle-cure.mit.edu:
+                real-mccoy.mit.edu:
+                  vlan486_hwaddr: 00:50:56:87:34:e4
+                  vlan461_hwaddr: 00:50:56:87:b6:8b
+                golden-egg.mit.edu:
+                  vlan486_hwaddr: 00:50:56:87:69:dc
+                  vlan461_hwaddr: 00:50:56:87:ba:12
+                miracle-cure.mit.edu:
+                  vlan486_hwaddr: 00:50:56:87:72:c6
+                  vlan461_hwaddr: 00:50:56:87:77:32
                 #lucky-star.mit.edu:
             scripts-real-f20:
               vars:
