@@ -45,7 +45,7 @@ git
 %post --erroronfail --log=/root/ks-post.log
 set -e
 passwd -d root
-systemctl enable serial-getty@ttyS0.service
+#systemctl enable serial-getty@ttyS0.service
 cd /srv
 git clone -b ansible-realserver --recurse-submodules https://github.com/mit-scripts/scripts repository
 chown -R scripts-build /srv/repository
