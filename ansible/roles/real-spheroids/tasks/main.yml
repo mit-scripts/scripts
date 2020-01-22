@@ -22,6 +22,7 @@
 - name: Make sure PHP modules in php-blacklist.txt are not present
   dnf:
     name: "{{ lookup('file', 'php-blacklist.txt').splitlines() | list}}"
+    autoremove: yes
     state: absent
 - name: Install Python 2 libraries
   dnf:
