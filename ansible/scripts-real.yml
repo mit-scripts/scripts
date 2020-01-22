@@ -329,10 +329,13 @@
     dnf: name=scripts-wizard state=present
     ignore_errors: yes
   - name: Disable rpcbind
-    service:
-      name: rpcbind
+    systemd:
+      name: "{{ item }}"
       enabled: no
       state: stopped
+    loop:
+      - rpcbind.socket
+      - rpcbind.service
   handlers:
   - name: reload autofs
     service: name=autofs state=reloaded
