@@ -6,19 +6,15 @@
       {% for hostname in groups['sql'] + groups['scripts-real'] %}
       {% with info = hostvars[hostname] %}
       {% if info['ip'] | default(False) %}
-      {{ info['ip'] -}}
-      {% for name in query('moira_ghal', hostname, include_short_names=True, include_cname=True) %}
-       {{ name -}}
-      {% endfor %}
-
-      {% for vip in vips %}
-      {{ vip.ip }} {{ vip.host }} {{ vip.host | replace('.mit.edu', '') }}
-      {% endfor %}
-
+      {{ info['ip'] }} {{ query('moira_ghal', hostname, include_short_names=True, include_cname=True)|join(' ') }}
       {% if info['vlan461_address'] | default(False) %}
       {{ info['vlan461_address'] }} {{ hostname }}
       {% endif %}
       {% endif %}
       {% endwith %}
+      {% endfor %}
+
+      {% for vip in vips %}
+      {{ vip.ip }} {{ vip.host }} {{ vip.host | replace('.mit.edu', '') }}
       {% endfor %}
   when: use_moira
