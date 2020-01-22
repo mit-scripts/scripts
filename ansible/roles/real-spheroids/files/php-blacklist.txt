@@ -1,2 +1,3 @@
 php-pecl-uopz
 php-libvirt
+php-libguestfs
