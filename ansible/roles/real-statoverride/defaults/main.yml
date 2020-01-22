@@ -60,8 +60,10 @@ drop_setugid:
   - /usr/bin/uustat
   - /usr/bin/uucp
   - /usr/bin/uux
+  - /usr/sbin/uuxqt
+  - /usr/sbin/uucico
+  - /usr/bin/uuname
   - /usr/bin/cu
-  - /usr/bin/uucico
   - /usr/libexec/qemu-bridge-helper
   - /usr/sbin/grub2-set-bootflag
   - /usr/libexec/abrt-action-install-debuginfo-to-abrt-cache
