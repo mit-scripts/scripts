@@ -36,6 +36,7 @@
           - fedora-obsolete-packages
           - nfs-utils
         autoremove: yes
+        disable_excludes: main
         state: absent
     - include_role:
         name: real-network

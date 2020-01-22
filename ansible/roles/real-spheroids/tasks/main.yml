@@ -23,6 +23,7 @@
   dnf:
     name: "{{ lookup('file', 'php-blacklist.txt').splitlines() | list}}"
     autoremove: yes
+    disable_excludes: main
     state: absent
 - name: Install Python 2 libraries
   dnf:

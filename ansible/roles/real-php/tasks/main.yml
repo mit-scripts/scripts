@@ -12,6 +12,7 @@
 - name: Explicitly remove php-fpm
   dnf:
     name: php-fpm
+    disable_excludes: main
     state: absent
 - name: Install php_scripts
   dnf:
