@@ -5,7 +5,7 @@
     block: |
       {% for hostname in groups['sql'] + groups['scripts-real'] %}
       {% with info = hostvars[hostname] %}
-      {% if info['ip'] | default(False) %}
+      {% if hostname == inventory_hostname or ('ip' in info and 'vlan461_address' in info) %}
       {{ info['ip'] }} {{ query('moira_ghal', hostname, include_short_names=True, include_cname=True)|join(' ') }}
       {% if info['vlan461_address'] | default(False) %}
       {{ info['vlan461_address'] }} {{ hostname }}
