@@ -1,1 +1,2 @@
 php-pecl-uopz
+php-libvirt

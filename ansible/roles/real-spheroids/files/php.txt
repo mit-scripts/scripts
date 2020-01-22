@@ -19,7 +19,6 @@ php-intl
 php-json
 php-ldap
 php-libguestfs
-php-libvirt
 php-maxminddb
 php-mbstring
 php-ming

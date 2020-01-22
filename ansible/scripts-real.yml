@@ -311,16 +311,6 @@
     copy:
       dest: /root/
       src: files/dotfiles/
-  - name: User utilities
-    block:
-      - name: Install utilities
-        dnf:
-          name:
-            - strace
-            - ImageMagick
-            - GraphicsMagick
-            - screen
-          state: present
   - name: athrun
     dnf: name=athrun state=present
     ignore_errors: yes
