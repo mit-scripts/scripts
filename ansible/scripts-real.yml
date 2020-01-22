@@ -32,7 +32,10 @@
           - ansible_distribution == "Fedora" and ansible_distribution_major_version|int >= 29
     - name: Remove stale packages
       dnf:
-        name: fedora-obsolete-packages
+        name:
+          - fedora-obsolete-packages
+          - nfs-utils
+        autoremove: yes
         state: absent
     - include_role:
         name: real-network
@@ -61,7 +64,7 @@
             - option: installonlypkgs
               value: kernel kernel-devel kernel-modules kmod-openafs ghc-cgi ghc-cgi-devel
             - option: excludepkgs
-              value: fedora-obsolete-packages php-fpm
+              value: fedora-obsolete-packages php-fpm nfs-utils
   roles:
     - role: packages
       tags: [always]
