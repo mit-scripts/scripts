@@ -92,6 +92,11 @@
       src: certs/
       mode: preserve
     notify: reload httpd
+  - name: Export certificates
+    command: /etc/httpd/export-scripts-certs
+    args:
+      creates: /var/lib/scripts-certs/vhosts.conf
+    ignore_errors: yes
   - name: Enable httpd
     service:
       name: httpd
