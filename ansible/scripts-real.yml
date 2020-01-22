@@ -327,6 +327,11 @@
   - name: scripts-wizard
     dnf: name=scripts-wizard state=present
     ignore_errors: yes
+  - name: Disable rpcbind
+    service:
+      name: rpcbind
+      enabled: no
+      state: stopped
   handlers:
   - name: reload autofs
     service: name=autofs state=reloaded
