@@ -9,6 +9,10 @@
       - php-mysqlnd
       - php-mbstring
     state: present
+- name: Explicitly remove php-fpm
+  dnf:
+    name: php-fpm
+    state: absent
 - name: Install php_scripts
   dnf:
     name:

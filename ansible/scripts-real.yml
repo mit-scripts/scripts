@@ -61,7 +61,7 @@
             - option: installonlypkgs
               value: kernel kernel-devel kernel-modules kmod-openafs ghc-cgi ghc-cgi-devel
             - option: excludepkgs
-              value: fedora-obsolete-packages
+              value: fedora-obsolete-packages php-fpm
   roles:
     - role: packages
       tags: [always]
