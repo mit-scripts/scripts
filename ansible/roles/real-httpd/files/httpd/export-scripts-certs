@@ -103,12 +103,12 @@ def conf(vhost):
         err('Error: key {} does not match certificate for vhost {}: {}\n'.format(key_path, name, e))
         return
 
-    certs_pem = ''.join(crypto.dump_certificate(crypto.FILETYPE_PEM, cert) for cert in certs)
-    cert_filename = base64.urlsafe_b64encode(hashlib.sha256(certs_pem).digest()).strip() + '.pem'
+    certs_pem = b''.join(crypto.dump_certificate(crypto.FILETYPE_PEM, cert) for cert in certs)
+    cert_filename = base64.urlsafe_b64encode(hashlib.sha256(certs_pem).digest()).strip().decode() + '.pem'
     cert_filenames.add(cert_filename)
     cert_path = os.path.join(CERTS_DIR, cert_filename)
     if not os.path.exists(cert_path):
-        with open(cert_path + '.new', 'w') as cert_file:
+        with open(cert_path + '.new', 'wb') as cert_file:
             cert_file.write(certs_pem)
         os.rename(cert_path + '.new', cert_path)
 
@@ -116,7 +116,7 @@ def conf(vhost):
         yield '<VirtualHost {}:{}>\n'.format(ip, port)
         yield '\tServerName {}\n'.format(name)
         if aliases:
-            yield '\tServerAlias {}\n'.format(' '.join(aliases))
+            yield '\tServerAlias {}\n'.format(b' '.join(aliases).decode())
         yield '\tInclude conf.d/vhost_ldap.conf\n'
         yield '\tInclude conf.d/vhosts-common-ssl.conf\n'
         if port == 444:
