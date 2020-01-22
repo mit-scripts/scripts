@@ -1,4 +1,6 @@
 ---
+- name: Install post-transaction-actions plugin
+  dnf: name=python3-dnf-plugin-post-transaction-actions
 - name: Ensure /etc/dnf/plugins/post-transaction-actions.d exists
   file:
     path: /etc/dnf/plugins/post-transaction-actions.d/
