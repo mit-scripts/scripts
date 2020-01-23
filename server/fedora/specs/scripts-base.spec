@@ -11,7 +11,7 @@ BuildRoot: %{_tmppath}/%(%{__id_u} -n)-%{name}-%{version}-root
 %define all_archs() %1%{?_isa}, %{?__isa_name: %1(%{__isa_name}-32)}
 Requires: accountadm
 Requires: execsys
-Requires: scripts-kmod-openafs
+Requires: scripts-dkms-openafs
 Requires: %{all_archs scripts-krb5-libs}
 Requires: scripts-httpd
 Requires: scripts-mod_ssl
