@@ -63,7 +63,7 @@
             - option: installonly_limit
               value: 0
             - option: installonlypkgs
-              value: dkms-openafs kernel kernel-devel kernel-modules ghc-cgi ghc-cgi-devel
+              value: kernel kernel-devel kernel-modules kmod-openafs ghc-cgi ghc-cgi-devel
             - option: excludepkgs
               value: fedora-obsolete-packages php-fpm nfs-utils
   roles:
