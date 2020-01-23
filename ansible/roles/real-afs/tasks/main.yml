@@ -6,7 +6,7 @@
     dnf:
       name:
         - fuse-better-mousetrapfs
-        - scripts-kmod-openafs
+        - scripts-dkms-openafs
         - scripts-openafs-client
         - scripts-openafs-authlibs
         - scripts-openafs-devel
