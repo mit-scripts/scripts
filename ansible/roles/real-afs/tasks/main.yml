@@ -80,12 +80,13 @@
         [Unit]
         Description=FUSE better mousetrap filesystem
         Requires=openafs-client.service
+        Before=remote-fs.target
         After=openafs-client.service
         [Mount]
         What=/usr/sbin/better-mousetrapfs
         Where=/afs/000
         Type=fuse
-        Options=defaults,nonempty,_netdev
+        Options=defaults,nonempty,_netdev,nofail
         [Install]
         WantedBy=multi-user.target
     notify: restart better-mousetrapfs
