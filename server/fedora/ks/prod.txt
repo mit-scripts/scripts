@@ -5,6 +5,7 @@ install
 text
 
 url --url=http://mirrors.mit.edu/fedora/linux/releases/$releasever/Everything/x86_64/os
+repo --name=updates
 
 lang en_US.UTF-8
 keyboard us
