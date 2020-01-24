@@ -15,6 +15,7 @@
   serial: 1
   vars:
     ldap_server: "{{ use_local_ldap | default(True) | ternary('ldapi://%2fvar%2frun%2fslapd-scripts.socket/', 'ldap://scripts-ldap.mit.edu/') }}"
+    ldap_server_tcp: "{{ use_local_ldap | default(True) | ternary('ldap://127.0.0.1/', 'ldap://scripts-ldap.mit.edu/') }}"
     rpm_repos:
       - key: scripts
         name: Scripts
