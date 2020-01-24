@@ -58,11 +58,39 @@
     - section: Session
       option: url_rewriter.tags
       value: '"a=href,area=href,frame=src,input=src,form=fakeentry"'
+- name: Create /etc/scripts/php.d
+  file:
+    path: /etc/scripts/php.d
+    state: directory
 - name: Configure php.d/_scripts.ini
   copy:
-    dest: /etc/php.d/_scripts.ini
+    dest: /etc/scripts/php.d/_scripts.ini
     # TODO: Reconcile this with php.ini above.
     content: |
+      extension=bz2
+      extension=calendar
+      extension=ctype
+      extension=curl
+      extension=dom
+      extension=exif
+      extension=fileinfo
+      extension=ftp
+      extension=gettext
+      extension=iconv
+      extension=mysqlnd
+      extension=phar
+      extension=simplexml
+      extension=sockets
+      extension=tokenizer
+      extension=xml
+      extension=xmlwriter
+      extension=xsl
+
+      extension=mysqli
+      extension=pdo_mysql
+      extension=wddx
+      extension=xmlreader
+
       {% if use_scripts_php %}
       zend_extension = /usr/lib64/php/modules/scripts.so
       {% endif %}

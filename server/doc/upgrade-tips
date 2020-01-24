@@ -205,10 +205,6 @@ such update was in Fedora 12, when i586 became i686.  Fixing this
 usually just involves replacing i586 with i686 in the appropriate places
 (Makefile, specfiles, /etc/mock configuration).
 
-Until we decide that the performance impact is negligible, any new PHP
-extensions other than the few we’ve whitelisted should be disabled by
-emptying their .ini files in /etc/php.d.
-
 9. Sending announcements
 ------------------------
 
