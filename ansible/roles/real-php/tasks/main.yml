@@ -78,9 +78,11 @@
       extension=gettext
       extension=iconv
       extension=mysqlnd
+      extension=pdo
       extension=phar
       extension=simplexml
       extension=sockets
+      extension=sqlite3
       extension=tokenizer
       extension=xml
       extension=xmlwriter
@@ -88,6 +90,7 @@
 
       extension=mysqli
       extension=pdo_mysql
+      extension=pdo_sqlite
       extension=wddx
       extension=xmlreader
 
