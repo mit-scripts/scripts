@@ -31,6 +31,7 @@ Business::ISBN::Data
 CGI
 CGI::Compile
 CGI::Emulate::PSGI
+CGI::Fast
 CGI::FastTemplate
 CGI::FormBuilder
 CGI::Session
