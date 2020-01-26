@@ -1,4 +1,4 @@
-{% for host in groups['scripts-real'] %}
+{% for host in groups['scripts-real-prod'] %}
 {{ host }}
 {{ hostvars[host].ip | default('') }}
 {{ hostvars[host].vlan461_address | default('') }}

@@ -1,4 +1,4 @@
-{% for host in groups['scripts-real'] %}
+{% for host in groups['scripts-real-prod'] %}
 {% set ghal = lookup('moira_ghal', host, include_short_names=True, include_cname=True) %}
 {% set ips = [hostvars[host].ip, hostvars[host].vlan461_address] | select("defined") | select | join(',') %}
 {% for key in ssh_host_keys %}
