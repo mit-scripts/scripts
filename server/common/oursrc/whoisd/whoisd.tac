@@ -7,15 +7,15 @@ import posixpath
 
 class WhoisProtocol(basic.LineReceiver):
     def lineReceived(self, hostname):
-        (key, hostname) = hostname.split('=',2)
+        (key, hostname) = hostname.decode('utf8').split('=',2)
         if key != self.factory.key:
-            self.transport.write("Unauthorized to use whois"+"\r\n")
+            self.transport.write(b"Unauthorized to use whois"+b"\r\n")
             self.transport.loseConnection()
         else:
             self.factory.getWhois(hostname
             ).addErrback(lambda _: "Internal error in server"
             ).addCallback(lambda m:
-                          (self.transport.write(m+"\r\n"),
+                          (self.transport.write(m.encode('utf8')+b"\r\n"),
                            self.transport.loseConnection()))
 class WhoisFactory(protocol.ServerFactory):
     protocol = WhoisProtocol
@@ -36,7 +36,7 @@ class WhoisFactory(protocol.ServerFactory):
             result = results[0]
             attrs = result[1]
             for attr in attrlist:
-                attrs[attr] = attrs[attr].join(', ')
+                attrs[attr] = ', '.join(list(map(lambda x: x.decode('utf8'), attrs[attr])))
             return attrs
         else:
             return None
@@ -62,7 +62,7 @@ class WhoisFactory(protocol.ServerFactory):
             ret = "No such hostname"
         return defer.succeed(ret)
 
-application = service.Application('whois', uid=99, gid=99)
+application = service.Application('whois', uid=65534, gid=65534)
 factory = WhoisFactory(
     ldap.get_option(ldap.OPT_URI), "ou=VirtualHosts,"+ldap.get_option(ldap.OPT_DEFBASE), "/etc/whoisd-password")
 internet.TCPServer(43, factory).setServiceParent(
