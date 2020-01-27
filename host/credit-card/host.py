@@ -50,7 +50,6 @@ COMMON_CREDS['prod'] = [
     ('root', 0o600, 'etc/ssh/ssh_host_rsa_key'),
     ('root', 0o600, 'etc/pki/tls/private/scripts-1024.key'),
     ('root', 0o600, 'etc/pki/tls/private/scripts.key'),
-    ('root', 0o600, 'etc/whoisd-password'),
     ('afsagent', 0o600, 'etc/daemon.keytab'),
 
     ('root', 0o644, 'etc/ssh/ssh_host_dsa_key.pub'),

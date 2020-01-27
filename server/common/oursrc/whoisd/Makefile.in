@@ -1,7 +1,0 @@
-install:
-	install -Dpm 644 whoisd.tac ${DESTDIR}@libexecdir@/whoisd.tac
-	install -Dpm 644 scripts-whoisd.service ${DESTDIR}/usr/lib/systemd/system/scripts-whoisd.service
-
-clean:
-	rm -f ${DESTDIR}@libexecdir@/whoisd.tac
-	rm -f ${DESTDIR}/usr/lib/systemd/system/scripts-whoisd.service

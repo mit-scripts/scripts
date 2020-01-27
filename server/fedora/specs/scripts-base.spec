@@ -23,7 +23,6 @@ Requires: scripts-openssh-server
 Requires: scripts-static-cat
 Requires: sql-signup
 Requires: tokensys
-Requires: whoisd
 Requires: logview
 Requires: fuse-better-mousetrapfs
 Requires: %{all_archs nss-pam-ldapd}
