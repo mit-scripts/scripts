@@ -190,8 +190,6 @@ all:
             afs_cache_size: 500000
             use_local_ldap: no
           hosts:
-            quentin-scripts-f30.xvm.mit.edu:
-              syslog_client: yes
             quentin-ansible-test.xvm.mit.edu: {}
 
             scripts-f30-test.xvm.mit.edu: {}
