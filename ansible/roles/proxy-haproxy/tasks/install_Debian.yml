@@ -1,0 +1,17 @@
+- copy:
+    dest: /etc/apt/sources.list.d/backports.list
+    content: |
+      deb http://deb.debian.org/debian buster-backports main
+      deb-src http://deb.debian.org/debian buster-backports main
+- apt:
+    update_cache: yes
+- apt:
+    name:
+      - haproxy
+    default_release: buster-backports
+    state: present
+- apt:
+    name:
+      - hatop
+      - haproxyctl
+    state: present

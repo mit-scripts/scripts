@@ -1,0 +1,14 @@
+- name: "Install haproxy"
+  dnf:
+    name:
+      - haproxy
+    state: present
+- name: "Install hatop"
+  get_url:
+    url: https://raw.githubusercontent.com/feurix/hatop/64e0f26d2e392d1f2535f1b0229e45798c7514e8/bin/hatop
+    checksum: "sha256:0b2ff2a76e73530d8a8dbce965aa3c12bf958a8311170b5d7731e7aa1fb0c07f"
+    dest: /usr/local/bin/hatop
+    mode: '0755'
+- name: "Install haproxyctl"
+  pip:
+    name: git+https://github.com/neurogeek/haproxyctl.git@8a10db76fdb7d6364a3ad99150c3ed37af439e71

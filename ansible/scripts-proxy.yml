@@ -19,7 +19,7 @@
       - reconfigure munin-node
       - setup
   - name: Install packages
-    apt:
+    package:
       name:
         - open-vm-tools
       state: present
@@ -29,25 +29,9 @@
     - root-aliases
     - munin-node
     - nrpe
+    - proxy-haproxy
   tasks:
-    - copy:
-        dest: /etc/apt/sources.list.d/backports.list
-        content: |
-          deb http://deb.debian.org/debian buster-backports main
-          deb-src http://deb.debian.org/debian buster-backports main
-    - apt:
-        update_cache: yes
-    - apt:
-        name:
-          - haproxy
-        default_release: buster-backports
-        state: present
-    - apt:
-        name:
-          - hatop
-          - haproxyctl
-        state: present
-    - apt:
+    - package:
         name:
           - vim
           - emacs-nox
