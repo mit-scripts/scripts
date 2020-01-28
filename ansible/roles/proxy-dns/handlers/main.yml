@@ -1,0 +1,12 @@
+- name: restart named-scripts-proxy
+  systemd:
+    daemon_reload: yes
+    name: named-scripts-proxy.service
+    enabled: yes
+    state: restarted
+# N.B. reload has to come after restart, or we might try to reload a
+# service that doesn't exist yet.
+- name: reload named-scripts-proxy
+  service:
+    name: named-scripts-proxy
+    state: reloaded
