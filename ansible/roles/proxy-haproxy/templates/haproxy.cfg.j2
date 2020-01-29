@@ -1,0 +1,95 @@
+#---------------------------------------------------------------------
+# Example configuration for a possible web application.  See the
+# full configuration options online.
+#
+#   https://www.haproxy.org/download/1.8/doc/configuration.txt
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+    # to have these messages end up in /var/log/haproxy.log you will
+    # need to:
+    #
+    # 1) configure syslog to accept network log events.  This is done
+    #    by adding the '-r' option to the SYSLOGD_OPTIONS in
+    #    /etc/sysconfig/syslog
+    #
+    # 2) configure local2 events to go to the /var/log/haproxy.log
+    #   file. A line like the following can be added to
+    #   /etc/sysconfig/syslog
+    #
+    #    local2.*                       /var/log/haproxy.log
+    #
+    log         127.0.0.1 local2 debug
+
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats
+
+    # utilize system-wide crypto-policies
+    ssl-default-bind-ciphers PROFILE=SYSTEM
+    ssl-default-server-ciphers PROFILE=SYSTEM
+
+#---------------------------------------------------------------------
+# common defaults that all the 'listen' and 'backend' sections will
+# use if not designated in their block
+#---------------------------------------------------------------------
+defaults
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+#    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 5000
+
+frontend scripts_http_frontend 
+    bind *:80
+    option dontlog-normal
+    # the lower option is required to make it work in the http frontend 
+    http-request do-resolve(txn.ldapip,scripts_dns,ipv4) req.hdr(host),lower
+    default_backend scripts_http_backend
+
+frontend scripts_tcp_frontend
+    bind *:443-444
+    option dontlog-normal
+    mode tcp
+    option tcplog
+    tcp-request inspect-delay 5s
+    tcp-request content do-resolve(txn.ldapip,scripts_dns,ipv4) req.ssl_sni
+    tcp-request content accept if { req.ssl_hello_type 1 }
+    tcp-request content capture var(txn.ldapip) len 40
+    default_backend scripts_tcp_backend
+
+backend scripts_http_backend
+    http-request reject unless { var(txn.ldapip) -m found }
+    http-request set-dst var(txn.ldapip)
+    server       clear 0.0.0.0:0
+
+backend scripts_tcp_backend
+    mode tcp
+    tcp-request content reject unless { var(txn.ldapip) -m found }
+    tcp-request content set-dst var(txn.ldapip)
+    server      clear 0.0.0.0:0
+
+resolvers scripts_dns
+    nameserver ns2 127.0.0.1:{{ proxy_dns_port }}
+    accepted_payload_size 8192

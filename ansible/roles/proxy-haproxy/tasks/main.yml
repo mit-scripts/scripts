@@ -1,2 +1,12 @@
 ---
 - include_tasks: 'install_{{ ansible_os_family }}.yml'
+- name: Configure haproxy
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+  notify: reload haproxy
+- name: Enable haproxy
+  service:
+    name: haproxy
+    enabled: yes
+    state: started
