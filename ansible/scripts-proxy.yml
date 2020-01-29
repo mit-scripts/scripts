@@ -11,7 +11,12 @@
       dns_search: mit.edu
   pre_tasks:
   - include_role: name=udev_rename_netiface
-  - include_role: name=network_interface
+  - include_role:
+      name: network_interface
+    vars:
+      network_pkgs:
+        - bridge-utils
+        - iputils
   - when: udev_rename_netiface_config_changed.changed or ether_result.changed
     command: "true"
     notify:
