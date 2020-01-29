@@ -1,0 +1,19 @@
+---
+- name: Install named
+  dnf:
+    name:
+      - bind
+      - bind-dlz-ldap
+    state: present
+- name: Configure named
+  template:
+    dest: /etc/named.scripts-proxy.conf
+    src: named.scripts-proxy.conf.j2
+  notify: reload named-scripts-proxy
+- name: Install systemd unit
+  copy:
+    dest: /etc/systemd/system/named-scripts-proxy.service
+    src: named-scripts-proxy.service
+  notify: restart named-scripts-proxy
+- name: Start or reload bind if necessary
+  meta: flush_handlers
