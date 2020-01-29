@@ -1,0 +1,30 @@
+[Unit]
+Description=BIND serving pool information from Scripts LDAP
+Wants=nss-lookup.target
+Wants=named-setup-rndc.service
+Before=nss-lookup.target
+Before=haproxy.service
+After=named-setup-rndc.service
+After=network.target
+
+[Service]
+Type=forking
+Environment=NAMEDCONF=/etc/named.scripts-proxy.conf
+EnvironmentFile=-/etc/sysconfig/named-scripts-proxy
+PIDFile=/run/named-scripts-proxy/named-scripts-proxy.pid
+
+User=named
+Group=named
+RuntimeDirectory=named-scripts-proxy
+StateDirectory=named-scripts-proxy
+
+ExecStartPre=/bin/bash -c 'if [ ! "$DISABLE_ZONE_CHECKING" == "yes" ]; then /usr/sbin/named-checkconf -z "$NAMEDCONF"; else echo "Checking of zone files is disabled"; fi'
+ExecStart=/usr/sbin/named -c ${NAMEDCONF} $OPTIONS
+ExecReload=/bin/sh -c 'if /usr/sbin/rndc -p 5354 null > /dev/null 2>&1; then /usr/sbin/rndc -p 5354 reload; else /bin/kill -HUP $MAINPID; fi'
+
+ExecStop=/bin/sh -c '/usr/sbin/rndc -p 5354 stop > /dev/null 2>&1 || /bin/kill -TERM $MAINPID'
+
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

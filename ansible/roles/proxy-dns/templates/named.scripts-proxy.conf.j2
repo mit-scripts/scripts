@@ -1,0 +1,74 @@
+// Scripts LDAP-backed named configuration
+//
+// Note: This configuration is designed to serve addresses used internally
+// by the scripts.mit.edu webhosting service to assign individual vhosts
+// to load balancer pools.  It does *NOT* serve the same addresses these
+// vhosts have in real DNS.
+//
+// Originally by:
+//   Josh Noguera
+//   Mitch Berger
+
+controls {
+	inet 127.0.0.1 port 5354 allow { localhost; };
+	inet ::1 port 5354 allow { localhost; };
+};
+
+options {
+	listen-on port {{ proxy_dns_port }} { 127.0.0.1; };
+	listen-on-v6 port {{ proxy_dns_port }} { ::1; };
+	directory "/var/lib/named-scripts-proxy";
+	pid-file "/run/named-scripts-proxy/named-scripts-proxy.pid";
+	session-keyfile "/run/named-scripts-proxy/session.key";
+};
+
+// Basic documentation for the configuration below can be found at:
+//   http://bind-dlz.sourceforge.net/ldap_driver.html
+//
+// Following is an explanation of things not made clear by that page:
+//
+// When dlz is sent a query for a given DNS domain name, it breaks
+// that up into two pieces: a record and a zone.  Initially, the zone
+// is the entire domain name, and the record is "@".  The dlz driver
+// will run a "zone query" (explained shortly) to see if this server
+// is authoritative for that zone.  If so, it will run the "record
+// query" (also explained shortly) to get the info.  If not, the
+// first component of the zone will be moved from the zone to the
+// record (which will no longer have "@") and the zone query will
+// be tried again with the shorter zone.  Eventually, if zone queries
+// keep failing, the record will end up with the entire domain name
+// and the zone will be "."  If that fails, too, the server won't
+// return a result.
+//
+// The first LDAP URL below is the "zone query".  Since we serve
+// hostnames under scripts.mit.edu, under mit.edu, and externally
+// registered hostnames, we must pretend to be authoritative for
+// everything.  So, we just look up the ou record that Scripts keeps
+// all vhosts under.  It does not matter at all what this query returns;
+// it just has to return at least 1 result to become authoritative.
+// It doesn't have to return any attributes at all, but it can; they
+// are discarded.  The zone query is required to have the $zone$ token
+// somewhere in it; we are simply using it as a bogus attribute name
+// to satisfy that requirement.
+//
+// The second LDAP URL below is the "record query".  It has to return
+// three attributes in order for an A record: the TTL, the record type,
+// and the IP address.  Because we're authoritative for all zones, the
+// $record$ token will always be "@" in our case; as a result, we are
+// using the $zone$ token despite it being nonintuitive.  The record
+// query is required to have the $record$ token somewhere in it; we
+// are ORing it into the search though that clause will never match
+// a real vhost in LDAP to satisfy that requirement.
+//
+// The documentation says the tokens are surrounded by percent signs;
+// this changed some years ago to dollar signs.
+//
+// TODO: Check if queries are actually load-balanced among the servers.
+
+dlz "scripts-ldap" {
+	database "dlopen /usr/lib64/bind/dlz_ldap_dynamic.so {{ groups['scripts-ldap'] | length }}
+	v3 simple {} {} {{"{"}}{{ groups['scripts-ldap'] | join(' ') }}{{"}"}}
+	ldap:///ou=VirtualHosts,dc=scripts,dc=mit,dc=edu?$zone$?base
+	ldap:///ou=VirtualHosts,dc=scripts,dc=mit,dc=edu?scriptsVhostPoolTTL,scriptsVhostPoolDNSRecordType,scriptsVhostPoolIPv4?one?(|(scriptsVhostName=$zone$)(scriptsVhostAlias=$zone$)(scriptsVhostName=$record$))";
+};
+
