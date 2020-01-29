@@ -1,7 +1,14 @@
+- name: Make Rawhide available
+  dnf:
+    name:
+      - fedora-repos-rawhide
+    state: present
+    when: ansible_distribution_major_version|int <= 31
 - name: "Install haproxy"
   dnf:
     name:
       - haproxy
+    enablerepo: {{ "rawhide" if ansible_distribution_major_version|int <= 31 else "" }}
     state: present
 - name: "Install hatop"
   get_url:
