@@ -5,7 +5,10 @@
     network_ether_interfaces:
     - device: vlan486
       hwaddr: "{{ vlan486_hwaddr | default(ansible_default_ipv4.macaddress) }}"
-      cidr: "{{ vlan486_address | default(ansible_default_ipv4.address) }}/24"
+      address: "{{ vlan486_address | default(ansible_default_ipv4.address) }}"
+      netmask: 255.255.255.0
+      onboot: True
+      bootproto: static
       gateway: 18.4.86.1
       dns_nameservers: "{{ mit_dns_servers }}"
       dns_search: mit.edu
