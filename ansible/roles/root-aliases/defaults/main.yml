@@ -1,2 +1,2 @@
 ---
-preferred_mta: exim4-daemon-light
+preferred_mta: "{{'exim4-daemon-light' if ansible_os_family == 'Debian' else 'postfix'}}"
