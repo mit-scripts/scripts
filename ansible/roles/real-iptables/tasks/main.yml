@@ -36,3 +36,14 @@
   loop:
     - iptables
     - ip6tables
+# modprobe ipt_dscp
+# modprobe ipt_CONNMARK
+# iptables -A INPUT -m dscp --dscp 3 -j CONNMARK --set-xmark 3
+# For each proxy:
+#  ip rule add fwmark 3 table 3
+#  ip route add default via 18.4.86.194 table 3
+# TODO: Replace the below with the tcp_fwmark_accept sysctl?
+# modprobe ipt_connmark
+# modprobe ipt_MARK
+# modprobe iptable_mangle
+# iptables -t mangle -A OUTPUT -m connmark --mark 3 -j MARK --set-mark 3

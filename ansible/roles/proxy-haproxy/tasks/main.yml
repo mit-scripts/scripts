@@ -10,3 +10,10 @@
     name: haproxy
     enabled: yes
     state: started
+# TODO: disable "client" when destination is off-subnet
+# iptables -t mangle -A PREROUTING ! -d 18.4.86.0/24 -p tcp -m socket -j MARK --set-xmark 1
+# ip rule add fwmark 1 lookup 1
+# ip route add local 0.0.0.0/0 dev lo table 1
+# net.ipv4.conf.all.rp_filter = 0
+# net.ipv4.conf.all.accept_local = 1
+# net.ipv4.conf.all.log_martians = 1
