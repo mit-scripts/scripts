@@ -9,6 +9,8 @@
   template:
     dest: /etc/named.scripts-proxy.conf
     src: named.scripts-proxy.conf.j2
+    group: named
+    setype: named_conf_t
   notify: reload named-scripts-proxy
 - name: Install systemd unit
   copy:
