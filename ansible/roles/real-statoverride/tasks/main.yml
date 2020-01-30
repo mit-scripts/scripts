@@ -42,3 +42,8 @@
   remove_filecaps:
     path: "{{ item }}"
   loop: "{{ drop_filecaps }}"
+- name: Disable grub-boot-success
+  systemd:
+    name: grub-boot-success.timer
+    masked: yes
+    scope: global
