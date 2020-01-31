@@ -10,12 +10,21 @@
       nf_log_ipv6
       xt_LOG
       xt_owner
+      ipt_dscp
+      ipt_MARK
+      iptable_mangle
       iptable_filter
       ipt_REJECT
       ip6_tables
       ip6table_filter
       ip6t_REJECT
   notify: load modules
+- name: Set socket fwmarks from packet marks
+  copy:
+    dest: /etc/sysctl.d/99-fwmark
+    content: |
+      net.ipv4.tcp_fwmark_accept = 1
+  notify: apply sysctl
 - name: Immediately load new modules
   meta: flush_handlers
 - name: Configure iptables rules
@@ -36,14 +45,3 @@
   loop:
     - iptables
     - ip6tables
-# modprobe ipt_dscp
-# modprobe ipt_CONNMARK
-# iptables -A INPUT -m dscp --dscp 3 -j CONNMARK --set-xmark 3
-# For each proxy:
-#  ip rule add fwmark 3 table 3
-#  ip route add default via 18.4.86.194 table 3
-# TODO: Replace the below with the tcp_fwmark_accept sysctl?
-# modprobe ipt_connmark
-# modprobe ipt_MARK
-# modprobe iptable_mangle
-# iptables -t mangle -A OUTPUT -m connmark --mark 3 -j MARK --set-mark 3

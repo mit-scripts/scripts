@@ -79,6 +79,10 @@ frontend scripts_tcp_frontend
     tcp-request content capture var(txn.ldapip) len 40
     default_backend scripts_tcp_backend
 
+# TODO: Disable source when destination is off subnet.
+# TODO: Serve a sorry server when there is no backend found.
+# TODO: Serve scripts.mit.edu when there is no Host header.
+
 backend scripts_http_backend
     http-request reject unless { var(txn.ldapip) -m found }
     http-request set-dst var(txn.ldapip)

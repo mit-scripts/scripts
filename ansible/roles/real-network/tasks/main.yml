@@ -52,6 +52,19 @@
 
           [Route]
           Gateway=18.4.86.1
+
+          {% for hostname in groups['scripts-proxy'] %}
+          {% with info = hostvars[hostname] %}
+          {% if info.dscp_tag is defined %}
+          [RoutingPolicyRule]
+          FirewallMark={{ info.dscp_tag }}
+          Table={{ info.dscp_tag }}
+          [Route]
+          Gateway={{ info.vlan486_address }}
+          Table={{ info.dscp_tag }}
+          {% endif %}
+          {% endwith %}
+          {% endfor %}
       notify: restart systemd-networkd
     - file:
         path: /etc/systemd/network/10-vlan486.network.d/

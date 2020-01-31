@@ -1,3 +1,19 @@
+*mangle
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+{# TODO: What do we do if packets come in from outside with a DSCP tag? #}
+{% for hostname in groups['scripts-proxy'] %}
+{% with info = hostvars[hostname] %}
+{% if info.dscp_tag is defined %}
+{# The packet mark works in concert with net.ipv4.tcp_fwmark_accept to
+   set the fwmark on the rest of the connection. #}
+-A INPUT -m dscp --dscp {{ info.dscp_tag }} -j MARK --set-xmark {{ info.dscp_tag }}
+{% endif %}
+{% endwith %}
+{% endfor %}
 *filter
 :INPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]

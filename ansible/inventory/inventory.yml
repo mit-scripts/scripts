@@ -106,8 +106,11 @@ all:
             maintainers: "{{ scripts_root + scripts_kiddies }}"
           hosts:
             scripts-test-proxy-1.mit.edu:
+              dscp_tag: 11
             scripts-test-proxy-2.mit.edu:
+              dscp_tag: 12
             scripts-test-proxy-3.mit.edu:
+              dscp_tag: 13
         scripts-proxy-quentin:
           vars:
             maintainers:
