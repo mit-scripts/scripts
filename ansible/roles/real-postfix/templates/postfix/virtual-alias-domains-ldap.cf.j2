@@ -13,7 +13,7 @@
 
 server_host = {{ ldap_server }}
 search_base = ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
-query_filter = (&(objectClass=scriptsVhost)(|(scriptsVhostName=%s)(scriptsVhostAlias=%s))(!(scriptsVhostName=scripts.mit.edu)))
+query_filter = (&(objectClass=scriptsVhost)(|(scriptsVhostName=%s)(scriptsVhostAlias=%s))(!(scriptsVhostName=scripts.mit.edu))(|{% for ip in ansible_all_ipv4_addresses %}(scriptsVhostPoolIPv4={{ip}}){% endfor %}))
 result_attribute = scriptsVhostName
 result_format = %S
 bind = no
