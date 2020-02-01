@@ -62,11 +62,13 @@ all:
       cidr_netmask: 24
       nic: vlan486
       mail: True
+      codename: Heisenbug
     - host: scripts-f30.mit.edu
       ip: 18.4.86.30
       cidr_netmask: 24
       nic: vlan486
       mail: True
+      codename: Thirty
     
     rsyslogs:
     - 18.4.86.15  # log-flume

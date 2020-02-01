@@ -18,7 +18,7 @@
           [Address]
           Address=127.0.0.1/8
           {% for vip in vips %}
-          {% if vip.type is undefined or vip.type != 'director' %}
+          {% if vip.type|default(True) != 'director' and (vip.codename|default(ansible_lsb.codename) == ansible_lsb.codename)%}
           [Address]
           Address={{vip.ip}}/32
           {% endif %}
