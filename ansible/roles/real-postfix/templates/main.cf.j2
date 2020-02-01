@@ -18,7 +18,7 @@ mailbox_command_maps =
 mailbox_size_limit = 0
 message_size_limit = 41943040
 recipient_delimiter = +
-inet_interfaces = $myhostname{% for vip in vips %}{% if vip.mail | default(False) %}, {{ vip.host }}{% endif %}{% endfor %}
+inet_interfaces = $myhostname{% for vip in vips %}{% if vip.mail | default(False) and (vip.codename|default(ansible_lsb.codename) == ansible_lsb.codename) %}, {{ vip.host }}{% endif %}{% endfor %}
 
 readme_directory = /usr/share/doc/postfix/README_FILES
 sample_directory = /usr/share/doc/postfix/samples
@@ -32,7 +32,7 @@ newaliases_path = /usr/bin/newaliases
 mailq_path = /usr/bin/mailq
 queue_directory = /var/spool/postfix
 mail_owner = postfix
-virtual_alias_domains = {% for vip in vips | rejectattr('type', 'defined') %}!{{ vip.host }}, !{{ vip.host | replace('.mit.edu', '') }}, {% endfor %}!$myhostname, !localhost, ldap:/etc/postfix/virtual-alias-domains-ldap.cf
+virtual_alias_domains = {% for vip in vips | rejectattr('type', 'defined') %}{% if (vip.codename|default(ansible_lsb.codename) == ansible_lsb.codename) %}!{{ vip.host }}, !{{ vip.host | replace('.mit.edu', '') }}, {% endif %}{% endfor %}!$myhostname, !localhost, ldap:/etc/postfix/virtual-alias-domains-ldap.cf
 virtual_alias_maps = ldap:/etc/postfix/virtual-alias-maps-ldap-reserved.cf, ldap:/etc/postfix/virtual-alias-maps-ldap.cf
 transport_maps = ldap:/etc/postfix/transport-maps-ldap.cf
 data_directory = /var/lib/postfix
