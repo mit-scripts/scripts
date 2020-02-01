@@ -19,12 +19,6 @@
   dnf:
     name: "{{ lookup('file', 'php.txt').splitlines() | list}}"
     state: present
-- name: Make sure PHP modules in php-blacklist.txt are not present
-  dnf:
-    name: "{{ lookup('file', 'php-blacklist.txt').splitlines() | list}}"
-    autoremove: yes
-    disable_excludes: main
-    state: absent
 - name: Install Python 2 libraries
   dnf:
     name: "{{ lookup('file', 'python2.txt').splitlines() | list}}"
@@ -154,4 +148,10 @@
       - openafs-docs
     state: present
   ignore_errors: yes
+- name: Make sure packages in blacklist.txt are not present
+  dnf:
+    name: "{{ lookup('file', 'blacklist.txt').splitlines() | list}}"
+    autoremove: yes
+    disable_excludes: main
+    state: absent
 # TODO: Install all -devel packages for installed packages

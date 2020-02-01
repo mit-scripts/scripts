@@ -1,3 +1,5 @@
 php-pecl-uopz
 php-libvirt
 php-libguestfs
+python2-basemap
+python2-fedora

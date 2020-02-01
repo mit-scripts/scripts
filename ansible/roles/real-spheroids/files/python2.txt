@@ -52,7 +52,6 @@ python2-enchant
 python2-enum
 python2-exif
 python2-eyed3
-python2-fedora
 python2-feedparser
 python2-flask
 python2-flask-sqlalchemy

@@ -6,7 +6,6 @@ python2-TurboGears2
 python2-adns
 python2-amara
 python2-backlash
-python2-basemap
 python2-beaker
 python2-biopython
 python2-bson
