@@ -32,6 +32,7 @@
   loop:
     - authorized-submit-users-ldap.cf
     - mailbox-command-maps-ldap.cf
+    - transport-maps-ldap.cf
     - virtual-alias-domains-ldap.cf
     - virtual-alias-maps-ldap-reserved.cf
     - virtual-alias-maps-ldap.cf
