@@ -102,6 +102,7 @@
       content: |
         net.ipv4.ip_forward=1
         net.ipv4.vs.expire_quiescent_template = 1
+        net.ipv4.conf.all.accept_local = 1
     notify: reload sysctl
   - name: "Install workaround for https://bugs.debian.org/808950"
     copy:
