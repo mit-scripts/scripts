@@ -21,7 +21,7 @@
   notify: load modules
 - name: Set socket fwmarks from packet marks
   copy:
-    dest: /etc/sysctl.d/99-fwmark
+    dest: /etc/sysctl.d/99-fwmark.conf
     content: |
       net.ipv4.tcp_fwmark_accept = 1
   notify: apply sysctl
