@@ -34,6 +34,7 @@ queue_directory = /var/spool/postfix
 mail_owner = postfix
 virtual_alias_domains = {% for vip in vips | rejectattr('type', 'defined') %}!{{ vip.host }}, !{{ vip.host | replace('.mit.edu', '') }}, {% endfor %}!$myhostname, !localhost, ldap:/etc/postfix/virtual-alias-domains-ldap.cf
 virtual_alias_maps = ldap:/etc/postfix/virtual-alias-maps-ldap-reserved.cf, ldap:/etc/postfix/virtual-alias-maps-ldap.cf
+transport_maps = ldap:/etc/postfix/transport-maps-ldap.cf
 data_directory = /var/lib/postfix
 authorized_flush_users = fail
 authorized_mailq_users = /etc/postfix/mailq_users
