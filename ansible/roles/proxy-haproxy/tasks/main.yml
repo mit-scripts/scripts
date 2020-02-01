@@ -11,6 +11,7 @@
     enabled: yes
     state: started
 # TODO: disable "client" when destination is off-subnet
+# TODO: bind the vip addresses
 # iptables -t mangle -A PREROUTING -p tcp -m socket -j MARK --set-xmark 1
 # ip rule add fwmark 1 lookup 1
 # ip route add local 0.0.0.0/0 dev lo table 1
