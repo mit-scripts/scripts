@@ -122,3 +122,16 @@ virtual={{ offset + 1 }}
 	checktype=negotiate
 	checkport=80
 {% endfor %}
+
+virtual=92
+	real=18.4.86.194 gate 4096 # scripts-test-proxy-3
+	fallback=127.0.0.1 gate
+	service=http
+	request="heartbeat/http?codename=Heisenbug"
+	virtualhost="scripts.mit.edu"
+	receive="1"
+	checktype=negotiate
+	checkport=80
+	scheduler=wlc
+	persistent=600
+	protocol=fwm
