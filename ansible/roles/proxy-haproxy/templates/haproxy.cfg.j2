@@ -28,7 +28,7 @@ global
     chroot      /var/lib/haproxy
     pidfile     /var/run/haproxy.pid
     maxconn     4000
-    user        haproxy
+#    user        haproxy
     group       haproxy
     daemon
 
@@ -63,20 +63,22 @@ defaults
 
 frontend scripts_http_frontend 
     bind *:80
-    option dontlog-normal
     # the lower option is required to make it work in the http frontend 
     http-request do-resolve(txn.ldapip,scripts_dns,ipv4) req.hdr(host),lower
+    http-request capture var(txn.ldapip) len 40
+    # everything but '%[capture.req.hdr(0)]' is the default http log format. '%[capture.req.header(0)]' gets the first thing we captured, which in this case is txn.ldapip.
+    # log-format "%ci:%cp [%tr] %ft %b/%s %TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs %{+Q}r %[capture.req.hdr(0)]"
     default_backend scripts_http_backend
 
 frontend scripts_tcp_frontend
     bind *:443-444
-    option dontlog-normal
     mode tcp
-    option tcplog
     tcp-request inspect-delay 5s
     tcp-request content do-resolve(txn.ldapip,scripts_dns,ipv4) req.ssl_sni
-    tcp-request content accept if { req.ssl_hello_type 1 }
     tcp-request content capture var(txn.ldapip) len 40
+    # everything but '%[capture.req.hdr(0)]' is the default tcp log format.
+    # log-format "%ci:%cp [%t] %ft %b/%s %Tw/%Tc/%Tt %B %ts %ac/%fc/%bc/%sc/%rc %sq/%bq %[capture.req.hdr(0)]"
+    tcp-request content accept if { req.ssl_hello_type 1 }
     default_backend scripts_tcp_backend
 
 # TODO: Disable source when destination is off subnet.
