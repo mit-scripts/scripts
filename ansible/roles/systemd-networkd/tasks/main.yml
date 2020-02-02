@@ -31,7 +31,9 @@
           [Link]
           Description=Public (VLAN 486)
           Name=vlan486
-      notify: reboot
+      notify:
+        - reboot
+        - network changed
     - copy:
         dest: /etc/systemd/network/10-vlan486.network
         content: |
@@ -49,7 +51,9 @@
           {% endif %}
 
           {{ vlan486_extra }}
-      notify: restart systemd-networkd
+      notify:
+        - restart systemd-networkd
+        - network changed
     - file:
         path: /etc/systemd/network/10-vlan486.network.d/
         state: directory
@@ -66,7 +70,9 @@
           {% endfor %}
           Domains=mit.edu
       when: not dns_conf.stat.exists
-      notify: restart systemd-networkd
+      notify:
+        - restart systemd-networkd
+        - network changed
     - name: Remove network-scripts config file
       file:
         path: "{{item}}"
@@ -87,7 +93,9 @@
           [Link]
           Description=Backend (VLAN 461)
           Name=vlan461
-      notify: reboot
+      notify:
+        - reboot
+        - network changed
     - copy:
         dest: /etc/systemd/network/10-vlan461.network
         content: |
@@ -106,7 +114,9 @@
           {% endif %}
           {% endwith %}
           {% endfor %}
-      notify: restart systemd-networkd
+      notify:
+        - restart systemd-networkd
+        - network changed
     - name: Remove network-scripts config file
       file:
         path: "{{item}}"

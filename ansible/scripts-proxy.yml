@@ -1,32 +1,8 @@
 - hosts: scripts-proxy
   serial: 1
-  vars:
-    network_allow_service_restart: false
-    network_ether_interfaces:
-    - device: vlan486
-      hwaddr: "{{ vlan486_hwaddr | default(ansible_default_ipv4.macaddress) }}"
-      address: "{{ vlan486_address | default(ansible_default_ipv4.address) }}"
-      netmask: 255.255.255.0
-      onboot: True
-      bootproto: static
-      gateway: 18.4.86.1
-      dns_nameservers: "{{ mit_dns_servers }}"
-      dns_search: mit.edu
   pre_tasks:
-  # TODO: Switch to systemd-networkd
-  - include_role: name=udev_rename_netiface
   - include_role:
-      name: network_interface
-    vars:
-      network_pkgs:
-        - bridge-utils
-        - iputils
-  - when: udev_rename_netiface_config_changed.changed or ether_result.changed
-    command: "true"
-    notify:
-      - reboot
-      - reconfigure munin-node
-      - setup
+      name: proxy-network
   - name: Install packages
     package:
       name:
@@ -49,5 +25,7 @@
   handlers:
     - name: reboot
       include_tasks: reboot.yml
+      listen: network changed
     - name: setup
       setup:
+      listen: network changed

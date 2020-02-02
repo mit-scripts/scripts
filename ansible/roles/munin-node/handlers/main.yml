@@ -4,6 +4,7 @@
   register: munin_node_configure
   changed_when: munin_node_configure.stderr != ""
   notify: restart munin-node
+  listen: network changed
 - name: restart munin-node
   service:
     name: munin-node

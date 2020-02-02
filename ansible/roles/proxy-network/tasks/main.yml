@@ -1,0 +1,29 @@
+---
+- name: Install iptables service
+  dnf: name=iptables-services state=present
+- name: Handle inbound backend traffic with spoofed destinations
+  copy:
+    dest: /etc/sysconfig/iptables
+    content: |
+      *mangle
+      :PREROUTING ACCEPT [0:0]
+      :INPUT ACCEPT [0:0]
+      :FORWARD ACCEPT [0:0]
+      :OUTPUT ACCEPT [0:0]
+      :POSTROUTING ACCEPT [0:0]
+      -A PREROUTING -p tcp -m socket -j MARK --set-xmark 1
+      COMMIT
+  notify: reload iptables
+- name: Start iptables rules
+  service:
+    name: iptables
+    enabled: yes
+    state: started
+- name: Accept reply packets with spoofed destination addresses from backends
+  copy:
+    dest: /etc/sysctl.d/99-scripts-proxy.conf
+    content: |
+      net.ipv4.conf.all.rp_filter = 0
+      net.ipv4.conf.all.accept_local = 1
+      net.ipv4.conf.all.log_martians = 1
+  notify: apply sysctl

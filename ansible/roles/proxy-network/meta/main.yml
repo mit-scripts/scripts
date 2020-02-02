@@ -1,0 +1,17 @@
+---
+dependencies:
+- role: systemd-networkd
+  vars:
+    lo_extra: |
+      {% for vip in vips|rejectattr('codename', 'defined') if vip.type|default(True) != 'director' %}
+      [Address]
+      Address={{vip.ip}}/32
+      {% endfor %}
+      [RoutingPolicyRule]
+      FirewallMark=1
+      Table=1
+      [Route]
+      Destination=0.0.0.0/0
+      Type=local
+      Table=1
+- role: sysctl
