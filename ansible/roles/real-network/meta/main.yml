@@ -1,0 +1,24 @@
+---
+dependencies:
+- role: systemd-networkd
+  vars:
+    lo_extra: |
+      {% for vip in vips %}
+      {% if vip.type|default(True) != 'director' and (vip.codename|default(ansible_lsb.codename) == ansible_lsb.codename)%}
+      [Address]
+      Address={{vip.ip}}/32
+      {% endif %}
+      {% endfor %}
+    vlan486_extra: |
+      {% for hostname in groups['scripts-proxy'] %}
+      {% with info = hostvars[hostname] %}
+      {% if info.dscp_tag is defined %}
+      [RoutingPolicyRule]
+      FirewallMark={{ info.dscp_tag }}
+      Table={{ info.dscp_tag }}
+      [Route]
+      Gateway={{ info.vlan486_address }}
+      Table={{ info.dscp_tag }}
+      {% endif %}
+      {% endwith %}
+      {% endfor %}
