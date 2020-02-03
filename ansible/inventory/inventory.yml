@@ -14,10 +14,10 @@ all:
       root_mail: null
     - username: glasgall
     - username: mitchb
-    - username: tboning
-    - username: quentin
-    - username: vasilvv
     - username: mrittenb
+    - username: quentin
+    - username: tboning
+    - username: vasilvv
     maintainers: "{{ scripts_root }}"
 
     scripts_kiddies:
