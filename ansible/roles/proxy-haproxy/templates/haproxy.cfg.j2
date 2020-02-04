@@ -31,6 +31,9 @@ global
 #    user        haproxy
     group       haproxy
     daemon
+    # do-resolve is not threadsafe, so restrict haproxy to one thread
+    # See https://github.com/haproxy/haproxy/issues/227
+    nbthread 1
 
     # turn on stats unix socket
     stats socket /var/lib/haproxy/stats
