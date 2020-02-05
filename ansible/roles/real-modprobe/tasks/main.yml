@@ -20,6 +20,13 @@
     content: |
       rpc_pipefs
   notify: load modules
+- name: Load vmw_vsock_vmci_transport
+  copy:
+    dest: /etc/modules-load.d/vmw_vsock_vmci_transport.conf
+    content: |
+      vmw_vsock_vmci_transport
+  notify: load modules
+  when: ansible_virtualization_type == "VMware"
 - name: Activate modprobe replacement script
   copy:
     dest: /etc/sysctl.d/99-scripts-modprobe.conf
