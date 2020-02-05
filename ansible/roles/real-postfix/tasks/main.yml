@@ -4,6 +4,7 @@
     name:
       - postfix
       - postfix-ldap
+      - postfix-pcre
       - procmail
       - spamass-milter-postfix
       - postfix-perl-scripts
@@ -32,10 +33,12 @@
   loop:
     - authorized-submit-users-ldap.cf
     - mailbox-command-maps-ldap.cf
-    - transport-maps-ldap.cf
     - virtual-alias-domains-ldap.cf
     - virtual-alias-maps-ldap-reserved.cf
     - virtual-alias-maps-ldap.cf
+    - virtual-alias-maps-relay-ldap.cf
+    - virtual-alias-maps-relay-user-ldap.cf
+    - virtual-alias-maps-relay-user-suffix-ldap.cf
   notify: reload postfix
 - name: Install main.cf
   template:

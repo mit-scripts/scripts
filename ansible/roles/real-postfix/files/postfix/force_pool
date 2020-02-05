@@ -1,0 +1,6 @@
+# To force a vhost or user to one pool or the other, uncomment one of
+# the below:
+#/(.*)@vhost\.mit\.edu/ $1!vhost.mit.edu@[18.4.86.22]
+#/user(\+.*)?@scripts\.mit\.edu/ user$1!scripts.mit.edu@[18.4.86.22]
+#/(.*)@vhost\.mit\.edu/ user+$1@localhost
+#/user(\+.*)?@scripts\.mit\.edu/ user$1@localhost
