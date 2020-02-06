@@ -5,9 +5,21 @@
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
   notify: reload haproxy
+- name: Automatically restart haproxy on failure
+  block:
+    - file:
+        path: /etc/systemd/system/haproxy.service.d
+        state: directory
+    - copy:
+        dest: /etc/systemd/system/haproxy.service.d/10-scripts.conf
+        content: |
+          [Service]
+          Restart=on-failure
+      register: override
 - name: Enable haproxy
   service:
     name: haproxy
+    daemon_reload: "{{ override.changed }}"
     enabled: yes
     state: started
 # TODO: disable "client" when destination is off-subnet
