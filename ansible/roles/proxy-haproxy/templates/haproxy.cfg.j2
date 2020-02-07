@@ -68,9 +68,11 @@ frontend scripts_http_frontend
     bind *:80
     # the lower option is required to make it work in the http frontend 
     http-request do-resolve(txn.ldapip,scripts_dns,ipv4) req.hdr(host),lower
+    http-request do-resolve(txn.ldapip,scripts_dns,ipv4) str(scripts.mit.edu) if ! { var(txn.ldapip) -m found }
     http-request capture var(txn.ldapip) len 40
     # everything but '%[capture.req.hdr(0)]' is the default http log format. '%[capture.req.header(0)]' gets the first thing we captured, which in this case is txn.ldapip.
     # log-format "%ci:%cp [%tr] %ft %b/%s %TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs %{+Q}r %[capture.req.hdr(0)]"
+    use_backend scripts_http_offnet_backend if ! { var(txn.ldapip) 18.4.86.0/24 }
     default_backend scripts_http_backend
 
 frontend scripts_tcp_frontend
@@ -81,12 +83,9 @@ frontend scripts_tcp_frontend
     tcp-request content capture var(txn.ldapip) len 40
     # everything but '%[capture.req.hdr(0)]' is the default tcp log format.
     # log-format "%ci:%cp [%t] %ft %b/%s %Tw/%Tc/%Tt %B %ts %ac/%fc/%bc/%sc/%rc %sq/%bq %[capture.req.hdr(0)]"
-    tcp-request content accept if { req.ssl_hello_type 1 }
+    tcp-request content accept if { req.ssl_hello_type 1 } { var(txn.ldapip) -m found }
+    use_backend scripts_tcp_offnet_backend if ! { var(txn.ldapip) 18.4.86.0/24 }
     default_backend scripts_tcp_backend
-
-# TODO: Disable source when destination is off subnet.
-# TODO: Serve a sorry server when there is no backend found.
-# TODO: Serve scripts.mit.edu when there is no Host header.
 
 backend scripts_http_backend
     http-request reject unless { var(txn.ldapip) -m found }
@@ -101,6 +100,19 @@ backend scripts_tcp_backend
     source      0.0.0.0 usesrc client
     server      clear 0.0.0.0:0
 
+backend scripts_http_offnet_backend
+    http-request reject unless { var(txn.ldapip) -m found }
+    http-request set-dst var(txn.ldapip)
+    server       clear 0.0.0.0:0
+
+backend scripts_tcp_offnet_backend
+   mode tcp
+   tcp-request content do-resolve(txn.ldapip,scripts_dns,ipv4) str(scripts.mit.edu) unless { var(txn.ldapip) -m found }
+   tcp-request content reject unless { var(txn.ldapip) -m found }
+   tcp-request content set-dst var(txn.ldapip)
+   server      clear 0.0.0.0:0
+   
 resolvers scripts_dns
-    nameserver ns2 127.0.0.1:{{ proxy_dns_port }}
+    nameserver bind-ldap 127.0.0.1:{{ proxy_dns_port }}
+    resolve_retries 1
     accepted_payload_size 8192
