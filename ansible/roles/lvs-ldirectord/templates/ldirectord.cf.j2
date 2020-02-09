@@ -127,7 +127,7 @@ virtual={{ offset + 1 }}
 virtual=92
 {% for hostname in groups['scripts-proxy-test'] %} 
 {% with info = hostvars[hostname] %}
-	real={{ info['ip'] }} gate 4096
+	real={{ info['ip'] }} gate 4096 # {{ hostname }}
 {% endwith %}
 {% endfor %}
 	fallback=127.0.0.1 gate
