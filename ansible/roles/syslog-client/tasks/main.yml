@@ -4,6 +4,12 @@
 - name: Install rsyslog-relp redhat
   dnf: name=rsyslog-relp state=present
   when: ansible_os_family == "RedHat"
+- name: Increase max log length
+  copy:
+    dest: /etc/rsyslog.d/00-maxmessagesize.conf
+    content: |
+      $MaxMessageSize 64k
+  notify: restart rsyslog
 - name: Configure rsyslog
   copy:
     dest: /etc/rsyslog.d/scripts-syslog-client.conf
