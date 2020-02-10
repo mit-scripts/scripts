@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+
+# logwatch 7.5.3 has a built-in Pre_Ignore setting, but F30 has
+# logwatch 7.5.2 so we have to do it ourselves.
+
+my @patterns = @ARGV;
+
+while (my $line = <STDIN>) {
+  print $line unless grep { $line =~ m/$_/ } @patterns;
+}
+
+# vi: shiftwidth=3 syntax=perl tabstop=3 et
+# Local Variables:
+# mode: perl
+# perl-indent-level: 3
+# indent-tabs-mode: nil
+# End:

@@ -8,7 +8,6 @@
   # /etc/ssh/*_key{,.pub}
 # Maybe:
 # TODO: Consider installing a crontab for export-scripts-certs (currently in scripts locker's crontab)
-# TODO: Configure logwatch (try the trivial existing config and see if it works)
 
 - hosts: scripts-real
   serial: 1
@@ -94,6 +93,7 @@
     - real-cron
     - real-httpd
     - real-logrotate
+    - real-logwatch
     - role: real-spheroids
       tags: [spheroids]
   tasks:

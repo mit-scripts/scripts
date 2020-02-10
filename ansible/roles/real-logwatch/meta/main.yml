@@ -1,0 +1,4 @@
+---
+# logwatch requires rsyslogd to function.
+dependencies:
+  - syslog-client

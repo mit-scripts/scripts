@@ -1,0 +1,13 @@
+---
+- name: Install logwatch
+  dnf:
+    name:
+      - logwatch
+    state: present
+- name: Configure logwatch
+  copy:
+    dest: /etc/logwatch/
+    src: logwatch/
+    mode: preserve
+# TODO: Configure an e-mail destination for logwatch (new Moira list?)
+# TODO: Enable logwatch.timer
