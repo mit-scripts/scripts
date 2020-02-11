@@ -92,45 +92,15 @@ server=YOUR-SERVER-NAME-HERE
     cd /srv/repository/fedora/server && make all
     cp /var/lib/mock/fedora-*/result/*.rpm /home/scripts-build/mock-local/
     createrepo ~/mock-local/
-# Flip the appropriate flag(s) in inventory.yml and rerun ansible
+
+# Copy the built packages and repo metadata to /mit/scripts/yum-repos/rpm-fcNN-testing/
+# After building packages, rerun Ansible to install and configure them.
+# Note that web.mit.edu caching means you have to wait several minutes
+# after installing the packages for them to become available.
+
     rm /etc/ansible-config-done
     systemctl start ansible-config-me
 
-# Install the full list of RPMs that users expect to be on the
-# scripts.mit.edu servers.
-rpm -qa --queryformat "%{Name}.%{Arch}\n" | sort > packages.txt
-# arrange for packages.txt to be passed to the server, then run:
-    cd /tmp
-    yum install -y $(cat packages.txt)
-
-# Check which packages are installed on your new server that are not
-# in the snapshot, and remove ones that aren't needed for some reason
-# on the new machine.  Otherwise, aside from bloat, you may end up
-# with undesirable things for security, like sendmail.
-    rpm -qa --queryformat "%{Name}.%{Arch}\n" | grep -v kernel | sort > newpackages.txt
-    diff -u packages.txt newpackages.txt | grep -v kernel | less
-    # here's a cute script that removes all extra packages
-    yum erase -y $(grep -Fxvf packages.txt newpackages.txt)
-
-# ----------------------------->8--------------------------------------
-#                       INFINITE CONFIGURATION
-
-# [PROD] Create fedora-ds user (needed for credit-card)
-# [TEST] too if you want to run a local dirsrv instance
-useradd -r -d /var/lib/dirsrv fedora-ds
-
-# Run credit-card to clone in credentials and make things runabble
-# NOTE: You may be tempted to run credit-card earlier in the install
-# process in order, for example, to be able to SSH in to the servers
-# with Kerberos.  However, it is better to install the credentials
-# *after* we have run a boatload untrusted code as part of the
-# spheroids objects process.  So don't move this step earlier!
-python host.py push $server
-
-# This is superseded by credit-card, which works for [PRODUCTION] and
-# [WIZARD].  We don't have an easy way of running credit-card for XVM...
-#b
-#
 #   # All types of servers will have an /etc/daemon.keytab file, however,
 #   # different types of server will have different credentials in this
 #   # keytab.
