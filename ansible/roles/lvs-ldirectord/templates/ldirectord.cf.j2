@@ -125,14 +125,14 @@ virtual={{ offset + 1 }}
 
 # The proxy servers get only web traffic
 virtual=92
-{% for hostname in groups['scripts-proxy-test'] %} 
+{% for hostname in groups['scripts-proxy-test'] %}
 {% with info = hostvars[hostname] %}
 	real={{ info['ip'] }} gate 4096 # {{ hostname }}
 {% endwith %}
 {% endfor %}
 	fallback=127.0.0.1 gate
 	service=http
-	request="heartbeat/http?codename=Heisenbug"
+	request="heartbeat/http?codename=ANY"
 	virtualhost="scripts.mit.edu"
 	receive="1"
 	checktype=negotiate
