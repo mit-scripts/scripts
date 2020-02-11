@@ -16,6 +16,7 @@
     - nrpe
     - proxy-dns
     - proxy-haproxy
+    # TODO: Configure logrotate
   tasks:
     - package:
         name:
