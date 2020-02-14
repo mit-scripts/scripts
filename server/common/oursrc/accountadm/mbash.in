@@ -1,3 +1,21 @@
-#!/bin/sh
+#!/usr/bin/python3
 
-exec @bash_path@ --rcfile /usr/local/etc/mbashrc "$@"
+import os
+import sys
+
+def getVhostPool():
+  return "scripts-f30.mit.edu"
+
+def ipConfigured(ip):
+  return False
+
+# SSH forwarding
+vhostPoolIp = getVhostPool()
+
+if ipConfigured(vhostPoolIp):
+   args = sys.argv[1:]
+   bash = '@bash_path@'
+   os.execv(bash, [bash, '--rcfile', '/usr/local/etc/mbashrc'] + args)
+else:
+   ssh = '/usr/bin/ssh'
+   os.execv(ssh, [ssh, str(vhostPoolIp)])
