@@ -12,13 +12,14 @@ No change for storage
 Next
 No changes for compatibility
 Next
-Select "Linux" -> "Debian GNU/Linux 8 (64-bit)"
+Select "Linux" -> "Red Hat Fedora (64-bit)"
 Next
 CPU -> 2
 Memory -> 8 GB
-New Hard disk -> 50 GB
+New Hard disk -> 16 GB
+Click Add New Device -> Hard disk. This should be 2 GB.
 New Network -> dvSIPB-486
-New CD/DVD Drive -> Datastore ISO file -> OC11-4-IST-UNITY-1-ALU013 -> install images -> debian-buster-20191112-mini.iso
+New CD/DVD Drive -> Datastore ISO file -> OC11-4-IST-UNITY-1-ALU013 -> install images -> Fedora-Everything-netinst-x86_64-31-1.9.iso
 New CD/DVD Drive -> check "Connect"
 Next
 Finish
@@ -26,67 +27,12 @@ Finish
 Select the new VM in the list if not already selected
 Click the green play button in the toolbar
 Summary -> Launch Web Console
+To boot, use an F31 boot ISO, press tab on "Install", delete "quiet" and add to the command line
 
-From here, it's a normal Debian install, here's what I chose
-
-Advanced options -> Expert install
-
-"Enter" repeatedly until "Auto configure networking?"
-"Auto configure networking? -> No" (if you choose yes, you will get IPv6-only)
-IP -> 18.4.86.75
-Netmask -> Enter
-Gateway -> Enter
-Nameserver addresses -> "18.0.70.160 18.0.71.151 18.0.72.3" -> Enter
-Confirmation -> Enter
-Link timeout -> Enter
-Hostname -> "scripts-test-proxy-quentin-1.mit.edu" -> Enter
-
-Choose a mirror -> Enter
-Mirror protocol -> Enter ("http" default)
-Debian archive mirror country -> page up until top of list ("enter information manually") -> Enter
-Debian archive mirror hostname -> "mirrors.mit.edu" -> Enter
-Debian archive mirror directory -> Enter
-Enter through remaining mirror questions
-
-Download installer components -> Enter
-
-Enter through passwords until
-Set root password -> scripts-dev root password -> Enter -> confirm -> Enter
-Create a normal user account now? -> No -> Enter
-
-Configure the clock - NTP server to use -> time.mit.edu -> Enter
-
-# XXX: Not sure what the best partitioning scheme is
-Partition the disks -> Guided - use entire disk and set up LVM
-Select the disk -> Enter
-All files in one partition -> Enter
-Write the changes to disk -> Yes -> Enter
-Enter through partitioning
-Write the changes to disk -> Yes -> Enter
-
-Enter through installing the base system
-Use non-free software? -> Yes -> Enter
-Enable source repos? -> Enter
-Services to use -> Enter
-No automatic updates -> Enter
-Participate in the package usage survey -> Enter
-Software selection -> UNselect "Debian desktop environment", UNselect "print server", select "SSH server" and "standard system utilities" -> Enter
-
-Install the GRUB bootloader -> Enter -> /dev/sda -> Enter
-EFI removable media path? No -> Enter
-Finish the installation -> Enter
-
-Installation complete -> Enter
+inst.ks=https://raw.githubusercontent.com/mit-scripts/scripts/ansible-realserver/server/fedora/ks/prod.txt ip=18.4.86.57::18.4.86.1:255.255.255.0:better-mousetrap.mit.edu:eth0:none nameserver=18.0.72.3 biosdevname=0 net.ifnames=0
 
 back to vSphere UI -> edit settings (tiny icon to the right of power button) -> uncheck "Connected" on CD/DVD drive 1
+Power it back on
 
 Back to console, log in as root
-
-apt install ansible git
-# same as kickstart.txt
-cd /srv
-git clone -b ansible-realserver --recurse-submodules https://github.com/mit-scripts/scripts repository
-ln -s /srv/repository/server/fedora/ansible-config-me.service /etc/systemd/system/
-systemctl daemon-reload
-systemctl enable ansible-config-me
-systemctl start ansible-config-me
+Ansible should be running in the background - it will reboot at least once before it is complete.
