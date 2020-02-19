@@ -103,6 +103,14 @@ all:
       vars:
         vlan486_address: "{{ ip }}"
       children:
+        scripts-proxy-prod:
+          hosts:
+            oaken-bucket.mit.edu:
+              dscp_tag: 1
+            instrumental-variable.mit.edu:
+              dscp_tag: 2
+            epoxy-resin.mit.edu:
+              dscp_tag: 3
         scripts-proxy-test:
           vars:
             maintainers: "{{ scripts_root + scripts_kiddies }}"
