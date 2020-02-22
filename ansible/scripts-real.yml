@@ -70,6 +70,7 @@
       tags: [always]
     - role: syslog-client
       when: syslog_client | default(True)
+    - ansible-config-me
     - mock
     - sysctl
     - tmpfiles

@@ -1,0 +1,16 @@
+---
+- name: Install binary
+  copy:
+    src: ansible-config-me
+    dest: /usr/local/sbin/ansible-config-me
+    mode: preserve
+- name: Install systemd unit
+  copy:
+    src: ansible-config-me.service
+    dest: /etc/systemd/system/ansible-config-me.service
+  register: unit
+- name: Enable unit
+  service:
+    name: ansible-config-me
+    daemon_reload: "{{ unit.changed }}"
+    enabled: yes

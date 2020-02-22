@@ -1,0 +1,11 @@
+[Unit]
+Description=Run ansible-pull at first boot to apply environment configuration
+After=network-online.target
+ConditionPathExists=!/etc/ansible-config-done
+
+[Service]
+ExecStart=/usr/local/sbin/ansible-config-me --direct
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target

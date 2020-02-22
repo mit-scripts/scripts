@@ -9,6 +9,7 @@
         - open-vm-tools
       state: present
   roles:
+    - ansible-config-me
     - k5login
     - syslog-client
     - root-aliases

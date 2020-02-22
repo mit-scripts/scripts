@@ -1,0 +1,54 @@
+#!/bin/bash
+
+options=$(getopt -o u --long update --long direct -- "$@")
+[ $? -eq 0 ] || {
+    echo "Incorrect option provided"
+    exit 1
+}
+eval set -- "$options"
+while true; do
+    case "$1" in
+	-u|--update)
+	    UPDATE=1
+	    ;;
+	--direct)
+	    DIRECT=1
+	    ;;
+	--)
+	    shift
+	    break
+	    ;;
+	*)
+	    break
+	    ;;
+    esac
+    shift
+done
+
+set -e
+set -x
+
+if [ "$UPDATE" ]; then
+    sudo -u scripts-build sh -c 'cd /srv/repository && git pull --ff-only'
+fi
+
+# Remove done flag so we continue configuring after an
+# Ansible-triggered reboot.
+rm -f /etc/ansible-config-done
+
+if [ -z "$DIRECT" ]; then
+    systemctl start --no-block ansible-config-me
+    journalctl -f -u ansible-config-me
+    exit 0
+fi
+
+# Remove this host from LVS
+touch /etc/nolvs /etc/nologin
+
+# Run ansible
+cd /srv/repository/ansible
+ansible-playbook playbook.yml -c local -l "localhost,$(hostname -f | tr '[:upper:]' '[:lower:]'),$(hostname -s | tr '[:upper:]' '[:lower:]'),127.0.0.1" --diff -v "$@"
+
+# Clean up
+touch /etc/ansible-config-done
+rm -f /etc/nolvs /etc/nologin
