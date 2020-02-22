@@ -157,7 +157,6 @@ all:
           children:
             scripts-real-f30:
               vars:
-                ansible_python_interpreter: /usr/bin/python3
                 codename: Thirty
               hosts:
                 better-mousetrap.mit.edu:
@@ -192,7 +191,6 @@ all:
                 shining-armor.mit.edu:
         scripts-real-test:
           vars:
-            ansible_python_interpreter: /usr/bin/python3
             vips:
               - host: scripts-test.mit.edu
                 ip: 18.4.86.229
