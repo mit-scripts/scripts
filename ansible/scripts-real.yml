@@ -301,7 +301,21 @@
           name:
             - clamav
             - clamav-update
-          state: present
+          state: latest
+      - name: Ensure freshclam log is present
+        file:
+          path: /var/log/freshclam.log
+          state: touch
+          modification_time: preserve
+          access_time: preserve
+          mode: 0664
+          owner: root
+          group: clamupdate
+      - name: Enable freshclam
+        service:
+          name: clamav-freshclam
+          state: started
+          enabled: yes
   - name: sysstat
     block:
       - dnf: name=sysstat state=present
