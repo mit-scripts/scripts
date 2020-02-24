@@ -50,7 +50,8 @@ passwd -d root
 cd /srv
 git clone -b ansible-realserver --recurse-submodules https://github.com/mit-scripts/scripts repository
 chown -R scripts-build /srv/repository
-ln -s /srv/repository/server/fedora/ansible-config-me.service /etc/systemd/system/
+cp /srv/repository/ansible/roles/ansible-config-me/files/ansible-config-me.service /etc/systemd/system/
+cp /srv/repository/ansible/roles/ansible-config-me/files/ansible-config-me /usr/local/sbin/
 systemctl daemon-reload
 systemctl enable ansible-config-me
 %end

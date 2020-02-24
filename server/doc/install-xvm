@@ -33,7 +33,7 @@ the server.  Disk space on order of 40G is probably good enough.
 Create a VM using the web interface but do not boot it. From the
 command line with suitable tickets, run
 
-remctl xvm-remote control $server install mirror=http://mirrors.mit.edu/fedora/linux/ dist=30 arch=x86_64 ks=https://raw.githubusercontent.com/mit-scripts/scripts/ansible-realserver/server/fedora/ks/kickstart.txt
+remctl xvm-remote control $server install mirror=http://mirrors.mit.edu/fedora/linux/ dist=30 arch=x86_64 ks=https://raw.githubusercontent.com/mit-scripts/scripts/ansible-realserver/server/fedora/ks/xvm.txt
 
 Watch the installation progress with
 

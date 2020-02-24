@@ -31,7 +31,7 @@ official release.  You can do this with:
 3. Install a new VM
 -------------------
 
-Update the kickstart file at server/fedora/ks/kickstart.txt for the
+Update the kickstart file at server/fedora/ks/{xvm,prod}.txt for the
 new release. At a minimum you'll need to change the "url" stanza, and
 probably also change the branch name in the "git clone" command.
 
@@ -41,9 +41,9 @@ packages available for this distro, so set the use_* variables to "no"
 to skip installing those packages.
 
 Install a new VM using the kickstart file. You might want to do this
-with the kernel command-line parameter:
+on XVM with remctl:
 
-    inst.ks=https://raw.githubusercontent.com/mit-scripts/scripts/ansible-realserver/server/fedora/ks/kickstart.txt inst.text
+    remctl xvm-remote control $server install mirror=http://mirrors.mit.edu/fedora/linux/ dist=30 arch=x86_64 ks=https://raw.githubusercontent.com/mit-scripts/scripts/ansible-realserver/server/fedora/ks/xvm.txt
 
 The "ansible-config-me" service will run on first boot and execute the
 Ansible playbook. If you're lucky, it will complete successfully on
