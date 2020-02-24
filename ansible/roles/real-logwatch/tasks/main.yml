@@ -9,5 +9,4 @@
     dest: /etc/logwatch/
     src: logwatch/
     mode: preserve
-# TODO: Configure an e-mail destination for logwatch (new Moira list?)
-# TODO: Enable logwatch.timer
+# TODO: Enable logwatch.timer?
