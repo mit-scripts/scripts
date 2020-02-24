@@ -127,6 +127,5 @@
 - name: Start systemd-networkd
   systemd:
     name: systemd-networkd
-    state: started
     enabled: yes
 
