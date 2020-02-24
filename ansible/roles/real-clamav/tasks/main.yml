@@ -1,0 +1,31 @@
+---
+- name: Install clamav
+  dnf:
+    name:
+      - clamav
+      - clamav-update
+    state: present
+- name: Check clamav version
+  dnf:
+    list: clamav-update
+  register: clamav_version
+- name: Update clamav-update if too old
+  dnf:
+    name:
+      - clamav-update
+    state: latest
+  when: clamav_version.results | json_query('([?yumstate==`installed`].version)[0]') is version('0.102.2', 'lt')
+- name: Ensure freshclam log is present
+  file:
+    path: /var/log/freshclam.log
+    state: touch
+    modification_time: preserve
+    access_time: preserve
+    mode: 0664
+    owner: root
+    group: clamupdate
+- name: Enable freshclam
+  service:
+    name: clamav-freshclam
+    state: started
+    enabled: yes

@@ -95,6 +95,7 @@
     - real-httpd
     - real-logrotate
     - real-logwatch
+    - real-clamav
     - role: real-spheroids
       tags: [spheroids]
   tasks:
@@ -294,28 +295,6 @@
         net.ipv4.conf.all.rp_filter = 2
         net.ipv4.tcp_keepalive_time = 825
     notify: apply sysctl
-  - name: ClamAV
-    block:
-      - name: Install clamav
-        dnf:
-          name:
-            - clamav
-            - clamav-update
-          state: latest
-      - name: Ensure freshclam log is present
-        file:
-          path: /var/log/freshclam.log
-          state: touch
-          modification_time: preserve
-          access_time: preserve
-          mode: 0664
-          owner: root
-          group: clamupdate
-      - name: Enable freshclam
-        service:
-          name: clamav-freshclam
-          state: started
-          enabled: yes
   - name: sysstat
     block:
       - dnf: name=sysstat state=present
