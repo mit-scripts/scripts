@@ -74,6 +74,7 @@
     - mock
     - sysctl
     - tmpfiles
+    - dnf-automatic
     - real-statoverride
     - real-munin-node
     - real-dns
@@ -236,37 +237,6 @@
           - option: GRUB_TERMINAL
             value: "serial console"
         notify: regenerate grub
-  - name: Enable update e-mails
-    block:
-      - name: Install dnf-automatic
-        dnf: name=dnf-automatic state=present
-      - name: Configure dnf-automatic
-        ini_file:
-          path: /etc/dnf/automatic.conf
-          section: "{{ item.section }}"
-          option: "{{ item.option }}"
-          value: "{{ item.value }}"
-        loop:
-          - section: commands
-            option: download_updates
-            value: "True"
-          - section: commands
-            option: apply_updates
-            value: "False"
-          - section: emitters
-            option: emit_via
-            value: stdio, command_email
-          - section: command_email
-            option: email_from
-            value: root
-          - section: command_email
-            option: email_to
-            value: root
-      - name: Enable dnf-automatic
-        systemd:
-          name: dnf-automatic.timer
-          enabled: yes
-          state: started
   - name: Configure reboot on {panic,oops,OOM}
     copy:
       dest: /etc/sysctl.d/99-scripts-reboot.conf
