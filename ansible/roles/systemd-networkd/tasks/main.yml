@@ -19,6 +19,18 @@
           Address=127.0.0.1/8
           {{ lo_extra }}
       notify: restart systemd-networkd
+- name: Disable ARP for lo aliases
+  when: lo_extra
+  copy:
+    dest: /etc/sysctl.d/99-scripts-arp.conf
+    content: |
+      # arp_ignore = 1 and arp_announce = 2
+      # prevent us from responding to ARP requests for lo addresses
+      net.ipv4.conf.default.arp_ignore = 1
+      net.ipv4.conf.default.arp_announce = 2
+      net.ipv4.conf.all.arp_ignore = 1
+      net.ipv4.conf.all.arp_announce = 2
+  notify: apply sysctl
 - name: vlan486
   block:
     - when: vlan486_hwaddr is defined

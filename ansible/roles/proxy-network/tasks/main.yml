@@ -26,10 +26,4 @@
       net.ipv4.conf.all.rp_filter = 0
       net.ipv4.conf.all.accept_local = 1
       net.ipv4.conf.all.log_martians = 1
-      # arp_ignore = 1 and arp_announce = 2
-      # prevent us from responding to ARP requests for lo addresses
-      net.ipv4.conf.default.arp_ignore = 1
-      net.ipv4.conf.default.arp_announce = 2
-      net.ipv4.conf.all.arp_ignore = 1
-      net.ipv4.conf.all.arp_announce = 2
   notify: apply sysctl
