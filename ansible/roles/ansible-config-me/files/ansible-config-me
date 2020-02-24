@@ -1,6 +1,6 @@
 #!/bin/bash
 
-options=$(getopt -o u --long update --long direct -- "$@")
+options=$(getopt -o u --long update --long force --long direct -- "$@")
 [ $? -eq 0 ] || {
     echo "Incorrect option provided"
     exit 1
@@ -10,6 +10,9 @@ while true; do
     case "$1" in
 	-u|--update)
 	    UPDATE=1
+	    ;;
+	--force)
+	    FORCE=1
 	    ;;
 	--direct)
 	    DIRECT=1
@@ -29,7 +32,11 @@ set -e
 set -x
 
 if [ "$UPDATE" ]; then
-    sudo -u scripts-build sh -c 'cd /srv/repository && git pull --ff-only'
+    if [ "$FORCE" ]; then
+	sudo -u scripts-build sh -c 'cd /srv/repository && git fetch && git reset --hard @{u}'
+    else
+	sudo -u scripts-build sh -c 'cd /srv/repository && git pull --ff-only'
+    fi
 fi
 
 # Remove done flag so we continue configuring after an
