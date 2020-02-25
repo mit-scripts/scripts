@@ -1,8 +1,7 @@
 ---
+nagios_plugin_dir: /usr/lib{{ "64" if ansible_os_family == "RedHat" else "" }}/nagios/plugins
 nrpe_checks:
-  check_load: /usr/lib/nagios/plugins/check_load -w 15,10,5 -c 30,25,20
-  check_disk: /usr/lib/nagios/plugins/check_disk -w 10% -c 5%
-  check_disk1: /usr/lib/nagios/plugins/check_disk -w 20 -c 10 -p /dev/hda1
-  check_disk2: /usr/lib/nagios/plugins/check_disk -w 20 -c 10 -p /dev/hdb1
-  check_zombie_procs: /usr/lib/nagios/plugins/check_procs -w 5 -c 10 -s Z
-  check_total_procs: /usr/lib/nagios/plugins/check_procs -w 150 -c 200
+  check_load: "{{nagios_plugin_dir}}/check_load -w 15,10,5 -c 30,25,20"
+  check_disk: "{{nagios_plugin_dir}}/check_disk -w 10% -c 5%"
+  check_zombie_procs: "{{nagios_plugin_dir}}/check_procs -w 5 -c 10 -s Z"
+  check_total_procs: "{{nagios_plugin_dir}}/check_procs -w 150 -c 200"
