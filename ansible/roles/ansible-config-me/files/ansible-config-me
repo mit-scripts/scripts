@@ -45,7 +45,7 @@ rm -f /etc/ansible-config-done
 
 if [ -z "$DIRECT" ]; then
     systemctl start --no-block ansible-config-me
-    journalctl -f -u ansible-config-me
+    journalctl -f -o cat -u ansible-config-me
     exit 0
 fi
 
