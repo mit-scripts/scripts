@@ -22,4 +22,3 @@
     daemon_reload: "{{ override.changed }}"
     enabled: yes
     state: started
-# TODO: disable "client" when destination is off-subnet

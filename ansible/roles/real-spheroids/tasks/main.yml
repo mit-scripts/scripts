@@ -14,7 +14,6 @@
       - rubygem-pony
     state: present
   ignore_errors: yes
-# TODO: Consider disabling PHP modules by default
 - name: Install PHP modules and libraries
   dnf:
     name: "{{ lookup('file', 'php.txt').splitlines() | list}}"
