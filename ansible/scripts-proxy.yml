@@ -18,7 +18,7 @@
     - dnf-automatic
     - proxy-dns
     - proxy-haproxy
-    # TODO: Configure logrotate
+    - proxy-logrotate
   tasks:
     - package:
         name:
