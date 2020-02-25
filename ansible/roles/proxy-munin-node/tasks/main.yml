@@ -1,0 +1,14 @@
+---
+- name: Install haproxyng munin plugin
+  copy:
+    dest: /etc/munin/plugins/haproxyng
+    src: monitoring-munin-haproxy/haproxyng
+  notify: reconfigure munin-node
+- name: Configure haproxyng munin plugin
+  copy:
+    dest: /etc/munin/plugin-conf.d/haproxyng
+    content: |
+      [haproxyng*]
+      env.socket /var/lib/haproxy/stats
+      env.clean scripts_
+  notify: reconfigure munin-node

@@ -13,7 +13,7 @@
     - k5login
     - syslog-client
     - root-aliases
-    - munin-node
+    - proxy-munin-node
     - nrpe
     - dnf-automatic
     - proxy-dns
