@@ -33,9 +33,9 @@ set -x
 
 if [ "$UPDATE" ]; then
     if [ "$FORCE" ]; then
-	sudo -u scripts-build sh -c 'cd /srv/repository && git fetch && git reset --hard @{u}'
+	sudo -u scripts-build sh -c 'cd /srv/repository && git fetch && git reset --hard @{u} && git submodule update'
     else
-	sudo -u scripts-build sh -c 'cd /srv/repository && git pull --ff-only'
+	sudo -u scripts-build sh -c 'cd /srv/repository && git pull --ff-only && git submodule update'
     fi
 fi
 
