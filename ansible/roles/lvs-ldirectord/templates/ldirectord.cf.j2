@@ -125,7 +125,7 @@ virtual={{ offset + 1 }}
 
 # The proxy servers get only web traffic
 virtual=92
-{% for hostname in groups['scripts-proxy-test'] %}
+{% for hostname in groups['scripts-proxy-prod'] %}
 {% with info = hostvars[hostname] %}
 	real={{ info['ip'] }} gate 4096 # {{ hostname }}
 {% endwith %}
