@@ -20,6 +20,22 @@
       input(type="imuxsock" Socket="/var/lib/haproxy/dev/log")
 
       local2.* /var/log/haproxy.log
+  notify: restart rsyslog
+- name: Configure logrotate to remove haproxy logs
+  copy:
+    dest: /etc/logrotate.d/haproxy
+    content: |
+      /var/log/haproxy.log {
+          rotate 0
+          daily
+          missingok
+          notifempty
+          create 600 root root
+          sharedscripts
+          postrotate
+              /usr/bin/systemctl kill -s HUP rsyslog.service >/dev/null 2>&1 || true
+          endscript
+      }
 - name: Automatically restart haproxy on failure
   block:
     - file:
