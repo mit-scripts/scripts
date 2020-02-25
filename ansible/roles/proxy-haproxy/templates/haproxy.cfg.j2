@@ -10,20 +10,7 @@
 # Global settings
 #---------------------------------------------------------------------
 global
-    # to have these messages end up in /var/log/haproxy.log you will
-    # need to:
-    #
-    # 1) configure syslog to accept network log events.  This is done
-    #    by adding the '-r' option to the SYSLOGD_OPTIONS in
-    #    /etc/sysconfig/syslog
-    #
-    # 2) configure local2 events to go to the /var/log/haproxy.log
-    #   file. A line like the following can be added to
-    #   /etc/sysconfig/syslog
-    #
-    #    local2.*                       /var/log/haproxy.log
-    #
-    #log         127.0.0.1 local2 debug
+    log         /dev/log local2 debug
 
     chroot      /var/lib/haproxy
     pidfile     /var/run/haproxy.pid
@@ -64,25 +51,27 @@ defaults
     timeout check           10s
     maxconn                 5000
 
-frontend scripts_http_frontend 
+frontend scripts_http_frontend
+    no log # COMMENT ME to enable logs
     bind *:80
     # the lower option is required to make it work in the http frontend 
     http-request do-resolve(txn.ldapip,scripts_dns,ipv4) req.hdr(host),lower
     http-request do-resolve(txn.ldapip,scripts_dns,ipv4) str(scripts.mit.edu) if ! { var(txn.ldapip) -m found }
     http-request capture var(txn.ldapip) len 40
     # everything but '%[capture.req.hdr(0)]' is the default http log format. '%[capture.req.header(0)]' gets the first thing we captured, which in this case is txn.ldapip.
-    # log-format "%ci:%cp [%tr] %ft %b/%s %TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs %{+Q}r %[capture.req.hdr(0)]"
+    log-format "%ci:%cp [%tr] %ft %b/%s %TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs %{+Q}r %[capture.req.hdr(0)]"
     use_backend scripts_http_offnet_backend if ! { var(txn.ldapip) 18.4.86.0/24 }
     default_backend scripts_http_backend
 
 frontend scripts_tcp_frontend
+    no log # COMMENT ME to enable logs
     bind *:443-444
     mode tcp
     tcp-request inspect-delay 5s
     tcp-request content do-resolve(txn.ldapip,scripts_dns,ipv4) req.ssl_sni
     tcp-request content capture var(txn.ldapip) len 40
     # everything but '%[capture.req.hdr(0)]' is the default tcp log format.
-    # log-format "%ci:%cp [%t] %ft %b/%s %Tw/%Tc/%Tt %B %ts %ac/%fc/%bc/%sc/%rc %sq/%bq %[capture.req.hdr(0)]"
+    log-format "%ci:%cp [%t] %ft %b/%s %Tw/%Tc/%Tt %B %ts %ac/%fc/%bc/%sc/%rc %sq/%bq %[capture.req.hdr(0)]"
     tcp-request content accept if { req.ssl_hello_type 1 } { var(txn.ldapip) -m found }
     use_backend scripts_tcp_offnet_backend if ! { var(txn.ldapip) 18.4.86.0/24 }
     default_backend scripts_tcp_backend
