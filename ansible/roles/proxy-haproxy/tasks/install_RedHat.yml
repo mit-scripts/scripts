@@ -12,8 +12,8 @@
     state: present
 - name: "Install hatop"
   get_url:
-    url: https://raw.githubusercontent.com/feurix/hatop/64e0f26d2e392d1f2535f1b0229e45798c7514e8/bin/hatop
-    checksum: "sha256:0b2ff2a76e73530d8a8dbce965aa3c12bf958a8311170b5d7731e7aa1fb0c07f"
+    url: https://raw.githubusercontent.com/voretaq7/hatop/fa6ed17d763b6d02ee8d1eb61b40f15e6e8115ac/bin/hatop
+    checksum: "sha256:93b539fc6be9f166b4b359f79ec1b08616b6d917dbef634ede2447e8fbda2333"
     dest: /usr/local/bin/hatop
     mode: '0755'
 - name: "Install haproxyctl"
