@@ -1,17 +1,18 @@
 [Unit]
 Description=BIND serving pool information from Scripts LDAP
-Wants=nss-lookup.target
 Wants=named-setup-rndc.service
-Before=nss-lookup.target
 Before=haproxy.service
+After=nss-lookup.target
 After=named-setup-rndc.service
-After=network.target
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 Type=forking
 Environment=NAMEDCONF=/etc/named.scripts-proxy.conf
 EnvironmentFile=-/etc/sysconfig/named-scripts-proxy
 PIDFile=/run/named-scripts-proxy/named-scripts-proxy.pid
+Restart=on-failure
 
 User=named
 Group=named
