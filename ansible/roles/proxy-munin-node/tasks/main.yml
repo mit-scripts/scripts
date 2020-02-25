@@ -1,14 +1,23 @@
 ---
+- name: Install dependencies
+  dnf:
+    name:
+      - perl-Switch
+    state: present
 - name: Install haproxyng munin plugin
   copy:
     dest: /etc/munin/plugins/haproxyng
     src: monitoring-munin-haproxy/haproxyng
+    mode: 0755
   notify: reconfigure munin-node
 - name: Configure haproxyng munin plugin
   copy:
     dest: /etc/munin/plugin-conf.d/haproxyng
     content: |
       [haproxyng*]
+      user root
       env.socket /var/lib/haproxy/stats
       env.clean scripts_
+      env.perserver 0
+      env.perstatus 0
   notify: reconfigure munin-node
