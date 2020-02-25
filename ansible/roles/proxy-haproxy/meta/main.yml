@@ -1,3 +1,4 @@
 ---
 dependencies:
   - proxy-dns
+  - syslog-client
