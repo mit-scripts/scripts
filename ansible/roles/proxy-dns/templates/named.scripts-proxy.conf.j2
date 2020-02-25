@@ -63,11 +63,13 @@ options {
 // The documentation says the tokens are surrounded by percent signs;
 // this changed some years ago to dollar signs.
 //
-// TODO: Check if queries are actually load-balanced among the servers.
+// Number of connections (currently 3) is used to set the number of
+// threads used to talk to LDAP. Every connection will be to the first
+// reachable server in the list.
 
 dlz "scripts-ldap" {
-	database "dlopen /usr/lib64/bind/dlz_ldap_dynamic.so {{ groups['scripts-ldap'] | length }}
-	v3 simple {} {} {{"{"}}{{ groups['scripts-ldap'] | join(' ') }}{{"}"}}
+	database "dlopen /usr/lib64/bind/dlz_ldap_dynamic.so 3
+	v3 simple {} {} {{"{"}}{{ groups['scripts-ldap'] | permute(dscp_tag | default(0)) | join(' ') }}{{"}"}}
 	ldap:///ou=VirtualHosts,dc=scripts,dc=mit,dc=edu?$zone$?base
 	ldap:///ou=VirtualHosts,dc=scripts,dc=mit,dc=edu?scriptsVhostPoolTTL,scriptsVhostPoolDNSRecordType,scriptsVhostPoolIPv4?one?(|(scriptsVhostName=$zone$)(scriptsVhostAlias=$zone$)(scriptsVhostName=$record$))";
 };
