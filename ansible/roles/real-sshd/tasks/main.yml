@@ -52,6 +52,8 @@
     - IgnoreRhosts yes
     - IgnoreUserKnownHosts yes
     - DenyUsers {{ groups['scripts-real-prod'] | map('regex_replace', '^', 'root@') | join(' ') }}
+    - Match User !root,*
+    - ForceCommand /usr/local/bin/mbash
 
   notify: reload ssh
 - name: Read ssh host keys
