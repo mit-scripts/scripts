@@ -29,7 +29,7 @@ Click the green play button in the toolbar
 Summary -> Launch Web Console
 To boot, use an F31 boot ISO, press tab on "Install", delete "quiet" and add to the command line
 
-inst.ks=https://raw.githubusercontent.com/mit-scripts/scripts/ansible-realserver/server/fedora/ks/prod.txt ip=18.4.86.57::18.4.86.1:255.255.255.0:better-mousetrap.mit.edu:eth0:none nameserver=18.0.72.3 biosdevname=0 net.ifnames=0
+inst.ks=https://raw.githubusercontent.com/mit-scripts/scripts/ansible-realserver/server/fedora/ks/prod.txt ip=$serverip::18.4.86.1:255.255.255.0:$hostname(including mit.edu):eth0:none nameserver=18.0.72.3 biosdevname=0 net.ifnames=0
 
 back to vSphere UI -> edit settings (tiny icon to the right of power button) -> uncheck "Connected" on CD/DVD drive 1
 Power it back on
