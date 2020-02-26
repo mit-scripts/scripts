@@ -4,6 +4,9 @@
 :OUTPUT ACCEPT [0:0]
 :log-smtp - [0:0]
 -A INPUT -p udp -m udp --dport 161 ! -s 18.0.0.0/8 -j REJECT
+-A INPUT -m dscp --dscp 1 -j MARK --set-mark 1
+-A INPUT -m dscp --dscp 2 -j MARK --set-mark 2
+-A INPUT -m dscp --dscp 3 -j MARK --set-mark 3
 -A INPUT -m dscp --dscp 11 -j MARK --set-mark 11
 -A INPUT -m dscp --dscp 12 -j MARK --set-mark 12
 -A INPUT -m dscp --dscp 13 -j MARK --set-mark 13

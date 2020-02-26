@@ -1,3 +1,6 @@
+default via 18.4.86.23 dev vlan486 table 1
+default via 18.4.86.24 dev vlan486 table 2
+default via 18.4.86.25 dev vlan486 table 3
 default via 18.4.86.187 dev vlan486 table 11
 default via 18.4.86.192 dev vlan486 table 12
 default via 18.4.86.194 dev vlan486 table 13
