@@ -1,20 +1,73 @@
 #!/usr/bin/python3
 
-import os
-import sys
+import ldap, ldap.sasl, ldap.filter
+import os, random, sys
 
-def getVhostPool():
-  return "scripts-f30.mit.edu"
+############### LDAP stuff #################
+# Largely copy+pasted from Pony
+# Needs to be properly library-ized, assuming
+# there's a good way to share code between the codebases
+
+class UserError(BaseException):
+    pass
+
+
+LDAP_SERVERS = ["doppelganger", "alter-ego", "body-double"]
+
+def connect():
+    hostname = "{0}.mit.edu".format(LDAP_SERVERS[random.randint(0, 2)])
+    conn = ldap.initialize("ldap://{0}".format(hostname))
+    # Only try to use the keytab if we have one
+    if False: #keytab.exists():
+        keytab.auth()
+        auth = ldap.sasl.gssapi()
+        conn.sasl_interactive_bind_s("", auth)
+    else:
+        conn.simple_bind_s()
+
+    return conn
+
+def get_vhost_info(conn, locker, hostname):
+    """Return path,aliases for the given hostname."""
+    res = conn.search_s(
+        "ou=VirtualHosts,dc=scripts,dc=mit,dc=edu",
+        ldap.SCOPE_ONELEVEL,
+        ldap.filter.filter_format(
+            "(&(objectClass=scriptsVhost)(scriptsVhostAccount=uid=%s,ou=People,dc=scripts,dc=mit,dc=edu)(scriptsVhostName=%s))",
+            [locker, hostname],
+        ),
+        ["scriptsVhostDirectory", "scriptsVhostAlias", "scriptsVhostPoolIPv4"],
+    )
+    try:
+        print(str(res))
+        return (
+            res[0][1]["scriptsVhostDirectory"][0],
+            res[0][1].get("scriptsVhostAlias", []),
+            res[0][1]["scriptsVhostPoolIPv4"][0]
+        )
+    except IndexError:
+        raise UserError(
+            "The hostname '%s' does not exist for the '%s' locker." % (hostname, locker)
+        )
+
+
+###################################################
+
+def getVhostPoolIp():
+  conn = connect()
+  # TODO: Get real locker, hostnamex
+  return get_vhost_info(conn, "jkoppel", "jkoppel.scripts.mit.edu")[2].decode('ascii')
 
 def ipConfigured(ip):
-  return False
+  ipAddrOut = os.popen("ip addr").read()
+  return ("inet " + ip + "/") in ipAddrOut
 
 # SSH forwarding
-vhostPoolIp = getVhostPool()
+vhostPoolIp = getVhostPoolIp()
 
 if ipConfigured(vhostPoolIp):
    args = sys.argv[1:]
-   bash = '@bash_path@'
+   bash = '/usr/bin/bash'
    os.execv(bash, [bash, '--rcfile', '/usr/local/etc/mbashrc'] + args)
 else:
    ssh = '/usr/bin/ssh'
