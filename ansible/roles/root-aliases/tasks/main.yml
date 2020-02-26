@@ -12,3 +12,9 @@
       {{ maintainer.root_mail|default(maintainer.username + '@mit.edu') }}{{ '' if loop.last else ', ' }}
       {%- endfor %}
   notify: newaliases
+- name: Enable postfix
+  when: preferred_mta == "postfix"
+  service:
+    name: postfix
+    enabled: yes
+    state: started
