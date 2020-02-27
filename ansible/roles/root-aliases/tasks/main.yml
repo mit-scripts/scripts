@@ -12,6 +12,11 @@
       {{ maintainer.root_mail|default(maintainer.username + '@mit.edu') }}{{ '' if loop.last else ', ' }}
       {%- endfor %}
   notify: newaliases
+- name: Install mailx
+  when: preferred_mta == "postfix"
+  dnf:
+    name: mailx
+    state: present
 - name: Enable postfix
   when: preferred_mta == "postfix"
   service:
