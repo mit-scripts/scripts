@@ -1,4 +1,8 @@
 ---
+- name: Install logrotate
+  dnf:
+    name: logrotate
+    state: present
 - name: Configure logrotate for HTTPD
   copy:
     dest: /etc/logrotate.d/httpd
