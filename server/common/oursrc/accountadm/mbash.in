@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import ldap, ldap.sasl, ldap.filter
-import os, random, sys
+import os, pwd, random, sys
 
 ############### LDAP stuff #################
 # Largely copy+pasted from Pony
@@ -62,7 +62,7 @@ def ipConfigured(ip):
   return ("inet " + ip + "/") in ipAddrOut
 
 # SSH forwarding
-user = os.environ['USER']
+user = pwd.getpwuid(os.getuid()).pw_name
 vhostPoolIp = getVhostPoolIp(user)
 
 if ipConfigured(vhostPoolIp):
