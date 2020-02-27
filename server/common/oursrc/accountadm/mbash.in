@@ -53,17 +53,17 @@ def get_vhost_info(conn, locker, hostname):
 
 ###################################################
 
-def getVhostPoolIp():
+def getVhostPoolIp(user):
   conn = connect()
-  # TODO: Get real locker, hostnamex
-  return get_vhost_info(conn, "jkoppel", "jkoppel.scripts.mit.edu")[2].decode('ascii')
+  return get_vhost_info(conn, user, user + ".scripts.mit.edu")[2].decode('ascii')
 
 def ipConfigured(ip):
   ipAddrOut = os.popen("ip addr").read()
   return ("inet " + ip + "/") in ipAddrOut
 
 # SSH forwarding
-vhostPoolIp = getVhostPoolIp()
+user = os.environ['USER']
+vhostPoolIp = getVhostPoolIp(user)
 
 if ipConfigured(vhostPoolIp):
    args = sys.argv[1:]
