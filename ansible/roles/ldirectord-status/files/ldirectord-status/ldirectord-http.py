@@ -4,55 +4,38 @@ import sys
 import subprocess
 import re
 import socket
+from gnlpy import ipvs
 
-# Ignore the input from the finger protocol
-sys.stdin.readline()
+# Ignore the HTTP request
+while sys.stdin.readline().strip():
+    pass
 
-print("HTTP/1.0 200 OK")
-print("Content-type: text/html")
-print("")
+print("HTTP/1.0 200 OK\r")
+print("Content-type: text/html\r")
+print("\r")
 print("<html><head><title>scripts.mit.edu server status</title></head><body><h1>scripts.mit.edu server status</h1><p>The following table shows a list of the servers that are currently handling web requests for scripts.mit.edu:</p>")
-lines = subprocess.check_output(['/sbin/ipvsadm', '-L', '-n']).split(b'\n')
-realserver = re.compile('(  -> )([^:]*):([^ ]*) *[^ ]* *([^ ]*) *([^ ]*) *([^ ]*)')
-fwm = re.compile('^FWM  ([0-9]*)')
-ipaddress = re.compile('[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')
-show = 1
-header = ''
-for line in lines:
-    line = line.decode('utf8')
-    fwmline = fwm.match(line)
-    if fwmline:
-        if show:
-            print("</table>")
-        mark = fwmline.group(1)
-        show = 1
-        if mark == '22':
-            pool = 'Fedora 20'
-        elif mark == '32':
-            pool = 'Fedora 30'
-        else:
-            show = 0
-        if show:
-            print("<p><b>%s servers</b></p><table>" % (pool))
-            print(header)
-    elif show:
-        realline = realserver.match(line)
-        if not realline:
-            continue
-        (preamble, ip, port, weight, inactive, active) = realline.groups()
-        target = ip
-        if ipaddress.match(ip):
-            try:
-                target = socket.gethostbyaddr(ip)[0]
-            except:
-                pass
-        line = '<tr><td>' + target + '</td><td>' + weight + '</td><td>'
-        line += inactive + '</td><td>' + active + '</td></tr>'
-        if not header: # The header isn't set yet - this is it!
-            header = line
-            show = 0
-        else:
-            print(line)
-if show:
+
+def row(target, weight, inactive, active):
+    try:
+        target = socket.gethostbyaddr(target)[0]
+    except:
+        pass
+    line = '<tr><td>' + target + '</td><td>' + str(weight) + '</td><td>'
+    line += str(inactive) + '</td><td>' + str(active) + '</td></tr>'
+    return line
+
+pools = ipvs.IpvsClient().get_pools()
+for pool in pools:
+    mark = pool.service().fwmark()
+    if mark == 22:
+        pool_name = 'Fedora 20'
+    elif mark == 32:
+        pool_name = 'Fedora 30'
+    # TODO: Add query parameter/URL for all pools?
+    else:
+        continue
+    print("<table><tr style='text-align: left'><th>%s servers</th><th>Weight</th><th>ActiveConn</th><th>InActConn</th></tr>" % (pool_name,))
+    for dest in pool.dests():
+        print(row(dest.ip(), dest.weight(), dest.counters().get('active_conns', 0), dest.counters().get('inact_conns', 0)))
     print("</table>")
 print("</body></html>")

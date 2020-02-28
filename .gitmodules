@@ -10,3 +10,6 @@
 [submodule "ansible/roles/proxy-munin-node/files/monitoring-munin-haproxy"]
 	path = ansible/roles/proxy-munin-node/files/monitoring-munin-haproxy
 	url = https://github.com/mit-scripts/monitoring-munin-haproxy.git
+[submodule "ansible/roles/ldirectord-status/files/ldirectord-status/gnlpy"]
+	path = ansible/roles/ldirectord-status/files/ldirectord-status/gnlpy
+	url = https://github.com/facebook/gnlpy.git
