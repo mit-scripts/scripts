@@ -21,7 +21,6 @@ all:
     maintainers: "{{ scripts_root }}"
 
     scripts_kiddies:
-    - username: jkoppel
     - username: jnoguera
     - username: rihn
 
@@ -205,9 +204,6 @@ all:
 
             scripts-f30-test.xvm.mit.edu: {}
 
-            jkoppel-scripts-test.xvm.mit.edu:
-              maintainers:
-                - username: jkoppel
             feral-purrbeast.xvm.mit.edu:
               maintainers:
                 - username: cela
