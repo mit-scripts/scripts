@@ -90,7 +90,7 @@ virtual=1
 {% for group, offset in [('scripts-real-f20', 20), ('scripts-real-f30', 30)] %}
 {% for service in ['smtp', 'http'] %}
 virtual={{ offset + {'smtp': 3, 'http': 2}[service] }}
-{% for hostname in groups[group] %}
+{% for hostname in groups[group]|sort %}
 {% with info = hostvars[hostname] %}
 	real={{ info['ip'] }} gate {{ 1024 if (info['primary'] | default(False)) else 4096 }} # {{ hostname }}
 {% endwith %}
@@ -111,7 +111,7 @@ virtual={{ offset + {'smtp': 3, 'http': 2}[service] }}
 
 # Everything else uses FWM 1 and gets sent only to the primary
 virtual={{ offset + 1 }}
-{% for hostname in groups[group] %}
+{% for hostname in groups[group]|sort %}
 {% with info = hostvars[hostname] %}
 	real={{ info['ip'] }} gate "heartbeat/services?codename={{ info['codename'] }}", "{{ hostname | replace('.mit.edu', '') }}"
 {% endwith %}
@@ -125,7 +125,7 @@ virtual={{ offset + 1 }}
 
 # The proxy servers get only web traffic
 virtual=92
-{% for hostname in groups['scripts-proxy-prod'] %}
+{% for hostname in groups['scripts-proxy-prod']|sort %}
 {% with info = hostvars[hostname] %}
 	real={{ info['ip'] }} gate 4096 # {{ hostname }}
 {% endwith %}
