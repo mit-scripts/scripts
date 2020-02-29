@@ -122,6 +122,7 @@ lua-socket
 lynx
 lyx-fonts
 madan-fonts
+mariadb
 mecab-ipadic
 memtest86+
 mikmod
