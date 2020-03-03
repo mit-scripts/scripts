@@ -13,7 +13,7 @@
       {%- endfor %}
   notify: newaliases
 - name: Install mailx
-  when: preferred_mta == "postfix"
+  when: ansible_os_family == "RedHat"
   dnf:
     name: mailx
     state: present
