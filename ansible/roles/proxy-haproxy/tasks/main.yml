@@ -17,9 +17,14 @@
       # this will cause a spurious warning about loading the module twice.
       module(load="imuxsock"
              SysSock.Use="off")
-      input(type="imuxsock" Socket="/var/lib/haproxy/dev/log")
 
-      local2.* /var/log/haproxy.log
+      # Direct inside-chroot messages at a specific ruleset to prevent
+      # default handling such as syslog forwarding.
+      input(type="imuxsock" Socket="/var/lib/haproxy/dev/log" ruleset="haproxy")
+
+      ruleset(name="haproxy") {
+        local2.* /var/log/haproxy.log
+      }
   notify: restart rsyslog
 - name: Configure logrotate to remove haproxy logs
   copy:
