@@ -42,13 +42,13 @@
 -A scripts -m tcp -p tcp --dport 25 -j MARK --set-mark 3
 # Send finger-bound traffic to the LVS director itself
 -A scripts -m tcp -p tcp --dport 78:79 -j RETURN
-# Send everything else to FWM 1 (primary)
--A scripts -m mark --mark 0 -j MARK --set-mark 1
+# Send everything else to FWM 21 (Fedora 20 primary)
+-A scripts -m mark --mark 0 -j MARK --set-mark 21
 
 # Clear external DSCP bits
 -A primary -j DSCP --set-dscp 0
-# scripts-primary.mit.edu goes to the primary (FWM 1) on all ports
--A primary -j MARK --set-mark 1
+# scripts-primary.mit.edu goes to the Fedora 20 primary (FWM 21) on all ports
+-A primary -j MARK --set-mark 21
 
 # Clear external DSCP bits
 -A sipb -j DSCP --set-dscp 0
