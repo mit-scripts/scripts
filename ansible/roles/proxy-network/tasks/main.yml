@@ -12,6 +12,7 @@
       :OUTPUT ACCEPT [0:0]
       :POSTROUTING ACCEPT [0:0]
       -A PREROUTING -p tcp -m socket -j MARK --set-xmark 1
+      -A OUTPUT -d 18.4.86.0/24 -j DSCP --set-dscp {{ dscp_tag }}
       COMMIT
   notify: reload iptables
 - name: Start iptables rules
