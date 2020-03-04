@@ -27,10 +27,21 @@
       net.ipv4.conf.all.rp_filter = 0
       net.ipv4.conf.all.accept_local = 1
       net.ipv4.conf.all.log_martians = 1
+      # Allow the use of every non-privileged port for connections
       net.ipv4.ip_local_port_range = 1024 65535
+      # FIN_WAIT timeout
       net.ipv4.tcp_fin_timeout = 15
+      # Limit on number of connections not attached to sockets (e.g. because FIN_WAIT);
+      # costs up to 64KB per connection
       net.ipv4.tcp_max_orphans = 262144
+      # Maximum number of connections that have not completed the three-way handshake;
+      # costs 304B per connection
       net.ipv4.tcp_max_syn_backlog = 4096
+      # Maximum number of TIME_WAIT sockets (can't be larger than tcp_max_orphans)
       net.ipv4.tcp_max_tw_buckets = 262144
+      # Allow reusing a 5-tuple in TIME_WAIT for new connections
+      net.ipv4.tcp_tw_reuse = 1
+      # Maximum number of connections netfilter is tracking
+      # TODO: Why are we using conntrack at all?
       net.netfilter.nf_conntrack_max = 8388608
   notify: apply sysctl
