@@ -1,0 +1,27 @@
+---
+- name: Install munin cps plugin
+  copy:
+    dest: /etc/munin/plugins/cps_1_0
+    src: cps_
+    mode: 0755
+  notify: restart munin-node
+- name: Create munin cps plugin links
+  file:
+    src: /etc/munin/plugins/cps_1_0
+    dest: "/etc/munin/plugins/cps_{{ item }}_0"
+    state: link
+  with_items:
+    - 2
+    - 3
+  notify: restart munin-node
+- name: Configure munin cps plugin
+  copy:
+    dest: /etc/munin/plugin-conf.d/cps
+    content: |
+      [cps_1_0]
+      env.graph_title Load balanced miscellaneous connections
+      [cps_2_0]
+      env.graph_title Load balanced Apache connections
+      [cps_3_0]
+      env.graph_title Load balanced SMTP connections
+  notify: restart munin-node
