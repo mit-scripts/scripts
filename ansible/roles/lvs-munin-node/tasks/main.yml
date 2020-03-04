@@ -13,15 +13,32 @@
   with_items:
     - 2
     - 3
+    - 21
+    - 22
+    - 23
+    - 31
+    - 32
+    - 33
+    - 92
   notify: restart munin-node
 - name: Configure munin cps plugin
+  vars:
+    fwmarks:
+      1: miscellaneous
+      2: Apache
+      3: SMTP
+      21: Fedora 20 primary
+      22: Fedora 20 Apache
+      23: Fedora 20 SMTP
+      31: Fedora 30 primary
+      32: Fedora 30 Apache
+      33: Fedora 30 SMTP
+      92: scripts-test Apache
   copy:
     dest: /etc/munin/plugin-conf.d/cps
     content: |
-      [cps_1_0]
-      env.graph_title Load balanced miscellaneous connections
-      [cps_2_0]
-      env.graph_title Load balanced Apache connections
-      [cps_3_0]
-      env.graph_title Load balanced SMTP connections
+      {% for fwmark, desc in fwmarks | dictsort %}
+      [cps_{{ fwmark }}_0]
+      env.graph_title Load balanced {{desc}} connections
+      {% endfor %}
   notify: restart munin-node
