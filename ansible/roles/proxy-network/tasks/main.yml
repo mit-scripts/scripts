@@ -27,4 +27,9 @@
       net.ipv4.conf.all.rp_filter = 0
       net.ipv4.conf.all.accept_local = 1
       net.ipv4.conf.all.log_martians = 1
+      net.ipv4.tcp_fin_timeout = 15
+      net.ipv4.tcp_max_orphans = 262144
+      net.ipv4.tcp_max_syn_backlog = 4096
+      net.ipv4.tcp_max_tw_buckets = 262144
+      net.netfilter.nf_conntrack_max = 8388608
   notify: apply sysctl
