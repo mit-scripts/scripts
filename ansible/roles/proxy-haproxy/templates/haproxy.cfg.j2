@@ -60,7 +60,7 @@ frontend scripts_http_frontend
     http-request capture var(txn.ldapip) len 40
     # everything but '%[capture.req.hdr(0)]' is the default http log format. '%[capture.req.header(0)]' gets the first thing we captured, which in this case is txn.ldapip.
     log-format "%ci:%cp [%tr] %ft %b/%s %TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %hr %hs %{+Q}r %[capture.req.hdr(0)]"
-    use_backend scripts_http_offnet_backend if ! { var(txn.ldapip) 18.4.86.0/24 }
+    use_backend scripts_http_offnet_backend if ! { var(txn.ldapip) -m ip 18.4.86.0/24 }
     default_backend scripts_http_backend
 
 frontend scripts_tcp_frontend
@@ -73,7 +73,7 @@ frontend scripts_tcp_frontend
     # everything but '%[capture.req.hdr(0)]' is the default tcp log format.
     log-format "%ci:%cp [%t] %ft %b/%s %Tw/%Tc/%Tt %B %ts %ac/%fc/%bc/%sc/%rc %sq/%bq %[capture.req.hdr(0)]"
     tcp-request content accept if { req.ssl_hello_type 1 } { var(txn.ldapip) -m found }
-    use_backend scripts_tcp_offnet_backend if ! { var(txn.ldapip) 18.4.86.0/24 }
+    use_backend scripts_tcp_offnet_backend if ! { var(txn.ldapip) -m ip 18.4.86.0/24 }
     default_backend scripts_tcp_backend
 
 backend scripts_http_backend
