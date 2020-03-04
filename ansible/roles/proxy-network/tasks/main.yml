@@ -41,7 +41,4 @@
       net.ipv4.tcp_max_tw_buckets = 262144
       # Allow reusing a 5-tuple in TIME_WAIT for new connections
       net.ipv4.tcp_tw_reuse = 1
-      # Maximum number of connections netfilter is tracking
-      # TODO: Why are we using conntrack at all?
-      net.netfilter.nf_conntrack_max = 8388608
   notify: apply sysctl

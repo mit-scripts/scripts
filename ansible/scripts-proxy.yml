@@ -8,6 +8,10 @@
       name:
         - open-vm-tools
       state: present
+  - name: Disable Munin conntrack plugins
+    copy:
+      dest: /etc/munin/plugin-conf.d/
+      src: files/conntrack
   roles:
     - ansible-config-me
     - k5login

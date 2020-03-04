@@ -1,0 +1,4 @@
+[fw_conntrack]
+command /bin/false
+[fw_forwarded_local]
+command /bin/false
