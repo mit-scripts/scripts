@@ -80,14 +80,14 @@ frontend scripts_tcp_frontend
 backend scripts_http_backend
     http-request reject unless { var(txn.ldapip) -m found }
     http-request set-dst var(txn.ldapip)
-    source       0.0.0.0 usesrc client
+    source       0.0.0.0 usesrc clientip
     server       clear 0.0.0.0:0
 
 backend scripts_tcp_backend
     mode tcp
     tcp-request content reject unless { var(txn.ldapip) -m found }
     tcp-request content set-dst var(txn.ldapip)
-    source      0.0.0.0 usesrc client
+    source      0.0.0.0 usesrc clientip
     server      clear 0.0.0.0:0
 
 backend scripts_http_offnet_backend
