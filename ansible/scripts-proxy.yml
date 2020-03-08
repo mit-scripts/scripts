@@ -19,6 +19,7 @@
     - k5login
     - syslog-client
     - root-aliases
+    - mock
     - proxy-munin-node
     - nrpe
     - dnf-automatic
