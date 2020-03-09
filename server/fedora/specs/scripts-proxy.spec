@@ -12,6 +12,7 @@ Source0:        %{name}.tar.gz
 BuildRequires:  (systemd-rpm-macros or systemd < 240)
 BuildRequires:  go-rpm-macros
 BuildRequires:  golang >= 1.6
+BuildRequires:  golang(gopkg.in/ldap.v3)
 
 %description
 scripts-proxy proxies HTTP and HTTPS+SNI requests to backend servers
