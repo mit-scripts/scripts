@@ -23,8 +23,7 @@
     - proxy-munin-node
     - nrpe
     - dnf-automatic
-    - proxy-dns
-    - proxy-haproxy
+    - proxy-scripts-proxy
     - proxy-logrotate
   tasks:
     - package:
