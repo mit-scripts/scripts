@@ -1,0 +1,10 @@
+---
+rpm_repos:
+  - key: scripts
+    name: Scripts
+    baseurl: https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}/
+    enabled: yes
+  - key: scripts-testing
+    name: Scripts Testing
+    baseurl: https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}-testing/
+    enabled: "{{ enable_testing_repo | default(False) }}"

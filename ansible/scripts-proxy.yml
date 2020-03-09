@@ -13,6 +13,8 @@
       dest: /etc/munin/plugin-conf.d/
       src: files/conntrack
   roles:
+    - role: rpm-repos
+      tags: [always]
     - ansible-config-me
     - k5login
     - syslog-client

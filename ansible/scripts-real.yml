@@ -14,15 +14,6 @@
   vars:
     ldap_server: "{{ use_local_ldap | default(True) | ternary('ldapi://%2fvar%2frun%2fslapd-scripts.socket/', 'ldap://scripts-ldap.mit.edu/') }}"
     ldap_server_tcp: "{{ use_local_ldap | default(True) | ternary('ldap://127.0.0.1/', 'ldap://scripts-ldap.mit.edu/') }}"
-    rpm_repos:
-      - key: scripts
-        name: Scripts
-        baseurl: https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}/
-        enabled: yes
-      - key: scripts-testing
-        name: Scripts Testing
-        baseurl: https://web.mit.edu/scripts/yum-repos/rpm-fc{{ ansible_distribution_major_version }}-testing/
-        enabled: "{{ enable_testing_repo | default(False) }}"
     preferred_mta: postfix
   pre_tasks:
     - name: Block Ansible on legacy realservers
@@ -39,33 +30,9 @@
         state: absent
     - include_role:
         name: real-network
-    - name: Configure dnf
-      block:
-        - name: Configure scripts RPM repos
-          copy:
-            dest: /etc/yum.repos.d/scripts.repo
-            content: |
-              {% for repo in rpm_repos %}
-              [{{ repo.key }}]
-              name={{ repo.name }}
-              baseurl={{ repo.baseurl }}
-              enabled={{ 1 if repo.enabled else 0 }}
-              gpgcheck=0
-              {% endfor %}
-        - name: Configure dnf.conf
-          ini_file:
-            path: /etc/dnf/dnf.conf
-            section: main
-            option: "{{ item.option }}"
-            value: "{{ item.value }}"
-          loop:
-            - option: installonly_limit
-              value: 0
-            - option: installonlypkgs
-              value: kernel kernel-devel kernel-modules kmod-openafs ghc-cgi ghc-cgi-devel
-            - option: excludepkgs
-              value: fedora-obsolete-packages php-fpm nfs-utils
   roles:
+    - role: rpm-repos
+      tags: [always]
     - role: packages
       tags: [always]
     - role: syslog-client
