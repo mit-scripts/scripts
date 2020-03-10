@@ -231,6 +231,7 @@ python3-sympy
 python3-talloc
 python3-tempita
 python3-textile
+python3-theano
 python3-tidy
 python3-tornado
 python3-tpg
