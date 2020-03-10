@@ -84,6 +84,7 @@ libiodbc
 libkate
 libmodplug
 libmp4v2
+libnsl
 libofx
 liboil
 libopenraw
