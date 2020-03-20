@@ -40,8 +40,8 @@ virtual=2
 {% endfor %}
 	fallback=127.0.0.1 gate
 	service=http
-	request="heartbeat/http?codename=ANY"
-	virtualhost="scripts.mit.edu"
+	request="__scripts/heartbeat/http?codename=ANY"
+	virtualhost="heartbeat.scripts.scripts.mit.edu"
 	receive="1"
 	checktype=negotiate
 	checkport=80
