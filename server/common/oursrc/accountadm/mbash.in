@@ -2,20 +2,28 @@
 
 from __future__ import (absolute_import, division, print_function)
 
-import os
-import sys
 import getpass
+import os
 import subprocess
+import sys
+
 import ldap
 import ldap.filter
 
+BASE_DN = 'dc=scripts,dc=mit,dc=edu'
+
 def get_pool(username):
+    """
+    Check what pool(s) a locker is on.
+
+    Returns: (default vhost pool IP, [(pool name, vhost name)] if multiple pools)
+    """
     ldap_uri = ldap.get_option(ldap.OPT_URI)
 
     ll = ldap.initialize(ldap_uri)
 
     users = ll.search_s(
-        'dc=scripts,dc=mit,dc=edu',
+        BASE_DN,
         ldap.SCOPE_SUBTREE,
         ldap.filter.filter_format('(&(objectClass=posixAccount)(uid=%s))', [username]),
         [],
@@ -26,20 +34,25 @@ def get_pool(username):
 
     pool_ips = set()
     vhost_pools = {}
-    for dn, attrs in ll.search_s(
-        'dc=scripts,dc=mit,dc=edu',
-        ldap.SCOPE_SUBTREE,
-        ldap.filter.filter_format('(&(objectClass=scriptsVhost)(scriptsVhostAccount=%s))', [user_dn]),
-        ['scriptsVhostName', 'scriptsVhostPoolIPv4'],
+    for _, attrs in ll.search_s(
+            BASE_DN,
+            ldap.SCOPE_SUBTREE,
+            ldap.filter.filter_format(
+                '(&(objectClass=scriptsVhost)(scriptsVhostAccount=%s))',
+                [user_dn]),
+            ['scriptsVhostName', 'scriptsVhostPoolIPv4'],
     ):
         vhost_pools[attrs['scriptsVhostName'][0]] = attrs['scriptsVhostPoolIPv4'][0]
         pool_ips.add(attrs['scriptsVhostPoolIPv4'][0])
 
     pool_names = {}
     for dn, attrs in ll.search_s(
-            'dc=scripts,dc=mit,dc=edu',
+            BASE_DN,
             ldap.SCOPE_SUBTREE,
-            '(&(objectClass=scriptsVhostPool)(|'+''.join(ldap.filter.filter_format('(scriptsVhostPoolIPv4=%s)', [ip]) for ip in pool_ips)+'))',
+            '(&(objectClass=scriptsVhostPool)(|'+''.join(
+                ldap.filter.filter_format('(scriptsVhostPoolIPv4=%s)', [ip])
+                for ip in pool_ips
+            )+'))',
             ['cn', 'scriptsVhostPoolIPv4'],
     ):
         pool_names[attrs['scriptsVhostPoolIPv4'][0]] = attrs['cn'][0]
@@ -47,10 +60,14 @@ def get_pool(username):
     main_pool = vhost_pools.get(username + '.scripts.mit.edu')
     other_pools = None
     if len(pool_ips) > 1:
-        other_pools = sorted((pool_names.get(pool, pool), vhost) for vhost, pool in vhost_pools.items())
+        other_pools = sorted(
+            (pool_names.get(pool, pool), vhost)
+            for vhost, pool in vhost_pools.items()
+        )
     return main_pool, other_pools
 
 def should_forward():
+    """Check if we were invoked by ssh on a vip that requires forwarding."""
     ssh_connection = os.environ.get('SSH_CONNECTION')
     if not ssh_connection:
         return False
@@ -64,9 +81,15 @@ def should_forward():
     return False
 
 def has_pool(ip):
+    """Check if the current machine is binding a vip."""
     return len(subprocess.check_output(['/sbin/ip', 'addr', 'show', 'to', ip])) > 0
 
 def maybe_forward():
+    """
+    Forward the invocation if appropriate.
+
+    exec's when forwarding, so returning means we should run locally.
+    """
     if not should_forward():
         return
     command = None
@@ -79,10 +102,11 @@ def maybe_forward():
     main_pool, other_pools = get_pool(user)
     forward = main_pool and not has_pool(main_pool)
     if forward:
-        # TODO: Check if we're already on the right server.
         print("Forwarding to the server for %s.scripts.mit.edu." % (user,), file=sys.stderr)
     if other_pools:
-        print("Your account has virtual hosts on multiple server pools; to connect to a server for a particular host, connect to a specific server:", file=sys.stderr)
+        print("Your account has virtual hosts on multiple server pools; "
+              "to connect to a server for a particular host, "
+              "connect to a specific server:", file=sys.stderr)
         print(file=sys.stderr)
         for name, vhost in other_pools:
             print("%s - ssh %s" % (vhost, name), file=sys.stderr)
@@ -93,6 +117,7 @@ def maybe_forward():
             args.append(command)
         os.execv('/usr/bin/ssh', args)
 
-maybe_forward()
+if __name__ == '__main__':
+    maybe_forward()
 
-os.execv("@bash_path@", ["bash", "--rcfile", "/usr/local/etc/mbashrc"] + sys.argv[1:])
+    os.execv("@bash_path@", ["bash", "--rcfile", "/usr/local/etc/mbashrc"] + sys.argv[1:])
