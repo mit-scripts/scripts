@@ -1,7 +1,15 @@
-{% for host in groups['scripts-real-prod'] %}
-{% set ghal = lookup('moira_ghal', host, include_short_names=True, include_cname=True) %}
-{% set ips = [hostvars[host].ip, hostvars[host].vlan461_address] | select("defined") | select | join(',') %}
+{% macro output_keys(names) %}
 {% for key in ssh_host_keys %}
-{{ ghal }},{{ ips }} {{ key }}
+{{ names | join(',') }} {{ key }}
 {% endfor %}
+{% endmacro %}
+
+{% for host in groups['scripts-real-prod'] %}
+{% set ghal = query('moira_ghal', host, include_short_names=True, include_cname=True) %}
+{% set ips = [hostvars[host].ip, hostvars[host].vlan461_address] | select("defined") | select | list %}
+{{ output_keys(ghal + ips) }}
+{% endfor %}
+
+{% for vip in vips|json_query("[?type != 'director']") %}
+{{ output_keys([vip.host, vip.host|replace('.mit.edu', ''), vip.ip]) }}
 {% endfor %}
