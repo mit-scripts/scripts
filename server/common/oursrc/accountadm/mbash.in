@@ -7,9 +7,6 @@ import os
 import subprocess
 import sys
 
-import ldap
-import ldap.filter
-
 BASE_DN = 'dc=scripts,dc=mit,dc=edu'
 
 def get_pool(username):
@@ -18,6 +15,9 @@ def get_pool(username):
 
     Returns: (default vhost pool IP, [(pool name, vhost name)] if multiple pools)
     """
+    import ldap
+    import ldap.filter
+
     ldap_uri = ldap.get_option(ldap.OPT_URI)
 
     ll = ldap.initialize(ldap_uri)
@@ -113,7 +113,14 @@ def maybe_forward():
             print("%s - ssh %s" % (vhost, name), file=sys.stderr)
         print(file=sys.stderr)
     if forward:
-        args = ['ssh', main_pool, '--']
+        args = [
+            'ssh',
+            '-F', '/etc/ssh/ssh_config',
+            '-o', 'IdentityFile=none',
+            '-o', 'UserKnownHostsFile=none',
+            main_pool,
+            '--',
+        ]
         if command is not None:
             args.append(command)
         os.execv('/usr/bin/ssh', args)
