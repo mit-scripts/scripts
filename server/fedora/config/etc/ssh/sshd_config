@@ -22,3 +22,8 @@ HostbasedAuthentication yes
 IgnoreRhosts yes
 IgnoreUserKnownHosts yes
 DenyUsers root@old-faithful.mit.edu root@better-mousetrap.mit.edu root@bees-knees.mit.edu root@cats-whiskers.mit.edu root@pancake-bunny.mit.edu root@busy-beaver.mit.edu root@real-mccoy.mit.edu root@whole-enchilada.mit.edu root@shining-armor.mit.edu root@golden-egg.mit.edu root@miracle-cure.mit.edu root@lucky-star.mit.edu
+
+# Must come last because F20 sshd doesn't support "Match All"
+Match LocalAddress 18.4.86.43,18.4.86.50,18.4.86.46,18.4.86.29
+AllowAgentForwarding no
+AllowTcpForwarding no
