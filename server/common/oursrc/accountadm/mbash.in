@@ -112,7 +112,14 @@ def maybe_forward():
             print("%s - ssh %s" % (vhost, name), file=sys.stderr)
         print(file=sys.stderr)
     if forward:
-        args = ['ssh', main_pool, '--']
+        args = [
+            'ssh',
+            '-F', '/etc/ssh/ssh_config',
+            '-o', 'IdentityFile=none',
+            '-o', 'UserKnownHostsFile=none',
+            main_pool,
+            '--',
+        ]
         if command is not None:
             args.append(command)
         os.execv('/usr/bin/ssh', args)
