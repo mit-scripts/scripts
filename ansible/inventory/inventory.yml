@@ -51,6 +51,7 @@ all:
       ip: 18.4.86.229
       cidr_netmask: 24
       nic: vlan486
+      codename: Thirty
     - host: sipb.mit.edu
       ip: 18.4.86.29
       cidr_netmask: 24
