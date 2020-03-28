@@ -119,9 +119,11 @@ def maybe_forward():
             '-o', 'IdentityFile=none',
             '-o', 'UserKnownHostsFile=none',
             main_pool,
-            '--',
         ]
+        if os.isatty(sys.stdin.fileno()):
+            args.append('-t')
         if command is not None:
+            args.append('--')
             args.append(command)
         os.execv('/usr/bin/ssh', args)
 
