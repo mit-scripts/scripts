@@ -1,0 +1,64 @@
+- hosts: jupyter
+  serial: 1
+  roles:
+  - ansible-config-me
+  - sysctl
+  - tmpfiles
+# - real-ldap
+  - k5login
+# - real-nsspam
+# - real-afs
+  tasks:
+  - package:
+      name:
+      - accountadm
+      state: present
+    when: use_account_adm | default(False)
+  - name: Hesiod
+    block:
+    - name: Install hesiod
+      package: name=hesiod state=present
+    - name: Configure hesiod
+      copy:
+        dest: /etc/hesiod.conf
+        content: |
+          rhs=.ATHENA.MIT.EDU
+          lhs=.ns
+  - name: autofs
+    block:
+    - name: Install autofs
+      package:
+        name:
+        - autofs
+        - autofs-hesiod
+        state: present
+    - name: Configure autofs
+      copy:
+        dest: /etc/auto.master
+        content: |
+          /mit hesiod:hesiod
+      notify: reload autofs
+    - name: Enable autofs
+      service:
+        name: autofs
+        enabled: yes
+        state: started
+  # resource limits
+  # per-user logs
+  - name: Configure reboot on {panic,oops,OOM}
+    copy:
+      dest: /etc/sysctl.d/99-scripts-reboot.conf
+      content: |
+        kernel.panic = 5
+        kernel.panic_on_oops = 1
+        vm.panic_on_oom = 1
+    notify: apply sysctl
+  - name: Enable sysrq
+    copy:
+      dest: /etc/sysctl.d/99-scripts-sysrq.conf
+      content: |
+        kernel.sysrq = 1
+    notify: apply sysctl
+  handlers:
+  - name: reload autofs
+    service: name=autofs state=reloaded
