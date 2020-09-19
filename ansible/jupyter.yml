@@ -1,5 +1,7 @@
 - hosts: jupyter
   serial: 1
+  vars:
+    use_afs: yes
   roles:
   - ansible-config-me
   - sysctl
@@ -7,7 +9,7 @@
 # - real-ldap
   - k5login
 # - real-nsspam
-# - real-afs
+  - jupyter-afs
   tasks:
   - package:
       name:

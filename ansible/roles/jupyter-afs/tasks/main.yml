@@ -1,0 +1,133 @@
+---
+- name: Jupyter AFS
+  when: use_afs
+  block:
+  - name: Install OpenAFS
+    package:
+      name:
+        # TODO: Add provides for patched packages that we can depend on
+        - openafs-client
+        - openafs-modules-dkms
+        - openafs-krb5
+      state: present
+  - name: Disable garbage collection of PAGs
+    copy:
+      dest: /etc/sysctl.d/99-scripts-afs.conf
+      content: |
+        afs.GCPAGs = 0
+    notify: apply sysctl
+  - name: Create afsagent group
+    group:
+      name: afsagent
+      gid: 201
+  - name: Create afsagent user
+    user:
+      name: afsagent
+      uid: 201
+      group: afsagent
+      system: yes
+  - name: Install renew
+    copy:
+      dest: /home/afsagent/renew
+      src: renew
+  - name: Install units
+    copy:
+      dest: /etc/systemd/system/{{ item }}
+      src: "{{ item }}"
+    loop:
+#      - scripts-afsagent-startup.service
+      - scripts-afsagent.service
+      - scripts-afsagent.timer
+  - name: Increase AFS performance
+    ini_file:
+      no_extra_spaces: yes
+      path: /etc/openafs/afs.conf
+      section: null
+      option: OPTIONS
+      value: '"-afsdb -dynroot -fakestat -stat 25000 -daemons 100 -volumes 4000 -files {{ afs_cache_size // 25 }} -chunksize 19"'
+    notify: restart openafs-client
+  - name: Configure ThisCell
+    copy:
+      dest: /etc/openafs/ThisCell
+      content: |
+        athena.mit.edu
+    notify: restart openafs-client
+  - name: Configure CellServDB
+    copy:
+      dest: /etc/openafs/CellServDB
+      src: CellServDB.local
+    notify: restart openafs-client
+  - name: Configure CellAlias
+    copy:
+      dest: /etc/openafs/CellAlias
+      content: |
+        athena.mit.edu          athena
+        csail.mit.edu           csail
+        dev.mit.edu             dev
+        lees.mit.edu            lees
+        net.mit.edu             net
+        ops.mit.edu             ops
+        sipb.mit.edu            sipb
+        andrew.cmu.edu          andrew
+        acpub.duke.edu          acpub
+    notify: restart openafs-client
+  - name: Resize AFS cache
+    copy:
+      dest: /etc/openafs/cacheinfo
+      content: |
+        /afs:/var/cache/openafs:{{ afs_cache_size }}
+    notify: restart openafs-client
+  - name: Configure SuidCells
+    copy:
+      dest: /etc/openafs/{{ item }}
+      content: ""
+    loop:
+      - SuidCells
+      - SuidCells.dist
+      - SuidCells.local
+    notify: restart openafs-client
+  - name: Configure NetRestrict
+    # TODO: Add all private IPs
+    template:
+      dest: /etc/openafs/NetRestrict
+      src: NetRestrict.j2
+    notify: restart openafs-client
+  # TODO: Configure NetInfo
+  - name: Start openafs-client
+    service:
+      name: openafs-client
+      enabled: yes
+      state: started
+    register: openafs_started
+  - name: Enable afsagent
+    systemd:
+      name: "{{ item }}"
+      enabled: yes
+    loop:
+      - scripts-afsagent.service
+#      - scripts-afsagent-startup.service
+      - scripts-afsagent.timer
+    when: has_daemon_keytab
+  - name: Start afsagent
+    systemd:
+      name: "{{ item }}"
+      state: started
+    loop:
+#      - scripts-afsagent-startup.service
+      - scripts-afsagent.timer
+    when: has_daemon_keytab
+
+# CellServDB maintains a mapping of cell names to IP addresses of servers
+# serving them.
+
+# Under normal operation, CellServDB.dist (which is distributed by the
+# OpenAFS package) and CellServDB.local (which is normally empty, but can
+# be used to add local AFS cells.)
+
+# However, we patch OpenAFS's systemd unit file to instead concatenate
+# CellServDB.local (which is Athena Ops provided database) and
+# CellServDB.mousetrap (which is a bogus entry for better-mousetrapfs,
+# which catches and kills 'find /afs').
+
+# CellServDB.mousetrap must be concatenated at the end, as readdir on
+# /afs returns cells in reverse order they are in CellServDB.

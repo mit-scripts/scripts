@@ -1,0 +1,3 @@
+{% for address in ansible_lo.ipv4_secondaries|default([]) %}
+{{ address.address }}
+{% endfor %}

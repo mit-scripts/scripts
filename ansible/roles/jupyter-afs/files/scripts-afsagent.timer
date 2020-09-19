@@ -1,0 +1,9 @@
+[Unit]
+Description=Scripts afsagent periodic renew
+
+[Timer]
+Unit=scripts-afsagent.service
+OnUnitActiveSec=3h
+
+[Install]
+WantedBy=multi-user.target remote-fs.target

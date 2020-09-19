@@ -1,0 +1,2 @@
+use_afs: yes
+afs_cache_size: 10000000

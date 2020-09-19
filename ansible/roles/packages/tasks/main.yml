@@ -4,5 +4,7 @@
     list: available
     disablerepo: [fedora, updates, fedora-modular, updates-modular]
   register: dnf_list_available
+  when: ansible_distribution == "Fedora"
 - set_fact:
     scripts_packages: "{{ dnf_list_available | json_query('results[*].name') }}"
+  when: ansible_distribution == "Fedora"
