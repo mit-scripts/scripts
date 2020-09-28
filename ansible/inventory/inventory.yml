@@ -141,6 +141,7 @@ all:
 
     sql:
       vars:
+        vlan486_address: "{{ ip }}"
         vlan461_address: "{{ ip | replace('18.4.86.', '172.21.0.') | replace('18.4.60.', '172.21.0.') }}"
       hosts:
         sql.mit.edu: {}
@@ -154,7 +155,8 @@ all:
               # Include IPs so they can be installed before DNS is ready
               ip: 18.4.86.201
             unique-key.mit.edu:
-              ip: 18.4.86.202
+              vlan486_hwaddr: 00:50:56:87:22:9e
+              vlan461_hwaddr: 00:50:56:87:28:7d
 
     scripts-real:
       children:

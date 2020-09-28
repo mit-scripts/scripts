@@ -1,14 +1,5 @@
 - hosts: sql-buster
   serial: 1
-  vars:
-    network_allow_service_restart: false
-    network_ether_interfaces:
-    - device: vlan486
-      hwaddr: "{{ vlan486_hwaddr }}"
-      cidr: "{{ vlan486_address }}/24"
-      gateway: 18.4.86.1
-      dns_nameservers: "{{ mit_dns_servers }}"
-      dns_search: mit.edu
   pre_tasks:
   - name: Install packages
     apt:
@@ -23,14 +14,7 @@
         - strace
         - emacs-nox
       state: present
-  - include_role: name=udev_rename_netiface
-  - include_role: name=network_interface
-  - when: udev_rename_netiface_config_changed.changed or ether_result.changed
-    command: "true"
-    notify:
-      - reboot
-      - reconfigure munin-node
-      - setup
+  - include_role: name=systemd-networkd
   roles:
   - k5login
   - syslog-client
