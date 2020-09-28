@@ -147,6 +147,14 @@ all:
         primary-key.mit.edu: {}
         foreign-key.mit.edu: {}
         sliced-bread.mit.edu: {}
+      children:
+        sql-buster:
+          hosts:
+            multivalue-key.mit.edu:
+              # Include IPs so they can be installed before DNS is ready
+              ip: 18.4.86.201
+            unique-key.mit.edu:
+              ip: 18.4.86.202
 
     scripts-real:
       children:

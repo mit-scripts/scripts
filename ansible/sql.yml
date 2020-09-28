@@ -1,0 +1,48 @@
+- hosts: sql-buster
+  serial: 1
+  vars:
+    network_allow_service_restart: false
+    network_ether_interfaces:
+    - device: vlan486
+      hwaddr: "{{ vlan486_hwaddr }}"
+      cidr: "{{ vlan486_address }}/24"
+      gateway: 18.4.86.1
+      dns_nameservers: "{{ mit_dns_servers }}"
+      dns_search: mit.edu
+  pre_tasks:
+  - name: Install packages
+    apt:
+      name:
+        - open-vm-tools
+        - open-vm-tools-dkms
+        - resolvconf
+        - mlocate
+        - aptitude
+        - tcpdump
+        - tshark
+        - strace
+        - emacs-nox
+      state: present
+  - include_role: name=udev_rename_netiface
+  - include_role: name=network_interface
+  - when: udev_rename_netiface_config_changed.changed or ether_result.changed
+    command: "true"
+    notify:
+      - reboot
+      - reconfigure munin-node
+      - setup
+  roles:
+  - k5login
+  - syslog-client
+  - root-aliases
+  - munin-node
+  - nrpe
+  handlers:
+  - name: load modules
+    service: name=systemd-modules-load state=restarted
+  - name: reload sysctl
+    service: name=systemd-sysctl state=restarted
+  - name: reboot
+    include_tasks: reboot.yml
+  - name: setup
+    setup:
