@@ -1,4 +1,5 @@
 ---
+# TODO: On Debian, `update-initramfs -u` needs to run after .link files change
 - name: Remove network-scripts and NetworkManager
   package:
     name:
