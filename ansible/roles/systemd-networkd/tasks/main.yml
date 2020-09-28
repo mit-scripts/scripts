@@ -1,11 +1,9 @@
 ---
-- name: Remove network-scripts
-  dnf:
-    name: network-scripts
-    state: absent
-- name: Remove NetworkManager
-  dnf:
-    name: NetworkManager
+- name: Remove network-scripts and NetworkManager
+  package:
+    name:
+      - network-scripts
+      - NetworkManager
     state: absent
 - name: lo
   block:
