@@ -18,3 +18,5 @@
 
 - import_playbook: scripts-real.yml
 
+- import_playbook: sql.yml
+
