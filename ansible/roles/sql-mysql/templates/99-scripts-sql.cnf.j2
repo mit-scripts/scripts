@@ -1,5 +1,9 @@
 [mysqld]
 
+# Disable checksums because p-k doesn't support them
+# TODO: Reenable when we're on all new versions
+binlog_checksum=NONE
+
 bind-address = 0.0.0.0
 
 # open_files_limit now set to 16K in the systemd unit
