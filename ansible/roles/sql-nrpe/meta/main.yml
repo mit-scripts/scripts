@@ -1,0 +1,14 @@
+---
+dependencies:
+  - role: nrpe
+    vars:
+      nrpe_checks:
+        check_load: /usr/lib/nagios/plugins/check_load -w 16:10:10 -c 20:15:15
+        check_disk: /usr/lib/nagios/plugins/check_disk -w 10% -c 5% -x /var/cache/openafs -x /mnt/isilon
+        check_mysql: /usr/lib/nagios/plugins/check_mysql
+        check_mysql_S: /usr/lib/nagios/plugins/check_mysql -S
+
+        # The nagios (or equivalent) user needs the PROCESS permission to run this
+        # query. Otherwise, this will include *that* user's processes only.
+        check_mysql_total_conns: /usr/lib/nagios/plugins/check_mysql_query --query="SELECT count(*) as count_total FROM PROCESSLIST" --database=information_schema --warning=3:425 --critical=2:600
+        check_mysql_user_conns: /usr/lib/nagios/plugins/check_mysql_query --query="SELECT count(*) as count_by_user, User FROM PROCESSLIST GROUP BY USER ORDER BY count_by_user DESC" --database=information_schema --warning=1:60 --critical=1:80

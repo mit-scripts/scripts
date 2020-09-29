@@ -1,0 +1,3 @@
+---
+- name: Install check_mysql and check_mysql_query
+  package: name=monitoring-plugins-standard
