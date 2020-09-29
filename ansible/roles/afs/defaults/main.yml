@@ -1,0 +1,4 @@
+afs_packages:
+  - openafs-client
+afs_cache_size: 1000000
+afs_config_directory: '{{ "/usr/vice/etc" if ansible_os_family == "RedHat" else "/etc/openafs" }}'

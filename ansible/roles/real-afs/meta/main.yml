@@ -4,3 +4,16 @@ dependencies:
   - sysctl
   - real-fuse
   - real-keytabs
+  - role: afs
+    when: use_afs
+    vars:
+      afs_packages:
+      - fuse-better-mousetrapfs
+      - scripts-dkms-openafs
+      - kernel-devel
+      - scripts-openafs-client
+      - scripts-openafs-authlibs
+      - scripts-openafs-devel
+      - scripts-openafs-krb5
+      - tokensys
+      afs_cellservdb_name: CellServDB.local

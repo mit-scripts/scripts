@@ -1,0 +1,7 @@
+---
+- name: restart openafs-client
+  service:
+    name: openafs-client
+    enabled: yes
+    state: restarted
+  when: not openafs_started.changed

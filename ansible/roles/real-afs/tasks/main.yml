@@ -2,72 +2,12 @@
 - name: Scripts AFS
   when: use_afs
   block:
-  - name: Install OpenAFS
-    dnf:
-      name:
-        - fuse-better-mousetrapfs
-        - scripts-dkms-openafs
-        - kernel-devel
-        - scripts-openafs-client
-        - scripts-openafs-authlibs
-        - scripts-openafs-devel
-        - scripts-openafs-krb5
-        - tokensys
-      state: present
   - name: Disable garbage collection of PAGs
     copy:
       dest: /etc/sysctl.d/99-scripts-afs.conf
       content: |
         afs.GCPAGs = 0
     notify: apply sysctl
-  - name: Increase AFS performance
-    ini_file:
-      no_extra_spaces: yes
-      path: /etc/sysconfig/openafs
-      section: null
-      option: AFSD_ARGS
-      value: '"-afsdb -dynroot -fakestat -stat 25000 -daemons 100 -volumes 4000 -files {{ afs_cache_size // 25 }} -chunksize 19"'
-    notify: restart openafs-client
-  - name: Configure ThisCell
-    copy:
-      dest: /usr/vice/etc/ThisCell
-      content: |
-        athena.mit.edu
-    notify: restart openafs-client
-  - name: Configure CellServDB
-    copy:
-      dest: /usr/vice/etc/CellServDB.local
-      src: CellServDB.local
-    notify: restart openafs-client
-  - name: Configure CellAlias
-    copy:
-      dest: /usr/vice/etc/CellAlias
-      content: |
-        athena.mit.edu          athena
-        csail.mit.edu           csail
-        dev.mit.edu             dev
-        lees.mit.edu            lees
-        net.mit.edu             net
-        ops.mit.edu             ops
-        sipb.mit.edu            sipb
-        andrew.cmu.edu          andrew
-        acpub.duke.edu          acpub
-    notify: restart openafs-client
-  - name: Resize AFS cache
-    copy:
-      dest: /usr/vice/etc/cacheinfo
-      content: |
-        /afs:/usr/vice/cache:{{ afs_cache_size }}
-    notify: restart openafs-client
-  - name: Configure SuidCells
-    copy:
-      dest: /usr/vice/etc/{{ item }}
-      content: ""
-    loop:
-      - SuidCells
-      - SuidCells.dist
-      - SuidCells.local
-    notify: restart openafs-client
   - name: Configure NetRestrict
     template:
       dest: /usr/vice/etc/NetRestrict
@@ -99,12 +39,6 @@
     notify:
       - restart openafs-client
       - restart better-mousetrapfs
-  - name: Start openafs-client
-    service:
-      name: openafs-client
-      enabled: yes
-      state: started
-    register: openafs_started
   - name: Start better-mousetrapfs
     systemd:
       daemon_reload: "{{ afs000_mount.changed }}"

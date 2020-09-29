@@ -1,0 +1,24 @@
+- name: Install OpenAFS
+  dnf:
+    name: "{{ afs_packages }}"
+    state: present
+- name: Increase AFS performance
+  ini_file:
+    no_extra_spaces: yes
+    path: /etc/sysconfig/openafs
+    section: null
+    option: AFSD_ARGS
+    value: '"-afsdb -dynroot -fakestat -stat 25000 -daemons 100 -volumes 4000 -files {{ afs_cache_size // 25 }} -chunksize 19"'
+  notify: restart openafs-client
+- name: Configure ThisCell
+  copy:
+    dest: "{{ afs_config_directory }}/ThisCell"
+    content: |
+      athena.mit.edu
+  notify: restart openafs-client
+- name: Resize AFS cache
+  copy:
+    dest: "{{ afs_config_directory }}/cacheinfo"
+    content: |
+      /afs:/usr/vice/cache:{{ afs_cache_size }}
+  notify: restart openafs-client

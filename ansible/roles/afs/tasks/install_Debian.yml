@@ -1,0 +1,6 @@
+---
+- name: Install OpenAFS
+  apt:
+    name: "{{ afs_packages }}"
+- debconf: name=openafs-client question=openafs-client/thiscell vtype=string value=athena.mit.edu
+- debconf: name=openafs-client question=openafs-client/cachesize vtype=string value={{ afs_cache_size }}

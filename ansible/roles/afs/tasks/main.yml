@@ -1,0 +1,36 @@
+---
+- include_tasks: 'install_{{ ansible_os_family }}.yml'
+- name: Configure CellServDB
+  copy:
+    dest: "{{ afs_config_directory }}/{{ afs_cellservdb_name }}"
+    src: CellServDB.local
+  notify: restart openafs-client
+- name: Configure CellAlias
+  copy:
+    dest: "{{ afs_config_directory }}/CellAlias"
+    content: |
+      athena.mit.edu          athena
+      csail.mit.edu           csail
+      dev.mit.edu             dev
+      lees.mit.edu            lees
+      net.mit.edu             net
+      ops.mit.edu             ops
+      sipb.mit.edu            sipb
+      andrew.cmu.edu          andrew
+      acpub.duke.edu          acpub
+  notify: restart openafs-client
+- name: Configure SuidCells
+  copy:
+    dest: "{{ afs_config_directory }}/{{ item }}"
+    content: ""
+  loop:
+    - SuidCells
+    - SuidCells.dist
+    - SuidCells.local
+  notify: restart openafs-client
+- name: Start openafs-client
+  service:
+    name: openafs-client
+    enabled: yes
+    state: started
+  register: openafs_started
