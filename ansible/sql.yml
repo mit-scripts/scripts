@@ -24,7 +24,7 @@
   - k5login
   - syslog-client
   - root-aliases
-  - munin-node
+  - sql-munin-node
   - sql-mysql
   - sql-remctl
   - sql-nrpe

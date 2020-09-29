@@ -1,0 +1,56 @@
+---
+- name: Install munin dependencies
+  package:
+    name:
+      - sudo
+      - libcache-cache-perl
+- name: Install mysql_aggregate_user_conns
+  copy:
+    dest: /etc/munin/plugins/mysql_aggregate_user_conns
+    src: files/mysql_aggregate_
+  notify: restart munin-node
+- name: Run munin as non-root
+  lineinfile:
+    path: /etc/munin/munin-node.conf
+    regexp: '^#?\s*{{ item.split()[0] }}\s'
+    line: "{{ item }}"
+  loop:
+    - user munin
+    - group munin
+  notify: restart munin-node
+- name: Configure sudoers
+  copy:
+    dest: /etc/sudoers.d/scripts-munin-node
+    content: |
+      Defaults:munin !syslog
+
+      munin ALL=(root) SETENV: NOPASSWD: /etc/munin/plugins/exim_* , /etc/munin/plugins/if_* , /etc/munin/plugins/if_err_*
+- name: Run certain munin plugins as root
+  copy:
+    dest: /etc/munin/plugin-conf.d/zzz-scripts
+    content: |
+      [exim*]
+      user root
+      command sudo -E %c
+
+      [if_*]
+      user root
+      command sudo -E %c
+      env.PATH /usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+  notify: reconfigure munin-node
+- name: Configure mysql plugins
+  copy:
+    dest: /etc/munin/plugin-conf.d/zz-mysql
+    content: |
+      [mysql*]
+      env.mysqluser munin
+
+      [mysql_aggregate_user_conns]
+      env.database information_schema
+      env.user munin
+      env.table processlist
+      env.field USER
+      env.label Max user connections
+      env.vlabel "Number of connections"
+      env.only max
+  notify: reconfigure munin-node
