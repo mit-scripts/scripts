@@ -4,6 +4,7 @@
     name:
       - sudo
       - libcache-cache-perl
+      - python-mysqldb
 - name: Install mysql_aggregate_user_conns
   copy:
     dest: /etc/munin/plugins/mysql_aggregate_user_conns
