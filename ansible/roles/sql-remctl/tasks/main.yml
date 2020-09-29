@@ -1,0 +1,16 @@
+---
+- name: Install remctl
+  package:
+    name:
+      - remctl-server
+      - remctl-client
+# TODO: Build and install admof
+- name: Install remctl-pony
+  command: git clone https://github.com/mit-scripts/sql-remctl.git /srv/remctl-pony
+  args:
+    creates: /srv/remctl-pony
+- name: Configure remctl
+  file:
+    state: link
+    src: /srv/remctl-pony/remctl.conf
+    dest: /etc/remctl/conf.d/sql

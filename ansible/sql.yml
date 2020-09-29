@@ -26,6 +26,7 @@
   - root-aliases
   - munin-node
   - sql-mysql
+  - sql-remctl
   - nrpe
   handlers:
   - name: load modules
