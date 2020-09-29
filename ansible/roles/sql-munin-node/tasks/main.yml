@@ -8,6 +8,7 @@
   copy:
     dest: /etc/munin/plugins/mysql_aggregate_user_conns
     src: files/mysql_aggregate_
+    mode: preserve
   notify: restart munin-node
 - name: Run munin as non-root
   lineinfile:
