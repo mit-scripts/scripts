@@ -31,6 +31,9 @@
   copy:
     dest: /etc/munin/plugin-conf.d/zzz-scripts
     content: |
+      [diskstats]
+      user munin
+
       [exim*]
       user root
       command sudo -E %c

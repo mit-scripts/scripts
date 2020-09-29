@@ -16,6 +16,7 @@
         - tcpdump
         - tshark
         - strace
+        - sysstat
         - net-tools
         - emacs-nox
       state: present
