@@ -1,6 +1,10 @@
 - hosts: sql-buster
   serial: 1
   pre_tasks:
+  - name: Refuse to run on the primary
+    fail:
+      msg: Refusing to run on the primary
+    when: lookup('dig', 'sql.mit.edu') in ansible_all_ipv4_addresses
   - name: Install packages
     apt:
       name:
@@ -12,6 +16,7 @@
         - tcpdump
         - tshark
         - strace
+        - net-tools
         - emacs-nox
       state: present
   - include_role: name=systemd-networkd
@@ -20,6 +25,7 @@
   - syslog-client
   - root-aliases
   - munin-node
+  - sql-mysql
   - nrpe
   handlers:
   - name: load modules

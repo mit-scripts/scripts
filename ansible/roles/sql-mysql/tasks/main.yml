@@ -1,0 +1,15 @@
+---
+- name: Install MariaDB
+  package:
+    name:
+      - mariadb-server
+      - percona-toolkit
+- name: Configure MariaDB
+  template:
+    dest: /etc/mysql/mariadb.conf.d/99-scripts-sql.cnf
+    src: 99-scripts-sql.cnf.j2
+  notify: restart mariadb
+- name: Configure MariaDB clients
+  template:
+    dest: /etc/mysql/mariadb.conf.d/99-scripts-sql-clients.cnf
+    src: 99-scripts-sql-clients.cnf.j2
