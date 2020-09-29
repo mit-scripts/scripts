@@ -117,7 +117,7 @@
           [Address]
           Address={{vlan461_address}}/24
 
-          {% for hostname in groups['sql'] + groups['scripts-real'] %}
+          {% for hostname in (groups['sql'] + groups['scripts-real'])|sort %}
           {% with info = hostvars[hostname] %}
           {% if info['vlan486_address'] | default(False) and info['vlan461_address'] | default(False) %}
           [Route]
