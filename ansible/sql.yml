@@ -29,6 +29,7 @@
   - sql-mysql
   - sql-remctl
   - sql-nrpe
+  - afs
   handlers:
   - name: load modules
     service: name=systemd-modules-load state=restarted

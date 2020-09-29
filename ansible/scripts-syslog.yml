@@ -17,6 +17,9 @@
         - aptitude
         - vim
         - emacs-nox
+        - tcpdump
+        - tshark
+        - screen
       state: present
   - name: Start zhm
     service: name=zhm state=started
