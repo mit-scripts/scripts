@@ -39,16 +39,19 @@
       env.PATH /usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
 
       [if_err_*]
-      command %c
+      user root
   notify: reconfigure munin-node
 - name: Configure mysql plugins
   copy:
     dest: /etc/munin/plugin-conf.d/zz-mysql
     content: |
       [mysql*]
+      user munin
       env.mysqluser munin
+      env.mysqlconnection DBI:mysql:
 
       [mysql_aggregate_user_conns]
+      user munin
       env.database information_schema
       env.user munin
       env.table processlist
