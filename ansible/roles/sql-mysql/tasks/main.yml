@@ -4,6 +4,18 @@
     name:
       - mariadb-server
       - percona-toolkit
+- name: Increase MariaDB open file limit
+  block:
+  - file:
+      path: /etc/systemd/system/mariadb.service.d
+      state: directory
+  - copy:
+      content: |
+        [Service]
+        LimitNOFILE=32768
+      dest: /etc/systemd/system/mariadb.service.d/99-scripts.conf
+    register: override
+    notify: restart mariadb
 - name: Configure MariaDB
   template:
     dest: /etc/mysql/mariadb.conf.d/99-scripts-sql.cnf
