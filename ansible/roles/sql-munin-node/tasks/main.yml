@@ -37,6 +37,9 @@
       user root
       command sudo -E %c
       env.PATH /usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+
+      [if_err_*]
+      command %c
   notify: reconfigure munin-node
 - name: Configure mysql plugins
   copy:
