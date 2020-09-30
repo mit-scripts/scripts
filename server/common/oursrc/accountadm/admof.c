@@ -117,15 +117,13 @@ admof_krb5_524_conv_principal(krb5_context context, krb5_const_principal princ,
 			      char *name, char *inst, char *realm) {
   size_t len = 0;
   /* Taken from aklog.c in openafs and modified */
-  len = min(get_princ_len(context, princ, 0),
-	    second_comp(context, princ) ?
-	    PR_MAXNAMELEN - 2 : PR_MAXNAMELEN - 1);
+  len = min(get_princ_len(context, princ, 0), ANAME_SZ - 1);
   strncpy(name, get_princ_str(context, princ, 0), len);
   name[len] = '\0';
 
   if (second_comp(context, princ)) {
     len = min(get_princ_len(context, princ, 1),
-	      PR_MAXNAMELEN - strlen(name) - 1);
+	      INST_SZ - 1);
     strncpy(inst, get_princ_str(context, princ, 1), len);
     inst[len] = '\0';
   }
