@@ -52,6 +52,12 @@ extern int pioctl(char *, afs_int32, struct ViceIoctl *, afs_int32);
       _x > _y ? _x : _y; })
 #endif
 
+#define get_princ_str(c, p, n) krb5_princ_component(c, p, n)->data
+#define get_princ_len(c, p, n) krb5_princ_component(c, p, n)->length
+#define second_comp(c, p) (krb5_princ_size(c, p) > 1)
+#define realm_data(c, p) krb5_princ_realm(c, p)->data
+#define realm_len(c, p) krb5_princ_realm(c, p)->length
+
 #define SYSADMINS "system:scripts-root"
 #define SYSADMIN_CELL "athena.mit.edu"
 
@@ -106,6 +112,44 @@ parse_rights(int n, const char **p, char *user)
     return rights;
 }
 
+static int
+admof_krb5_524_conv_principal(krb5_context context, krb5_const_principal princ,
+			      char *name, char *inst, char *realm) {
+  size_t len = 0;
+  /* Taken from aklog.c in openafs and modified */
+  len = min(get_princ_len(context, princ, 0),
+	    second_comp(context, princ) ?
+	    PR_MAXNAMELEN - 2 : PR_MAXNAMELEN - 1);
+  strncpy(name, get_princ_str(context, princ, 0), len);
+  name[len] = '\0';
+
+  if (second_comp(context, princ)) {
+    len = min(get_princ_len(context, princ, 1),
+	      PR_MAXNAMELEN - strlen(name) - 1);
+    strncpy(inst, get_princ_str(context, princ, 1), len);
+    inst[len] = '\0';
+  }
+  realm[0] = '\0';
+#if 0
+  // This code works for Heimdal krb5
+  if (princ->name.name_string.len < 1) {
+    return -1;
+  }
+  strncpy(name, princ->name.name_string.val[0], ANAME_SZ);
+  name[ANAME_SZ-1] = '\0';
+  if (princ->name.name_string.len > 1) {
+    strncpy(inst, princ->name.name_string.val[1], ANAME_SZ);
+    inst[ANAME_SZ-1] = '\0';
+  }
+  realm[0] = '\0';
+  if (princ->realm) {
+    strncpy(realm, princ->realm, ANAME_SZ);
+  }
+  realm[ANAME_SZ-1] = '\0';
+#endif
+  return 0;
+}
+
 /* Resolve a Kerberos principal to a name usable by the AFS PTS. */
 void
 resolve_principal(const char *name, const char *cell, char *user)
@@ -124,20 +168,30 @@ resolve_principal(const char *name, const char *cell, char *user)
     krb5_principal principal;
     if (krb5_parse_name(context, name, &principal) != 0)
 	die("internal error: krb5_parse_name failed");
-    char pname[ANAME_SZ], pinst[INST_SZ], prealm[REALM_SZ];
-    if (krb5_524_conv_principal(context, principal, pname, pinst, prealm) != 0)
+    char pname[ANAME_SZ] = {0}, pinst[INST_SZ] = {0}, prealm[REALM_SZ] = {0};
+    if (admof_krb5_524_conv_principal(context, principal, pname, pinst, prealm) != 0)
 	die("internal error: krb5_524_conv_principal failed\n");
 
     krb5_data realm = *krb5_princ_realm(context, principal);
     if (realm.length > REALM_SZ - 1)
-	realm.length = REALM_SZ - 1;
+      realm.length = REALM_SZ - 1;
     if (strlen(realm_list[0]) == realm.length &&
 	memcmp(realm.data, realm_list[0], realm.length) == 0)
-	snprintf(user, MAX_K_NAME_SZ, "%s%s%s",
+      snprintf(user, MAX_K_NAME_SZ, "%s%s%s",
+	       pname, pinst[0] ? "." : "", pinst);
+    else
+      snprintf(user, MAX_K_NAME_SZ, "%s%s%s@%.*s",
+	       pname, pinst[0] ? "." : "", pinst, realm.length, realm.data);
+
+#if 0
+    // This code works with Heimdal krb5
+    if (strcmp(realm_list[0], prealm) == 0)
+      snprintf(user, MAX_K_NAME_SZ, "%s%s%s",
 		 pname, pinst[0] ? "." : "", pinst);
     else
-	snprintf(user, MAX_K_NAME_SZ, "%s%s%s@%.*s",
-		 pname, pinst[0] ? "." : "", pinst, realm.length, realm.data);
+	snprintf(user, MAX_K_NAME_SZ, "%s%s%s@%s",
+		 pname, pinst[0] ? "." : "", pinst, prealm);
+#endif
 
     krb5_free_principal(context, principal);
     krb5_free_host_realm(context, realm_list);
@@ -225,7 +279,7 @@ main(int argc, const char *argv[])
     }
 
     /* Get the locker's cell. */
-    char cell[MAXCELLCHARS];
+    char cell[MAXCELLCHARS] = {0};
     struct ViceIoctl vi;
     vi.in = NULL;
     vi.in_size = 0;
@@ -245,12 +299,13 @@ main(int argc, const char *argv[])
     if (afsconf_GetCellInfo(configdir, cell, NULL, &cellconfig) != 0)
 	die("internal error: afsconf_GetCellInfo failed\n");
     afsconf_Close(configdir);
+    configdir = NULL;
 
     char user[MAX(PR_MAXNAMELEN, MAX_K_NAME_SZ)];
     resolve_principal(name, cellconfig.hostName[0], user);
 
     /* Read the locker ACL. */
-    char acl[2048];
+    char acl[2048] = {0};
     vi.in = NULL;
     vi.in_size = 0;
     vi.out = acl;
@@ -261,8 +316,8 @@ main(int argc, const char *argv[])
     /* Parse the locker ACL to compute the user's rights. */
     const char *p = acl;
 
-    int nplus, nminus;
-    int off;
+    int nplus = 0, nminus = 0;
+    int off = 0;
     if (sscanf(p, "%d\n%d\n%n", &nplus, &nminus, &off) < 2)
 	die("internal error: can't parse output from pioctl\n");
     p += off;
