@@ -17,3 +17,4 @@ dependencies:
       - scripts-openafs-krb5
       - tokensys
       afs_cellservdb_name: CellServDB.local
+      afs_cache_size: "{{ hostvars[inventory_hostname]['afs_cache_size'] | default(10000000) }}"

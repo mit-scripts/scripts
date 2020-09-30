@@ -1,2 +1,1 @@
 use_afs: "{{ 'fuse-better-mousetrapfs' in scripts_packages and 'openafs-client' in scripts_packages and 'dkms-openafs' in scripts_packages and 'tokensys' in scripts_packages }}"
-afs_cache_size: 10000000
