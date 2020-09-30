@@ -1,0 +1,6 @@
+- package: name=autofs-hesiod
+- copy:
+    dest: /etc/auto.master.d/mit-hesiod.autofs
+    content: |
+      /mit hesiod:hesiod
+  notify: reload autofs

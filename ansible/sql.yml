@@ -27,6 +27,7 @@
   - root-aliases
   - sql-munin-node
   - sql-mysql
+  - sql-automounter
   - sql-remctl
   - sql-backup-ng
   - sql-nrpe
