@@ -28,6 +28,7 @@
   - sql-munin-node
   - sql-mysql
   - sql-remctl
+  - sql-backup-ng
   - sql-nrpe
   - afs
   handlers:

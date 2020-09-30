@@ -1,0 +1,14 @@
+---
+- name: Install backup-ng dependencies
+  package:
+    name:
+      - pigz
+- name: Install backup-ng
+  command: git clone https://github.com/mit-scripts/sql-backup.git /srv/backup-ng
+  args:
+    creates: /srv/backup-ng
+- name: Create mit-backup user
+  user:
+    name: mit-backup
+    system: yes
+    home: /srv/backup
