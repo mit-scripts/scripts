@@ -1,0 +1,6 @@
+---
+- name: Install jupyterhub
+  pip:
+    name:
+      jupyterhub
+    virtualenv: /opt/jupyterhub
