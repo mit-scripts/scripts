@@ -16,3 +16,29 @@
     state: link
     src: /srv/remctl-pony/remctl.conf
     dest: /etc/remctl/conf.d/sql
+- name: Install build dependencies of admof
+  package:
+    name:
+    - build-essential
+    - autoconf
+    - automake
+    - libopenafs-dev
+    - krb5-multidev
+    - heimdal-multidev
+- name: Create accountadm directory
+  file:
+    path: /srv/accountadm
+    owner: scripts-build
+    state: directory
+- name: Compile admof
+  shell: |
+    set -ex
+    cd /srv/repository/server/common/oursrc/accountadm
+    autoreconf -fvi
+    cd /srv/accountadm
+    /srv/repository/server/common/oursrc/accountadm/configure
+    make
+  args:
+    creates: /srv/accountadm/admof
+  become: yes
+  become_user: scripts-build
