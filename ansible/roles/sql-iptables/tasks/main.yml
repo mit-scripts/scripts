@@ -1,0 +1,8 @@
+---
+- name: Install iptables-persistent
+  package: name=iptables-persistent
+- name: Configure iptables-persistent
+  template:
+    dest: /etc/iptables/rules.v4
+    src: rules.v4.j2
+  notify: restart netfilter-persistent

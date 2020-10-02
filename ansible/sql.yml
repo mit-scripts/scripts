@@ -31,6 +31,7 @@
   - sql-remctl
   - sql-backup-ng
   - sql-nrpe
+  - sql-iptables
   - afs
   tasks:
   - name: Disable rpcbind

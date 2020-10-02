@@ -1,0 +1,20 @@
+*nat
+:PREROUTING ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+# Send the web interface to scripts
+#-A PREROUTING -p tcp -m tcp -m multiport --dports 80,443,444 -j DNAT --to-destination 18.4.86.46 -i vlan486
+#-A PREROUTING -p tcp -m tcp -m multiport --dports 80,443,444 -j DNAT --to-destination 172.21.0.46 -i vlan461
+#-A POSTROUTING -p tcp -m tcp -m multiport --dports 80,443,444 -j SNAT --to-source {{ vlan486_address }} -o vlan486
+#-A POSTROUTING -p tcp -m tcp -m multiport --dports 80,443,444 -j SNAT --to-source {{ vlan461_address }} -o vlan461
+# Send the web interface to s-b
+-A PREROUTING -p tcp -m tcp -m multiport --dports 80,443,444 -j DNAT --to-destination 18.4.86.47 -i vlan486
+-A PREROUTING -p tcp -m tcp -m multiport --dports 80,443,444 -j DNAT --to-destination 172.21.0.47 -i vlan461
+-A POSTROUTING -p tcp -m tcp -m multiport --dports 80,443,444 -j SNAT --to-source {{ vlan486_address }} -o vlan486
+-A POSTROUTING -p tcp -m tcp -m multiport --dports 80,443,444 -j SNAT --to-source {{ vlan461_address }} -o vlan461
+COMMIT
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+COMMIT
