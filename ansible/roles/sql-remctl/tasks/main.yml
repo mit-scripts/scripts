@@ -1,9 +1,11 @@
 ---
-- name: Install remctl
+- name: Install remctl and dependencies
   package:
     name:
       - remctl-server
       - remctl-client
+      - python-ldap
+      - python-sqlalchemy
 # TODO: Build and install admof
 - name: Install remctl-pony
   command: git clone https://github.com/mit-scripts/sql-remctl.git /srv/remctl-pony
