@@ -6,3 +6,10 @@
     dest: /etc/iptables/rules.v4
     src: rules.v4.j2
   notify: restart netfilter-persistent
+- name: Configure sysctl
+  copy:
+    dest: /etc/sysctl.d/sql.conf
+    content: |
+      net.ipv4.ip_forward=1
+      net.ipv4.conf.all.accept_local = 1
+  notify: reload sysctl
