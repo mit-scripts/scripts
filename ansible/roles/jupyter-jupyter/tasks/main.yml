@@ -3,6 +3,8 @@
   package:
     name:
       - virtualenv
+      - npm
+      - nodejs
 - name: Install jupyterhub
   pip:
     name:
