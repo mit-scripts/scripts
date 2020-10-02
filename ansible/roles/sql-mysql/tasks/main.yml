@@ -13,6 +13,7 @@
       content: |
         [Service]
         LimitNOFILE=32768
+        Environment="UMASK_DIR=0750" "UMASK=0640"
       dest: /etc/systemd/system/mariadb.service.d/99-scripts.conf
     register: override
     notify: restart mariadb

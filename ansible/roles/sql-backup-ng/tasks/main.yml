@@ -12,3 +12,5 @@
     name: mit-backup
     system: yes
     home: /srv/backup
+    groups:
+      - mysql
