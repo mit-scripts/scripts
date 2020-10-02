@@ -5,6 +5,9 @@
       - virtualenv
       - npm
       - nodejs
+- npm:
+    name: configurable-http-proxy
+    global: yes
 - name: Install jupyterhub
   pip:
     name:
