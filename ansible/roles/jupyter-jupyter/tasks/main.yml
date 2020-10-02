@@ -11,5 +11,6 @@
 - name: Install jupyterhub
   pip:
     name:
-      jupyterhub
+    - jupyterhub
+    - oauthenticator
     virtualenv: /opt/jupyterhub
