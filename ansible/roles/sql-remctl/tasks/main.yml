@@ -51,7 +51,7 @@
       After=network-online.target
       ConditionPathExists=/etc/daemon.keytab
       [Service]
-      ExecStart=/usr/bin/k5start -f /etc/daemon.keytab -u daemon/sql.mit.edu -t -K 15m -l6h
+      ExecStart=/usr/bin/k5start -f /etc/daemon.keytab -u daemon/sql.mit.edu -t -K 15 -l 6h
       [Install]
       WantedBy=multi-user.target
   notify: restart persistent-tokens
