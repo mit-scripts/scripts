@@ -1,0 +1,6 @@
+- name: restart persistent-tokens
+  systemd:
+    daemon_reload: yes
+    name: persistent-tokens.service
+    enabled: yes
+    state: restarted

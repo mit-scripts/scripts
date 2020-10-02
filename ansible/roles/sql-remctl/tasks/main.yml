@@ -6,7 +6,7 @@
       - remctl-client
       - python-ldap
       - python-sqlalchemy
-# TODO: Build and install admof
+      - kstart
 - name: Install remctl-pony
   command: git clone https://github.com/mit-scripts/sql-remctl.git /srv/remctl-pony
   args:
@@ -42,3 +42,16 @@
     creates: /srv/accountadm/admof
   become: yes
   become_user: scripts-build
+- name: Install systemd unit for fetching tokens
+  copy:
+    dest: /etc/systemd/system/persistent-tokens.service
+    content: |
+      [Unit]
+      Description=Persistent tokens for remctl-pony
+      After=network-online.target
+      ConditionPathExists=/etc/daemon.keytab
+      [Service]
+      ExecStart=/usr/bin/k5start -f /etc/daemon.keytab -u daemon/sql.mit.edu -t -K 15m -l6h
+      [Install]
+      WantedBy=multi-user.target
+  notify: restart persistent-tokens
