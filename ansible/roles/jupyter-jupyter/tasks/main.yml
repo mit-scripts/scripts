@@ -1,4 +1,8 @@
 ---
+- name: Install jupyterhub dependencies
+  package:
+    name:
+      - virtualenv
 - name: Install jupyterhub
   pip:
     name:
