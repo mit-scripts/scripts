@@ -32,6 +32,15 @@
   - sql-backup-ng
   - sql-nrpe
   - afs
+  tasks:
+  - name: Disable rpcbind
+    systemd:
+      name: "{{ item }}"
+      enabled: no
+      state: stopped
+    loop:
+      - rpcbind.socket
+      - rpcbind.service
   handlers:
   - name: load modules
     service: name=systemd-modules-load state=restarted
