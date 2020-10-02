@@ -51,6 +51,7 @@
       After=network-online.target
       ConditionPathExists=/etc/daemon.keytab
       [Service]
+      Environment="AKLOG=/usr/bin/aklog athena.mit.edu sipb.mit.edu"
       ExecStart=/usr/bin/k5start -f /etc/daemon.keytab -u daemon/sql.mit.edu -t -K 15 -l 6h
       [Install]
       WantedBy=multi-user.target
