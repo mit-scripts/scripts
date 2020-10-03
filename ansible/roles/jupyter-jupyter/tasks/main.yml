@@ -18,6 +18,13 @@
     - Cython
     - git+https://github.com/macathena/python-hesiod@python3
     - git+https://github.com/macathena/python-afs@py3-debian
+    # User packages
+    - numpy
+    - astropy
+    - astroplan
+    - pyyaml
+    - matplotlib
+    - scipy
     virtualenv: /opt/jupyterhub
 # TODO: Real database
 # TODO: Other config settings
