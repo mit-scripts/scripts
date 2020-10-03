@@ -19,3 +19,9 @@
     - git+https://github.com/macathena/python-hesiod@python3
     - git+https://github.com/macathena/python-afs@py3-debian
     virtualenv: /opt/jupyterhub
+# TODO: Real database
+# TODO: Other config settings
+- name: Configure jupyterhub
+  copy:
+    dest: /opt/jupyterhub/jupyterhub_config.py
+    src: jupyterhub_config.py
