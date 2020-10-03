@@ -271,3 +271,26 @@ Index: openafs-1.8.4~pre1/src/afs/afs_pioctl.c
      AFS_STATCNT(PUnlog);
      if (!afs_resourceinit_flag)	/* afs daemons haven't started yet */
  	return EIO;		/* Inappropriate ioctl for device */
+@@ -5337,6 +5354,10 @@ DECL_PIOCTL(PSetTokens2)
+     struct ktc_setTokenData tokenSet;
+     struct ktc_tokenUnion decodedToken;
+ 
++    if (areq->uid == globalpag && areq->realuid != AFSAGENT_UID) {
++	return EACCES;
++    }
++
+     memset(&tokenSet, 0, sizeof(tokenSet));
+ 
+     AFS_STATCNT(PSetTokens2);
+@@ -5475,6 +5496,11 @@ DECL_PIOCTL(PGetTokens2)
+     XDR xdrs;
+     struct ktc_setTokenData tokenSet;
+ 
++    if (areq->uid == globalpag && areq->realuid != AFSAGENT_UID &&
++	areq->realuid != 0 && areq->realuid != SIGNUP_UID) {
++	return EDOM;
++    }
++
+     AFS_STATCNT(PGetTokens);
+     if (!afs_resourceinit_flag)
+ 	return EIO;
