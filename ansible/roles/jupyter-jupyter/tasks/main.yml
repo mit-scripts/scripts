@@ -5,6 +5,8 @@
       - virtualenv
       - npm
       - nodejs
+      - cython3
+      - libhesiod-dev
 - npm:
     name: configurable-http-proxy
     global: yes
@@ -12,5 +14,8 @@
   pip:
     name:
     - jupyterhub
-    - oauthenticator
+    - notebook
+    - Cython
+    - git+https://github.com/macathena/python-hesiod@python3
+    - git+https://github.com/macathena/python-afs@py3-debian
     virtualenv: /opt/jupyterhub
