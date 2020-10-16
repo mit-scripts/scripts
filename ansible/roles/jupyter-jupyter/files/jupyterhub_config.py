@@ -6,9 +6,18 @@ from jupyterhub.spawner import LocalProcessSpawner
 from tempfile import mkdtemp
 import logging
 import os
+import os.path
 import sys
 import hesiod
 import afs
+from jupyterhub.handlers.login import LoginHandler
+from jupyterhub.handlers.base import BaseHandler
+from jupyterhub.utils import url_path_join
+
+# JupyterHub expects to find Jupyter's binaries on PATH, which doesn't work if we're in a venv.
+os.environ['PATH'] = os.path.join(sys.exec_prefix, 'bin') + ':' + os.environ['PATH']
+if sys.prefix != sys.base_prefix:
+    os.environ['VIRTUAL_ENV'] = sys.prefix
 
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration
@@ -139,13 +148,37 @@ class MITAuthenticator(oauthenticator.generic.GenericOAuthenticator):
 
 #c.JupyterHub.authenticator_class = MITAuthenticator
 
+class HomepageHandler(BaseHandler):
+    async def get(self):
+        self.finish("TODO")
+
+class CertificateLoginHandler(LoginHandler):
+    async def get(self):
+        user = await self.login_user()
+        if user is None:
+            # auto_login failed, just 403
+            raise web.HTTPError(403)
+        else:
+            self.redirect(self.get_next_url(user))
+
 class ClientCertAuthenticator(Authenticator):
+    login_service = "MIT certificates"
+
     async def authenticate(self, handler, data):
         subj = handler.request.headers.get('X-Client-Cert-Subject')
         if subj:
             # emailAddress=quentin@MIT.EDU,CN=Quentin Smith,OU=Client CA v1,O=Massachusetts Institute of Technology,ST=Massachusetts,C=US
             subj_parts = {k: v for k,v in [x.split('=', 1) for x in subj.split(',')]}
             return subj_parts['emailAddress'].replace('@MIT.EDU', '')
+
+    def login_url(self, base_url):
+        return url_path_join(base_url, 'login/certificate')
+
+    def get_handlers(self, app):
+        return [
+                ('/login', LoginHandler),
+                ('/login/certificate', CertificateLoginHandler),
+                ]
 
 c.JupyterHub.authenticator_class = ClientCertAuthenticator
 

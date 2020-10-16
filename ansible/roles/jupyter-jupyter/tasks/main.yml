@@ -32,3 +32,15 @@
   copy:
     dest: /opt/jupyterhub/jupyterhub_config.py
     src: jupyterhub_config.py
+  notify: restart jupyterhub
+- name: Install service
+  copy:
+    dest: /etc/systemd/system/jupyterhub.service
+    src: jupyterhub.service
+  notify: restart jupyterhub
+  register: unit
+- name: Enable service
+  service:
+    name: jupyterhub
+    daemon_reload: "{{ unit.changed }}"
+    enabled: yes

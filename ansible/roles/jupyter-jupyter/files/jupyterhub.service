@@ -1,0 +1,9 @@
+[Unit]
+Description=SIPB JupyterHub
+
+[Service]
+ExecStart=/opt/jupyterhub/bin/jupyterhub
+WorkingDirectory=/opt/jupyterhub
+
+[Install]
+WantedBy=multi-user.target
