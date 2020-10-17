@@ -3,16 +3,19 @@
 import oauthenticator.generic
 from jupyterhub.auth import Authenticator
 from jupyterhub.spawner import LocalProcessSpawner
-from tempfile import mkdtemp
+from tempfile import mkdtemp, NamedTemporaryFile
+import json
 import logging
 import os
 import os.path
+import subprocess
 import sys
 import hesiod
 import afs
 from jupyterhub.handlers.login import LoginHandler
 from jupyterhub.handlers.base import BaseHandler
 from jupyterhub.utils import url_path_join
+from ccache import make_ccache
 
 # JupyterHub expects to find Jupyter's binaries on PATH, which doesn't work if we're in a venv.
 os.environ['PATH'] = os.path.join(sys.exec_prefix, 'bin') + ':' + os.environ['PATH']
@@ -152,6 +155,40 @@ class HomepageHandler(BaseHandler):
     async def get(self):
         self.finish("TODO")
 
+class WebathenaLoginHandler(BaseHandler):
+    async def get(self):
+        # TODO: Check if we need AFS tickets to create ~/Jupyter
+        self.finish(self.render_template(
+            'webathena_login.html',
+        ))
+
+    async def post(self):
+        creds = json.loads(self.get_argument('creds', strip=False))
+
+        # TODO: Use host/jupyter.mit.edu key to log user in
+
+        for cred in creds:
+            if cred['sname']['nameString'] != ["afs", "athena.mit.edu"]:
+                continue
+
+            with NamedTemporaryFile(prefix="jupyterhub_ccache_") as ccache:
+                ccache.write(make_ccache(cred))
+                ccache.flush()
+
+                user = cred["cname"]["nameString"][0]
+
+                # TODO: Run as user's uid?
+                env = dict(os.environ)
+                env['KRB5CCNAME'] = ccache.name
+                # TODO: Use async-safe version of check_call?
+                subprocess.check_call([
+                    "/usr/bin/pagsh",
+                    os.path.join(os.path.dirname(__file__), "register.sh"),
+                    user,
+                ], env=env)
+                self.finish("~/Jupyter created")
+
+
 class CertificateLoginHandler(LoginHandler):
     async def get(self):
         user = await self.login_user()
@@ -178,9 +215,11 @@ class ClientCertAuthenticator(Authenticator):
         return [
                 ('/login', LoginHandler),
                 ('/login/certificate', CertificateLoginHandler),
+                ('/login/webathena', WebathenaLoginHandler),
                 ]
 
 c.JupyterHub.authenticator_class = ClientCertAuthenticator
+c.JupyterHub.template_paths.append('./templates/')
 
 def _try_setcwd(path):
     """Try to set CWD to path, walking up until a valid directory is found.
@@ -204,7 +243,7 @@ class MITSpawner(LocalProcessSpawner):
         """Augment environment of spawned process with user specific env variables."""
         import pwd
 
-        env['USER'] = self.user.name
+        env['USER'] = env['LOGNAME'] = self.user.name
         home = self.get_home(self.user.name)
         shell = "/bin/bash"
         # These will be empty if undefined,

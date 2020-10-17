@@ -30,9 +30,23 @@
 # TODO: Other config settings
 - name: Configure jupyterhub
   copy:
-    dest: /opt/jupyterhub/jupyterhub_config.py
-    src: jupyterhub_config.py
+    dest: /opt/jupyterhub/{{item}}
+    src: "{{ item }}"
+  loop:
+    - jupyterhub_config.py
+    - register.sh
   notify: restart jupyterhub
+- name: Install Python modules
+  copy:
+    dest: /opt/jupyterhub/lib/python3.8/site-packages/{{item}}
+    src: "{{ item }}"
+  loop:
+    - ccache.py
+  notify: restart jupyterhub
+- name: Install templates
+  copy:
+    dest: /opt/jupyterhub
+    src: templates
 - name: Install service
   copy:
     dest: /etc/systemd/system/jupyterhub.service
