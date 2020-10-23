@@ -5,6 +5,7 @@ from jupyterhub.auth import Authenticator
 from jupyterhub.spawner import LocalProcessSpawner
 from tempfile import mkdtemp, NamedTemporaryFile
 from tornado.escape import json_encode
+import base64
 import json
 import logging
 import os
@@ -173,7 +174,7 @@ class WebathenaLoginHandler(BaseHandler):
         # GSSAPI exchange to validate the server
         server_creds = gssapi.Credentials(usage='accept')
         ctx = gssapi.SecurityContext(creds=server_creds, usage='accept')
-        gss_token = ctx.step(self.get_argument('token', strip=False).encode('utf-8'))
+        gss_token = ctx.step(base64.b64decode(self.get_argument('token', strip=False)))
 
         if not ctx.complete:
             raise web.HTTPError(403)
