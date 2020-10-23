@@ -251,7 +251,7 @@ class MITAuthenticator(Authenticator):
                 ('/login', LoginHandler),
                 ('/login/certificate', CertificateLoginHandler),
                 ('/login/webathena', WebathenaLoginHandler),
-                ('/login/static/', CacheControlStaticFilesHandler, {"path": './static/login'}),
+                ('/login/static/(.*)', CacheControlStaticFilesHandler, {"path": './static/login'}),
                 ]
 
 c.JupyterHub.authenticator_class = MITAuthenticator
