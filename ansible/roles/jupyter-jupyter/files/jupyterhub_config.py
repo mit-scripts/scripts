@@ -10,6 +10,7 @@ import os
 import os.path
 import subprocess
 import sys
+import gssapi
 import hesiod
 import afs
 from jupyterhub.handlers.login import LoginHandler
@@ -138,7 +139,7 @@ if sys.prefix != sys.base_prefix:
 #  Default: 'jupyterhub.auth.PAMAuthenticator'
 # c.JupyterHub.authenticator_class = 'jupyterhub.auth.PAMAuthenticator'
 
-class MITAuthenticator(oauthenticator.generic.GenericOAuthenticator):
+class MITOIDCAuthenticator(oauthenticator.generic.GenericOAuthenticator):
     # Not used but these are here as a reference for when we need to edit the client
     client_config_url='XXX'
     registration_access_token='XXX'
@@ -157,15 +158,37 @@ class HomepageHandler(BaseHandler):
 
 class WebathenaLoginHandler(BaseHandler):
     async def get(self):
+        afs = False
+        if self.get_argument('register'):
+            afs = True
         # TODO: Check if we need AFS tickets to create ~/Jupyter
         self.finish(self.render_template(
             'webathena_login.html',
+            afs=afs
         ))
 
     async def post(self):
-        creds = json.loads(self.get_argument('creds', strip=False))
+        # GSSAPI exchange to validate the server
+        server_creds = gssapi.Credentials(usage='accept')
+        ctx = gssapi.SecurityContext(creds=server_creds, usage='accept')
+        gss_token = ctx.step(self.get_argument('token', strip=False))
 
-        # TODO: Use host/jupyter.mit.edu key to log user in
+        if not ctx.complete:
+            raise web.HTTPError(403)
+
+        principal = str(ctx.initiator_name)
+        username = principal.replace('@ATHENA.MIT.EDU', '')
+
+        user = await self.login_user({'username': username})
+
+        if self.get_argument('creds'):
+            registered = await self.register()
+            if not registered:
+                self.redirect(url_path_join(self.hub.base_url, 'login/webathena?register=1'))
+        self.redirect(self.get_next_url(user))
+
+    async def register(self):
+        creds = json.loads(self.get_argument('creds', strip=False))
 
         for cred in creds:
             if cred['sname']['nameString'] != ["afs", "athena.mit.edu"]:
@@ -186,27 +209,36 @@ class WebathenaLoginHandler(BaseHandler):
                     os.path.join(os.path.dirname(__file__), "register.sh"),
                     user,
                 ], env=env)
-                self.finish("~/Jupyter created")
+                return True
 
 
-class CertificateLoginHandler(LoginHandler):
-    async def get(self):
-        user = await self.login_user()
-        if user is None:
-            # auto_login failed, just 403
-            raise web.HTTPError(403)
-        else:
-            self.redirect(self.get_next_url(user))
-
-class ClientCertAuthenticator(Authenticator):
-    login_service = "MIT certificates"
-
-    async def authenticate(self, handler, data):
-        subj = handler.request.headers.get('X-Client-Cert-Subject')
+class CertificateLoginHandler(BaseHandler):
+    def get_username(self):
+        subj = self.request.headers.get('X-Client-Cert-Subject')
         if subj:
             # emailAddress=quentin@MIT.EDU,CN=Quentin Smith,OU=Client CA v1,O=Massachusetts Institute of Technology,ST=Massachusetts,C=US
             subj_parts = {k: v for k,v in [x.split('=', 1) for x in subj.split(',')]}
             return subj_parts['emailAddress'].replace('@MIT.EDU', '')
+
+    async def get(self):
+        user = None
+        username = self.get_username()
+        if username:
+            user = await self.login_user({'username': username})
+        if not user:
+            # auto_login failed, just 403
+            # TODO: Kind error page?
+            raise web.HTTPError(403)
+        else:
+            self.redirect(self.get_next_url(user))
+
+class MITAuthenticator(Authenticator):
+    login_service = "MIT certificates"
+
+    async def authenticate(self, handler, data):
+        if data:
+            # TODO: Return anything other than username?
+            return data.get('username')
 
     def login_url(self, base_url):
         return url_path_join(base_url, 'login/certificate')
@@ -218,7 +250,7 @@ class ClientCertAuthenticator(Authenticator):
                 ('/login/webathena', WebathenaLoginHandler),
                 ]
 
-c.JupyterHub.authenticator_class = ClientCertAuthenticator
+c.JupyterHub.authenticator_class = MITAuthenticator
 c.JupyterHub.template_paths.append('./templates/')
 
 def _try_setcwd(path):
