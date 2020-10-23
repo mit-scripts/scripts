@@ -154,7 +154,7 @@ class MITOIDCAuthenticator(oauthenticator.generic.GenericOAuthenticator):
 
 class HomepageHandler(BaseHandler):
     async def get(self):
-        self.finish(self.render_template('home.html'))
+        self.finish(self.render_template('sipb-home.html'))
 
 class WebathenaLoginHandler(BaseHandler):
     async def get(self):
