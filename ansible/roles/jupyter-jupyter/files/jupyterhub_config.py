@@ -154,7 +154,7 @@ class MITOIDCAuthenticator(oauthenticator.generic.GenericOAuthenticator):
 
 class HomepageHandler(BaseHandler):
     async def get(self):
-        self.finish("TODO")
+        self.finish(self.render_template('home.html'))
 
 class WebathenaLoginHandler(BaseHandler):
     async def get(self):
@@ -245,6 +245,7 @@ class MITAuthenticator(Authenticator):
 
     def get_handlers(self, app):
         return [
+                ('/', HomepageHandler),
                 ('/login', LoginHandler),
                 ('/login/certificate', CertificateLoginHandler),
                 ('/login/webathena', WebathenaLoginHandler),

@@ -1,0 +1,30 @@
+{% extends "page.html" %}
+{% if announcement_login %}
+{% set announcement = announcement_login %}
+{% endif %}
+
+{% block login_widget %}
+{% endblock %}
+
+{% block main %}
+<h1>SIPB JupyterHub</h1>
+<p>
+    Welcome to SIPB's JupyterHub instance!
+</p>
+<div class="service-login">
+  <a role="button" class='btn btn-jupyter btn-lg' href='/login/certificate'>
+    Sign in with MIT certificates
+  </a>
+</div>
+<div class="service-login">
+  <a role="button" class='btn btn-jupyter btn-lg' href='/login/webathena'>
+    Sign in with WebAthena
+  </a>
+</div>
+<div class="service-login">
+  <a role="button" class='btn btn-jupyter btn-lg' href='/login/touchstone'>
+    Sign in with Touchstone (beta)
+  </a>
+</div>
+{% endblock %}
+
