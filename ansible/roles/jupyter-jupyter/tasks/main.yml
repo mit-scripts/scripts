@@ -48,6 +48,17 @@
   copy:
     dest: /opt/jupyterhub
     src: templates
+- name: Install JavaScript dependencies
+  block:
+  - file:
+      path: /opt/jupyterhub/static/login
+      state: directory
+  - copy:
+      dest: /opt/jupyterhub/static/login/sjcl.js
+      src: sjcl/sjcl.js
+  - copy:
+      dest: /opt/jupyterhub/static/login/
+      src: webathena/dist/
 - name: Install service
   copy:
     dest: /etc/systemd/system/jupyterhub.service

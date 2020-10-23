@@ -13,3 +13,9 @@
 [submodule "ansible/roles/ldirectord-status/files/ldirectord-status/gnlpy"]
 	path = ansible/roles/ldirectord-status/files/ldirectord-status/gnlpy
 	url = https://github.com/facebook/gnlpy.git
+[submodule "ansible/roles/jupyter-jupyter/files/webathena"]
+	path = ansible/roles/jupyter-jupyter/files/webathena
+	url = https://github.com/davidben/webathena
+[submodule "ansible/roles/jupyter-jupyter/files/sjcl"]
+	path = ansible/roles/jupyter-jupyter/files/sjcl
+	url = https://github.com/bitwiseshiftleft/sjcl

@@ -16,6 +16,7 @@ import hesiod
 import afs
 from jupyterhub.handlers.login import LoginHandler
 from jupyterhub.handlers.base import BaseHandler
+from jupyterhub.handlers.static import CacheControlStaticFilesHandler
 from jupyterhub.utils import url_path_join
 from ccache import make_ccache
 
@@ -250,6 +251,7 @@ class MITAuthenticator(Authenticator):
                 ('/login', LoginHandler),
                 ('/login/certificate', CertificateLoginHandler),
                 ('/login/webathena', WebathenaLoginHandler),
+                ('/login/static/', CacheControlStaticFileHandler, {"path": './static/login'}),
                 ]
 
 c.JupyterHub.authenticator_class = MITAuthenticator
