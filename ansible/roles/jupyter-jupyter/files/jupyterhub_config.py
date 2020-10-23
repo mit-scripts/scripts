@@ -173,7 +173,7 @@ class WebathenaLoginHandler(BaseHandler):
         # GSSAPI exchange to validate the server
         server_creds = gssapi.Credentials(usage='accept')
         ctx = gssapi.SecurityContext(creds=server_creds, usage='accept')
-        gss_token = ctx.step(self.get_argument('token', strip=False))
+        gss_token = ctx.step(self.get_argument('token', strip=False).encode('utf-8'))
 
         if not ctx.complete:
             raise web.HTTPError(403)
