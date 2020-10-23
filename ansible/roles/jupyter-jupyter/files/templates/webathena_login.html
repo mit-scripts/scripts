@@ -27,7 +27,7 @@
     var POST_URL = "/login/webathena";
 
     var button = document.getElementById("login");
-    var afs = {{ afs | json_encode }};
+    var afs = {{ json_encode(afs) }};
     // Pfft. Firefox seems to leave it disabled sometimes.
     button.disabled = false;
     button.addEventListener("click", function (ev) {
