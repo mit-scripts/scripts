@@ -152,8 +152,8 @@ all:
         sql-buster:
           hosts:
             multivalue-key.mit.edu:
-              # Include IPs so they can be installed before DNS is ready
-              ip: 18.4.86.201
+              vlan486_hwaddr: 00:50:56:87:36:df
+              vlan461_hwaddr: 00:50:56:87:7e:48
             unique-key.mit.edu:
               vlan486_hwaddr: 00:50:56:87:22:9e
               vlan461_hwaddr: 00:50:56:87:28:7d
