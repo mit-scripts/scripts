@@ -77,7 +77,7 @@
 
             document.getElementById('token').value = arrayutils.toBase64(gssToken)
             if (afs) {
-                var sessions = JSON.stringify([r.sessions[1]);
+                var sessions = JSON.stringify([r.sessions[1]]);
                 document.getElementById('creds').value = sessions;
             }
             document.getElementById('ticket_post').submit();
