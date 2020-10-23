@@ -25,6 +25,7 @@
     - libopenafs-dev
     - krb5-multidev
     - heimdal-multidev
+    - pkg-config
 - name: Create accountadm directory
   file:
     path: /srv/accountadm
