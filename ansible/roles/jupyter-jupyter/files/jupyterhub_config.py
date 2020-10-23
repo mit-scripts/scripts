@@ -4,6 +4,7 @@ import oauthenticator.generic
 from jupyterhub.auth import Authenticator
 from jupyterhub.spawner import LocalProcessSpawner
 from tempfile import mkdtemp, NamedTemporaryFile
+from tornado.escape import json_encode
 import json
 import logging
 import os
@@ -253,6 +254,9 @@ class MITAuthenticator(Authenticator):
 
 c.JupyterHub.authenticator_class = MITAuthenticator
 c.JupyterHub.template_paths.append('./templates/')
+c.JupyterHub.template_vars.update({
+    'json_encode': json_encode,
+})
 
 def _try_setcwd(path):
     """Try to set CWD to path, walking up until a valid directory is found.
