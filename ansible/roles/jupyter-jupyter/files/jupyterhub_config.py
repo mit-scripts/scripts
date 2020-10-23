@@ -159,7 +159,7 @@ class HomepageHandler(BaseHandler):
 class WebathenaLoginHandler(BaseHandler):
     async def get(self):
         afs = False
-        if self.get_argument('register'):
+        if self.get_argument('register', None):
             afs = True
         # TODO: Check if we need AFS tickets to create ~/Jupyter
         self.finish(self.render_template(
@@ -181,7 +181,7 @@ class WebathenaLoginHandler(BaseHandler):
 
         user = await self.login_user({'username': username})
 
-        if self.get_argument('creds'):
+        if self.get_argument('creds', None):
             registered = await self.register()
             if not registered:
                 self.redirect(url_path_join(self.hub.base_url, 'login/webathena?register=1'))
