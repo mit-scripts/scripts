@@ -29,12 +29,9 @@
     # Extra Jupyter features
     - widgetsnbextension
     - ipywidgets
-    - jupyterlab-downloadfolder
-    - jupyterlab-commands
+    - jupyter-archive
     - jupyterlab-git
     - jupyterlab-widgets
-    - jupyterlab-sql
-    - jupyterlab-discovery
     - jupyterlab-quickopen
     - jupyterlab-apod
     - jupyterlab-python-file
@@ -237,6 +234,26 @@
     - zstd
     virtualenv: /opt/jupyterhub
     virtualenv_site_packages: yes
+- name: Install JupyterLab extensions
+  shell: |
+    . /opt/jupyterhub/bin/activate
+    jupyter labextension check {{extensions|join(" ")}} && exit 37
+    jupyter labextension install {{extensions|join(" ")}}
+  vars:
+    extensions:
+    - "@jupyter-widgets/jupyterlab-manager"
+    - "@bokeh/jupyter_bokeh"
+    - jupyterlab-python-file
+    - "@parente/jupyterlab-quickopen"
+    - "@jupyterlab/hdf5"
+    - "@jupyterlab/latex"
+    - jupyterlab-kernelspy
+    - jupyterlab-drawio
+    - "@aquirdturtle/collapsible_headings"
+    - "@jupyterlab/geojson-extension"
+  register: result
+  changed_when: result.rc != 37
+  failed_when: result.rc not in (0, 37)
 # TODO: Real database
 # TODO: Other config settings
 - name: Configure jupyterhub
