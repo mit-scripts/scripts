@@ -255,6 +255,72 @@
   register: result
   changed_when: result.rc != 37
   failed_when: result.rc not in (0, 37)
+- name: Install JavaScript kernel
+  block:
+    # TODO: Install npm packages inside the virtualenv?
+    # TODO: Use community.general.npm when we have Ansible > 2.9.10
+    - community_general_npm:
+        name: ijavascript
+        global: yes
+        unsafe_perm: yes
+    - name: Calculate ijavascript spec
+      command: /usr/bin/node
+      args:
+        chdir: /usr/local/lib/node_modules/ijavascript/bin
+        stdin: |
+          var rc = require("./rc.js")
+          var context = rc.context;
+          var installKernelAsync = rc.installKernelAsync;
+          var log = rc.log;
+          var readPackageJson = rc.readPackageJson;
+          var parseCommandArgs = rc.parseCommandArgs;
+          var setJupyterInfoAsync = rc.setJupyterInfoAsync;
+          var setPaths = rc.setPaths;
+          var setProtocol = rc.setProtocol;
+
+          process.argv[1] = "/usr/local/lib/node_modules/ijavascript/bin/ijsinstall.js";
+          process.env.PATH = '/opt/jupyterhub/bin:' + process.env.PATH;
+
+          setPaths(context);
+
+          readPackageJson(context);
+
+          parseCommandArgs(context, {
+            installer: true,
+          });
+
+          setJupyterInfoAsync(context, function() {
+            setProtocol(context);
+            process.stdout.write(JSON.stringify({
+              argv: context.args.kernel,
+              env: {},
+              display_name: "Javascript (Node.js)",
+              language: "javascript",
+              interrupt_mode: "signal",
+              metadata: {},
+            }));
+          });
+      check_mode: no
+      changed_when: no
+      register: ijs_spec
+    - name: Read current kernels
+      command: /opt/jupyterhub/bin/jupyter kernelspec list --json
+      check_mode: no
+      changed_when: no
+      register: jupyter_kernels
+    - name: Install kernel
+      shell: |
+        set -ex
+        tmpdir=$(mktemp -d)
+        trap "{ rm -rf $tmpdir; }" EXIT
+        mkdir "$tmpdir/javascript"
+        cat > "$tmpdir/javascript/kernel.json"
+        cp /usr/local/lib/node_modules/ijavascript/images/nodejs/js-green-32x32.png "$tmpdir/javascript/logo-32x32.png"
+        cp /usr/local/lib/node_modules/ijavascript/images/nodejs/js-green-64x64.png "$tmpdir/javascript/logo-64x64.png"
+        /opt/jupyterhub/bin/jupyter kernelspec install --sys-prefix --replace "$tmpdir/javascript"
+      args:
+        stdin: "{{ ijs_spec.stdout | string }}"
+      when: "(ijs_spec.stdout | from_json) != (jupyter_kernels.stdout | from_json | json_query('kernelspecs.javascript.spec'))"
 # TODO: Real database
 # TODO: Other config settings
 - name: Configure jupyterhub

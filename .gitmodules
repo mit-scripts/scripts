@@ -16,3 +16,6 @@
 [submodule "ansible/roles/jupyter-jupyter/files/webathena"]
 	path = ansible/roles/jupyter-jupyter/files/webathena
 	url = https://github.com/davidben/webathena
+[submodule "ansible/collections/community.general"]
+	path = ansible/collections/community.general
+	url = https://github.com/ansible-collections/community.general.git
