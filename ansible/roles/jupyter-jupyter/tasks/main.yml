@@ -55,7 +55,7 @@
       state: directory
   - copy:
       dest: /opt/jupyterhub/static/login/sjcl.js
-      src: sjcl/sjcl.js
+      src: webathena/app/scripts/sjcl.js
   - copy:
       dest: /opt/jupyterhub/static/login/
       src: webathena/dist/
