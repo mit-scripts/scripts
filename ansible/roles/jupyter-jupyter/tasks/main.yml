@@ -26,7 +26,9 @@
     - pyyaml
     - matplotlib
     - scipy
+    - pandas
     virtualenv: /opt/jupyterhub
+    virtualenv_site_packages: yes
 # TODO: Real database
 # TODO: Other config settings
 - name: Configure jupyterhub
