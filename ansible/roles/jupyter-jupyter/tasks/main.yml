@@ -11,6 +11,7 @@
       - python3-gmpy2
       - python3-pyodbc
       - python3-gdal
+      - texlive-full
 - npm:
     name: configurable-http-proxy
     global: yes
