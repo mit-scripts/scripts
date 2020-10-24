@@ -10,6 +10,7 @@
       # User packages
       - python3-gmpy2
       - python3-pyodbc
+      - python3-gdal
 - npm:
     name: configurable-http-proxy
     global: yes
@@ -19,16 +20,32 @@
     - jupyterhub
     - jupyterlab
     - jupyterlab_server
-    - widgetsnbextension
-    - ipywidgets
     - notebook
     - Cython
     - gssapi
     - oauthenticator
     - git+https://github.com/macathena/python-hesiod@python3
     - git+https://github.com/macathena/python-afs@py3-debian
+    # Extra Jupyter features
+    - widgetsnbextension
+    - ipywidgets
+    - jupyterlab-downloadfolder
+    - jupyterlab-commands
+    - jupyterlab-git
+    - jupyterlab-widgets
+    - jupyterlab-sql
+    - jupyterlab-discovery
+    - jupyterlab-quickopen
+    - jupyterlab-apod
+    - jupyterlab-python-file
+    - jupyterlab-hdf
+    - jupyterlab-latex
+    - jupyterlab-kernelspy
+    - astrowidgets
     # User packages
+    # Inspired by Anaconda package list:
     # curl https://repo.anaconda.com/pkgs/main/linux-64/repodata.json | jq '.packages[.packages | keys | map(select(startswith("_anaconda_depends-20")))[-1]].depends'
+    - git+https://github.com/usgs/geomag-algorithms.git
     - argh
     - asn1crypto
     - astroid
@@ -173,6 +190,7 @@
     - scikit-image
     - scikit-learn
     - scikit-rf
+    - scikit-dataaccess
     - scipy
     - seaborn
     - secretstorage
