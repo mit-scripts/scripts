@@ -7,6 +7,9 @@
       - nodejs
       - cython3
       - libhesiod-dev
+      # User packages
+      - python3-gmpy2
+      - python3-pyodbc
 - npm:
     name: configurable-http-proxy
     global: yes
@@ -14,6 +17,10 @@
   pip:
     name:
     - jupyterhub
+    - jupyterlab
+    - jupyterlab_server
+    - widgetsnbextension
+    - ipywidgets
     - notebook
     - Cython
     - gssapi
@@ -21,13 +28,195 @@
     - git+https://github.com/macathena/python-hesiod@python3
     - git+https://github.com/macathena/python-afs@py3-debian
     # User packages
-    - numpy
-    - astropy
+    # curl https://repo.anaconda.com/pkgs/main/linux-64/repodata.json | jq '.packages[.packages | keys | map(select(startswith("_anaconda_depends-20")))[-1]].depends'
+    - argh
+    - asn1crypto
+    - astroid
     - astroplan
-    - pyyaml
+    - astropy
+    - atomicwrites
+    - attrs
+    - autopep8
+    - babel
+    - backcall
+    - beautifulsoup4
+    - biopython
+    - bitarray
+    - bkcharts
+    - bleach
+    - blosc
+    - bokeh
+    - boto
+    - bottleneck
+    - brotlipy
+    - cffi
+    - chardet
+    - click
+    - cloudpickle
+    - clyent
+    - colorama
+    - contextlib2
+    - cryptography
+    - cycler
+    - cytoolz
+    - dask
+    - decorator
+    - defusedxml
+    - diff-match-patch
+    - docutils
+    - entrypoints
+    - et_xmlfile
+    - fastcache
+    - filelock
+    - flake8
+    - flask
+    - fsspec
+    - future
+    - gevent
+    - glob2
+    - gmpy2
+    - greenlet
+    - h5py
+    - heapdict
+    - html5lib
+    - icu
+    - idna
+    - imageio
+    - imagesize
+    - importlib-metadata
+    - intel-openmp
+    - intervaltree
+    - ipython_genutils
+    - isort
+    - itsdangerous
+    - jdcal
+    - jinja2
+    - joblib
+    - json5
+    - jsonschema
+    - keyring
+    - kiwisolver
+    - lazy-object-proxy
+    - libarchive-c
+    - lief
+    - llvmlite
+    - locket
+    - lxml
+    - lz4
+    - markupsafe
     - matplotlib
-    - scipy
+    - mccabe
+    - mistune
+    - mkl
+    - mock
+    - more-itertools
+    - mpmath
+    - msgpack
+    - multipledispatch
+    - networkx
+    - nltk
+    - nose
+    - notebook
+    - numba
+    - numexpr
+    - numpy
+    - olefile
+    - openpyxl
+    - packaging
     - pandas
+    - pandoc
+    - pandocfilters
+    - parso
+    - partd
+    - path
+    - pathlib2
+    - pathtools
+    - patsy
+    - pep8
+    - pexpect
+    - pickleshare
+    - pillow
+    - pkginfo
+    - pluggy
+    - ply
+    - prometheus_client
+    - prompt-toolkit
+    - psutil
+    - ptyprocess
+    - py
+    - pycodestyle
+    - pycosat
+    - pycparser
+    - pycurl
+    - pydocstyle
+    - pyflakes
+    - pygments
+    - pylint
+    - pyodbc
+    - pyopenssl
+    - pyparsing
+    - pyrsistent
+    - pysocks
+    - pytest
+    - python-jsonrpc-server
+    - python-language-server
+    - pytz
+    - pywavelets
+    - pyxdg
+    - pyyaml
+    - pyzmq
+    - regex
+    - requests
+    - rope
+    - ruamel_yaml
+    - scikit-bio
+    - scikit-image
+    - scikit-learn
+    - scikit-rf
+    - scipy
+    - seaborn
+    - secretstorage
+    - simplegeneric
+    - singledispatch
+    - sip
+    - six
+    - snappy
+    - snowballstemmer
+    - sortedcollections
+    - sortedcontainers
+    - soupsieve
+    - sqlalchemy
+    - statsmodels
+    - sympy
+    - tables
+    - tbb
+    - tblib
+    - terminado
+    - testpath
+    - threadpoolctl
+    - toml
+    - toolz
+    - tqdm
+    - typing_extensions
+    - ujson
+    - unicodecsv
+    - urllib3
+    - watchdog
+    - wcwidth
+    - webencodings
+    - werkzeug
+    - wrapt
+    - wurlitzer
+    - xlrd
+    - xlsxwriter
+    - xlwt
+    - yapf
+    - zict
+    - zipp
+    - zope
+    - zope.event
+    - zope.interface
+    - zstd
     virtualenv: /opt/jupyterhub
     virtualenv_site_packages: yes
 # TODO: Real database
