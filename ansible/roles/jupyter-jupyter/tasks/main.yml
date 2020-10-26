@@ -308,7 +308,7 @@
       check_mode: no
       changed_when: no
       register: jupyter_kernels
-    - name: Install kernel
+    - name: Install kernel spec
       shell: |
         set -ex
         tmpdir=$(mktemp -d)
@@ -321,6 +321,51 @@
       args:
         stdin: "{{ ijs_spec.stdout | string }}"
       when: "(ijs_spec.stdout | from_json) != (jupyter_kernels.stdout | from_json | json_query('kernelspecs.javascript.spec'))"
+- name: Install TypeScript kernel
+  block:
+    # TODO: Install npm packages inside the virtualenv?
+    # TODO: Use community.general.npm when we have Ansible > 2.9.10
+    - community_general_npm:
+        name: itypescript
+        global: yes
+        unsafe_perm: yes
+    - name: Check TypeScript version
+      command: node -p 'require("typescript").version.replace(/([0-9]+\.[0-9]+)\..*/g, "$1")'
+      args:
+        chdir: /usr/local/lib/node_modules/itypescript
+      check_mode: no
+      changed_when: no
+      register: ts_version
+    - name: Generate TypeScript spec
+      set_fact:
+        its_spec:
+          argv:
+            - /usr/bin/node
+            - /usr/local/lib/node_modules/itypescript/lib/kernel.js
+            - "{connection_file}"
+            - --protocol=5.1
+          display_name: Typescript {{ts_version.stdout}}
+          language: typescript
+          interrupt_mode: signal
+          env: {}
+          metadata: {}
+    - name: Read current kernels
+      command: /opt/jupyterhub/bin/jupyter kernelspec list --json
+      check_mode: no
+      changed_when: no
+      register: jupyter_kernels
+    - name: Install kernel spec
+      shell: |
+        set -ex
+        tmpdir=$(mktemp -d)
+        trap "{ rm -rf $tmpdir; }" EXIT
+        mkdir "$tmpdir/typescript"
+        cat > "$tmpdir/typescript/kernel.json"
+        cp /usr/local/lib/node_modules/itypescript/images/* "$tmpdir/typescript/"
+        /opt/jupyterhub/bin/jupyter kernelspec install --sys-prefix --replace "$tmpdir/typescript"
+      args:
+        stdin: "{{ its_spec | to_json }}"
+      when: "its_spec != (jupyter_kernels.stdout | from_json | json_query('kernelspecs.typescript.spec'))"
 # TODO: Real database
 # TODO: Other config settings
 - name: Configure jupyterhub
