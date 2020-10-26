@@ -4,7 +4,6 @@ import oauthenticator.generic
 from jupyterhub.auth import Authenticator
 from jupyterhub.spawner import LocalProcessSpawner
 from tempfile import mkdtemp, NamedTemporaryFile
-from tornado import web
 from tornado.escape import json_encode
 import jinja2.ext
 import base64
@@ -165,7 +164,10 @@ class RegisterHandler(BaseHandler):
     async def get(self):
         self.finish(self.render_template('register.html'))
 
-class WebathenaLoginHandler(BaseHandler):
+class LoginBaseHandler(BaseHandler):
+    redirect_to_server = True
+
+class WebathenaLoginHandler(LoginBaseHandler):
     async def get(self):
         self.redirect(self.settings['login_url'])
 
@@ -181,7 +183,7 @@ class WebathenaLoginHandler(BaseHandler):
         principal = str(ctx.initiator_name)
         username = principal.replace('@ATHENA.MIT.EDU', '')
 
-        user = await self.login_user({'username': username})
+        user = await self.login_user(username)
 
         if self.get_argument('creds', None):
             registered = await self.register()
@@ -214,7 +216,7 @@ class WebathenaLoginHandler(BaseHandler):
                 return True
 
 
-class CertificateLoginHandler(BaseHandler):
+class CertificateLoginHandler(LoginBaseHandler):
     def get_username(self):
         subj = self.request.headers.get('X-Client-Cert-Subject')
         if subj:
@@ -226,7 +228,7 @@ class CertificateLoginHandler(BaseHandler):
         user = None
         username = self.get_username()
         if username:
-            user = await self.login_user({'username': username})
+            user = await self.login_user(username)
         if not user:
             # auto_login failed, just 403
             # TODO: Kind error page?
@@ -238,9 +240,14 @@ class MITAuthenticator(Authenticator):
     login_service = "MIT certificates"
 
     async def authenticate(self, handler, data):
-        if data:
+        if isinstance(data, str):
+            # N.B. Users can call this with an arbitrary dict as data; make sure the argument is something the user can't spoof.
             # TODO: Return anything other than username?
-            return data.get('username')
+            return data
+
+    async def run_post_auth_hook(self, handler, authentication):
+        handler.redirect_to_server = await MITSpawner.is_registered(authentication['name'])
+        return authentication
 
     def login_url(self, base_url):
         return url_path_join(base_url, 'login/certificate')
@@ -302,17 +309,19 @@ class MITSpawner(LocalProcessSpawner):
             env['SHELL'] = shell
         return env
 
-    def get_home(self, name):
+    @staticmethod
+    def get_home(name):
         return hesiod.FilsysLookup(name).filsys[0]['location']
 
-    async def start(self):
-        home = self.get_home(self.user.name)
+    @classmethod
+    async def is_registered(cls, username):
+        home = cls.get_home(username)
         jupyter_home = home + '/Jupyter'
-        if not os.path.exists(jupyter_home):
-            register_url = url_path_join(self.handler.hub.base_url, "register")
+        return os.path.exists(jupyter_home)
 
-            raise web.HTTPError(409,
-                            "/mit/%s/Jupyter does not exist; registration required" % (self.user.name,))
+    async def start(self):
+        if not await self.is_registered(self.user.name):
+            raise PermissionError("/mit/%s/Jupyter does not exist; registration required" % (self.user.name,))
         return await super().start()
 
     def make_preexec_fn(self, name):
