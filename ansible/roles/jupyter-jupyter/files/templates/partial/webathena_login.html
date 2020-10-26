@@ -1,0 +1,83 @@
+{% macro button(text='Sign in') %}
+<div class="service-login">
+  <a id="webathena_login" role="button" class='btn btn-jupyter btn-lg'>
+    {{text}} with WebAthena
+  </a>
+</div>
+<form method="post" id="webathena_post" action="/hub/login/webathena">
+  <input type="hidden" id="webathena_token" name="token" />
+  <input type="hidden" id="webathena_creds" name="creds" />
+</form>
+{% endmacro %}
+
+{% macro script(afs=False) %}
+<script src="https://cdn.jsdelivr.net/npm/winchan@0.2.2/winchan.min.js"></script>
+<script src="{{base_url}}login/static/sjcl.js"></script>
+<script src="{{base_url}}login/static/webathena.js"></script>
+<script src="{{base_url}}login/static/gss.js"></script>
+<script>
+  (function () {
+    var WEBATHENA_HOST = "https://webathena.mit.edu";
+    var REMOTE_HOST = "jupyter.mit.edu";
+    var REALM = "ATHENA.MIT.EDU";
+    var POST_URL = "/login/webathena";
+
+    var button = document.getElementById("webathena_login");
+    var afs = {{ afs | json_encode }};
+    // Pfft. Firefox seems to leave it disabled sometimes.
+    button.disabled = false;
+    button.addEventListener("click", function (ev) {
+        button.disabled = true;
+        var services = [
+            {
+                principal: ["host", REMOTE_HOST],
+                realm: REALM,
+            }
+        ];
+        if (afs) {
+            services.push({
+                principal: ["afs", "athena.mit.edu"],
+                realm: REALM,
+            });
+        }
+
+        WinChan.open({
+            url: WEBATHENA_HOST + "/#!request_ticket_v1",
+            relay_url: WEBATHENA_HOST + "/relay.html",
+            params: {
+                services: services
+            }
+        }, function (err, r) {
+            if (err) {
+                button.disabled = false;
+                // TODO: Report the error.
+                console.log(err);
+                return;
+            }
+            if (r.status !== "OK") {
+                button.disabled = false;
+                // TODO: Report the error.
+                console.log(r);
+                return;
+            }
+
+            const context = new gss.Context(
+                gss.Name.importName("host/" + REMOTE_HOST,
+                    gss.KRB5_NT_PRINCIPAL_NAME),
+                gss.KRB5_MECHANISM, krb.Session.fromDict(r.sessions[0]), { });
+            const gssToken = context.initSecContext(null);
+            if (!context.isEstablished()) {
+                throw "Context not established after one message!";
+            }
+
+            document.getElementById('webathena_token').value = arrayutils.toBase64(gssToken)
+            if (afs) {
+                var sessions = JSON.stringify([r.sessions[1]]);
+                document.getElementById('webathena_creds').value = sessions;
+            }
+            document.getElementById('webathena_post').submit();
+        });
+    });
+})();
+</script>
+{% endmacro %}

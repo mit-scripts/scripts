@@ -1,0 +1,34 @@
+{% extends "page.html" %}
+{% import "partial/webathena_login.html" as webathena %}
+
+{% block main %}
+<h1>Registration needed</h1>
+<p>
+  This seems to be your first time here. Welcome to SIPB's JupyterHub
+  instance! Your notebooks and files will be stored in a directory
+  called "Jupyter" in your Athena locker. You can create that
+  directory automatically using WebAthena, or you can manually create
+  the directory.
+</p>
+<h2>WebAthena</h2>
+{{ webathena.button('Register') }}
+<h2>Manual registration</h2>
+
+<p>
+  Open an Athena shell (such as
+  at <a href="https://athena.dialup.mit.edu/">athena.dialup.mit.edu</a>)
+  and run the following commands:
+</p>
+<pre>
+athena$ <b>mkdir /mit/$USER/Jupyter</b>
+athena$ <b>fs sa /mit/$USER/Jupyter daemon.jupyter write</b>
+</pre>
+<p>
+  After you've created the directory, log in to Jupyter again.
+</p>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+{{ webathena.script(afs=True) }}
+{% endblock %}

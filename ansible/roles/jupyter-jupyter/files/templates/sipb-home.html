@@ -1,4 +1,5 @@
 {% extends "page.html" %}
+{% import "partial/webathena_login.html" as webathena %}
 
 {% block main %}
 <h1>SIPB JupyterHub</h1>
@@ -10,11 +11,7 @@
     Sign in with MIT certificates
   </a>
 </div>
-<div class="service-login">
-  <a role="button" class='btn btn-jupyter btn-lg' href='/login/webathena'>
-    Sign in with WebAthena
-  </a>
-</div>
+{{ webathena.button() }}
 <div class="service-login">
   <a role="button" class='btn btn-jupyter btn-lg' href='/login/touchstone'>
     Sign in with Touchstone (beta)
@@ -22,3 +19,7 @@
 </div>
 {% endblock %}
 
+{% block script %}
+{{ super() }}
+{{ webathena.script() }}
+{% endblock %}

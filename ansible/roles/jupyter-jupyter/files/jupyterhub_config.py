@@ -4,7 +4,9 @@ import oauthenticator.generic
 from jupyterhub.auth import Authenticator
 from jupyterhub.spawner import LocalProcessSpawner
 from tempfile import mkdtemp, NamedTemporaryFile
+from tornado import web
 from tornado.escape import json_encode
+import jinja2.ext
 import base64
 import json
 import logging
@@ -159,16 +161,13 @@ class HomepageHandler(BaseHandler):
     async def get(self):
         self.finish(self.render_template('sipb-home.html'))
 
+class RegisterHandler(BaseHandler):
+    async def get(self):
+        self.finish(self.render_template('register.html'))
+
 class WebathenaLoginHandler(BaseHandler):
     async def get(self):
-        afs = False
-        if self.get_argument('register', None):
-            afs = True
-        # TODO: Check if we need AFS tickets to create ~/Jupyter
-        self.finish(self.render_template(
-            'webathena_login.html',
-            afs=afs
-        ))
+        self.redirect(self.settings['login_url'])
 
     async def post(self):
         # GSSAPI exchange to validate the server
@@ -187,7 +186,7 @@ class WebathenaLoginHandler(BaseHandler):
         if self.get_argument('creds', None):
             registered = await self.register()
             if not registered:
-                self.redirect(url_path_join(self.hub.base_url, 'login/webathena?register=1'))
+                self.redirect(url_path_join(self.hub.base_url, 'register'))
         self.redirect(self.get_next_url(user))
 
     async def register(self):
@@ -249,6 +248,7 @@ class MITAuthenticator(Authenticator):
     def get_handlers(self, app):
         return [
                 ('/', HomepageHandler),
+                ('/register', RegisterHandler),
                 ('/login', LoginHandler),
                 ('/login/certificate', CertificateLoginHandler),
                 ('/login/webathena', WebathenaLoginHandler),
@@ -256,10 +256,14 @@ class MITAuthenticator(Authenticator):
                 ]
 
 c.JupyterHub.authenticator_class = MITAuthenticator
-c.JupyterHub.template_paths.append('./templates/')
-c.JupyterHub.template_vars.update({
-    'json_encode': json_encode,
-})
+class JinjaExtension(jinja2.ext.Extension):
+    def __init__(self, environment):
+        super().__init__(environment)
+        self.environment.filters['json_encode'] = json_encode
+c.JupyterHub.jinja_environment_options = {
+    'extensions': [JinjaExtension],
+}
+c.JupyterHub.template_paths = ['./templates/']
 
 def _try_setcwd(path):
     """Try to set CWD to path, walking up until a valid directory is found.
@@ -279,6 +283,8 @@ def _try_setcwd(path):
     os.chdir(td)
 
 class MITSpawner(LocalProcessSpawner):
+    # TODO: Add support for spawning inside a PAG with user-supplied AFS tokens.
+
     def user_env(self, env):
         """Augment environment of spawned process with user specific env variables."""
         import pwd
@@ -298,6 +304,16 @@ class MITSpawner(LocalProcessSpawner):
 
     def get_home(self, name):
         return hesiod.FilsysLookup(name).filsys[0]['location']
+
+    async def start(self):
+        home = self.get_home(self.user.name)
+        jupyter_home = home + '/Jupyter'
+        if not os.path.exists(jupyter_home):
+            register_url = url_path_join(self.handler.hub.base_url, "register")
+
+            raise web.HTTPError(409,
+                            "/mit/%s/Jupyter does not exist; registration required" % (self.user.name,))
+        return await super().start()
 
     def make_preexec_fn(self, name):
         print("make_preexec_fn", name)
