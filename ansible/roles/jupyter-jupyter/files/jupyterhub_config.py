@@ -20,7 +20,9 @@ from jupyterhub.handlers.login import LoginHandler
 from jupyterhub.handlers.base import BaseHandler
 from jupyterhub.handlers.static import CacheControlStaticFilesHandler
 from jupyterhub.utils import url_path_join
-from ccache import make_ccache
+
+from sipb.jupyter.ccache import make_ccache
+import sipb.jupyter.userdb
 
 # JupyterHub expects to find Jupyter's binaries on PATH, which doesn't work if we're in a venv.
 os.environ['PATH'] = os.path.join(sys.exec_prefix, 'bin') + ':' + os.environ['PATH']
