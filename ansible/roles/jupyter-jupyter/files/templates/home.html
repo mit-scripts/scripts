@@ -1,7 +1,9 @@
-{% extends "page.html" %}
+{% extends "templates/home.html" %}
 {% import "partial/webathena_login.html" as webathena %}
 
 {% block main %}
+{% if not user.spawner.is_registered(user.name) %}
+<div class="container">
 <h1>Registration needed</h1>
 <p>
   This seems to be your first time here. Welcome to SIPB's JupyterHub
@@ -24,11 +26,17 @@ athena$ <b>mkdir /mit/$USER/Jupyter</b>
 athena$ <b>fs sa /mit/$USER/Jupyter daemon.jupyter write</b>
 </pre>
 <p>
-  After you've created the directory, log in to Jupyter again.
+  After you've created the directory, refresh this page.
 </p>
+</div>
+{% else %}
+{{ super() }}
+{% endif %}
 {% endblock %}
 
 {% block script %}
 {{ super() }}
+{% if not user.spawner.is_registered(user.name) %}
 {{ webathena.script(afs=True) }}
+{% endif %}
 {% endblock %}

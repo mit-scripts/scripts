@@ -160,10 +160,6 @@ class HomepageHandler(BaseHandler):
     async def get(self):
         self.finish(self.render_template('sipb-home.html'))
 
-class RegisterHandler(BaseHandler):
-    async def get(self):
-        self.finish(self.render_template('register.html'))
-
 class LoginBaseHandler(BaseHandler):
     redirect_to_server = True
 
@@ -188,7 +184,7 @@ class WebathenaLoginHandler(LoginBaseHandler):
         if self.get_argument('creds', None):
             registered = await self.register()
             if not registered:
-                self.redirect(url_path_join(self.hub.base_url, 'register'))
+                self.redirect(url_path_join(self.hub.base_url, 'home'))
         self.redirect(self.get_next_url(user))
 
     async def register(self):
@@ -246,7 +242,7 @@ class MITAuthenticator(Authenticator):
             return data
 
     async def run_post_auth_hook(self, handler, authentication):
-        handler.redirect_to_server = await MITSpawner.is_registered(authentication['name'])
+        handler.redirect_to_server = MITSpawner.is_registered(authentication['name'])
         return authentication
 
     def login_url(self, base_url):
@@ -255,7 +251,6 @@ class MITAuthenticator(Authenticator):
     def get_handlers(self, app):
         return [
                 ('/', HomepageHandler),
-                ('/register', RegisterHandler),
                 ('/login', LoginHandler),
                 ('/login/certificate', CertificateLoginHandler),
                 ('/login/webathena', WebathenaLoginHandler),
@@ -314,13 +309,13 @@ class MITSpawner(LocalProcessSpawner):
         return hesiod.FilsysLookup(name).filsys[0]['location']
 
     @classmethod
-    async def is_registered(cls, username):
+    def is_registered(cls, username):
         home = cls.get_home(username)
         jupyter_home = home + '/Jupyter'
         return os.path.exists(jupyter_home)
 
     async def start(self):
-        if not await self.is_registered(self.user.name):
+        if not self.is_registered(self.user.name):
             raise PermissionError("/mit/%s/Jupyter does not exist; registration required" % (self.user.name,))
         return await super().start()
 
