@@ -156,10 +156,6 @@ class MITOIDCAuthenticator(oauthenticator.generic.GenericOAuthenticator):
 
 #c.JupyterHub.authenticator_class = MITAuthenticator
 
-class HomepageHandler(BaseHandler):
-    async def get(self):
-        self.finish(self.render_template('sipb-home.html'))
-
 class LoginBaseHandler(BaseHandler):
     redirect_to_server = True
 
@@ -233,8 +229,6 @@ class CertificateLoginHandler(LoginBaseHandler):
             self.redirect(self.get_next_url(user))
 
 class MITAuthenticator(Authenticator):
-    login_service = "MIT certificates"
-
     async def authenticate(self, handler, data):
         if isinstance(data, str):
             # N.B. Users can call this with an arbitrary dict as data; make sure the argument is something the user can't spoof.
@@ -242,15 +236,12 @@ class MITAuthenticator(Authenticator):
             return data
 
     async def run_post_auth_hook(self, handler, authentication):
+        # If ~/Jupyter doesn't exist, redirect to /hub/home so they get registration instructions.
         handler.redirect_to_server = MITSpawner.is_registered(authentication['name'])
         return authentication
 
-    def login_url(self, base_url):
-        return url_path_join(base_url, 'login/certificate')
-
     def get_handlers(self, app):
         return [
-                ('/', HomepageHandler),
                 ('/login', LoginHandler),
                 ('/login/certificate', CertificateLoginHandler),
                 ('/login/webathena', WebathenaLoginHandler),

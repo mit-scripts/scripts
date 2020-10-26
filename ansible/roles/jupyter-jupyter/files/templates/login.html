@@ -1,7 +1,8 @@
-{% extends "page.html" %}
+{% extends "templates/login.html" %}
 {% import "partial/webathena_login.html" as webathena %}
 
-{% block main %}
+{% block login %}
+<div id="login-main" class="container">
 <h1>SIPB JupyterHub</h1>
 <p>
     Welcome to SIPB's JupyterHub instance!
@@ -16,6 +17,7 @@
   <a role="button" class='btn btn-jupyter btn-lg' href='/login/touchstone'>
     Sign in with Touchstone (beta)
   </a>
+</div>
 </div>
 {% endblock %}
 
