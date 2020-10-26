@@ -3,11 +3,11 @@
   <a id="webathena_login" role="button" class='btn btn-jupyter btn-lg'>
     {{text}} with WebAthena
   </a>
+  <form method="post" id="webathena_post" action="/hub/login/webathena">
+    <input type="hidden" id="webathena_token" name="token" />
+    <input type="hidden" id="webathena_creds" name="creds" />
+  </form>
 </div>
-<form method="post" id="webathena_post" action="/hub/login/webathena">
-  <input type="hidden" id="webathena_token" name="token" />
-  <input type="hidden" id="webathena_creds" name="creds" />
-</form>
 {% endmacro %}
 
 {% macro script(afs=False) %}
