@@ -40,6 +40,7 @@
     - jupyterlab-latex
     - jupyterlab-kernelspy
     - astrowidgets
+    - octave_kernel
     # User packages
     # Inspired by Anaconda package list:
     # curl https://repo.anaconda.com/pkgs/main/linux-64/repodata.json | jq '.packages[.packages | keys | map(select(startswith("_anaconda_depends-20")))[-1]].depends'
@@ -320,7 +321,7 @@
         /opt/jupyterhub/bin/jupyter kernelspec install --sys-prefix --replace "$tmpdir/javascript"
       args:
         stdin: "{{ ijs_spec.stdout | string }}"
-      when: "(ijs_spec.stdout | from_json) != (jupyter_kernels.stdout | from_json | json_query('kernelspecs.javascript.spec'))"
+      when: (ijs_spec.stdout | from_json) != (jupyter_kernels.stdout | from_json | json_query('kernelspecs.javascript.spec'))
 - name: Install TypeScript kernel
   block:
     # TODO: Install npm packages inside the virtualenv?
@@ -365,7 +366,81 @@
         /opt/jupyterhub/bin/jupyter kernelspec install --sys-prefix --replace "$tmpdir/typescript"
       args:
         stdin: "{{ its_spec | to_json }}"
-      when: "its_spec != (jupyter_kernels.stdout | from_json | json_query('kernelspecs.typescript.spec'))"
+      when: its_spec != (jupyter_kernels.stdout | from_json | json_query('kernelspecs.typescript.spec'))
+- name: Install Octave
+  block:
+  - apt:
+      name:
+      - octave
+      - libfftw3-bin
+      - gnuplot-nox
+      - libopenblas0
+      - epstool
+      - octave-doc
+      - octave-arduino
+      - octave-bim
+      - octave-communications
+      - octave-control
+      - octave-data-smoothing
+      - octave-database
+      - octave-dataframe
+      - octave-dicom
+      - octave-divand
+      - octave-econometrics
+      - octave-financial
+      - octave-fits
+      - octave-fpl
+      - octave-fuzzy-logic-toolkit
+      - octave-ga
+      - octave-gdf
+      - octave-general
+      - octave-geometry
+      - octave-gsl
+      - octave-image
+      - octave-instrument-control
+      - octave-interval
+      - octave-io
+      - octave-level-set
+      - octave-linear-algebra
+      - octave-lssa
+      - octave-ltfat
+      - octave-mapping
+      - octave-miscellaneous
+      - octave-missing-functions
+      - octave-msh
+      - octave-mvn
+      - octave-nan
+      - octave-ncarray
+      - octave-netcdf
+      - octave-nlopt
+      - octave-nurbs
+      - octave-octclip
+      - octave-octproj
+      - octave-openems
+      - octave-optics
+      - octave-optim
+      - octave-optiminterp
+      - octave-pfstools
+      - octave-plplot
+      - octave-quaternion
+      - octave-queueing
+      - octave-secs1d
+      - octave-secs2d
+      - octave-secs3d
+      - octave-signal
+      - octave-sockets
+      - octave-sparsersb
+      - octave-specfun
+      - octave-splines
+      - octave-statistics
+      - octave-stk
+      - octave-strings
+      - octave-struct
+      - octave-symbolic
+      - octave-tsa
+      - octave-zeromq
+      install_recommends: no
+    # N.B. The Octave kernel is installed as part of pip above.
 # TODO: Real database
 # TODO: Other config settings
 - name: Configure jupyterhub
