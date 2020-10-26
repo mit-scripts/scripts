@@ -2,6 +2,15 @@ import pkg_resources
 import threading
 import varlink
 
+# Monkey-patch varlink.scanner
+# systemd uses uppercase service names, which python-varlink rejects.
+import varlink.scanner
+orig_init = varlink.scanner.Scanner.__init__
+def scanner_init(self, string):
+    orig_init(self, string)
+    self.patterns['interface-name'] = re.compile(r'[a-z]([-]*[a-z0-9])*([.][a-zA-Z0-9]([-]*[a-zA-Z0-9])*)+')
+varlink.scanner.Scanner.__init__ = scanner_init
+
 varlink_service = varlink.Service(
     vendor='SIPB',
     product='JupyterHub',
