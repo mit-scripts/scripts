@@ -240,7 +240,7 @@ class MITAuthenticator(Authenticator):
 
     async def run_post_auth_hook(self, handler, authentication):
         # If ~/Jupyter doesn't exist, redirect to /hub/home so they get registration instructions.
-        handler.redirect_to_server = MITSpawner.is_registered(authentication['name'])
+        handler.redirect_to_server = MITLocalSpawner.is_registered(authentication['name'])
         return authentication
 
     def get_handlers(self, app):
