@@ -1,3 +1,4 @@
+import re
 import pkg_resources
 import threading
 import varlink
@@ -92,6 +93,9 @@ class UserDatabaseServer(varlink.ThreadingServer):
     users_by_uid = {}
     users_by_name = {}
 
+    def __init__(self):
+        super().__init__('unix:/run/systemd/userdb/edu.mit.jupyter.User', ServiceRequestHandler)
+
     def add_user(self, uid, userName, homeDirectory):
         # Consider setting: umask, environment
         user = {
@@ -108,7 +112,7 @@ class UserDatabaseServer(varlink.ThreadingServer):
             users_by_name[userName] = user
 
 def run_server(address):
-    with UserDatabaseServer('unix:/run/systemd/userdb/edu.mit.jupyter.User', ServiceRequestHandler) as server:
+    with UserDatabaseServer() as server:
         print("Listening on", server.server_address)
         try:
             server.serve_forever()

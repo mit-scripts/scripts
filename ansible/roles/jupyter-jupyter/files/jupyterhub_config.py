@@ -12,6 +12,7 @@ import logging
 import os
 import os.path
 import subprocess
+import threading
 import sys
 import gssapi
 import hesiod
@@ -277,7 +278,10 @@ def _try_setcwd(path):
     td = mkdtemp()
     os.chdir(td)
 
-class MITSpawner(LocalProcessSpawner):
+userdb_server = sipb.jupyter.userdb.UserDatabaseServer()
+threading.Thread(name='userdb server', target=userdb_server.serve_forever, daemon=True).start()
+
+class MITLocalSpawner(LocalProcessSpawner):
     # TODO: Add support for spawning inside a PAG with user-supplied AFS tokens.
 
     def user_env(self, env):
@@ -314,8 +318,12 @@ class MITSpawner(LocalProcessSpawner):
 
     def make_preexec_fn(self, name):
         print("make_preexec_fn", name)
+        sys.stdout.flush()
         home = self.get_home(name)
         uid = afs.fs.examine(home)[0].Vid
+        jupyter_home = home + '/Jupyter'
+        # Make sure the user exists
+        userdb_server.add_user(uid, name, jupyter_home)
         def preexec():
             """Set uid/gid of current process
             Executed after fork but before exec by python.
@@ -332,7 +340,7 @@ class MITSpawner(LocalProcessSpawner):
                 raise
 
         return preexec
-c.JupyterHub.spawner_class = MITSpawner
+c.JupyterHub.spawner_class = MITLocalSpawner
 
 ## The base URL of the entire application.
 #  
