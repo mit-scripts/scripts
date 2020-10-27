@@ -448,6 +448,29 @@
       - octave-zeromq
       install_recommends: no
     # N.B. The Octave kernel is installed as part of pip above.
+- name: Install Julia kernel
+  block:
+  - apt:
+      name:
+      - julia
+      - julia-doc
+  - command: julia -e 'empty!(DEPOT_PATH); push!(DEPOT_PATH, "/opt/jupyterhub/julia"); using Pkg; Pkg.add("IJulia")'
+    args:
+      creates: /root/.local/share/jupyter/kernels/julia-1.4
+  - command: cat /root/.local/share/jupyter/kernels/julia-1.4/kernel.json
+    register: iju_spec
+  - name: Read current kernels
+    command: /opt/jupyterhub/bin/jupyter kernelspec list --json
+    check_mode: no
+    changed_when: no
+    register: jupyter_kernels
+  - name: Install kernel spec
+    shell: |
+      set -ex
+      /opt/jupyterhub/bin/jupyter kernelspec install --sys-prefix --replace /root/.local/share/jupyter/kernels/julia-1.4
+    args:
+      stdin: "{{ iju_spec.stdout | string }}"
+    when: (iju_spec.stdout | from_json) != (jupyter_kernels.stdout | from_json | json_query('kernelspecs."julia-1.4".spec'))
 # TODO: Real database
 # TODO: Other config settings
 - name: Configure jupyterhub
