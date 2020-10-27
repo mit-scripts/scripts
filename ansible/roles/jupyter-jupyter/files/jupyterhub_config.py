@@ -408,7 +408,7 @@ c.JupyterHub.bind_url = 'http://localhost:8000'
 #  
 #  The Hub should be able to resume from database state.
 #  Default: True
-# c.JupyterHub.cleanup_proxy = True
+c.JupyterHub.cleanup_proxy = False
 
 ## Whether to shutdown single-user servers when the Hub shuts down.
 #  
