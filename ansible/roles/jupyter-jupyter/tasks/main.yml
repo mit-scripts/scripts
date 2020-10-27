@@ -459,6 +459,8 @@
       creates: /root/.local/share/jupyter/kernels/julia-1.4
   - command: cat /root/.local/share/jupyter/kernels/julia-1.4/kernel.json
     register: iju_spec
+  - set_fact:
+      iju_spec_mod: "{{ iju_spec.stdout | from_json | combine({'metadata': {}, 'env': {'JULIA_DEPOT_PATH': ':/opt/jupyterhub/julia'}}) | to_json }}"
   - name: Read current kernels
     command: /opt/jupyterhub/bin/jupyter kernelspec list --json
     check_mode: no
@@ -467,10 +469,15 @@
   - name: Install kernel spec
     shell: |
       set -ex
-      /opt/jupyterhub/bin/jupyter kernelspec install --sys-prefix --replace /root/.local/share/jupyter/kernels/julia-1.4
+      tmpdir=$(mktemp -d)
+      trap "{ rm -rf $tmpdir; }" EXIT
+      mkdir "$tmpdir/julia-1.4"
+      cat > "$tmpdir/julia-1.4/kernel.json"
+      cp /root/.local/share/jupyter/kernels/julia-1.4/*.png "$tmpdir/julia-1.4/"
+      /opt/jupyterhub/bin/jupyter kernelspec install --sys-prefix --replace "$tmpdir/julia-1.4"
     args:
-      stdin: "{{ iju_spec.stdout | string }}"
-    when: (iju_spec.stdout | from_json) != (jupyter_kernels.stdout | from_json | json_query('kernelspecs."julia-1.4".spec'))
+      stdin: "{{ iju_spec_mod | string }}"
+    when: (iju_spec_mod | from_json) != (jupyter_kernels.stdout | from_json | json_query('kernelspecs."julia-1.4".spec'))
 # TODO: Real database
 # TODO: Other config settings
 - name: Configure jupyterhub
