@@ -3,6 +3,7 @@
 import oauthenticator.generic
 from jupyterhub.auth import Authenticator
 from jupyterhub.spawner import LocalProcessSpawner
+import systemdspawner
 from tempfile import mkdtemp, NamedTemporaryFile
 from tornado.escape import json_encode
 import jinja2.ext
@@ -240,7 +241,7 @@ class MITAuthenticator(Authenticator):
 
     async def run_post_auth_hook(self, handler, authentication):
         # If ~/Jupyter doesn't exist, redirect to /hub/home so they get registration instructions.
-        handler.redirect_to_server = MITLocalSpawner.is_registered(authentication['name'])
+        handler.redirect_to_server = c.JupyterHub.spawner_class.is_registered(authentication['name'])
         return authentication
 
     def get_handlers(self, app):
@@ -280,6 +281,40 @@ def _try_setcwd(path):
 
 userdb_server = sipb.jupyter.userdb.UserDatabaseServer()
 threading.Thread(name='userdb server', target=userdb_server.serve_forever, daemon=True).start()
+
+class MITSystemdSpawner(systemdspawner.SystemdSpawner):
+    isolate_tmp = True
+    isolate_devices = True
+    disable_user_sudo = True
+    slice = 'jupyter.slice'
+
+    @staticmethod
+    def get_home(name):
+        return hesiod.FilsysLookup(name).filsys[0]['location']
+
+    @classmethod
+    def is_registered(cls, username):
+        home = cls.get_home(username)
+        jupyter_home = home + '/Jupyter'
+        return os.path.exists(jupyter_home)
+
+    def add_user(self):
+        name = self.user.name
+        home = self.get_home(name)
+        uid = afs.fs.examine(home)[0].Vid
+        jupyter_home = home + '/Jupyter'
+        # Make sure the user exists
+        userdb_server.add_user(uid, name, jupyter_home)
+
+    def load_state(self, state):
+        # Reregister user with userdb
+        self.add_user()
+        super().load_state(state)
+
+    async def start(self):
+        # Register user with userdb
+        self.add_user()
+        return await super().start()
 
 class MITLocalSpawner(LocalProcessSpawner):
     # TODO: Add support for spawning inside a PAG with user-supplied AFS tokens.
@@ -340,7 +375,7 @@ class MITLocalSpawner(LocalProcessSpawner):
                 raise
 
         return preexec
-c.JupyterHub.spawner_class = MITLocalSpawner
+c.JupyterHub.spawner_class = MITSystemdSpawner
 
 ## The base URL of the entire application.
 #  
@@ -382,7 +417,7 @@ c.JupyterHub.bind_url = 'http://localhost:8000'
 #  
 #  The Hub should be able to resume from database state.
 #  Default: True
-# c.JupyterHub.cleanup_servers = True
+c.JupyterHub.cleanup_servers = False
 
 ## Maximum number of concurrent users that can be spawning at a time.
 #  
