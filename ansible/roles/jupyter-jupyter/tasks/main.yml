@@ -7,6 +7,9 @@
       - nodejs
       - cython3
       - libhesiod-dev
+      # Dependencies of PIP packages below
+      - libcurl4-openssl-dev
+      - unixodbc-dev
       # User packages
       - python3-gmpy2
       - python3-pyodbc

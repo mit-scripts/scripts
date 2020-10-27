@@ -1,4 +1,5 @@
 import re
+import os
 import pkg_resources
 import threading
 import varlink
@@ -11,6 +12,8 @@ def scanner_init(self, string):
     orig_init(self, string)
     self.patterns['interface-name'] = re.compile(r'[a-z]([-]*[a-z0-9])*([.][a-zA-Z0-9]([-]*[a-zA-Z0-9])*)+')
 varlink.scanner.Scanner.__init__ = scanner_init
+
+SERVICE_NAME = "edu.mit.jupyter.User"
 
 varlink_service = varlink.Service(
     vendor='SIPB',
@@ -25,12 +28,10 @@ class ServiceRequestHandler(varlink.RequestHandler):
 
 class UserDBError(varlink.VarlinkError):
     def __init__(self):
-        super().__init__(
-            self,
-            {
-                'error': 'io.systemd.UserDatabase.' + self.__class__.__name__,
-                'parameters': {},
-            })
+        super().__init__({
+            'error': 'io.systemd.UserDatabase.' + self.__class__.__name__,
+            'parameters': {},
+        })
 class NoRecordFound(UserDBError): pass
 class BadService(UserDBError): pass
 class ServiceNotAvailable(UserDBError): pass
@@ -47,7 +48,7 @@ class UserDatabase(object):
             with _server.lock:
                 user = _server.users_by_uid.get(uid)
                 if not user:
-                    user = _server.users_by_userName(userName)
+                    user = _server.users_by_userName.get(userName)
             if not user:
                 raise NoRecordFound()
             if userName and user['userName'] != userName:
@@ -89,12 +90,17 @@ class UserDatabase(object):
         raise NoRecordFound()
 
 class UserDatabaseServer(varlink.ThreadingServer):
-    lock = threading.Lock()
-    users_by_uid = {}
-    users_by_name = {}
 
     def __init__(self):
-        super().__init__('unix:/run/systemd/userdb/edu.mit.jupyter.User', ServiceRequestHandler)
+        sockname = '/run/systemd/userdb/%s' % (SERVICE_NAME,)
+        try:
+            os.unlink(sockname)
+        except FileNotFoundError:
+            pass
+        super().__init__('unix:%s;mode=0666' % (sockname,), ServiceRequestHandler)
+        self.lock = threading.Lock()
+        self.users_by_uid = {}
+        self.users_by_userName = {}
 
     def add_user(self, uid, userName, homeDirectory):
         # Consider setting: umask, environment
@@ -103,13 +109,14 @@ class UserDatabaseServer(varlink.ThreadingServer):
             'gid': 101,
             'userName': userName,
             'realm': 'edu.mit.jupyter',
+            'service': SERVICE_NAME,
             'disposition': 'regular',
             'shell': '/bin/bash',
             'homeDirectory': homeDirectory,
         }
         with self.lock:
-            users_by_uid[uid] = user
-            users_by_name[userName] = user
+            self.users_by_uid[uid] = user
+            self.users_by_userName[userName] = user
 
 def run_server(address):
     with UserDatabaseServer() as server:
