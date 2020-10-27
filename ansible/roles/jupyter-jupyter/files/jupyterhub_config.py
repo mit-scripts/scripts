@@ -286,6 +286,9 @@ class MITSystemdSpawner(systemdspawner.SystemdSpawner):
     isolate_tmp = True
     isolate_devices = True
     disable_user_sudo = True
+    unit_extra_properties = {
+        'CPUAccounting': 'yes',
+    }
     slice = 'jupyter.slice'
 
     @staticmethod
