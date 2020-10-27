@@ -17,6 +17,7 @@
     global: yes
 - name: Install jupyterhub
   pip:
+    extra_args: --upgrade
     name:
     - jupyterhub
     - jupyterlab
