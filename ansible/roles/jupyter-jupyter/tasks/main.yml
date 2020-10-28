@@ -162,7 +162,8 @@
     - pandas
     - pandoc
     - pandocfilters
-    - parso
+    # pyls is not compatible with parso 0.8.0
+    - parso<0.8.0
     - partd
     - path
     - pathlib2

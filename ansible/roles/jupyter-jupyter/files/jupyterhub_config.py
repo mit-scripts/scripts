@@ -286,9 +286,15 @@ class MITSystemdSpawner(systemdspawner.SystemdSpawner):
     isolate_tmp = True
     isolate_devices = True
     disable_user_sudo = True
-    unit_extra_properties = {
-        'CPUAccounting': 'yes',
-    }
+    @property
+    def unit_extra_properties(self):
+        return {
+            'CPUAccounting': 'yes',
+            'CacheDirectory': 'jupyter/'+self.unit_name,
+            'CacheDirectoryMode': '0700',
+            # %C is supposed to work but we have to hardcode /var/cache :(
+            'Environment': 'XDG_CACHE_HOME=/var/cache/jupyter/'+self.unit_name,
+        }
     slice = 'jupyter.slice'
 
     @staticmethod
