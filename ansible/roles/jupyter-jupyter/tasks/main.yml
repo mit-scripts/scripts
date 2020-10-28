@@ -15,9 +15,19 @@
       - python3-pyodbc
       - python3-gdal
       - texlive-full
-- npm:
-    name: configurable-http-proxy
+- name: Install jupyterhub node dependencies
+  npm:
+    name: "{{ item }}"
     global: yes
+  loop:
+  - configurable-http-proxy
+  - bash-language-server
+  - javascript-typescript-langserver
+  - unified-language-server
+  - vscode-css-languageserver-bin
+  - vscode-html-languageserver-bin
+  - vscode-json-languageserver-bin
+  - yaml-language-server
 - name: Install jupyterhub
   pip:
     extra_args: --upgrade
@@ -48,6 +58,9 @@
     - jupyterlab-kernelspy
     - astrowidgets
     - octave_kernel
+    - jupyter-lsp
+    # Language servers
+    - python-language-server[all]
     # User packages
     # Inspired by Anaconda package list:
     # curl https://repo.anaconda.com/pkgs/main/linux-64/repodata.json | jq '.packages[.packages | keys | map(select(startswith("_anaconda_depends-20")))[-1]].depends'
@@ -260,6 +273,7 @@
     - jupyterlab-drawio
     - "@aquirdturtle/collapsible_headings"
     - "@jupyterlab/geojson-extension"
+    - "@krassowski/jupyterlab-lsp"
   register: result
   changed_when: result.rc != 37
   failed_when: result.rc not in (0, 37)
