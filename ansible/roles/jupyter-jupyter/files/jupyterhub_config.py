@@ -290,6 +290,9 @@ class MITSystemdSpawner(systemdspawner.SystemdSpawner):
     def unit_extra_properties(self):
         return {
             'CPUAccounting': 'yes',
+            'MemoryAccounting': 'yes',
+            'MemoryHigh': '50%',
+            'MemoryMax': '75%',
             'CacheDirectory': 'jupyter/'+self.unit_name,
             'CacheDirectoryMode': '0700',
             # %C is supposed to work but we have to hardcode /var/cache :(
