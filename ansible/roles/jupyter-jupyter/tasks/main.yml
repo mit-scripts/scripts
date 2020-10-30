@@ -15,6 +15,11 @@
       - python3-pyodbc
       - python3-gdal
       - texlive-full
+      # PARI kernel
+      - pari-gp
+      - pari-gp2c
+      - pari-galpol
+      - libreadline-dev
 - name: Install jupyterhub node dependencies
   npm:
     name: "{{ item }}"
@@ -59,6 +64,7 @@
     - astrowidgets
     - octave_kernel
     - jupyter-lsp
+    - pari_jupyter
     # Language servers
     - python-language-server[all]
     # User packages
