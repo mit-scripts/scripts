@@ -1,5 +1,7 @@
 [Unit]
 Description=SIPB JupyterHub
+Requires=scripts-afsagent.service
+After=scripts-afsagent.service
 
 [Service]
 ExecStart=/opt/jupyterhub/bin/jupyterhub
