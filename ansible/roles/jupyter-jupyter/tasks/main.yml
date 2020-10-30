@@ -499,6 +499,18 @@
     args:
       stdin: "{{ iju_spec_mod | string }}"
     when: (iju_spec_mod | from_json) != (jupyter_kernels.stdout | from_json | json_query('kernelspecs."julia-1.4".spec'))
+- name: Install R kernel
+  block:
+  - apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: E298A3A825C0D65DFD57CBB651716619E084DAB9
+  - apt_repository:
+    repo: deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/
+    state: present
+  - apt:
+    name:
+      - r-base
+  # TODO: R -e "install.packages('IRkernel'); IRkernel::installspec()"
 # TODO: Real database
 # TODO: Other config settings
 - name: Configure jupyterhub
