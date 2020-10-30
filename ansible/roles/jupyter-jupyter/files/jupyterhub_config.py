@@ -311,12 +311,15 @@ class MITSystemdSpawner(systemdspawner.SystemdSpawner):
         return os.path.exists(jupyter_home)
 
     def add_user(self):
-        name = self.user.name
-        home = self.get_home(name)
-        uid = afs.fs.examine(home)[0].Vid
-        jupyter_home = home + '/Jupyter'
-        # Make sure the user exists
-        userdb_server.add_user(uid, name, jupyter_home)
+        try:
+            name = self.user.name
+            home = self.get_home(name)
+            uid = afs.fs.examine(home)[0].Vid
+            jupyter_home = home + '/Jupyter'
+            # Make sure the user exists
+            userdb_server.add_user(uid, name, jupyter_home)
+        except:
+            logging.exception("User or home directory for %s not found", name)
 
     def load_state(self, state):
         # Reregister user with userdb
