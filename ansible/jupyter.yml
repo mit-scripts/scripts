@@ -10,6 +10,7 @@
   - k5login
 # - real-nsspam
   - jupyter-afs
+  - jupyter-httpd
   - jupyter-jupyter
   tasks:
   - package:
