@@ -510,7 +510,9 @@
   - apt:
       name:
       - r-base
-  # TODO: R -e "install.packages('IRkernel'); IRkernel::installspec()"
+      - r-recommended
+      - r-cran-irkernel
+  - command: R -e "IRkernel::installspec()"
 # TODO: Real database
 # TODO: Other config settings
 - name: Configure jupyterhub
