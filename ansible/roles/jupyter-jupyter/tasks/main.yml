@@ -511,6 +511,14 @@
       name:
       - r-base
       - r-recommended
+      - r-cran-repr
+      - r-cran-evaluate
+      - r-cran-irdisplay
+      - r-cran-pbdzmq
+      - r-cran-crayon
+      - r-cran-jsonlite
+      - r-cran-uuid
+      - r-cran-digest
       - r-cran-irkernel
   - command: R -e "IRkernel::installspec()"
 # TODO: Real database
