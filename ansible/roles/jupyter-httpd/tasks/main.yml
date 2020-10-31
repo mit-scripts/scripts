@@ -1,0 +1,23 @@
+---
+- name: Install Apache
+  package:
+    name:
+    - apache2
+- name: Install jupyter site configuration
+  copy:
+    dest: /etc/apache2/sites-available/jupyter.conf
+    src: jupyter.conf
+  notify: reload apache2
+- community_general_apache2_module:
+    name: headers
+  notify: reload apache2
+- file:
+    path: /etc/apache2/sites-enabled/000-default.conf
+    state: absent
+  notify: reload apache2
+- file:
+    path: /etc/apache2/sites-enabled/jupyter.conf
+    state: link
+    src: ../sites-available/jupyter.conf
+  notify: reload apache2
+
