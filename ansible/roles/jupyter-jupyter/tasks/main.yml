@@ -506,6 +506,7 @@
       name:
       - r-base
       - r-recommended
+      - r-cran-pbdzmq
   - name: Install IRkernel and kernelspec
     command: R -e "install.packages('IRkernel'); IRkernel::installspec(user=FALSE, sys_prefix=TRUE)"
     environment:
