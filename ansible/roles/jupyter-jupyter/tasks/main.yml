@@ -501,11 +501,15 @@
     when: (iju_spec_mod | from_json) != (jupyter_kernels.stdout | from_json | json_query('kernelspecs."julia-1.4".spec'))
 - name: Install R kernel
   block:
-  - apt:
+  - name: Install R
+    apt:
       name:
       - r-base
       - r-recommended
-  - command: R -e "install.packages('IRkernel'); IRkernel::installspec(user=FALSE, sys_prefix=TRUE)"
+  - name: Install IRkernel and kernelspec
+    command: R -e "install.packages('IRkernel'); IRkernel::installspec(user=FALSE, sys_prefix=TRUE)"
+    environment:
+      PATH: /opt/jupyterhub/bin:{{ ansible_env.PATH }}
 # TODO: Real database
 # TODO: Other config settings
 - name: Configure jupyterhub
