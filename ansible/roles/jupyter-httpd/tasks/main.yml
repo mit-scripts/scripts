@@ -13,11 +13,15 @@
     dest: /etc/ssl/certs/mitCAclient.pem
     src: mitCAclient.pem
 - community_general_apache2_module:
-    name: headers
+    name: '{{ item }}'
   notify: reload apache2
-- community_general_apache2_module:
-    name: ssl
-  notify: reload apache2
+  loop:
+    - headers
+    - ssl
+    - rewrite
+    - proxy
+    - proxy_http
+    - proxy_wstunnel
 - file:
     path: /etc/apache2/sites-enabled/000-default.conf
     state: absent
