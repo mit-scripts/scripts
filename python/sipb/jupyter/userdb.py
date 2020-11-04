@@ -68,11 +68,11 @@ class UserDatabase(object):
                 'incomplete': False,
                 '_continues': True,
             } for user in _server.users_by_uid.values()]
+        if not returns:
+            raise NoRecordFound()
         returns[-1]['_continues'] = False
         for r in returns:
             yield r
-        if not returns:
-            raise NoRecordFound()
 
     def GetGroupRecord(self, gid=None, groupName=None, service=None, _more=True, _server=None):
         # yield {
