@@ -30,6 +30,7 @@
     copy:
       dest: /home/afsagent/renew
       src: renew
+      mode: preserve
   - name: Install units
     copy:
       dest: /etc/systemd/system/{{ item }}
