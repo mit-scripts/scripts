@@ -8,8 +8,15 @@
     dest: /etc/apache2/sites-available/jupyter.conf
     src: jupyter.conf
   notify: reload apache2
+- name: Install MIT client CA
+  copy:
+    dest: /etc/ssl/certs/mitCAclient.pem
+    src: mitCAclient.pem
 - community_general_apache2_module:
     name: headers
+  notify: reload apache2
+- community_general_apache2_module:
+    name: ssl
   notify: reload apache2
 - file:
     path: /etc/apache2/sites-enabled/000-default.conf
