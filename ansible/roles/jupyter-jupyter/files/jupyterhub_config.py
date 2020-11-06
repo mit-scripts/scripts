@@ -880,7 +880,7 @@ c.JupyterHub.cleanup_servers = False
 #  
 #  When using SSL (i.e. always) this also requires a wildcard SSL certificate.
 #  Default: ''
-# c.JupyterHub.subdomain_host = ''
+c.JupyterHub.subdomain_host = 'https://jupyter.sipb.org'
 
 ## Paths to search for jinja templates, before using the default templates.
 #  Default: []
