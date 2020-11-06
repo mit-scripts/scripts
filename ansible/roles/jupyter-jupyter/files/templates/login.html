@@ -4,9 +4,12 @@
 {% block login %}
 <div id="login-main" class="container">
 <h1>SIPB JupyterHub</h1>
+
 <p>
-    Welcome to SIPB's JupyterHub instance!
+  Welcome to SIPB's JupyterHub instance! jupyter.sipb.org is a free
+  service provided by <a href="https://sipb.mit.edu">SIPB</a>.
 </p>
+
 <div>
 <div class="service-login">
   <a role="button" class='btn btn-jupyter btn-lg' href='/login/certificate'>
@@ -21,6 +24,17 @@
   </a>
 </div> -->
 </div>
+
+<p>
+  Currently, we support kernels for Python 3.8.5, Node.js v10, Typescript 3.9, Julia 1.4.1,
+  R 3.6, GNU Octave, and PARI/GP.
+</p>
+
+<p>
+  If you have any questions, comments, requests for new kernels/packages, or want to help out,
+  drop us an email at sipb-cloud (at) mit.edu!
+</p>
+
 </div>
 {% endblock %}
 
