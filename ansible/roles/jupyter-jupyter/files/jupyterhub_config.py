@@ -12,12 +12,16 @@ import json
 import logging
 import os
 import os.path
+import shutil
 import subprocess
 import threading
 import sys
 import gssapi
 import hesiod
 import afs
+from traitlets import Integer
+from traitlets import Unicode
+from traitlets import observe
 from jupyterhub.handlers.login import LoginHandler
 from jupyterhub.handlers.base import BaseHandler
 from jupyterhub.handlers.static import CacheControlStaticFilesHandler
@@ -300,6 +304,23 @@ class MITSystemdSpawner(systemdspawner.SystemdSpawner):
         }
     slice = 'jupyter.slice'
 
+    uid = Integer()
+    jupyter_home = Unicode()
+
+    @observe('user')
+    def _update_user_info(self, change):
+        user = change['new']
+        name = user.name
+        try:
+            home = self.get_home(name)
+            self.uid = afs.fs.examine(home)[0].Vid
+            self.jupyter_home = home + '/Jupyter'
+        except:
+            logging.exception("User or home directory for %s not found", name)
+        else:
+            # (Re)register user with userdb
+            userdb_server.add_user(self.uid, self.user.name, self.jupyter_home)
+
     @staticmethod
     def get_home(name):
         return hesiod.FilsysLookup(name).filsys[0]['location']
@@ -310,26 +331,10 @@ class MITSystemdSpawner(systemdspawner.SystemdSpawner):
         jupyter_home = home + '/Jupyter'
         return os.path.exists(jupyter_home)
 
-    def add_user(self):
-        try:
-            name = self.user.name
-            home = self.get_home(name)
-            uid = afs.fs.examine(home)[0].Vid
-            jupyter_home = home + '/Jupyter'
-            # Make sure the user exists
-            userdb_server.add_user(uid, name, jupyter_home)
-        except:
-            logging.exception("User or home directory for %s not found", name)
-
-    def load_state(self, state):
-        # Reregister user with userdb
-        self.add_user()
-        super().load_state(state)
-
-    async def start(self):
-        # Register user with userdb
-        self.add_user()
-        return await super().start()
+    async def move_certs(self, paths):
+        # Make the key readable by the user
+        shutil.chown(paths['keyfile'], user=self.uid)
+        return paths
 
 class MITLocalSpawner(LocalProcessSpawner):
     # TODO: Add support for spawning inside a PAG with user-supplied AFS tokens.
@@ -651,7 +656,7 @@ c.JupyterHub.cleanup_servers = False
 #  
 #  Use with internal_ssl
 #  Default: 'internal-ssl'
-# c.JupyterHub.internal_certs_location = 'internal-ssl'
+c.JupyterHub.internal_certs_location = os.path.abspath('internal-ssl')
 
 ## Enable SSL for all internal communication
 #  
@@ -659,7 +664,7 @@ c.JupyterHub.cleanup_servers = False
 #  JupyterHub will automatically create the necessary certificate authority and
 #  sign notebook certificates as they're created.
 #  Default: False
-# c.JupyterHub.internal_ssl = False
+c.JupyterHub.internal_ssl = True
 
 ## The public facing ip of the whole JupyterHub application (specifically
 #  referred to as the proxy).
@@ -923,7 +928,7 @@ c.JupyterHub.subdomain_host = 'https://jupyter.sipb.org'
 #  
 #  Use with internal_ssl
 #  Default: []
-# c.JupyterHub.trusted_alt_names = []
+c.JupyterHub.trusted_alt_names = ['DNS:*.jupyter.sipb.org']
 
 ## Downstream proxy IP addresses to trust.
 #  
