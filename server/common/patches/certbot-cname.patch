@@ -1,0 +1,21 @@
+From: SIPB Jupyter team <sipb-jupyter@mit.edu>
+Date: Sat, 7 Nov 2020 00:45:51 +0000
+Subject: Follow CNAME for validation name
+
+---
+ certbot_dns_route53/dns_route53.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/certbot_dns_route53/dns_route53.py b/certbot_dns_route53/dns_route53.py
+index e32017b..979f960 100644
+--- a/certbot_dns_route53/dns_route53.py
++++ b/certbot_dns_route53/dns_route53.py
+@@ -102,6 +102,8 @@ class Authenticator(dns_common.DNSAuthenticator):
+         return zones[0][1]
+ 
+     def _change_txt_record(self, action, validation_domain_name, validation):
++        validation_domain_name = validation_domain_name.replace('jupyter.sipb.org', 'jupyter-53.sipb.org')
++
+         zone_id = self._find_zone_id_for_domain(validation_domain_name)
+ 
+         rrecords = self._resource_records[validation_domain_name]
