@@ -800,7 +800,17 @@ c.JupyterHub.internal_ssl = True
 #          }
 #      ]
 #  Default: []
-# c.JupyterHub.services = []
+c.JupyterHub.services = [
+    {
+        'name': 'idle-culler',
+        'admin': True,
+        'command': [
+            sys.executable,
+            '-m', 'jupyterhub_idle_culler',
+            '--timeout=1209600' # 2 weeks
+        ],
+    }
+]
 
 ## Instead of starting the Application, dump configuration to stdout
 #  See also: Application.show_config
