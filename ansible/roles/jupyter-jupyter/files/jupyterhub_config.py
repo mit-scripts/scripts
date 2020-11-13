@@ -101,10 +101,6 @@ if sys.prefix != sys.base_prefix:
 #  Default: False
 # c.JupyterHub.admin_access = False
 
-## DEPRECATED since version 0.7.2, use Authenticator.admin_users instead.
-#  Default: set()
-# c.JupyterHub.admin_users = set()
-
 ## Allow named single-user servers per user
 #  Default: False
 # c.JupyterHub.allow_named_servers = False
@@ -150,19 +146,6 @@ if sys.prefix != sys.base_prefix:
 #    - pam: jupyterhub.auth.PAMAuthenticator
 #  Default: 'jupyterhub.auth.PAMAuthenticator'
 # c.JupyterHub.authenticator_class = 'jupyterhub.auth.PAMAuthenticator'
-
-class MITOIDCAuthenticator(oauthenticator.generic.GenericOAuthenticator):
-    # Not used but these are here as a reference for when we need to edit the client
-    client_config_url='XXX'
-    registration_access_token='XXX'
-
-    authorize_url = 'https://oidc.mit.edu/authorize'
-    # Other possible properties (unused?): token_url, userdata_url, login_service, username_key
-    oauth_callback_url = 'http://XXX/hub/oauth_callback'
-    client_id = 'XXX'
-    client_secret = 'XXX'
-
-#c.JupyterHub.authenticator_class = MITAuthenticator
 
 class LoginBaseHandler(BaseHandler):
     redirect_to_server = True
@@ -220,7 +203,6 @@ class CertificateLoginHandler(LoginBaseHandler):
     def get_username(self):
         subj = self.request.headers.get('X-Client-Cert-Subject')
         if subj:
-            # emailAddress=quentin@MIT.EDU,CN=Quentin Smith,OU=Client CA v1,O=Massachusetts Institute of Technology,ST=Massachusetts,C=US
             subj_parts = {k: v for k,v in [x.split('=', 1) for x in subj.split(',')]}
             return subj_parts['emailAddress'].replace('@MIT.EDU', '')
 
@@ -395,6 +377,7 @@ class MITLocalSpawner(LocalProcessSpawner):
                 raise
 
         return preexec
+
 c.JupyterHub.spawner_class = MITSystemdSpawner
 
 ## The base URL of the entire application.
