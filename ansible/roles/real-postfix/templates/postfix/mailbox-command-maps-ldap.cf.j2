@@ -1,0 +1,6 @@
+server_host = {{ ldap_server }}
+search_base = ou=People,dc=scripts,dc=mit,dc=edu
+query_filter = (&(objectClass=posixAccount)(uid=%s))
+result_attribute = scriptsMailboxCommand
+bind = no
+version = 3

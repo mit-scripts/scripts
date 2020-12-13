@@ -1,0 +1,5 @@
+# Rewrite foo!bar.com@[18.4.86.200] to foo@bar.com
+# This happens after transport selection, so the message is still
+# delivered to 18.4.86.200
+
+/(.*)!(.*)@\[[0-9.]+\]/ $1@$2

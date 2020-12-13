@@ -1,0 +1,4 @@
+:0
+! {% for maintainer in maintainers|rejectattr('root_mail', 'none') -%}
+{{ maintainer.root_mail|default(maintainer.username + '@mit.edu') }}{{ '' if loop.last else ', ' }}
+{%- endfor %}

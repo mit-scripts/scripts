@@ -1,0 +1,56 @@
+#biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+myorigin = scripts.mit.edu
+mydestination = scripts.mit.edu, scripts, $myhostname, scripts-test.mit.edu, scripts-test, localhost
+relayhost =
+mynetworks_style = host
+mailbox_command_maps =
+    texthash:/etc/postfix/mailbox_command_maps,
+    ldap:/etc/postfix/mailbox-command-maps-ldap.cf
+mailbox_size_limit = 0
+message_size_limit = 41943040
+recipient_delimiter = +
+inet_interfaces = $myhostname{% for vip in vips %}{% if vip.mail | default(False) and (vip.codename|default(ansible_lsb.codename) == ansible_lsb.codename) %}, {{ vip.host }}{% endif %}{% endfor %}
+
+readme_directory = /usr/share/doc/postfix/README_FILES
+sample_directory = /usr/share/doc/postfix/samples
+sendmail_path = /usr/sbin/sendmail
+html_directory = no
+setgid_group = postdrop
+command_directory = /usr/sbin
+manpage_directory = /usr/share/man
+daemon_directory = /usr/libexec/postfix
+newaliases_path = /usr/bin/newaliases
+mailq_path = /usr/bin/mailq
+queue_directory = /var/spool/postfix
+mail_owner = postfix
+# virtual-alias-maps-ldap-reserved.cf redirects {abuse,webmaster,etc.}@ -> root
+# For domains on this pool, virtual-alias-maps-ldap.cf does foo@bar.com -> user+foo@localhost
+# For domains on another pool, virtual-alias-maps-relay-ldap.cf does foo@bar.com -> foo!bar.com@[18.4.86.22]
+# For users on another pool, pass-scripts.mit.edu matches *@scripts.mit.edu and virtual-alias-maps-relay-user-ldap.cf does foo@scripts.mit.edu -> foo!scripts.mit.edu@[18.4.86.22]
+# pass-scripts.mit.edu-suffix and virtual-alias-maps-relay-user-suffix-ldap.cf do the same for foo+bar@scripts.mit.edu
+# Native routing does foo@scripts.mit.edu -> foo
+# smtp_generic_map rewrites foo!scripts.mit.edu@[18.4.86.22] -> foo@scripts.mit.edu after the transport is selected
+# To override, put something in /etc/postfix/force_pool
+virtual_alias_domains = {% for vip in vips | rejectattr('type', 'defined') %}{% if (vip.codename|default(ansible_lsb.codename) == ansible_lsb.codename) %}!{{ vip.host }}, !{{ vip.host | replace('.mit.edu', '') }}, {% endif %}{% endfor %}!$myhostname, !localhost, pcre:/etc/postfix/force_pool, ldap:/etc/postfix/virtual-alias-domains-ldap.cf
+virtual_alias_maps = ldap:/etc/postfix/virtual-alias-maps-ldap-reserved.cf, ldap:/etc/postfix/virtual-alias-maps-ldap.cf, ldap:/etc/postfix/virtual-alias-maps-relay-ldap.cf, pipemap:{pcre:/etc/postfix/pass-scripts.mit.edu,ldap:/etc/postfix/virtual-alias-maps-relay-user-ldap.cf}, pipemap:{pcre:/etc/postfix/pass-scripts.mit.edu-suffix,ldap:/etc/postfix/virtual-alias-maps-relay-user-suffix-ldap.cf}
+smtp_generic_maps = pcre:/etc/postfix/generic-strip-pool
+data_directory = /var/lib/postfix
+authorized_flush_users = fail
+authorized_mailq_users = /etc/postfix/mailq_users
+authorized_submit_users = !ldap:/etc/postfix/authorized-submit-users-ldap.cf, static:all
+non_smtpd_milters = unix:/run/spamass-milter/postfix/sock
+# "all" is the default, but if we do not specify it, Fedora's packaging
+# will add the wrong value here.
+inet_protocols = all
+# note: as of 21 Oct 2015, our IPv6 addresses do not have rDNS and are rejected by Gmail
+smtp_address_preference = ipv4
+smtpd_relay_restrictions = permit_mynetworks, permit_sasl_authenticated, defer_unauth_destination
