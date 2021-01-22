@@ -1,6 +1,10 @@
 # To force a vhost or user to one pool or the other, uncomment one of
 # the below:
+# Vhost to another pool:
 #/(.*)@vhost\.mit\.edu/ $1!vhost.mit.edu@[18.4.86.22]
+# User to another pool:
 #/user(\+.*)?@scripts\.mit\.edu/ user$1!scripts.mit.edu@[18.4.86.22]
+# Vhost to this pool:
 #/(.*)@vhost\.mit\.edu/ user+$1@localhost
+# User to this pool:
 #/user(\+.*)?@scripts\.mit\.edu/ user$1@localhost
