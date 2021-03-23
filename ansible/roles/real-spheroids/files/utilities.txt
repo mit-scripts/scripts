@@ -122,6 +122,7 @@ lua-socket
 lynx
 lyx-fonts
 madan-fonts
+maildrop
 mariadb
 mecab-ipadic
 memtest86+
