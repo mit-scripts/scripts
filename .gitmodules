@@ -13,3 +13,6 @@
 [submodule "ansible/roles/ldirectord-status/files/ldirectord-status/gnlpy"]
 	path = ansible/roles/ldirectord-status/files/ldirectord-status/gnlpy
 	url = https://github.com/facebook/gnlpy.git
+[submodule "server/common/oursrc/scripts-proxy/vendor/inet.af/tcpproxy"]
+	path = server/common/oursrc/scripts-proxy/vendor/inet.af/tcpproxy
+	url = https://github.com/inetaf/tcpproxy.git
