@@ -9,6 +9,7 @@
 18.4.86.46	scripts-vhosts.mit.edu scripts-vhosts
 18.4.86.50	scripts-cert.mit.edu scripts-cert
 18.4.86.229	scripts-test.mit.edu scripts-test
+18.4.86.22	scripts-f20.mit.edu scripts-f20
 
 18.4.86.57	better-mousetrap.mit.edu better-mousetrap scripts1.mit.edu scripts1
 18.4.86.53	old-faithful.mit.edu old-faithful scripts2.mit.edu scripts2
