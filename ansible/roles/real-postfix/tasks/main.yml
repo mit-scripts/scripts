@@ -37,6 +37,7 @@
     - virtual-alias-maps-ldap-reserved.cf
     - virtual-alias-maps-ldap.cf
     - virtual-alias-maps-relay-ldap.cf
+    - virtual-alias-maps-relay-ldap-domain.cf
     - virtual-alias-maps-relay-user-ldap.cf
     - virtual-alias-maps-relay-user-suffix-ldap.cf
   notify: reload postfix

@@ -10,6 +10,17 @@ alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 myorigin = scripts.mit.edu
 mydestination = scripts.mit.edu, scripts, $myhostname, scripts-test.mit.edu, scripts-test, localhost
+
+# Relay mail for domains that are hosted by other pools
+relay_domains =
+    $mydestination,
+    ldap:/etc/postfix/virtual-alias-maps-relay-ldap-domain.cf
+# Disable automatic parent domain matching; otherwise a name like
+# f30.scripts-demo.scripts.mit.edu will match
+# f30.scripts-demo.scripts.mit.edu in virtual_alias_domains
+# AND match scripts-demo.scripts.mit.edu in relay_domains.
+parent_domain_matches_subdomains =
+
 relayhost =
 mynetworks_style = host
 mailbox_command_maps =

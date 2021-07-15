@@ -1,0 +1,9 @@
+# Check if the search key is a domain served from another pool;
+# this is used as a relay_domains map to tell Postfix it's a relay domain.
+
+server_host = {{ ldap_server }}
+search_base = ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
+query_filter = (&(objectClass=scriptsVhost)(|(scriptsVhostName=%s)(scriptsVhostAlias=%s))(!(scriptsVhostName=scripts.mit.edu))(!(|{% for ip in ansible_all_ipv4_addresses %}(scriptsVhostPoolIPv4={{ip}}){% endfor %})))
+result_attribute = scriptsVhostPoolIPv4
+bind = no
+version = 3
