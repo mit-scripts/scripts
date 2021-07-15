@@ -89,7 +89,8 @@
     - real-pki
     - real-iptables
     - real-sshd
-    - real-postfix
+    - role: real-postfix
+      tags: [postfix]
     - real-afs
     - real-php
     - real-cron
