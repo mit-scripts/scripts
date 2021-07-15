@@ -40,8 +40,19 @@ mail_owner = postfix
 # Native routing does foo@scripts.mit.edu -> foo
 # smtp_generic_map rewrites foo!scripts.mit.edu@[18.4.86.22] -> foo@scripts.mit.edu after the transport is selected
 # To override, put something in /etc/postfix/force_pool
-virtual_alias_domains = {% for vip in vips | rejectattr('type', 'defined') %}{% if (vip.codename|default(ansible_lsb.codename) == ansible_lsb.codename) %}!{{ vip.host }}, !{{ vip.host | replace('.mit.edu', '') }}, {% endif %}{% endfor %}!$myhostname, !localhost, pcre:/etc/postfix/force_pool, ldap:/etc/postfix/virtual-alias-domains-ldap.cf
-virtual_alias_maps = ldap:/etc/postfix/virtual-alias-maps-ldap-reserved.cf, ldap:/etc/postfix/virtual-alias-maps-ldap.cf, ldap:/etc/postfix/virtual-alias-maps-relay-ldap.cf, pipemap:{pcre:/etc/postfix/pass-scripts.mit.edu,ldap:/etc/postfix/virtual-alias-maps-relay-user-ldap.cf}, pipemap:{pcre:/etc/postfix/pass-scripts.mit.edu-suffix,ldap:/etc/postfix/virtual-alias-maps-relay-user-suffix-ldap.cf}
+virtual_alias_domains =
+    {% for vip in vips | rejectattr('type', 'defined') %}{% if (vip.codename|default(ansible_lsb.codename) == ansible_lsb.codename) %}!{{ vip.host }}, !{{ vip.host | replace('.mit.edu', '') }}, {% endif %}{% endfor %}
+    !$myhostname,
+    !localhost,
+    pcre:/etc/postfix/force_pool,
+    ldap:/etc/postfix/virtual-alias-domains-ldap.cf
+virtual_alias_maps =
+    ldap:/etc/postfix/virtual-alias-maps-ldap-reserved.cf,
+    pcre:/etc/postfix/force_pool,
+    ldap:/etc/postfix/virtual-alias-maps-ldap.cf,
+    ldap:/etc/postfix/virtual-alias-maps-relay-ldap.cf,
+    pipemap:{pcre:/etc/postfix/pass-scripts.mit.edu,ldap:/etc/postfix/virtual-alias-maps-relay-user-ldap.cf},
+    pipemap:{pcre:/etc/postfix/pass-scripts.mit.edu-suffix,ldap:/etc/postfix/virtual-alias-maps-relay-user-suffix-ldap.cf}
 smtp_generic_maps = pcre:/etc/postfix/generic-strip-pool
 data_directory = /var/lib/postfix
 authorized_flush_users = fail
