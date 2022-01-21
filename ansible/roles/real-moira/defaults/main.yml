@@ -1,1 +1,1 @@
-use_moira: false
+use_moira: "{{ 'moira-clients' in scripts_packages }}"
