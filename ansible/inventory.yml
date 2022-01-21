@@ -8,6 +8,7 @@ all:
     - username: btidor
       root_mail: btidor-scripts@mit.edu
     - username: cela
+      root_mail: null
     - username: cereslee
     - username: ezyang
     - username: geofft
