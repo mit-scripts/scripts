@@ -42,6 +42,7 @@
     loop:
       - rpcbind.socket
       - rpcbind.service
+      - rpc-svcgssd.service
   handlers:
   - name: load modules
     service: name=systemd-modules-load state=restarted
