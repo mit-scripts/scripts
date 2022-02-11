@@ -1,4 +1,4 @@
-- hosts: sql-buster
+- hosts: sql-bullseye
   serial: 1
   pre_tasks:
   - name: Refuse to run on the primary

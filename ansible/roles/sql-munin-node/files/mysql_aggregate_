@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # vim: set fileencoding=utf-8
 #
@@ -129,8 +129,8 @@ aggregateQuery = "SELECT %sCOUNT(*) FROM %s %s %s %s" % (field, table, where, gr
 try:
     conn = MySQLdb.connect(host=server, user=login, passwd=passw, db=db)
     cursor = conn.cursor()
-except MySQLdb.Error, e:
-    print "Error %d: %s" % (e.args[0], e.args[1])
+except MySQLdb.Error as e:
+    print("Error %d: %s" % (e.args[0], e.args[1]))
     sys.exit(1)
 
 single_value = field == "" or order_by != ""
@@ -144,7 +144,7 @@ if not single_value:
         values[result[0]] = 0
 
 if len(sys.argv) == 2 and sys.argv[1] == "autoconf":
-    print "yes"
+    print("yes")
 elif len(sys.argv) == 2 and sys.argv[1] == "config":
 
     if "label" in os.environ:
@@ -158,34 +158,34 @@ elif len(sys.argv) == 2 and sys.argv[1] == "config":
         vlabel = "count(*)"
 
     if single_value:
-        print "graph mysql_aggregate_%s" % table
-        print "graph_title %s" % label
-        print "graph_vlabel %s" % vlabel
-        print "graph_category db"
-        print ""
+        print("graph mysql_aggregate_%s" % table)
+        print("graph_title %s" % label)
+        print("graph_vlabel %s" % vlabel)
+        print("graph_category db")
+        print("")
         if "only" in os.environ:
-            print "values_count.label %s" % (os.environ["only"], )
+            print("values_count.label %s" % (os.environ["only"], ))
         else:
-            print "values_count.label count"
+            print("values_count.label count")
     else:
-        print "multigraph mysql_aggregate_%s" % table
-        print "graph_title %s" % label
-        print "graph_vlabel %s" % vlabel
-        print "graph_category db"
-        print ""
+        print("multigraph mysql_aggregate_%s" % table)
+        print("graph_title %s" % label)
+        print("graph_vlabel %s" % vlabel)
+        print("graph_category db")
+        print("")
 
-        for key in values.keys():
-            print "%s_count.label %s" % (key.replace(".", "_"), key.replace(".", "_"))
+        for key in list(values.keys()):
+            print("%s_count.label %s" % (key.replace(".", "_"), key.replace(".", "_")))
 
-        for key in values.keys():
-            print ""
-            print "multigraph mysql_aggregate_%s.%s" % (table, key.replace(".", "_"))
-            print "graph_title %s, value %s" % (label, key.replace(".", "_"))
-            print "graph_vlabel %s" % vlabel
-            print "graph_category db"
-            print ""
-            print "%s_count.label %s" % (key.replace(".", "_"), key)
-            print ""
+        for key in list(values.keys()):
+            print("")
+            print("multigraph mysql_aggregate_%s.%s" % (table, key.replace(".", "_")))
+            print("graph_title %s, value %s" % (label, key.replace(".", "_")))
+            print("graph_vlabel %s" % vlabel)
+            print("graph_category db")
+            print("")
+            print("%s_count.label %s" % (key.replace(".", "_"), key))
+            print("")
 
 else:
     try:
@@ -200,24 +200,24 @@ else:
                 ind = 0
             if result[ind]:
                 count = count + result[ind]
-            print "values_count.value %s" % count
+            print("values_count.value %s" % count)
         else:
             results = cursor.fetchall()
 
             for result in results:
                 values[result[0]] = result[1]
-            print "multigraph mysql_aggregate_%s" % table
+            print("multigraph mysql_aggregate_%s" % table)
 
-            for key in values.keys():
-                print "%s_count.value %s" % (key.replace(".", "_"), values[key])
+            for key in list(values.keys()):
+                print("%s_count.value %s" % (key.replace(".", "_"), values[key]))
 
-            for key in values.keys():
-                print ""
-                print "multigraph mysql_aggregate_%s.%s" % (table, key.replace(".", "_"))
-                print "%s_count.value %s" % (key.replace(".", "_"), values[key])
+            for key in list(values.keys()):
+                print("")
+                print("multigraph mysql_aggregate_%s.%s" % (table, key.replace(".", "_")))
+                print("%s_count.value %s" % (key.replace(".", "_"), values[key]))
 
-    except MySQLdb.Error, e:
-        print "Error %d: %s" % (e.args[0], e.args[1])
+    except MySQLdb.Error as e:
+        print("Error %d: %s" % (e.args[0], e.args[1]))
 
 if conn:
     conn.close()

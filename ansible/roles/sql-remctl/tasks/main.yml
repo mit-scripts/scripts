@@ -4,8 +4,9 @@
     name:
       - remctl-server
       - remctl-client
-      - python-ldap
-      - python-sqlalchemy
+      - python-is-python3
+      - python3-ldap
+      - python3-sqlalchemy
       - kstart
 - name: Install remctl-pony
   command: git clone https://github.com/mit-scripts/sql-remctl.git /srv/remctl-pony

@@ -150,7 +150,7 @@ all:
         foreign-key.mit.edu: {}
         sliced-bread.mit.edu: {}
       children:
-        sql-buster:
+        sql-bullseye:
           hosts:
             multivalue-key.mit.edu:
               vlan486_hwaddr: 00:50:56:87:36:df
