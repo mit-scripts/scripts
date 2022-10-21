@@ -4,6 +4,7 @@ all:
     - username: achernya
     - username: adehnert
       root_mail: adehnert-sipb@mit.edu
+    - username: amigdal
     - username: andersk
     - username: btidor
       root_mail: btidor-scripts@mit.edu
