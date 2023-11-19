@@ -1,0 +1,7 @@
+server_host = {{ ldap_server }}
+search_base = ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
+query_filter = (&(objectClass=scriptsVhost)(|(scriptsVhostName=%d)(scriptsVhostAlias=%d))(!(scriptsVhostName=scripts.mit.edu))(scriptsReservedMail=%u))
+result_attribute = scriptsVhostName
+result_format = %U
+bind = no
+version = 3
