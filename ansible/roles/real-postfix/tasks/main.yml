@@ -1,0 +1,89 @@
+---
+- name: Install postfix
+  dnf:
+    name:
+      - postfix
+      - postfix-ldap
+      - postfix-pcre
+      - procmail
+      - spamass-milter-postfix
+      - postfix-perl-scripts
+    state: present
+  notify: reload postfix
+- name: Create /etc/systemd/system/postfix.service.d/
+  file:
+    path: /etc/systemd/system/postfix.service.d/
+    state: directory
+- name: Delay postfix startup until network is online
+  copy:
+    dest: /etc/systemd/system/postfix.service.d/scripts-postfix-network-online.conf
+    content: |
+      [Unit]
+      Wants=network-online.target
+      After=network-online.target
+- name: Install postfix configuration files
+  copy:
+    src: postfix/
+    dest: /etc/postfix/
+  notify: reload postfix
+- name: Install postfix LDAP configuration
+  template:
+    src: "postfix/{{ item }}.j2"
+    dest: /etc/postfix/{{ item }}
+  loop:
+    - authorized-submit-users-ldap.cf
+    - mailbox-command-maps-ldap.cf
+    - virtual-alias-domains-ldap.cf
+    - virtual-alias-maps-ldap-reserved.cf
+    - virtual-alias-maps-ldap.cf
+    - virtual-alias-maps-relay-ldap.cf
+    - virtual-alias-maps-relay-user-ldap.cf
+    - virtual-alias-maps-relay-user-suffix-ldap.cf
+  notify: reload postfix
+- name: Install main.cf
+  template:
+    src: main.cf.j2
+    dest: /etc/postfix/main.cf
+  notify: reload postfix
+- name: Ensure /etc/scripts exists
+  file:
+    path: /etc/scripts/
+    state: directory
+- name: Install root's procmailrc
+  template:
+    src: root-procmailrc.j2
+    dest: /etc/scripts/root-procmailrc
+- name: Install prune-mailq
+  copy:
+    dest: /etc/scripts/prune-mailq
+    src: prune-mailq
+    mode: preserve
+- name: Install aliases
+  copy:
+    dest: /etc/aliases
+    src: aliases
+  notify: newaliases
+- name: Configure spamass-milter
+  ini_file:
+    path: /etc/sysconfig/spamass-milter
+    section: null
+    option: EXTRA_FLAGS
+    value: '"-m -r -1 -- --socket=/run/spamd.socket"'
+    no_extra_spaces: yes
+  notify: restart spamass-milter
+- name: Configure spamassassin
+  ini_file:
+    path: /etc/sysconfig/spamassassin
+    section: null
+    option: SPAMDOPTIONS
+    value: '"--username=sa-milt --groupname=sa-milt --nouser-config --socketpath=/run/spamd.socket --socketowner=sa-milt --socketgroup=sa-milt --socketmode=0600"'
+    no_extra_spaces: yes
+  notify: restart spamassassin
+- name: Enable postfix
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop:
+    - spamass-milter
+    - postfix

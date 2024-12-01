@@ -1,0 +1,8 @@
+- name: reload postfix
+  service: name=postfix state=reloaded
+- name: newaliases
+  command: newaliases
+- name: restart spamassassin
+  service: name=spamassassin state=restarted
+- name: restart spamass-milter
+  service: name=spamass-milter state=restarted
