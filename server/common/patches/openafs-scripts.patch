@@ -5,6 +5,7 @@
 # and Edward Z. Yang <ezyang@mit.edu>
 # and Benjamin Kaduk <kaduk@mit.edu>
 # and Alexander Chernyakhovsky <achernya@mit.edu>
+# and Mitchell Berger <mitchb@mit.edu>
 #
 # This file is available under both the MIT license and the GPL.
 #
@@ -119,6 +120,24 @@ index 0087073..df3e4ef 100644
  	return ((fileBits & arights) == arights);	/* true if all rights bits are on */
      }
  }
+@@ -305,7 +329,16 @@ afs_access(OSI_VC_DECL(avc), afs_int32 amode,
+ 			if ((avc->f.m.Mode & 0100) == 0)
+ 			    code = 0;
+ 		} else if (avc->f.m.Mode & 0100)
+-		    code = 1;
++		    /* [scripts] Stock AFS sets code to 1 here and allows an
++		     * attempt at execution even if the AFS permissions don't
++		     * allow reading.  If the read permission is really
++		     * missing, the server would prevent this.  Because we
++		     * return 0 from afs_AccessOK when the read permission is
++		     * present but the UID doesn't match the VID, setting code
++		     * to 1 here would allow any user to execute (and
++		     * therefore read) any program Scripts can read, even if
++		     * it's in the wrong volume. */
++		    ;
+ 	    }
+ 	    if (code && (amode & VWRITE)) {
+ 		code = afs_AccessOK(avc, PRSFS_WRITE, treq, CHECK_MODE_BITS);
 diff --git a/src/afs/VNOPS/afs_vnop_attrs.c b/src/afs/VNOPS/afs_vnop_attrs.c
 index 2eb228f..d5d6e4a 100644
 --- a/src/afs/VNOPS/afs_vnop_attrs.c
