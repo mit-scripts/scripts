@@ -1,0 +1,5 @@
+- name: restart scripts-proxy
+  service:
+    name: scripts-proxy
+    state: restarted
+    enabled: yes

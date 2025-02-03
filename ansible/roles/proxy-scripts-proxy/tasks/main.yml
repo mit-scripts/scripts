@@ -1,0 +1,39 @@
+---
+- name: Disable haproxy-related services
+  service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: no
+  failed_when: no
+  loop:
+    - named-scripts-proxy
+    - haproxy
+- name: Remove haproxy-related configuration
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/named.scripts-proxy.conf
+    - /etc/systemd/system/named-scripts-proxy.service
+    - /etc/haproxy/haproxy.cfg
+    - /etc/rsyslog.d/haproxy.conf
+    - /etc/systemd/system/haproxy.service.d/10-scripts.conf
+    - /usr/local/bin/hatop
+- name: Remove haproxy-related packages
+  dnf:
+    name:
+      - bind
+      - bind-dlz-ldap
+      - haproxy
+    state: absent
+- name: Install scripts-proxy
+  dnf:
+    name:
+      - scripts-proxy
+    state: present
+- name: Configure scripts-proxy
+  copy:
+    dest: /etc/sysconfig/scripts-proxy
+    content: |
+      OPTIONS="-ldap_servers={{ groups['scripts-ldap'] | join(':389,') }}:389"
+  notify: restart scripts-proxy

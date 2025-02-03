@@ -13,15 +13,17 @@
       dest: /etc/munin/plugin-conf.d/
       src: files/conntrack
   roles:
+    - role: rpm-repos
+      tags: [always]
     - ansible-config-me
     - k5login
     - syslog-client
     - root-aliases
+    - mock
     - proxy-munin-node
     - nrpe
     - dnf-automatic
-    - proxy-dns
-    - proxy-haproxy
+    - proxy-scripts-proxy
     - proxy-logrotate
   tasks:
     - package:
