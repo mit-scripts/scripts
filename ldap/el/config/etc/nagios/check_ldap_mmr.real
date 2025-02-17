@@ -46,7 +46,7 @@ foreach my $entr ( @entries ) {
 }
 print "$nl";
 
-$result=LDAPSearch($ldap,"nsds5ReplConflict=*",["nsds5ReplConflict"],$replicatedBase);
+$result=LDAPSearch($ldap,"(&(objectClass=ldapSubEntry)(nsds5ReplConflict=*))",["nsds5ReplConflict"],$replicatedBase);
 @entries = $result->entries;
 foreach my $entr ( @entries ) {
     my $conflictingDN=$entr->dn();
