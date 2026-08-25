@@ -1,0 +1,20 @@
+[Unit]
+Description=Scripts HTTP/SNI proxy
+After=nss-lookup.target
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Restart=on-failure
+
+# Run as nobody but grant the ability to bind 80/443/444
+User=nobody
+Group=nobody
+AmbientCapabilities=CAP_NET_BIND_SERVICE CAP_NET_ADMIN
+
+EnvironmentFile=-/etc/sysconfig/scripts-proxy
+
+ExecStart=/usr/sbin/scripts-proxy $OPTIONS
+
+[Install]
+WantedBy=multi-user.target

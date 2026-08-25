@@ -1,0 +1,25 @@
+---
+- name: Configure scripts RPM repos
+  copy:
+    dest: /etc/yum.repos.d/scripts.repo
+    content: |
+      {% for repo in rpm_repos %}
+      [{{ repo.key }}]
+      name={{ repo.name }}
+      baseurl={{ repo.baseurl }}
+      enabled={{ 1 if repo.enabled else 0 }}
+      gpgcheck=0
+      {% endfor %}
+- name: Configure dnf.conf
+  ini_file:
+    path: /etc/dnf/dnf.conf
+    section: main
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  loop:
+    - option: installonly_limit
+      value: 0
+    - option: installonlypkgs
+      value: kernel kernel-devel kernel-modules kmod-openafs ghc-cgi ghc-cgi-devel
+    - option: excludepkgs
+      value: fedora-obsolete-packages php-fpm nfs-utils
