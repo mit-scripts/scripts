@@ -1,0 +1,21 @@
+# Find any vhost with a name or alias matching the domain of the e-mail
+# address.  We're queried with only the domain portion to determine whether
+# we accept mail at all for a given domain.  If we have no matching vhost
+# and return no records, Postfix will reject mail with a "Relay access denied"
+# error, unless the domain is configured in $mydestination.  We don't match
+# the scripts.mit.edu vhost here because otherwise it'll be treated as a
+# virtual alias domain and once we resolve an address to a scripts account,
+# we'll end up resolving the locker@scripts.mit.edu address to go to the
+# owners of the scripts.mit.edu vhost.  The value we return (if we return
+# anything at all) is supposedly arbitrary.  We choose to return the same
+# value we were queried with (the domain whose mail we host).  Protocol
+# version 3 is necessary to use ldapi.
+
+server_host = {{ ldap_server }}
+search_base = ou=VirtualHosts,dc=scripts,dc=mit,dc=edu
+query_filter = (&(objectClass=scriptsVhost)(|(scriptsVhostName=%s)(scriptsVhostAlias=%s))(!(scriptsVhostName=scripts.mit.edu))(|{% for ip in ansible_all_ipv4_addresses %}(scriptsVhostPoolIPv4={{ip}}){% endfor %}))
+result_attribute = scriptsVhostName
+result_format = %S
+bind = no
+version = 3
+

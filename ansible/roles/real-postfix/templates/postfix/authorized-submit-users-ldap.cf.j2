@@ -1,0 +1,7 @@
+# N.B. If this /does/ match, the user is /blocked/.
+server_host = {{ ldap_server }}
+search_base = ou=People,dc=scripts,dc=mit,dc=edu
+query_filter = (&(objectClass=posixAccount)(uid=%s)(scriptsBlockMailSubmit=TRUE))
+result_attribute = uid
+bind = no
+version = 3

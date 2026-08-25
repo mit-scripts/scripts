@@ -1,0 +1,3 @@
+# Match @scripts.mit.edu addresses (but don't change them)
+# This is chained with an LDAP lookup using pipemap
+/(.*)@scripts\.mit\.edu/ $1@scripts.mit.edu

@@ -1,0 +1,184 @@
+#!/bin/sh
+
+set -eu
+shopt -s failglob
+
+usage="Usage:
+    $0 list-from
+    $0 list-fullname
+    $0 list-to
+    $0 show-rand [from regex|to regex]
+    $0 email lockers...
+    $0 purge-fullname fullnames...
+    $0 purge-from lockers...
+    $0 purge-from-re regexes...
+    $0 purge-to lockers...
+    $0 purge-to-re regexes..."
+
+usage() {
+    echo "$usage" >&2;
+    exit 1
+}
+
+clean_locker() {
+    echo "${1%%@scripts.mit.edu}"
+}
+
+canonicalize_address() {
+    if [[ "$1" == *@* ]]; then
+	echo "$1"
+    else
+	echo "$1@scripts.mit.edu"
+    fi
+}
+
+list_fullname() {
+    echo "Top twenty sender fullnames by number of queued messages:"
+    mailq | grep -v '^ *(\|^-' | awk 'BEGIN { RS = "" } { print $1 }' | tr -d '*!' | xargs postcat -q -e | sed -n 's/sender_fullname: //p' | sort | uniq -c | sort -n | tail -n 20
+}
+
+list_from() {
+    echo "Top twenty sending addresses by number of queued messages:"
+    mailq | grep -v '^ *(\|^-' | awk 'BEGIN { RS = "" } { print $7 }' | sort | uniq -c | sort -n | tail -n 20
+}
+
+list_to() {
+    echo "Top twenty recipients by number of queued messages:"
+    mailq | grep -v '^ *(\|^-' | awk 'BEGIN { RS = "" } { print $8 }' | sort | uniq -c | sort -n | tail -n 20
+}
+
+show_rand() {
+    if [[ $# -eq 0 ]]; then
+	files=$(printf '%s\n' /var/spool/postfix/deferred/?/* | shuf -n 3)
+    elif [[ $# -eq 2 ]]; then
+	match=$2
+	case "$1" in
+	    from) dir=7;;
+	    to) dir=8;;
+	    *) usage;;
+	esac
+	msgids=$(mailq | grep -v '^ *(\|^-' | awk "BEGIN { RS = \"\" } (\$$dir ~ /$match/) { print \$1 }" | shuf -n 3)
+	files=$(for msgid in $msgids; do echo /var/spool/postfix/deferred/${msgid:0:1}/$msgid; done)
+    else
+	usage
+    fi
+    for file in $files; do
+        echo ">>>> $file";
+        postcat "$file"
+        echo;
+    done
+}
+
+tmpl_email() {
+    sender=${SSH_GSSAPI_NAME%%/*}
+    if [[ $# -eq 0 ]]; then
+        echo "Please specify a locker to generate template for." >&2
+        exit 1
+    fi
+    for locker in "$@"; do
+        locker=$(clean_locker "$locker")
+        echo "fs la /mit/$locker/"
+        fs la "/mit/$locker"
+        echo
+        cat <<-EOF
+The scripts.mit.edu servers currently have a large number of email messages destined for the *$locker* account that are not being handled by your account and are being queued. Sufficiently large numbers of queued messages can cause stability issues for the servers, so we would like you to ensure that your account can handle all messages it receives by two weeks from now.
+
+You will be able to process the incoming messages if you sign up for the mail scripts service (http://scripts.mit.edu/mail/). You're welcome to simply forward all incoming mail to another address (the default is to forward it to the mit.edu address of the user who signs up); otherwise, you can configure mail scripts to process the incoming messages in some suitable fashion.
+
+Frequently, large numbers of queued messages are a sign that some wiki, blog, forum, or other site has been spammed. If this is the case, you should apply some appropriate spam-blocking mechanism.
+
+If you have any questions, feel free to contact us.
+
+Thanks,
+scripts.mit.edu team
+scripts@mit.edu --- semi-private
+scripts-root@mit.edu --- service maintainers only
+EOF
+        echo;echo
+    done
+}
+
+purge_fullname() {
+    if [[ $# -eq 0 ]]; then
+        echo "Please specify a fullname to purge emails from" >&2
+        exit 1
+    fi
+    for locker in "$@"; do
+        mailq | grep -v '^ *(\|^-' | awk 'BEGIN { RS = "" } { print $1 }' | tr -d '*!' | xargs postcat -q -e | awk "BEGIN { RS = \"*** ENVELOPE RECORDS \" } /\\nsender_fullname: $locker\\n/ { sub(\".*/\", \"\", \$1); print \$1 }" | postsuper -d -
+        echo
+    done
+}
+
+purge_from() {
+    if [[ $# -eq 0 ]]; then
+        echo "Please specify an address to purge emails from" >&2
+        exit 1
+    fi
+    for address in "$@"; do
+        address=$(canonicalize_address "$address")
+        echo "$address..."
+        mailq | grep -v '^ *(\|^-' | awk "BEGIN { RS = \"\" } (\$7 == \"$address\") { print \$1 }" | tr -d '*!' | postsuper -d -
+        echo
+    done
+}
+
+purge_from_re() {
+    if [[ $# -eq 0 ]]; then
+        echo "Please specify a regex to purge emails from" >&2
+        exit 1
+    fi
+    for re in "$@"; do
+        echo "$re"
+        mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$7 ~ \"$re\") { print \$1 }" | tr -d '*!' | postsuper -d -
+        echo
+    done
+}
+
+purge_to() {
+    if [[ $# -eq 0 ]]; then
+        echo "Please specify a locker to purge emails to" >&2
+        exit 1
+    fi
+    for locker in "$@"; do
+        address=$(canonicalize_address "$locker")
+        echo "$address..."
+        mailq | grep -v '^ *(\|^-' | awk "BEGIN { RS = \"\" } (\$8 == \"$address\" && \$9 == \"\") { print \$1 }" | tr -d '*!' | postsuper -d -
+        echo
+    done
+}
+
+purge_to_re() {
+    if [[ $# -eq 0 ]]; then
+        echo "Please specify a regex to purge emails to" >&2
+        exit 1
+    fi
+    for re in "$@"; do
+        echo "$re"
+        mailq | tail -n +2 | grep -v '^ *(' | awk "BEGIN { RS = \"\" } (\$8 ~ \"$re\" && \$9 == \"\") { print \$1 }" | tr -d '*!' | postsuper -d -
+        echo
+    done
+}
+
+op=${1:-}
+
+# We want to go ahead and show the usage message if there are no args, so
+# don't let the shift fail and end the script because of "set -e"
+shift || :
+
+case "$op" in
+    list-from) list_from;;
+    list-fullname) list_fullname;;
+    list-to) list_to;;
+    show-rand) show_rand "$@";;
+    email) tmpl_email "$@";;
+    purge-fullname) purge_fullname "$@";;
+    purge-from) purge_from "$@";;
+    purge-from-re) purge_from_re "$@";;
+    purge-to) purge_to "$@";;
+    purge-to-re) purge_to_re "$@";;
+    *)
+	usage
+        ;;
+esac
+
+# vim: set sts=4 sw=4 et:
