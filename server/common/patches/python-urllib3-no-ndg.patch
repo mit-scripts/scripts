@@ -1,0 +1,15 @@
+diff --git a/urllib3/contrib/pyopenssl.py b/urllib3/contrib/pyopenssl.py
+index 21a12c6..843aa6e 100644
+--- a/urllib3/contrib/pyopenssl.py
++++ b/urllib3/contrib/pyopenssl.py
+@@ -46,8 +46,8 @@ Module Variables
+ 
+ '''
+ 
+-from ndg.httpsclient.ssl_peer_verification import SUBJ_ALT_NAME_SUPPORT
+-from ndg.httpsclient.subj_alt_name import SubjectAltName as BaseSubjectAltName
++SUBJ_ALT_NAME_SUPPORT = True
++from pyasn1_modules.rfc2459 import SubjectAltName as BaseSubjectAltName
+ import OpenSSL.SSL
+ from pyasn1.codec.der import decoder as der_decoder
+ from pyasn1.type import univ, constraint

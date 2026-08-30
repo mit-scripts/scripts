@@ -1,0 +1,28 @@
+--- python-urllib3.spec.orig	2026-08-30 05:41:46.415958749 -0400
++++ python-urllib3.spec	2026-08-30 05:52:38.146716582 -0400
+@@ -8,7 +8,7 @@
+ 
+ Name:           python-%{srcname}
+ Version:        1.8.2
+-Release:        1%{?dist}
++Release:        1.scripts.%{scriptsversion}%{?dist}
+ Summary:        Python HTTP library with thread-safe connection pooling and file post
+ 
+ License:        MIT
+@@ -22,6 +22,8 @@
+ # Remove logging-clear-handlers from setup.cfg because it's not available in RHEL6's nose
+ Patch100:       python-urllib3-old-nose-compat.patch
+ 
++Patch1001:      python-urllib3-no-ndg.patch
++
+ BuildArch:      noarch
+ 
+ Requires:       ca-certificates
+@@ -73,6 +75,7 @@
+ %if 0%{?rhel} && 0%{?rhel} <= 6
+ %patch100 -p1
+ %endif
++%patch1001 -p1 -b .no-ndg
+ 
+ %if 0%{?with_python3}
+ rm -rf %{py3dir}
